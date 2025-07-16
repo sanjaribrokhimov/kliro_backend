@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  backend:
+    build: .
+    container_name: kliro-backend
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    networks:
+      - kliro-net
+  db:
+    image: postgres:15
+    container_name: kliro-db
+    environment:
+      POSTGRES_DB: kliro
+      POSTGRES_USER: kliro
+      POSTGRES_PASSWORD: kliro
+    ports:
+      - "5432:5432"
+    networks:
+      - kliro-net
+    restart: always
+  redis:
+    image: redis:7
+    container_name: kliro-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - kliro-net
+    restart: always
+networks:
+  kliro-net:
+    driver: bridge 
