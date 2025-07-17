@@ -17,10 +17,10 @@ services:
     container_name: kliro-db
     environment:
       POSTGRES_DB: kliro
-      POSTGRES_USER: kliro
-      POSTGRES_PASSWORD: kliro
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 3210
     ports:
-      - "5432:5432"
+      - "5433:5433"
     networks:
       - kliro-net
     restart: always
