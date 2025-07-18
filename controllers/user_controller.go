@@ -115,7 +115,7 @@ func (uc *UserController) Register(c *gin.Context) {
 	// Сохраняем временные данные (можно расширить по ТЗ)
 	uc.RDB.Set(ctx, redisKey+":data", "pending", 5*time.Minute)
 
-	c.JSON(http.StatusOK, gin.H{"status": "otp sent"})
+	c.JSON(http.StatusOK, gin.H{"status": "otp sent deploy"})
 }
 
 type ConfirmOTPRequest struct {
@@ -399,7 +399,7 @@ func (uc *UserController) ForgotPassword(c *gin.Context) {
 		}
 	}
 	uc.RDB.Set(ctx, redisKey+":data", "pending", 5*time.Minute)
-	c.JSON(200, gin.H{"status": "otp sent"})
+	c.JSON(200, gin.H{"status": "otp sent deploy"})
 }
 
 // POST /reset-password
