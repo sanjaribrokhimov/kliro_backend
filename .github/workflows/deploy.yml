@@ -22,4 +22,6 @@ jobs:
           script: |
             cd /var/www/kliro_backend
             git pull
-            sudo systemctl restart nginx || true
+            go build -o app
+            pkill app || true
+            nohup ./app > app.log 2>&1 &
