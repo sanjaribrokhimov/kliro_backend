@@ -6,7 +6,13 @@ info:
     Полная документация API для KLIRO (Go + Gin + GORM + Redis).
     Все защищённые эндпоинты требуют JWT в заголовке Authorization.
 servers:
-  - url: http://localhost:8080
+  - url: http://5.182.26.60:8080
+
+tags:
+  - name: auth
+    description: Регистрация, вход, восстановление пароля, Google OAuth
+  - name: user
+    description: Профиль пользователя и действия с ним
 
 components:
   securitySchemes:
@@ -125,8 +131,9 @@ components:
           example: newpass
 
 paths:
-  /register:
+  /auth/register:
     post:
+      tags: [auth]
       summary: Регистрация пользователя по email или телефону
       requestBody:
         required: true
@@ -163,8 +170,9 @@ paths:
                     type: string
                     example: Пользователь уже существует
 
-  /confirm-otp:
+  /auth/confirm-otp:
     post:
+      tags: [auth]
       summary: Подтверждение OTP для email или телефона
       requestBody:
         required: true
@@ -201,8 +209,9 @@ paths:
                     type: string
                     example: Неверный или истёкший код
 
-  /confirm-otp-create:
+  /auth/confirm-otp-create:
     post:
+      tags: [auth]
       summary: Создание пользователя после подтверждения OTP
       requestBody:
         required: true
@@ -239,8 +248,9 @@ paths:
                     type: string
                     example: Неверный или истёкший код
 
-  /set-region-password-final:
+  /auth/set-region-password-final:
     post:
+      tags: [auth]
       summary: Установка региона и пароля (завершение регистрации)
       requestBody:
         required: true
@@ -277,8 +287,9 @@ paths:
                     type: string
                     example: Сначала подтвердите OTP
 
-  /login:
+  /auth/login:
     post:
+      tags: [auth]
       summary: Вход по email или телефону и паролю
       requestBody:
         required: true
@@ -335,8 +346,9 @@ paths:
                     type: string
                     example: Пользователь не найден
 
-  /forgot-password:
+  /auth/forgot-password:
     post:
+      tags: [auth]
       summary: Запросить восстановление пароля (отправка OTP)
       requestBody:
         required: true
@@ -373,8 +385,9 @@ paths:
                     type: string
                     example: Пользователь не найден
 
-  /reset-password:
+  /auth/reset-password:
     post:
+      tags: [auth]
       summary: Сброс пароля по OTP
       requestBody:
         required: true
@@ -423,6 +436,7 @@ paths:
 
   /auth/google:
     get:
+      tags: [auth]
       summary: Редирект на Google OAuth
       responses:
         '302':
@@ -430,6 +444,7 @@ paths:
 
   /auth/google/callback:
     get:
+      tags: [auth]
       summary: Callback от Google OAuth
       parameters:
         - in: query
@@ -471,6 +486,7 @@ paths:
 
   /auth/google/complete:
     post:
+      tags: [auth]
       summary: Завершение регистрации через Google (выбор региона)
       requestBody:
         required: true
@@ -509,6 +525,7 @@ paths:
 
   /user/profile:
     get:
+      tags: [user]
       summary: Получить профиль пользователя
       security:
         - BearerAuth: []
@@ -548,6 +565,7 @@ paths:
 
   /user/update-contact:
     post:
+      tags: [user]
       summary: Запросить смену email или телефона (отправка OTP)
       security:
         - BearerAuth: []
@@ -590,6 +608,7 @@ paths:
 
   /user/confirm-update-contact:
     post:
+      tags: [user]
       summary: Подтвердить смену email/телефона по OTP
       security:
         - BearerAuth: []
@@ -629,6 +648,7 @@ paths:
 
   /user/change-password:
     post:
+      tags: [user]
       summary: Сменить пароль
       security:
         - BearerAuth: []
@@ -671,6 +691,7 @@ paths:
 
   /user/change-region:
     post:
+      tags: [user]
       summary: Сменить регион
       security:
         - BearerAuth: []
@@ -710,6 +731,7 @@ paths:
 
   /user/add-contact:
     post:
+      tags: [user]
       summary: Добавить дополнительный email или телефон (mock)
       security:
         - BearerAuth: []
