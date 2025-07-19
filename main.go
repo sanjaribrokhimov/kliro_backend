@@ -73,7 +73,7 @@ func main() {
 	// Запуск Gin
 	r := routes.SetupRouter()
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"}, // Разрешить все (для продакшена лучше указать домен)
+		AllowOrigins:     []string{"http://localhost:3000", "https://kliro.uz"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
