@@ -16,6 +16,8 @@ import (
 	"kliro/database"
 	"kliro/routes"
 	"kliro/utils"
+
+	"github.com/gin-contrib/cors"
 )
 
 func main() {
@@ -70,6 +72,14 @@ func main() {
 
 	// Запуск Gin
 	r := routes.SetupRouter()
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"}, // Разрешить все (для продакшена лучше указать домен)
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
+	// routes.SetupRoutes(r, rdb) — удалено, чтобы не было ошибки undefined
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
