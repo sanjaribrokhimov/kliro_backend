@@ -18,6 +18,7 @@ import (
 	"kliro/utils"
 
 	"github.com/gin-contrib/cors"
+	"time"
 )
 
 func main() {
@@ -73,16 +74,23 @@ func main() {
 	// Запуск Gin
 	r := routes.SetupRouter()
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"}, // Разрешить все домены
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"},
-		AllowHeaders:     []string{"*"}, // Разрешить любые заголовки
+		AllowOrigins: []string{
+			"http://localhost:3000",
+			"https://kliro.uz",
+		},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: false, // Должно быть false для AllowOrigins: ["*"]
+		AllowCredentials: true,
+		MaxAge: 12 * time.Hour,
+
 	}))
 	// routes.SetupRoutes(r, rdb) — удалено, чтобы не было ошибки undefined
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
+		log.Printf("Server is running on port %s", port)
+
 	}
 	if err := r.Run(":" + port); err != nil {
 		log.Fatalf("Failed to run server: %v", err)
