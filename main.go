@@ -16,9 +16,6 @@ import (
 	"kliro/database"
 	"kliro/routes"
 	"kliro/utils"
-
-	"github.com/gin-contrib/cors"
-	"time"
 )
 
 func main() {
@@ -71,27 +68,15 @@ func main() {
 	// Инициализация Google OAuth
 	controllers.InitGoogleOAuth()
 
-	// Запуск Gin
+	// Создание Gin роутера и настройка всех маршрутов
 	r := routes.SetupRouter()
-	r.Use(cors.New(cors.Config{
-		AllowOrigins: []string{
-			"http://localhost:3000",
-			"https://kliro.uz",
-		},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		MaxAge: 12 * time.Hour,
 
-	}))
-	// routes.SetupRoutes(r, rdb) — удалено, чтобы не было ошибки undefined
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
-		log.Printf("Server is running on port %s", port)
-
 	}
+	log.Printf("Server is running on port %s", port)
+
 	if err := r.Run(":" + port); err != nil {
 		log.Fatalf("Failed to run server: %v", err)
 	}

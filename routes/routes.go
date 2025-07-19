@@ -4,6 +4,7 @@ import (
 	"kliro/controllers"
 	"kliro/middleware"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 )
@@ -11,6 +12,15 @@ import (
 // SetupRouter создаёт gin.Engine, регистрирует все маршруты и возвращает роутер
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
+
+	// CORS middleware ДО роутов
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000", "https://kliro.uz"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
 
 	// Здесь инициализируй зависимости (например, Redis)
 	// Для тестов можно использовать in-memory Redis или мок
