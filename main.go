@@ -73,11 +73,11 @@ func main() {
 	// Запуск Gin
 	r := routes.SetupRouter()
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"}, // Разрешить все (для продакшена лучше указать домен)
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"},
+		AllowOrigins:     []string{"*"}, // Разрешить все домены
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"},
+		AllowHeaders:     []string{"*"}, // Разрешить любые заголовки
 		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: false,
+		AllowCredentials: false, // Должно быть false для AllowOrigins: ["*"]
 	}))
 	// routes.SetupRoutes(r, rdb) — удалено, чтобы не было ошибки undefined
 	port := os.Getenv("PORT")
