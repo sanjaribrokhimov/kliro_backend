@@ -73,11 +73,11 @@ func main() {
 	// Запуск Gin
 	r := routes.SetupRouter()
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "https://kliro.uz"},
+		AllowOrigins:     []string{"*"}, // Разрешить все (для продакшена лучше указать домен)
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
+		AllowCredentials: false,
 	}))
 	// routes.SetupRoutes(r, rdb) — удалено, чтобы не было ошибки undefined
 	port := os.Getenv("PORT")
