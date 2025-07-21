@@ -267,15 +267,15 @@ paths:
                 value: {"phone": "+998901234567", "region_id": 1, "password": "pass123"}
       responses:
         '200':
-          description: User created
+          description: Успешное завершение регистрации, возвращает JWT-токен
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  status:
+                  token:
                     type: string
-                    example: user created
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
         '400':
           description: Ошибка завершения регистрации
           content:

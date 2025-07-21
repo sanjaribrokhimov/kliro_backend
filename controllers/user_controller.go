@@ -284,7 +284,14 @@ func (uc *UserController) SetRegionPasswordFinal(c *gin.Context) {
 	}
 	// Очищаем временные данные из Redis
 	uc.RDB.Del(ctx, redisKey+":otp", redisKey+":confirmed", redisKey+":data")
-	c.JSON(200, gin.H{"status": "user created"})
+
+	// Генерируем JWT-токен
+	jwt, err := utils.GenerateJWT(user.ID, user.Role, os.Getenv("JWT_SECRET"))
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Ошибка генерации токена"})
+		return
+	}
+	c.JSON(200, gin.H{"token": jwt})
 }
 
 type LoginRequest struct {

@@ -17,7 +17,7 @@ func CanSendOTP(rdb *redis.Client, key string) (bool, string) {
 	}
 	cnt, _ := rdb.Get(ctx, hourKey).Int()
 	if cnt >= 10 {
-		return false, "Можно отправлять не более 4 раз в час"
+		return false, "Можно отправлять не более 10 раз в час"
 	}
 	return true, ""
 }
