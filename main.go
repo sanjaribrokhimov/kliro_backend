@@ -19,7 +19,7 @@ import (
 )
 
 func main() {
-	
+
 	// Загрузка .env
 	err := godotenv.Load("./.env")
 	if err != nil {
@@ -81,4 +81,5 @@ func main() {
 	if err := r.Run(":" + port); err != nil {
 		log.Fatalf("Failed to run server: %v", err)
 	}
+
 }

@@ -32,6 +32,7 @@ func SetupRouter() *gin.Engine {
 	})
 	userController := controllers.NewUserController(rdb)
 	userProfileController := controllers.NewUserProfileController(rdb)
+	parserController := controllers.NewParserController()
 
 	r.POST("/auth/register", userController.Register)
 	r.POST("/auth/confirm-otp", userController.ConfirmOTP)
@@ -43,6 +44,7 @@ func SetupRouter() *gin.Engine {
 	r.GET("/auth/google", userController.GoogleLogin)
 	r.GET("/auth/google/callback", userController.GoogleCallback)
 	r.POST("/auth/google/complete", userController.GoogleComplete)
+	r.GET("/parse", parserController.ParsePage)
 
 	userGroup := r.Group("/user", middleware.JWTAuthMiddleware())
 	{

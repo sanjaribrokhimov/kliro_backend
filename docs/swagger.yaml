@@ -129,6 +129,21 @@ components:
         password:
           type: string
           example: newpass
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        refreshToken:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        accessTokenExpiry:
+          type: integer
+          example: 1712345678
+        refreshTokenExpiry:
+          type: integer
+          example: 1714937678
 
 paths:
   /auth/register:
@@ -267,15 +282,11 @@ paths:
                 value: {"phone": "+998901234567", "region_id": 1, "password": "pass123"}
       responses:
         '200':
-          description: Успешное завершение регистрации, возвращает JWT-токен
+          description: Успешное завершение регистрации, возвращает токены
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                $ref: '#/components/schemas/AuthResponse'
         '400':
           description: Ошибка завершения регистрации
           content:
@@ -310,11 +321,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                $ref: '#/components/schemas/AuthResponse'
         '400':
           description: Ошибка входа (Google-аккаунт)
           content:
@@ -460,11 +467,7 @@ paths:
             application/json:
               schema:
                 oneOf:
-                  - type: object
-                    properties:
-                      token:
-                        type: string
-                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  - $ref: '#/components/schemas/AuthResponse'
                   - type: object
                     properties:
                       need_region:
@@ -507,11 +510,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                $ref: '#/components/schemas/AuthResponse'
         '400':
           description: Ошибка завершения Google регистрации
           content:

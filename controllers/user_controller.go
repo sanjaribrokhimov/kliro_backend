@@ -3,7 +3,6 @@ package controllers
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"os"
 	"strings"
 	"time"
@@ -48,12 +47,12 @@ func NewUserController(rdb *redis.Client) *UserController {
 func (uc *UserController) Register(c *gin.Context) {
 	var req UserRegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "invalid request"})
 		return
 	}
 
 	if (req.Email == "" && req.Phone == "") || (req.Email != "" && req.Phone != "") {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Укажите только email или только phone"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "Укажите только email или только phone"})
 		return
 	}
 
@@ -66,7 +65,7 @@ func (uc *UserController) Register(c *gin.Context) {
 		db.Model(&models.User{}).Where("phone = ?", req.Phone).Count(&userCount)
 	}
 	if userCount > 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Пользователь уже существует"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "Пользователь уже существует"})
 		return
 	}
 
@@ -84,7 +83,7 @@ func (uc *UserController) Register(c *gin.Context) {
 
 	// Лимиты
 	if ok, msg := utils.CanSendOTP(uc.RDB, redisKey); !ok {
-		c.JSON(http.StatusTooManyRequests, gin.H{"error": msg})
+		c.JSON(429, gin.H{"result": nil, "success": false, "error": msg})
 		return
 	}
 
@@ -96,18 +95,18 @@ func (uc *UserController) Register(c *gin.Context) {
 	if channel == "email" {
 		err := utils.SendEmail(to, "KLIRO: Код подтверждения", msg, os.Getenv("SMTP_HOST"), os.Getenv("SMTP_PORT"), os.Getenv("SMTP_USER"), os.Getenv("SMTP_PASS"))
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка отправки email"})
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка отправки email"})
 			return
 		}
 	} else {
 		token, err := utils.GetEskizToken(os.Getenv("ESKIZ_EMAIL"), os.Getenv("ESKIZ_PASSWORD"))
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка Eskiz авторизации"})
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка Eskiz авторизации"})
 			return
 		}
 		err = utils.SendEskizSMS(token, to, msg)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка отправки SMS"})
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка отправки SMS"})
 			return
 		}
 	}
@@ -115,7 +114,7 @@ func (uc *UserController) Register(c *gin.Context) {
 	// Сохраняем временные данные (можно расширить по ТЗ)
 	uc.RDB.Set(ctx, redisKey+":data", "pending", 5*time.Minute)
 
-	c.JSON(http.StatusOK, gin.H{"status": "otp sent deploy"})
+	c.JSON(200, gin.H{"result": gin.H{"status": "otp sent deploy"}, "success": true})
 }
 
 type ConfirmOTPRequest struct {
@@ -132,11 +131,11 @@ func (uc *UserController) ConfirmOTP(c *gin.Context) {
 		OTP   string `json:"otp"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(400, gin.H{"error": "invalid request"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "invalid request"})
 		return
 	}
 	if (req.Email == "" && req.Phone == "") || (req.Email != "" && req.Phone != "") {
-		c.JSON(400, gin.H{"error": "Укажите только email или только phone"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "Укажите только email или только phone"})
 		return
 	}
 	ctx := context.Background()
@@ -148,23 +147,23 @@ func (uc *UserController) ConfirmOTP(c *gin.Context) {
 	}
 	otpInRedis, err := uc.RDB.Get(ctx, redisKey+":otp").Result()
 	if err != nil || otpInRedis != req.OTP {
-		c.JSON(400, gin.H{"error": "Неверный или истёкший код"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "Неверный или истёкший код"})
 		return
 	}
 	// Помечаем как подтверждённый (флаг в Redis)
 	uc.RDB.Set(ctx, redisKey+":confirmed", "1", 10*time.Minute)
-	c.JSON(200, gin.H{"status": "otp confirmed"})
+	c.JSON(200, gin.H{"result": gin.H{"status": "otp confirmed"}, "success": true})
 }
 
 // POST /confirm-otp-create
 func (uc *UserController) ConfirmOTPCreate(c *gin.Context) {
 	var req ConfirmOTPRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(400, gin.H{"error": "invalid request"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "invalid request"})
 		return
 	}
 	if (req.Email == "" && req.Phone == "") || (req.Email != "" && req.Phone != "") {
-		c.JSON(400, gin.H{"error": "Укажите только email или только phone"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "Укажите только email или только phone"})
 		return
 	}
 	ctx := context.Background()
@@ -176,7 +175,7 @@ func (uc *UserController) ConfirmOTPCreate(c *gin.Context) {
 	}
 	otpInRedis, err := uc.RDB.Get(ctx, redisKey+":otp").Result()
 	if err != nil || otpInRedis != req.OTP {
-		c.JSON(400, gin.H{"error": "Неверный или истёкший код"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "Неверный или истёкший код"})
 		return
 	}
 	// Создаём пользователя с confirmed=true, без пароля и региона
@@ -196,12 +195,12 @@ func (uc *UserController) ConfirmOTPCreate(c *gin.Context) {
 		user.Phone = &phone
 	}
 	if err := db.Create(user).Error; err != nil {
-		c.JSON(500, gin.H{"error": "Ошибка сохранения пользователя"})
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка сохранения пользователя"})
 		return
 	}
 	// Очищаем временные данные
 	uc.RDB.Del(ctx, redisKey+":otp", redisKey+":confirmed", redisKey+":data")
-	c.JSON(200, gin.H{"status": "user created, set region and password"})
+	c.JSON(200, gin.H{"result": gin.H{"status": "user created, set region and password"}, "success": true})
 }
 
 type SetRegionPasswordRequest struct {
@@ -220,15 +219,15 @@ func (uc *UserController) SetRegionPasswordFinal(c *gin.Context) {
 		Password string `json:"password"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(400, gin.H{"error": "invalid request"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "invalid request"})
 		return
 	}
 	if (req.Email == "" && req.Phone == "") || (req.Email != "" && req.Phone != "") {
-		c.JSON(400, gin.H{"error": "Укажите только email или только phone"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "Укажите только email или только phone"})
 		return
 	}
 	if req.RegionID == 0 || req.Password == "" {
-		c.JSON(400, gin.H{"error": "region_id и password обязательны"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "region_id и password обязательны"})
 		return
 	}
 	ctx := context.Background()
@@ -240,7 +239,7 @@ func (uc *UserController) SetRegionPasswordFinal(c *gin.Context) {
 	}
 	confirmed, err := uc.RDB.Get(ctx, redisKey+":confirmed").Result()
 	if err != nil || confirmed != "1" {
-		c.JSON(400, gin.H{"error": "Сначала подтвердите OTP"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "Сначала подтвердите OTP"})
 		return
 	}
 	// Проверяем, что пользователь с таким email/phone ещё не существует
@@ -252,13 +251,13 @@ func (uc *UserController) SetRegionPasswordFinal(c *gin.Context) {
 		db.Model(&models.User{}).Where("phone = ?", req.Phone).Count(&userCount)
 	}
 	if userCount > 0 {
-		c.JSON(400, gin.H{"error": "Пользователь уже существует"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "Пользователь уже существует"})
 		return
 	}
 	// Хэшируем пароль
 	hash, err := utils.HashPassword(req.Password)
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Ошибка хэширования пароля"})
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка хэширования пароля"})
 		return
 	}
 	// Создаём пользователя
@@ -279,7 +278,7 @@ func (uc *UserController) SetRegionPasswordFinal(c *gin.Context) {
 		user.Phone = &phoneVal
 	}
 	if err := db.Create(user).Error; err != nil {
-		c.JSON(500, gin.H{"error": "Ошибка сохранения пользователя"})
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка сохранения пользователя"})
 		return
 	}
 	// Очищаем временные данные из Redis
@@ -288,22 +287,22 @@ func (uc *UserController) SetRegionPasswordFinal(c *gin.Context) {
 	// Генерируем JWT-токен
 	accessToken, err := utils.GenerateJWT(user.ID, user.Role, os.Getenv("JWT_SECRET"))
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Ошибка генерации токена"})
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка генерации токена"})
 		return
 	}
 	refreshToken, refreshExp, err := utils.GenerateRefreshToken(user.ID, os.Getenv("JWT_SECRET"))
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Ошибка генерации refresh токена"})
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка генерации refresh токена"})
 		return
 	}
 	accessClaims, _ := utils.ParseJWT(accessToken, os.Getenv("JWT_SECRET"))
 	accessExp := int64(accessClaims["exp"].(float64))
-	c.JSON(200, gin.H{
+	c.JSON(200, gin.H{"result": gin.H{
 		"accessToken":        accessToken,
 		"refreshToken":       refreshToken,
 		"accessTokenExpiry":  accessExp,
 		"refreshTokenExpiry": refreshExp,
-	})
+	}, "success": true})
 }
 
 type LoginRequest struct {
@@ -316,15 +315,15 @@ type LoginRequest struct {
 func (uc *UserController) Login(c *gin.Context) {
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(400, gin.H{"error": "invalid request"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "invalid request"})
 		return
 	}
 	if (req.Email == "" && req.Phone == "") || (req.Email != "" && req.Phone != "") {
-		c.JSON(400, gin.H{"error": "Укажите только email или только phone"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "Укажите только email или только phone"})
 		return
 	}
 	if req.Password == "" {
-		c.JSON(400, gin.H{"error": "Пароль обязателен"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "Пароль обязателен"})
 		return
 	}
 	db := utils.GetDB()
@@ -336,36 +335,36 @@ func (uc *UserController) Login(c *gin.Context) {
 		result = db.Where("phone = ? AND confirmed = ?", req.Phone, true).First(&user)
 	}
 	if result.Error != nil {
-		c.JSON(404, gin.H{"error": "Пользователь не найден"})
+		c.JSON(404, gin.H{"result": nil, "success": false, "error": "Пользователь не найден"})
 		return
 	}
 	// Проверка: если это Google-аккаунт (GoogleID заполнен, пароль пустой или дефолтный)
 	if user.GoogleID != nil && *user.GoogleID != "" && (user.Password == "" || user.Password == "-") {
-		c.JSON(400, gin.H{"error": "Этот аккаунт зарегистрирован через Google. Войдите через Google OAuth."})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "Этот аккаунт зарегистрирован через Google. Войдите через Google OAuth."})
 		return
 	}
 	if !utils.CheckPasswordHash(req.Password, user.Password) {
-		c.JSON(401, gin.H{"error": "Пароль неверный"})
+		c.JSON(401, gin.H{"result": nil, "success": false, "error": "Пароль неверный"})
 		return
 	}
 	accessToken, err := utils.GenerateJWT(user.ID, user.Role, os.Getenv("JWT_SECRET"))
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Ошибка генерации токена"})
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка генерации токена"})
 		return
 	}
 	refreshToken, refreshExp, err := utils.GenerateRefreshToken(user.ID, os.Getenv("JWT_SECRET"))
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Ошибка генерации refresh токена"})
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка генерации refresh токена"})
 		return
 	}
 	accessClaims, _ := utils.ParseJWT(accessToken, os.Getenv("JWT_SECRET"))
 	accessExp := int64(accessClaims["exp"].(float64))
-	c.JSON(200, gin.H{
+	c.JSON(200, gin.H{"result": gin.H{
 		"accessToken":        accessToken,
 		"refreshToken":       refreshToken,
 		"accessTokenExpiry":  accessExp,
 		"refreshTokenExpiry": refreshExp,
-	})
+	}, "success": true})
 }
 
 type ForgotPasswordRequest struct {
@@ -384,11 +383,11 @@ type ResetPasswordRequest struct {
 func (uc *UserController) ForgotPassword(c *gin.Context) {
 	var req ForgotPasswordRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(400, gin.H{"error": "invalid request"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "invalid request"})
 		return
 	}
 	if (req.Email == "" && req.Phone == "") || (req.Email != "" && req.Phone != "") {
-		c.JSON(400, gin.H{"error": "Укажите только email или только phone"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "Укажите только email или только phone"})
 		return
 	}
 	ctx := context.Background()
@@ -404,7 +403,7 @@ func (uc *UserController) ForgotPassword(c *gin.Context) {
 	}
 	// Лимиты
 	if ok, msg := utils.CanSendOTP(uc.RDB, redisKey); !ok {
-		c.JSON(429, gin.H{"error": msg})
+		c.JSON(429, gin.H{"result": nil, "success": false, "error": msg})
 		return
 	}
 	otp := utils.GenerateOTP()
@@ -414,38 +413,38 @@ func (uc *UserController) ForgotPassword(c *gin.Context) {
 	if channel == "email" {
 		err := utils.SendEmail(to, "KLIRO: Восстановление пароля", msg, os.Getenv("SMTP_HOST"), os.Getenv("SMTP_PORT"), os.Getenv("SMTP_USER"), os.Getenv("SMTP_PASS"))
 		if err != nil {
-			c.JSON(500, gin.H{"error": "Ошибка отправки email"})
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка отправки email"})
 			return
 		}
 	} else {
 		token, err := utils.GetEskizToken(os.Getenv("ESKIZ_EMAIL"), os.Getenv("ESKIZ_PASSWORD"))
 		if err != nil {
-			c.JSON(500, gin.H{"error": "Ошибка Eskiz авторизации"})
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка Eskiz авторизации"})
 			return
 		}
 		err = utils.SendEskizSMS(token, to, msg)
 		if err != nil {
-			c.JSON(500, gin.H{"error": "Ошибка отправки SMS"})
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка отправки SMS"})
 			return
 		}
 	}
 	uc.RDB.Set(ctx, redisKey+":data", "pending", 5*time.Minute)
-	c.JSON(200, gin.H{"status": "otp sent deploy"})
+	c.JSON(200, gin.H{"result": gin.H{"status": "otp sent deploy"}, "success": true})
 }
 
 // POST /reset-password
 func (uc *UserController) ResetPassword(c *gin.Context) {
 	var req ResetPasswordRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(400, gin.H{"error": "invalid request"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "invalid request"})
 		return
 	}
 	if (req.Email == "" && req.Phone == "") || (req.Email != "" && req.Phone != "") {
-		c.JSON(400, gin.H{"error": "Укажите только email или только phone"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "Укажите только email или только phone"})
 		return
 	}
 	if req.Password == "" || req.OTP == "" {
-		c.JSON(400, gin.H{"error": "otp и password обязательны"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "otp и password обязательны"})
 		return
 	}
 	ctx := context.Background()
@@ -457,7 +456,7 @@ func (uc *UserController) ResetPassword(c *gin.Context) {
 	}
 	otpInRedis, err := uc.RDB.Get(ctx, redisKey+":otp").Result()
 	if err != nil || otpInRedis != req.OTP {
-		c.JSON(400, gin.H{"error": "Неверный или истёкший код"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "Неверный или истёкший код"})
 		return
 	}
 	db := utils.GetDB()
@@ -469,21 +468,21 @@ func (uc *UserController) ResetPassword(c *gin.Context) {
 		result = db.Where("phone = ? AND confirmed = ?", req.Phone, true).First(&user)
 	}
 	if result.Error != nil {
-		c.JSON(404, gin.H{"error": "Пользователь не найден или не подтверждён"})
+		c.JSON(404, gin.H{"result": nil, "success": false, "error": "Пользователь не найден или не подтверждён"})
 		return
 	}
 	hash, err := utils.HashPassword(req.Password)
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Ошибка хэширования пароля"})
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка хэширования пароля"})
 		return
 	}
 	user.Password = hash
 	if err := db.Save(&user).Error; err != nil {
-		c.JSON(500, gin.H{"error": "Ошибка обновления пароля"})
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка обновления пароля"})
 		return
 	}
 	uc.RDB.Del(ctx, redisKey+":otp", redisKey+":data")
-	c.JSON(200, gin.H{"status": "password updated"})
+	c.JSON(200, gin.H{"result": gin.H{"status": "password updated"}, "success": true})
 }
 
 type googleUserInfo struct {
@@ -502,28 +501,28 @@ func (uc *UserController) GoogleLogin(c *gin.Context) {
 func (uc *UserController) GoogleCallback(c *gin.Context) {
 	code := c.Query("code")
 	if code == "" {
-		c.JSON(400, gin.H{"error": "code not found"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "code not found"})
 		return
 	}
 	token, err := googleOauthConfig.Exchange(context.Background(), code)
 	if err != nil {
-		c.JSON(400, gin.H{"error": "token exchange failed"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "token exchange failed"})
 		return
 	}
 	client := googleOauthConfig.Client(context.Background(), token)
 	resp, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo?alt=json")
 	if err != nil || resp.StatusCode != 200 {
-		c.JSON(400, gin.H{"error": "failed to get user info"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "failed to get user info"})
 		return
 	}
 	defer resp.Body.Close()
 	var userInfo googleUserInfo
 	if err := json.NewDecoder(resp.Body).Decode(&userInfo); err != nil {
-		c.JSON(400, gin.H{"error": "failed to decode user info"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "failed to decode user info"})
 		return
 	}
 	if userInfo.Email == "" {
-		c.JSON(400, gin.H{"error": "email not found in Google profile"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "email not found in Google profile"})
 		return
 	}
 	db := utils.GetDB()
@@ -533,22 +532,22 @@ func (uc *UserController) GoogleCallback(c *gin.Context) {
 		// Пользователь найден — выдаём JWT
 		accessToken, err := utils.GenerateJWT(user.ID, user.Role, os.Getenv("JWT_SECRET"))
 		if err != nil {
-			c.JSON(500, gin.H{"error": "Ошибка генерации токена"})
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка генерации токена"})
 			return
 		}
 		refreshToken, refreshExp, err := utils.GenerateRefreshToken(user.ID, os.Getenv("JWT_SECRET"))
 		if err != nil {
-			c.JSON(500, gin.H{"error": "Ошибка генерации refresh токена"})
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка генерации refresh токена"})
 			return
 		}
 		accessClaims, _ := utils.ParseJWT(accessToken, os.Getenv("JWT_SECRET"))
 		accessExp := int64(accessClaims["exp"].(float64))
-		c.JSON(200, gin.H{
+		c.JSON(200, gin.H{"result": gin.H{
 			"accessToken":        accessToken,
 			"refreshToken":       refreshToken,
 			"accessTokenExpiry":  accessExp,
 			"refreshTokenExpiry": refreshExp,
-		})
+		}, "success": true})
 		return
 	}
 	// Новый пользователь — сохраняем данные в Redis
@@ -562,7 +561,7 @@ func (uc *UserController) GoogleCallback(c *gin.Context) {
 	}
 	userDataJson, _ := json.Marshal(userData)
 	uc.RDB.Set(ctx, redisKey, userDataJson, 10*time.Minute)
-	c.JSON(200, gin.H{"need_region": true, "session_id": sessionID})
+	c.JSON(200, gin.H{"result": gin.H{"need_region": true, "session_id": sessionID}, "success": true})
 }
 
 // POST /auth/google/complete
@@ -573,23 +572,23 @@ func (uc *UserController) GoogleComplete(c *gin.Context) {
 	}
 	var req CompleteReq
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(400, gin.H{"error": "invalid request"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "invalid request"})
 		return
 	}
 	if req.SessionID == "" || req.RegionID == 0 {
-		c.JSON(400, gin.H{"error": "session_id и region_id обязательны"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "session_id и region_id обязательны"})
 		return
 	}
 	ctx := context.Background()
 	redisKey := "google:session:" + req.SessionID
 	userDataJson, err := uc.RDB.Get(ctx, redisKey).Result()
 	if err != nil {
-		c.JSON(400, gin.H{"error": "session not found or expired"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "session not found or expired"})
 		return
 	}
 	var userData map[string]string
 	if err := json.Unmarshal([]byte(userDataJson), &userData); err != nil {
-		c.JSON(500, gin.H{"error": "failed to parse session data"})
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to parse session data"})
 		return
 	}
 	db := utils.GetDB()
@@ -597,7 +596,7 @@ func (uc *UserController) GoogleComplete(c *gin.Context) {
 	var user models.User
 	result := db.Where("email = ?", userData["email"]).First(&user)
 	if result.Error == nil {
-		c.JSON(400, gin.H{"error": "user already exists"})
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "user already exists"})
 		return
 	}
 	email := userData["email"]
@@ -612,26 +611,26 @@ func (uc *UserController) GoogleComplete(c *gin.Context) {
 		Role:      "user",
 	}
 	if err := db.Create(&user).Error; err != nil {
-		c.JSON(500, gin.H{"error": "Ошибка сохранения пользователя"})
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка сохранения пользователя"})
 		return
 	}
 	uc.RDB.Del(ctx, redisKey)
 	accessToken, err := utils.GenerateJWT(user.ID, user.Role, os.Getenv("JWT_SECRET"))
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Ошибка генерации токена"})
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка генерации токена"})
 		return
 	}
 	refreshToken, refreshExp, err := utils.GenerateRefreshToken(user.ID, os.Getenv("JWT_SECRET"))
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Ошибка генерации refresh токена"})
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка генерации refresh токена"})
 		return
 	}
 	accessClaims, _ := utils.ParseJWT(accessToken, os.Getenv("JWT_SECRET"))
 	accessExp := int64(accessClaims["exp"].(float64))
-	c.JSON(200, gin.H{
+	c.JSON(200, gin.H{"result": gin.H{
 		"accessToken":        accessToken,
 		"refreshToken":       refreshToken,
 		"accessTokenExpiry":  accessExp,
 		"refreshTokenExpiry": refreshExp,
-	})
+	}, "success": true})
 }
