@@ -25,3 +25,15 @@ func ParseJWT(tokenStr, secret string) (jwt.MapClaims, error) {
 	}
 	return nil, err
 }
+
+func GenerateRefreshToken(userID uint, secret string) (string, int64, error) {
+	expiry := time.Now().Add(30 * 24 * time.Hour).Unix() // 30 дней
+	claims := jwt.MapClaims{
+		"user_id": userID,
+		"exp":     expiry,
+		"type":    "refresh",
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenStr, err := token.SignedString([]byte(secret))
+	return tokenStr, expiry, err
+}

@@ -248,3 +248,30 @@ func (upc *UserProfileController) AddContact(c *gin.Context) {
 	// Можно добавить контакт в отдельную таблицу, если нужно. Сейчас просто возвращаем успех.
 	c.JSON(http.StatusOK, gin.H{"status": "contact added (mock)"})
 }
+
+// POST /user/logout
+func (upc *UserProfileController) Logout(c *gin.Context) {
+	token := c.GetHeader("Authorization")
+	if token == "" {
+		c.JSON(400, gin.H{"error": "No token provided"})
+		return
+	}
+	if len(token) > 7 && token[:7] == "Bearer " {
+		token = token[7:]
+	}
+	claims, err := utils.ParseJWT(token, os.Getenv("JWT_SECRET"))
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid token"})
+		return
+	}
+	exp, ok := claims["exp"].(float64)
+	if !ok {
+		c.JSON(400, gin.H{"error": "Invalid token exp"})
+		return
+	}
+	ttl := int64(exp) - time.Now().Unix()
+	if ttl > 0 {
+		upc.RDB.Set(context.Background(), "blacklist:"+token, "1", time.Duration(ttl)*time.Second)
+	}
+	c.JSON(200, gin.H{"status": "logged out"})
+}

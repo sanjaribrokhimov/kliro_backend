@@ -286,12 +286,24 @@ func (uc *UserController) SetRegionPasswordFinal(c *gin.Context) {
 	uc.RDB.Del(ctx, redisKey+":otp", redisKey+":confirmed", redisKey+":data")
 
 	// Генерируем JWT-токен
-	jwt, err := utils.GenerateJWT(user.ID, user.Role, os.Getenv("JWT_SECRET"))
+	accessToken, err := utils.GenerateJWT(user.ID, user.Role, os.Getenv("JWT_SECRET"))
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Ошибка генерации токена"})
 		return
 	}
-	c.JSON(200, gin.H{"token": jwt})
+	refreshToken, refreshExp, err := utils.GenerateRefreshToken(user.ID, os.Getenv("JWT_SECRET"))
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Ошибка генерации refresh токена"})
+		return
+	}
+	accessClaims, _ := utils.ParseJWT(accessToken, os.Getenv("JWT_SECRET"))
+	accessExp := int64(accessClaims["exp"].(float64))
+	c.JSON(200, gin.H{
+		"accessToken":        accessToken,
+		"refreshToken":       refreshToken,
+		"accessTokenExpiry":  accessExp,
+		"refreshTokenExpiry": refreshExp,
+	})
 }
 
 type LoginRequest struct {
@@ -336,12 +348,24 @@ func (uc *UserController) Login(c *gin.Context) {
 		c.JSON(401, gin.H{"error": "Пароль неверный"})
 		return
 	}
-	jwt, err := utils.GenerateJWT(user.ID, user.Role, os.Getenv("JWT_SECRET"))
+	accessToken, err := utils.GenerateJWT(user.ID, user.Role, os.Getenv("JWT_SECRET"))
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Ошибка генерации токена"})
 		return
 	}
-	c.JSON(200, gin.H{"token": jwt})
+	refreshToken, refreshExp, err := utils.GenerateRefreshToken(user.ID, os.Getenv("JWT_SECRET"))
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Ошибка генерации refresh токена"})
+		return
+	}
+	accessClaims, _ := utils.ParseJWT(accessToken, os.Getenv("JWT_SECRET"))
+	accessExp := int64(accessClaims["exp"].(float64))
+	c.JSON(200, gin.H{
+		"accessToken":        accessToken,
+		"refreshToken":       refreshToken,
+		"accessTokenExpiry":  accessExp,
+		"refreshTokenExpiry": refreshExp,
+	})
 }
 
 type ForgotPasswordRequest struct {
@@ -507,12 +531,24 @@ func (uc *UserController) GoogleCallback(c *gin.Context) {
 	result := db.Where("email = ?", userInfo.Email).First(&user)
 	if result.Error == nil {
 		// Пользователь найден — выдаём JWT
-		jwt, err := utils.GenerateJWT(user.ID, user.Role, os.Getenv("JWT_SECRET"))
+		accessToken, err := utils.GenerateJWT(user.ID, user.Role, os.Getenv("JWT_SECRET"))
 		if err != nil {
 			c.JSON(500, gin.H{"error": "Ошибка генерации токена"})
 			return
 		}
-		c.JSON(200, gin.H{"token": jwt})
+		refreshToken, refreshExp, err := utils.GenerateRefreshToken(user.ID, os.Getenv("JWT_SECRET"))
+		if err != nil {
+			c.JSON(500, gin.H{"error": "Ошибка генерации refresh токена"})
+			return
+		}
+		accessClaims, _ := utils.ParseJWT(accessToken, os.Getenv("JWT_SECRET"))
+		accessExp := int64(accessClaims["exp"].(float64))
+		c.JSON(200, gin.H{
+			"accessToken":        accessToken,
+			"refreshToken":       refreshToken,
+			"accessTokenExpiry":  accessExp,
+			"refreshTokenExpiry": refreshExp,
+		})
 		return
 	}
 	// Новый пользователь — сохраняем данные в Redis
@@ -580,10 +616,22 @@ func (uc *UserController) GoogleComplete(c *gin.Context) {
 		return
 	}
 	uc.RDB.Del(ctx, redisKey)
-	jwt, err := utils.GenerateJWT(user.ID, user.Role, os.Getenv("JWT_SECRET"))
+	accessToken, err := utils.GenerateJWT(user.ID, user.Role, os.Getenv("JWT_SECRET"))
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Ошибка генерации токена"})
 		return
 	}
-	c.JSON(200, gin.H{"token": jwt})
+	refreshToken, refreshExp, err := utils.GenerateRefreshToken(user.ID, os.Getenv("JWT_SECRET"))
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Ошибка генерации refresh токена"})
+		return
+	}
+	accessClaims, _ := utils.ParseJWT(accessToken, os.Getenv("JWT_SECRET"))
+	accessExp := int64(accessClaims["exp"].(float64))
+	c.JSON(200, gin.H{
+		"accessToken":        accessToken,
+		"refreshToken":       refreshToken,
+		"accessTokenExpiry":  accessExp,
+		"refreshTokenExpiry": refreshExp,
+	})
 }
