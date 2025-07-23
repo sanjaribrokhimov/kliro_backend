@@ -496,7 +496,7 @@ type googleUserInfo struct {
 func (uc *UserController) GoogleLogin(c *gin.Context) {
 	redirectURL := c.Query("redirect_url")
 	if redirectURL == "" {
-		redirectURL = "https://kliro.uz/oauth-callback" // default frontend page
+		redirectURL = "https://kliro.uz/auth/google-complete" // default frontend page
 	}
 	state := base64.URLEncoding.EncodeToString([]byte(redirectURL))
 	url := googleOauthConfig.AuthCodeURL(state, oauth2.AccessTypeOffline)
@@ -507,7 +507,7 @@ func (uc *UserController) GoogleLogin(c *gin.Context) {
 func (uc *UserController) GoogleCallback(c *gin.Context) {
 	code := c.Query("code")
 	state := c.Query("state")
-	redirectURL := "https://kliro.uz/oauth-callback"
+	redirectURL := "https://kliro.uz/auth-callback"
 	if state != "" {
 		decoded, err := base64.URLEncoding.DecodeString(state)
 		if err == nil {
