@@ -10,6 +10,7 @@ import (
 	"kliro/models"
 	"kliro/utils"
 
+	"encoding/base64"
 	"encoding/json"
 
 	"github.com/gin-gonic/gin"
@@ -493,61 +494,71 @@ type googleUserInfo struct {
 
 // GET /auth/google
 func (uc *UserController) GoogleLogin(c *gin.Context) {
-	url := googleOauthConfig.AuthCodeURL("state", oauth2.AccessTypeOffline)
+	redirectURL := c.Query("redirect_url")
+	if redirectURL == "" {
+		redirectURL = "https://kliro.uz/oauth-callback" // default frontend page
+	}
+	state := base64.URLEncoding.EncodeToString([]byte(redirectURL))
+	url := googleOauthConfig.AuthCodeURL(state, oauth2.AccessTypeOffline)
 	c.Redirect(302, url)
 }
 
 // GET /auth/google/callback
 func (uc *UserController) GoogleCallback(c *gin.Context) {
 	code := c.Query("code")
+	state := c.Query("state")
+	redirectURL := "https://kliro.uz/oauth-callback"
+	if state != "" {
+		decoded, err := base64.URLEncoding.DecodeString(state)
+		if err == nil {
+			redirectURL = string(decoded)
+		}
+	}
 	if code == "" {
-		c.JSON(400, gin.H{"result": nil, "success": false, "error": "code not found"})
+		c.Redirect(302, redirectURL+"?error=code_not_found")
 		return
 	}
 	token, err := googleOauthConfig.Exchange(context.Background(), code)
 	if err != nil {
-		c.JSON(400, gin.H{"result": nil, "success": false, "error": "token exchange failed"})
+		c.Redirect(302, redirectURL+"?error=token_exchange_failed")
 		return
 	}
 	client := googleOauthConfig.Client(context.Background(), token)
 	resp, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo?alt=json")
 	if err != nil || resp.StatusCode != 200 {
-		c.JSON(400, gin.H{"result": nil, "success": false, "error": "failed to get user info"})
+		c.Redirect(302, redirectURL+"?error=failed_to_get_user_info")
 		return
 	}
 	defer resp.Body.Close()
 	var userInfo googleUserInfo
 	if err := json.NewDecoder(resp.Body).Decode(&userInfo); err != nil {
-		c.JSON(400, gin.H{"result": nil, "success": false, "error": "failed to decode user info"})
+		c.Redirect(302, redirectURL+"?error=failed_to_decode_user_info")
 		return
 	}
 	if userInfo.Email == "" {
-		c.JSON(400, gin.H{"result": nil, "success": false, "error": "email not found in Google profile"})
+		c.Redirect(302, redirectURL+"?error=email_not_found")
 		return
 	}
 	db := utils.GetDB()
 	var user models.User
 	result := db.Where("email = ?", userInfo.Email).First(&user)
 	if result.Error == nil {
-		// Пользователь найден — выдаём JWT
+		// Пользователь найден — выдаём JWT через редирект
 		accessToken, err := utils.GenerateJWT(user.ID, user.Role, os.Getenv("JWT_SECRET"))
 		if err != nil {
-			c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка генерации токена"})
+			c.Redirect(302, redirectURL+"?error=token_generation_failed")
 			return
 		}
 		refreshToken, refreshExp, err := utils.GenerateRefreshToken(user.ID, os.Getenv("JWT_SECRET"))
 		if err != nil {
-			c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка генерации refresh токена"})
+			c.Redirect(302, redirectURL+"?error=refresh_token_generation_failed")
 			return
 		}
 		accessClaims, _ := utils.ParseJWT(accessToken, os.Getenv("JWT_SECRET"))
 		accessExp := int64(accessClaims["exp"].(float64))
-		c.JSON(200, gin.H{"result": gin.H{
-			"accessToken":        accessToken,
-			"refreshToken":       refreshToken,
-			"accessTokenExpiry":  accessExp,
-			"refreshTokenExpiry": refreshExp,
-		}, "success": true})
+		// Собираем query string
+		params := fmt.Sprintf("?accessToken=%s&refreshToken=%s&accessTokenExpiry=%d&refreshTokenExpiry=%d", accessToken, refreshToken, accessExp, refreshExp)
+		c.Redirect(302, redirectURL+params)
 		return
 	}
 	// Новый пользователь — сохраняем данные в Redis
@@ -561,7 +572,9 @@ func (uc *UserController) GoogleCallback(c *gin.Context) {
 	}
 	userDataJson, _ := json.Marshal(userData)
 	uc.RDB.Set(ctx, redisKey, userDataJson, 10*time.Minute)
-	c.JSON(200, gin.H{"result": gin.H{"need_region": true, "session_id": sessionID}, "success": true})
+	// Редиректим на фронт с need_region и session_id
+	params := fmt.Sprintf("?need_region=true&session_id=%s", sessionID)
+	c.Redirect(302, redirectURL+params)
 }
 
 // POST /auth/google/complete

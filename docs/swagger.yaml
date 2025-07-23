@@ -3,770 +3,515 @@ info:
   title: KLIRO API
   version: 1.0.0
   description: |
-    Полная документация API для KLIRO (Go + Gin + GORM + Redis).
-    Все защищённые эндпоинты требуют JWT в заголовке Authorization.
+    Backend API для регистрации, входа, восстановления пароля, Google OAuth, профиля пользователя.
 servers:
-  - url: http://5.182.26.60:8080
-
+  - url: https://api.kliro.uz
 tags:
-  - name: auth
+  - name: Auth
     description: Регистрация, вход, восстановление пароля, Google OAuth
-  - name: user
-    description: Профиль пользователя и действия с ним
-
-components:
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-  schemas:
-    RegisterEmail:
-      type: object
-      properties:
-        email:
-          type: string
-          example: test@mail.com
-    RegisterPhone:
-      type: object
-      properties:
-        phone:
-          type: string
-          example: "+998901234567"
-    ConfirmOTPEmail:
-      type: object
-      properties:
-        email:
-          type: string
-          example: test@mail.com
-        otp:
-          type: string
-          example: "123456"
-    ConfirmOTPPhone:
-      type: object
-      properties:
-        phone:
-          type: string
-          example: "+998901234567"
-        otp:
-          type: string
-          example: "123456"
-    SetRegionPasswordEmail:
-      type: object
-      properties:
-        email:
-          type: string
-          example: test@mail.com
-        region_id:
-          type: integer
-          example: 1
-        password:
-          type: string
-          example: pass123
-    SetRegionPasswordPhone:
-      type: object
-      properties:
-        phone:
-          type: string
-          example: "+998901234567"
-        region_id:
-          type: integer
-          example: 1
-        password:
-          type: string
-          example: pass123
-    LoginEmail:
-      type: object
-      properties:
-        email:
-          type: string
-          example: test@mail.com
-        password:
-          type: string
-          example: pass123
-    LoginPhone:
-      type: object
-      properties:
-        phone:
-          type: string
-          example: "+998901234567"
-        password:
-          type: string
-          example: pass123
-    ForgotPasswordEmail:
-      type: object
-      properties:
-        email:
-          type: string
-          example: test@mail.com
-    ForgotPasswordPhone:
-      type: object
-      properties:
-        phone:
-          type: string
-          example: "+998901234567"
-    ResetPasswordEmail:
-      type: object
-      properties:
-        email:
-          type: string
-          example: test@mail.com
-        otp:
-          type: string
-          example: "123456"
-        password:
-          type: string
-          example: newpass
-    ResetPasswordPhone:
-      type: object
-      properties:
-        phone:
-          type: string
-          example: "+998901234567"
-        otp:
-          type: string
-          example: "123456"
-        password:
-          type: string
-          example: newpass
-    AuthResponse:
-      type: object
-      properties:
-        accessToken:
-          type: string
-          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-        refreshToken:
-          type: string
-          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-        accessTokenExpiry:
-          type: integer
-          example: 1712345678
-        refreshTokenExpiry:
-          type: integer
-          example: 1714937678
-
+  - name: User
+    description: Профиль пользователя и управление аккаунтом
 paths:
   /auth/register:
     post:
-      tags: [auth]
-      summary: Регистрация пользователя по email или телефону
+      tags: [Auth]
+      summary: Регистрация (email или телефон)
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: '#/components/schemas/RegisterEmail'
-                - $ref: '#/components/schemas/RegisterPhone'
-            examples:
-              email:
-                value: {"email": "test@mail.com"}
-              phone:
-                value: {"phone": "+998901234567"}
+              $ref: '#/components/schemas/RegisterRequest'
       responses:
         '200':
-          description: OTP sent
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: otp sent
+          $ref: '#/components/responses/SuccessStatus'
         '400':
-          description: Ошибка регистрации
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Пользователь уже существует
-
+          $ref: '#/components/responses/Error'
   /auth/confirm-otp:
     post:
-      tags: [auth]
-      summary: Подтверждение OTP для email или телефона
+      tags: [Auth]
+      summary: Подтвердить OTP для регистрации
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: '#/components/schemas/ConfirmOTPEmail'
-                - $ref: '#/components/schemas/ConfirmOTPPhone'
-            examples:
-              email:
-                value: {"email": "test@mail.com", "otp": "123456"}
-              phone:
-                value: {"phone": "+998901234567", "otp": "123456"}
+              $ref: '#/components/schemas/ConfirmOTPRequest'
       responses:
         '200':
-          description: OTP confirmed
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: otp confirmed
+          $ref: '#/components/responses/SuccessStatus'
         '400':
-          description: Неверный или истёкший код
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Неверный или истёкший код
-
+          $ref: '#/components/responses/Error'
   /auth/confirm-otp-create:
     post:
-      tags: [auth]
-      summary: Создание пользователя после подтверждения OTP
+      tags: [Auth]
+      summary: Создать пользователя после подтверждения OTP
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: '#/components/schemas/ConfirmOTPEmail'
-                - $ref: '#/components/schemas/ConfirmOTPPhone'
-            examples:
-              email:
-                value: {"email": "test@mail.com", "otp": "123456"}
-              phone:
-                value: {"phone": "+998901234567", "otp": "123456"}
+              $ref: '#/components/schemas/ConfirmOTPRequest'
       responses:
         '200':
-          description: User created, set region and password
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: user created, set region and password
+          $ref: '#/components/responses/SuccessStatus'
         '400':
-          description: Ошибка создания пользователя
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Неверный или истёкший код
-
+          $ref: '#/components/responses/Error'
   /auth/set-region-password-final:
     post:
-      tags: [auth]
-      summary: Установка региона и пароля (завершение регистрации)
+      tags: [Auth]
+      summary: Установить регион и пароль (завершение регистрации)
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: '#/components/schemas/SetRegionPasswordEmail'
-                - $ref: '#/components/schemas/SetRegionPasswordPhone'
-            examples:
-              email:
-                value: {"email": "test@mail.com", "region_id": 1, "password": "pass123"}
-              phone:
-                value: {"phone": "+998901234567", "region_id": 1, "password": "pass123"}
+              $ref: '#/components/schemas/SetRegionPasswordRequest'
       responses:
         '200':
-          description: Успешное завершение регистрации, возвращает токены
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
+          $ref: '#/components/responses/TokenResponse'
         '400':
-          description: Ошибка завершения регистрации
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Сначала подтвердите OTP
-
+          $ref: '#/components/responses/Error'
   /auth/login:
     post:
-      tags: [auth]
+      tags: [Auth]
       summary: Вход по email или телефону и паролю
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: '#/components/schemas/LoginEmail'
-                - $ref: '#/components/schemas/LoginPhone'
-            examples:
-              email:
-                value: {"email": "test@mail.com", "password": "pass123"}
-              phone:
-                value: {"phone": "+998901234567", "password": "pass123"}
+              $ref: '#/components/schemas/LoginRequest'
       responses:
         '200':
-          description: Успешный вход
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
+          $ref: '#/components/responses/TokenResponse'
         '400':
-          description: Ошибка входа (Google-аккаунт)
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Этот аккаунт зарегистрирован через Google. Войдите через Google OAuth.
+          $ref: '#/components/responses/Error'
         '401':
-          description: Неверный пароль
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Пароль неверный
-        '404':
-          description: Пользователь не найден
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Пользователь не найден
-
+          $ref: '#/components/responses/Error'
   /auth/forgot-password:
     post:
-      tags: [auth]
-      summary: Запросить восстановление пароля (отправка OTP)
+      tags: [Auth]
+      summary: Запросить OTP для восстановления пароля
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: '#/components/schemas/ForgotPasswordEmail'
-                - $ref: '#/components/schemas/ForgotPasswordPhone'
-            examples:
-              email:
-                value: {"email": "test@mail.com"}
-              phone:
-                value: {"phone": "+998901234567"}
+              $ref: '#/components/schemas/ForgotPasswordRequest'
       responses:
         '200':
-          description: OTP sent
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: otp sent
+          $ref: '#/components/responses/SuccessStatus'
         '400':
-          description: Ошибка восстановления
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Пользователь не найден
-
+          $ref: '#/components/responses/Error'
   /auth/reset-password:
     post:
-      tags: [auth]
-      summary: Сброс пароля по OTP
+      tags: [Auth]
+      summary: Сбросить пароль по OTP
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: '#/components/schemas/ResetPasswordEmail'
-                - $ref: '#/components/schemas/ResetPasswordPhone'
-            examples:
-              email:
-                value: {"email": "test@mail.com", "otp": "123456", "password": "newpass"}
-              phone:
-                value: {"phone": "+998901234567", "otp": "123456", "password": "newpass"}
+              $ref: '#/components/schemas/ResetPasswordRequest'
       responses:
         '200':
-          description: Пароль обновлён
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: password updated
+          $ref: '#/components/responses/SuccessStatus'
         '400':
-          description: Ошибка сброса пароля
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Неверный или истёкший код
-        '404':
-          description: Пользователь не найден
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Пользователь не найден или не подтверждён
-
+          $ref: '#/components/responses/Error'
   /auth/google:
     get:
-      tags: [auth]
-      summary: Редирект на Google OAuth
+      tags: [Auth]
+      summary: Начать Google OAuth (редирект)
       responses:
         '302':
-          description: Редирект на Google
-
+          description: Redirect to Google
   /auth/google/callback:
     get:
-      tags: [auth]
-      summary: Callback от Google OAuth
+      tags: [Auth]
+      summary: Callback Google OAuth
       parameters:
         - in: query
           name: code
           schema:
             type: string
           required: true
-          description: Код авторизации Google
       responses:
         '200':
-          description: Успешная авторизация или начало регистрации
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/schemas/AuthResponse'
-                  - type: object
-                    properties:
-                      need_region:
-                        type: boolean
-                        example: true
-                      session_id:
-                        type: string
-                        example: abc123
+          $ref: '#/components/responses/TokenResponse'
         '400':
-          description: Ошибка Google OAuth
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: code not found
-
+          $ref: '#/components/responses/Error'
   /auth/google/complete:
     post:
-      tags: [auth]
-      summary: Завершение регистрации через Google (выбор региона)
+      tags: [Auth]
+      summary: Завершить регистрацию через Google (указать регион)
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                session_id:
-                  type: string
-                  example: abc123
-                region_id:
-                  type: integer
-                  example: 1
+              $ref: '#/components/schemas/GoogleCompleteRequest'
       responses:
         '200':
-          description: Успешная регистрация через Google
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
+          $ref: '#/components/responses/TokenResponse'
         '400':
-          description: Ошибка завершения Google регистрации
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: session not found or expired
-
+          $ref: '#/components/responses/Error'
   /user/profile:
     get:
-      tags: [user]
+      tags: [User]
       summary: Получить профиль пользователя
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       responses:
         '200':
-          description: Профиль пользователя
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                    example: 1
-                  email:
-                    type: string
-                    example: test@mail.com
-                  phone:
-                    type: string
-                    example: "+998901234567"
-                  region_id:
-                    type: integer
-                    example: 1
-                  name:
-                    type: string
-                    example: Ivan
-                  role:
-                    type: string
-                    example: user
-                  category_id:
-                    type: integer
-                    example: 2
+          $ref: '#/components/responses/UserProfile'
         '401':
-          description: Требуется авторизация
-        '404':
-          description: Пользователь не найден
-
+          $ref: '#/components/responses/Error'
   /user/update-contact:
     post:
-      tags: [user]
+      tags: [User]
       summary: Запросить смену email или телефона (отправка OTP)
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: '#/components/schemas/RegisterEmail'
-                - $ref: '#/components/schemas/RegisterPhone'
-            examples:
-              email:
-                value: {"email": "new@mail.com"}
-              phone:
-                value: {"phone": "+998901234567"}
+              $ref: '#/components/schemas/UpdateContactRequest'
       responses:
         '200':
-          description: OTP sent
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: otp sent
+          $ref: '#/components/responses/SuccessStatus'
         '400':
-          description: Ошибка смены контакта
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Email уже используется
-        '401':
-          description: Требуется авторизация
-
+          $ref: '#/components/responses/Error'
   /user/confirm-update-contact:
     post:
-      tags: [user]
-      summary: Подтвердить смену email/телефона по OTP
+      tags: [User]
+      summary: Подтвердить смену email или телефона по OTP
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                otp:
-                  type: string
-                  example: "123456"
+              $ref: '#/components/schemas/ConfirmUpdateContactRequest'
       responses:
         '200':
-          description: Контакт обновлён
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: contact updated
+          $ref: '#/components/responses/SuccessStatus'
         '400':
-          description: Ошибка подтверждения
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Неверный или истёкший код
-        '401':
-          description: Требуется авторизация
-
+          $ref: '#/components/responses/Error'
   /user/change-password:
     post:
-      tags: [user]
+      tags: [User]
       summary: Сменить пароль
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                old_password:
-                  type: string
-                  example: oldpass123
-                new_password:
-                  type: string
-                  example: newpass321
+              $ref: '#/components/schemas/ChangePasswordRequest'
       responses:
         '200':
-          description: Пароль изменён
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: password changed
+          $ref: '#/components/responses/SuccessStatus'
         '400':
-          description: Ошибка смены пароля
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Оба пароля обязательны
-        '401':
-          description: Требуется авторизация
-
+          $ref: '#/components/responses/Error'
   /user/change-region:
     post:
-      tags: [user]
+      tags: [User]
       summary: Сменить регион
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                region_id:
-                  type: integer
-                  example: 1
+              $ref: '#/components/schemas/ChangeRegionRequest'
       responses:
         '200':
-          description: Регион изменён
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: region changed
+          $ref: '#/components/responses/SuccessStatus'
         '400':
-          description: Ошибка смены региона
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: region_id обязателен
-        '401':
-          description: Требуется авторизация
-
+          $ref: '#/components/responses/Error'
   /user/add-contact:
     post:
-      tags: [user]
-      summary: Добавить дополнительный email или телефон (mock)
+      tags: [User]
+      summary: Добавить дополнительный контакт (email или телефон)
       security:
-        - BearerAuth: []
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: '#/components/schemas/RegisterEmail'
-                - $ref: '#/components/schemas/RegisterPhone'
-            examples:
-              email:
-                value: {"email": "new@mail.com"}
-              phone:
-                value: {"phone": "+998901234567"}
+              $ref: '#/components/schemas/AddContactRequest'
       responses:
         '200':
-          description: Контакт добавлен (mock)
-          content:
-            application/json:
-              schema:
+          $ref: '#/components/responses/SuccessStatus'
+        '400':
+          $ref: '#/components/responses/Error'
+  /user/logout:
+    post:
+      tags: [User]
+      summary: Выйти из аккаунта (logout, blacklist токена)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessStatus'
+        '400':
+          $ref: '#/components/responses/Error'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    RegisterRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+      example:
+        email: user@example.com
+    ConfirmOTPRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        phone:
+          type: string
+        otp:
+          type: string
+      example:
+        email: user@example.com
+        otp: "123456"
+    SetRegionPasswordRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        phone:
+          type: string
+        region_id:
+          type: integer
+        password:
+          type: string
+      required: [region_id, password]
+      example:
+        email: user@example.com
+        region_id: 1
+        password: "password123"
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        phone:
+          type: string
+        password:
+          type: string
+      required: [password]
+      example:
+        email: user@example.com
+        password: "password123"
+    ForgotPasswordRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        phone:
+          type: string
+      example:
+        email: user@example.com
+    ResetPasswordRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        phone:
+          type: string
+        otp:
+          type: string
+        password:
+          type: string
+      required: [otp, password]
+      example:
+        email: user@example.com
+        otp: "123456"
+        password: "newpassword"
+    GoogleCompleteRequest:
+      type: object
+      properties:
+        session_id:
+          type: string
+        region_id:
+          type: integer
+      required: [session_id, region_id]
+      example:
+        session_id: "abc123"
+        region_id: 1
+    UpdateContactRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        phone:
+          type: string
+      example:
+        email: new@example.com
+    ConfirmUpdateContactRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        phone:
+          type: string
+        otp:
+          type: string
+      example:
+        email: new@example.com
+        otp: "654321"
+    ChangePasswordRequest:
+      type: object
+      properties:
+        old_password:
+          type: string
+        new_password:
+          type: string
+      required: [old_password, new_password]
+      example:
+        old_password: "oldpass"
+        new_password: "newpass"
+    ChangeRegionRequest:
+      type: object
+      properties:
+        region_id:
+          type: integer
+      required: [region_id]
+      example:
+        region_id: 2
+    AddContactRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        phone:
+          type: string
+      example:
+        phone: "+998901234567"
+    UserProfileResult:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        phone:
+          type: string
+        region_id:
+          type: integer
+        name:
+          type: string
+        role:
+          type: string
+        category_id:
+          type: integer
+  responses:
+    SuccessStatus:
+      description: Успешный ответ (статус)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              result:
                 type: object
                 properties:
                   status:
                     type: string
-                    example: contact added (mock)
-        '400':
-          description: Ошибка добавления контакта
-          content:
-            application/json:
-              schema:
+              success:
+                type: boolean
+              error:
+                type: string
+                nullable: true
+            example:
+              result: { status: "otp sent" }
+              success: true
+    TokenResponse:
+      description: Успешный ответ с токенами
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              result:
                 type: object
                 properties:
-                  error:
+                  accessToken:
                     type: string
-                    example: Email уже используется
-        '401':
-          description: Требуется авторизация
+                  refreshToken:
+                    type: string
+                  accessTokenExpiry:
+                    type: integer
+                  refreshTokenExpiry:
+                    type: integer
+              success:
+                type: boolean
+              error:
+                type: string
+                nullable: true
+            example:
+              result:
+                accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                accessTokenExpiry: 1712345678
+                refreshTokenExpiry: 1712945678
+              success: true
+    UserProfile:
+      description: Профиль пользователя
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              result:
+                $ref: '#/components/schemas/UserProfileResult'
+              success:
+                type: boolean
+              error:
+                type: string
+                nullable: true
+            example:
+              result:
+                id: 1
+                email: user@example.com
+                phone: "+998901234567"
+                region_id: 1
+                name: "Иван"
+                role: "user"
+                category_id: 2
+              success: true
+    Error:
+      description: Ошибка
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              result:
+                nullable: true
+              success:
+                type: boolean
+              error:
+                type: string
+            example:
+              result: null
+              success: false
+              error: "Ошибка"
