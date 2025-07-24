@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"net/http"
 	"os"
 	"strings"
@@ -8,6 +9,7 @@ import (
 	"kliro/utils"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 )
 
 func JWTAuthMiddleware() gin.HandlerFunc {
@@ -23,6 +25,22 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 			return
 		}
 		token := strings.TrimPrefix(header, "Bearer ")
+
+		// Проверяем черный список токенов
+		rdb := redis.NewClient(&redis.Options{
+			Addr:     "localhost:6379",
+			Password: "",
+			DB:       0,
+		})
+		ctx := context.Background()
+		_, err := rdb.Get(ctx, "blacklist:"+token).Result()
+		if err == nil {
+			// Токен найден в черном списке
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Token has been revoked"})
+			c.Abort()
+			return
+		}
+
 		claims, err := utils.ParseJWT(token, os.Getenv("JWT_SECRET"))
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
