@@ -1,0 +1,40 @@
+2025/07/24 09:34:17 Инициализация данных microcredit - таблицы пустые, парсим все сайты...
+2025/07/24 09:35:44 Инициализация завершена - заполнены таблицы new_microcredit и old_microcredit
+2025/07/24 10:03:34 Инициализация данных microcredit - таблицы пустые, парсим все сайты...
+2025/07/24 10:03:34 Ошибка запроса https://tengebank.uz/credit/mikrozajm-onlajn: Get "http://localhost:8080/parse?url=https://tengebank.uz/credit/mikrozajm-onlajn": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:03:34 Ошибка запроса https://ru.ipakyulibank.uz/physical/kredity/mikrozaymy: Get "http://localhost:8080/parse?url=https://ru.ipakyulibank.uz/physical/kredity/mikrozaymy": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:03:34 Ошибка запроса https://tbcbank.uz/ru/product/kredity/: Get "http://localhost:8080/parse?url=https://tbcbank.uz/ru/product/kredity/": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:03:34 Ошибка запроса https://aloqabank.uz/uz/private/crediting/onlayn-mikroqarz/: Get "http://localhost:8080/parse?url=https://aloqabank.uz/uz/private/crediting/onlayn-mikroqarz/": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:03:34 Ошибка запроса https://mkbank.uz/uz/private/crediting/microloan/: Get "http://localhost:8080/parse?url=https://mkbank.uz/uz/private/crediting/microloan/": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:03:34 Ошибка запроса https://xb.uz/page/onlayn-mikroqarz: Get "http://localhost:8080/parse?url=https://xb.uz/page/onlayn-mikroqarz": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:03:34 Ошибка запроса https://turonbank.uz/ru/private/crediting/mikrokredit-dlya-samozanyatykh-lits/: Get "http://localhost:8080/parse?url=https://turonbank.uz/ru/private/crediting/mikrokredit-dlya-samozanyatykh-lits/": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:03:34 Ошибка запроса https://hamkorbank.uz/physical/credits/microloan-online/: Get "http://localhost:8080/parse?url=https://hamkorbank.uz/physical/credits/microloan-online/": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:03:34 Ошибка запроса https://sqb.uz/uz/individuals/credits/mikrozaym-ru/: Get "http://localhost:8080/parse?url=https://sqb.uz/uz/individuals/credits/mikrozaym-ru/": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:03:34 Ошибка запроса https://www.ipotekabank.uz/private/crediting/micro_new/: Get "http://localhost:8080/parse?url=https://www.ipotekabank.uz/private/crediting/micro_new/": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:03:34 Инициализация завершена - заполнены таблицы new_microcredit и old_microcredit
+2025/07/24 10:04:56 Инициализация данных microcredit - таблицы пустые, парсим все сайты...
+2025/07/24 10:04:56 Ошибка запроса https://tengebank.uz/credit/mikrozajm-onlajn: Get "http://localhost:8080/parse?url=https://tengebank.uz/credit/mikrozajm-onlajn": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:04:56 Ошибка запроса https://ru.ipakyulibank.uz/physical/kredity/mikrozaymy: Get "http://localhost:8080/parse?url=https://ru.ipakyulibank.uz/physical/kredity/mikrozaymy": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:04:56 Ошибка запроса https://tbcbank.uz/ru/product/kredity/: Get "http://localhost:8080/parse?url=https://tbcbank.uz/ru/product/kredity/": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:04:56 Ошибка запроса https://aloqabank.uz/uz/private/crediting/onlayn-mikroqarz/: Get "http://localhost:8080/parse?url=https://aloqabank.uz/uz/private/crediting/onlayn-mikroqarz/": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:04:56 Ошибка запроса https://mkbank.uz/uz/private/crediting/microloan/: Get "http://localhost:8080/parse?url=https://mkbank.uz/uz/private/crediting/microloan/": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:04:56 Ошибка запроса https://xb.uz/page/onlayn-mikroqarz: Get "http://localhost:8080/parse?url=https://xb.uz/page/onlayn-mikroqarz": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:04:56 Ошибка запроса https://turonbank.uz/ru/private/crediting/mikrokredit-dlya-samozanyatykh-lits/: Get "http://localhost:8080/parse?url=https://turonbank.uz/ru/private/crediting/mikrokredit-dlya-samozanyatykh-lits/": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:04:56 Ошибка запроса https://hamkorbank.uz/physical/credits/microloan-online/: Get "http://localhost:8080/parse?url=https://hamkorbank.uz/physical/credits/microloan-online/": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:04:56 Ошибка запроса https://sqb.uz/uz/individuals/credits/mikrozaym-ru/: Get "http://localhost:8080/parse?url=https://sqb.uz/uz/individuals/credits/mikrozaym-ru/": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:04:56 Ошибка запроса https://www.ipotekabank.uz/private/crediting/micro_new/: Get "http://localhost:8080/parse?url=https://www.ipotekabank.uz/private/crediting/micro_new/": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:04:56 Инициализация завершена - заполнены таблицы new_microcredit и old_microcredit
+2025/07/24 10:06:55 Инициализация данных microcredit - таблицы пустые, парсим все сайты...
+2025/07/24 10:06:55 Ошибка запроса https://tengebank.uz/credit/mikrozajm-onlajn: Get "http://localhost:8080/parse?url=https://tengebank.uz/credit/mikrozajm-onlajn": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:06:55 Ошибка запроса https://ru.ipakyulibank.uz/physical/kredity/mikrozaymy: Get "http://localhost:8080/parse?url=https://ru.ipakyulibank.uz/physical/kredity/mikrozaymy": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:06:55 Ошибка запроса https://tbcbank.uz/ru/product/kredity/: Get "http://localhost:8080/parse?url=https://tbcbank.uz/ru/product/kredity/": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:06:55 Ошибка запроса https://aloqabank.uz/uz/private/crediting/onlayn-mikroqarz/: Get "http://localhost:8080/parse?url=https://aloqabank.uz/uz/private/crediting/onlayn-mikroqarz/": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:06:55 Ошибка запроса https://mkbank.uz/uz/private/crediting/microloan/: Get "http://localhost:8080/parse?url=https://mkbank.uz/uz/private/crediting/microloan/": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:06:55 Ошибка запроса https://xb.uz/page/onlayn-mikroqarz: Get "http://localhost:8080/parse?url=https://xb.uz/page/onlayn-mikroqarz": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:06:55 Ошибка запроса https://turonbank.uz/ru/private/crediting/mikrokredit-dlya-samozanyatykh-lits/: Get "http://localhost:8080/parse?url=https://turonbank.uz/ru/private/crediting/mikrokredit-dlya-samozanyatykh-lits/": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:06:55 Ошибка запроса https://hamkorbank.uz/physical/credits/microloan-online/: Get "http://localhost:8080/parse?url=https://hamkorbank.uz/physical/credits/microloan-online/": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:06:55 Ошибка запроса https://sqb.uz/uz/individuals/credits/mikrozaym-ru/: Get "http://localhost:8080/parse?url=https://sqb.uz/uz/individuals/credits/mikrozaym-ru/": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:06:55 Ошибка запроса https://www.ipotekabank.uz/private/crediting/micro_new/: Get "http://localhost:8080/parse?url=https://www.ipotekabank.uz/private/crediting/micro_new/": dial tcp [::1]:8080: connect: connection refused
+2025/07/24 10:06:55 Инициализация завершена - заполнены таблицы new_microcredit и old_microcredit
+2025/07/24 10:08:14 Инициализация данных microcredit - таблицы пустые, парсим все сайты...
+2025/07/24 10:09:36 Инициализация завершена - заполнены таблицы new_microcredit и old_microcredit

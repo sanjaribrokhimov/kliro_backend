@@ -15,6 +15,7 @@ import (
 	"kliro/controllers"
 	"kliro/database"
 	"kliro/routes"
+	"kliro/services"
 	"kliro/utils"
 )
 
@@ -54,6 +55,10 @@ func main() {
 		log.Fatalf("failed to seed regions: %v", err)
 	}
 	log.Println("Regions seeded (if needed)")
+
+	// Запуск microcredit cron
+	services.StartMicrocreditCron(db)
+	log.Println("Microcredit cron started")
 
 	// Подключение к Redis
 	rdb := redis.NewClient(&redis.Options{

@@ -15,7 +15,7 @@ func SetupRouter() *gin.Engine {
 
 	// CORS middleware ДО роутов
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "https://kliro.uz","https://www.kliro.uz"},
+		AllowOrigins:     []string{"http://localhost:3000", "https://kliro.uz", "https://www.kliro.uz"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -33,6 +33,7 @@ func SetupRouter() *gin.Engine {
 	userController := controllers.NewUserController(rdb)
 	userProfileController := controllers.NewUserProfileController(rdb)
 	parserController := controllers.NewParserController()
+	microcreditController := controllers.NewMicrocreditController()
 
 	r.POST("/auth/register", userController.Register)
 	r.POST("/auth/confirm-otp", userController.ConfirmOTP)
@@ -45,6 +46,8 @@ func SetupRouter() *gin.Engine {
 	r.GET("/auth/google/callback", userController.GoogleCallback)
 	r.POST("/auth/google/complete", userController.GoogleComplete)
 	r.GET("/parse", parserController.ParsePage)
+	r.GET("/microcredits/new", microcreditController.GetNewMicrocredits)
+	r.GET("/microcredits/old", microcreditController.GetOldMicrocredits)
 
 	userGroup := r.Group("/user", middleware.JWTAuthMiddleware())
 	{

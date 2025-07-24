@@ -3,7 +3,7 @@ info:
   title: KLIRO API
   version: 1.0.0
   description: |
-    Backend API для регистрации, входа, восстановления пароля, Google OAuth, профиля пользователя.
+    Backend API для регистрации, входа, восстановления пароля, Google OAuth, профиля пользователя и парсинга кредитных предложений.
 servers:
   - url: https://api.kliro.uz
 tags:
@@ -11,6 +11,8 @@ tags:
     description: Регистрация, вход, восстановление пароля, Google OAuth
   - name: User
     description: Профиль пользователя и управление аккаунтом
+  - name: Parser
+    description: Парсинг кредитных предложений с банковских сайтов
 paths:
   /auth/register:
     post:
@@ -123,22 +125,35 @@ paths:
     get:
       tags: [Auth]
       summary: Начать Google OAuth (редирект)
+      parameters:
+        - in: query
+          name: redirect_url
+          schema:
+            type: string
+          description: URL для редиректа после авторизации (по умолчанию https://kliro.uz/auth/google-complete)
+          example: "https://kliro.uz/oauth-callback"
       responses:
         '302':
-          description: Redirect to Google
+          description: Redirect to Google OAuth
   /auth/google/callback:
     get:
       tags: [Auth]
-      summary: Callback Google OAuth
+      summary: Callback Google OAuth (внутренний endpoint)
       parameters:
         - in: query
           name: code
           schema:
             type: string
           required: true
+          description: Authorization code from Google
+        - in: query
+          name: state
+          schema:
+            type: string
+          description: Encoded redirect URL
       responses:
-        '200':
-          $ref: '#/components/responses/TokenResponse'
+        '302':
+          description: Redirect to frontend with tokens or session_id
         '400':
           $ref: '#/components/responses/Error'
   /auth/google/complete:
@@ -155,6 +170,25 @@ paths:
         '200':
           $ref: '#/components/responses/TokenResponse'
         '400':
+          $ref: '#/components/responses/Error'
+  /parse:
+    get:
+      tags: [Parser]
+      summary: Парсинг кредитных предложений с банковского сайта
+      parameters:
+        - in: query
+          name: url
+          schema:
+            type: string
+          required: true
+          description: URL банковского сайта для парсинга
+          example: "https://ru.ipakyulibank.uz/physical/kredity/mikrozaymy"
+      responses:
+        '200':
+          $ref: '#/components/responses/ParserResponse'
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
           $ref: '#/components/responses/Error'
   /user/profile:
     get:
@@ -255,12 +289,38 @@ paths:
   /user/logout:
     post:
       tags: [User]
-      summary: Выйти из аккаунта (logout, blacklist токена)
+      summary: Выйти из аккаунта (добавить токен в черный список)
+      description: |
+        Добавляет текущий JWT токен в черный список в Redis.
+        После logout токен становится недействительным для всех последующих запросов.
+        OTP код не требуется.
       security:
         - bearerAuth: []
       responses:
         '200':
-          $ref: '#/components/responses/SuccessStatus'
+          description: Успешный выход из аккаунта
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: logged out
+                  success:
+                    type: boolean
+                    example: true
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
+              example:
+                result: { status: "logged out" }
+                success: true
+                error: null
         '400':
           $ref: '#/components/responses/Error'
 components:
@@ -406,6 +466,39 @@ components:
           type: string
       example:
         phone: "+998901234567"
+    LoanOfferDetails:
+      type: object
+      properties:
+        bank_name:
+          type: string
+          nullable: true
+          description: Название банка, извлеченное из URL
+        url:
+          type: string
+          description: Оригинальный URL
+        max_amount:
+          type: number
+          nullable: true
+          description: Максимальная сумма кредита
+        term_months:
+          type: integer
+          nullable: true
+          description: Срок кредита в месяцах
+        rate_min:
+          type: number
+          nullable: true
+          description: Минимальная процентная ставка
+        rate_max:
+          type: number
+          nullable: true
+          description: Максимальная процентная ставка
+      example:
+        bank_name: "ipakyulibank"
+        url: "https://ru.ipakyulibank.uz/physical/kredity/mikrozaymy"
+        max_amount: 100000000
+        term_months: 60
+        rate_min: 22.9
+        rate_max: 31.9
     UserProfileResult:
       type: object
       properties:
@@ -473,6 +566,29 @@ components:
                 refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
                 accessTokenExpiry: 1712345678
                 refreshTokenExpiry: 1712945678
+              success: true
+    ParserResponse:
+      description: Результат парсинга кредитного предложения
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              result:
+                $ref: '#/components/schemas/LoanOfferDetails'
+              success:
+                type: boolean
+              error:
+                type: string
+                nullable: true
+            example:
+              result:
+                bank_name: "ipakyulibank"
+                url: "https://ru.ipakyulibank.uz/physical/kredity/mikrozaymy"
+                max_amount: 100000000
+                term_months: 60
+                rate_min: 22.9
+                rate_max: 31.9
               success: true
     UserProfile:
       description: Профиль пользователя
