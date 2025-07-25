@@ -108,7 +108,7 @@ func (mc *MicrocreditController) getMicrocreditsWithPagination(c *gin.Context, t
 			},
 			Empty: true,
 		}
-		c.JSON(http.StatusOK, response)
+		c.JSON(http.StatusOK, gin.H{"result": response, "success": true})
 		return
 	}
 
@@ -188,5 +188,5 @@ func (mc *MicrocreditController) getMicrocreditsWithPagination(c *gin.Context, t
 		Empty: len(credits) == 0,
 	}
 
-	c.JSON(http.StatusOK, response)
+	c.JSON(http.StatusOK, gin.H{"result": response, "success": true})
 }
