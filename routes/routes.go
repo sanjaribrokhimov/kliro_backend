@@ -48,6 +48,7 @@ func SetupRouter() *gin.Engine {
 	r.GET("/parse", parserController.ParsePage)
 	r.GET("/microcredits/new", microcreditController.GetNewMicrocredits)
 	r.GET("/microcredits/old", microcreditController.GetOldMicrocredits)
+	r.GET("/parse-currency", parserController.ParseCurrencyPage)
 
 	userGroup := r.Group("/user", middleware.JWTAuthMiddleware())
 	{

@@ -13,6 +13,8 @@ tags:
     description: Профиль пользователя и управление аккаунтом
   - name: Parser
     description: Парсинг кредитных предложений с банковских сайтов
+  - name: Microcredits
+    description: API для получения микрофинансовых предложений от банков
 paths:
   /auth/register:
     post:
@@ -190,6 +192,25 @@ paths:
           $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'
+  /parse-currency:
+    get:
+      tags: [Parser]
+      summary: Парсинг курсов валют с банковского сайта
+      parameters:
+        - in: query
+          name: url
+          schema:
+            type: string
+          required: true
+          description: URL банковского сайта с курсами валют
+          example: "https://bank.uz/currency"
+      responses:
+        '200':
+          $ref: '#/components/responses/CurrencyParserResponse'
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
   /user/profile:
     get:
       tags: [User]
@@ -322,6 +343,208 @@ paths:
                 success: true
                 error: null
         '400':
+          $ref: '#/components/responses/Error'
+  /microcredits/new:
+    get:
+      tags: [Microcredits]
+      summary: Получить новые микрофинансы с пагинацией
+      description: |
+        Возвращает список новых микрофинансовых предложений от банков с поддержкой пагинации и сортировки.
+        
+        **Параметры пагинации:**
+        - `page` - номер страницы (начиная с 0, по умолчанию 0)
+        - `size` - размер страницы (1-100, по умолчанию 10)
+        
+        **Параметры сортировки:**
+        - `sort` - поле для сортировки (bank_name, max_amount, rate_max, rate_min, term_months, created_at)
+        - `direction` - направление сортировки (asc, desc, по умолчанию asc)
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Номер страницы (начиная с 0)
+          example: 0
+        - in: query
+          name: size
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Размер страницы
+          example: 10
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [bank_name, max_amount, rate_max, rate_min, term_months, created_at]
+            default: bank_name
+          description: Поле для сортировки
+          example: bank_name
+        - in: query
+          name: direction
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+          description: Направление сортировки
+          example: asc
+      responses:
+        '200':
+          description: Успешный ответ с пагинированными данными
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MicrocreditPaginationResponse'
+              example:
+                totalPages: 5
+                totalElements: 47
+                first: true
+                last: false
+                size: 10
+                content:
+                  - id: 1
+                    bank_name: "TBC Bank"
+                    max_amount: 50000000
+                    rate_max: 24.5
+                    rate_min: 18.0
+                    term_months: 12
+                    url: "https://tbcbank.uz/credit/mikrozajm"
+                    created_at: "2024-01-15T10:30:00Z"
+                  - id: 2
+                    bank_name: "Ipak Yo'li Banki"
+                    max_amount: 30000000
+                    rate_max: 22.9
+                    rate_min: 16.5
+                    term_months: 24
+                    url: "https://ru.ipakyulibank.uz/physical/kredity/mikrozaymy"
+                    created_at: "2024-01-15T11:00:00Z"
+                number: 0
+                sort:
+                  - direction: "ASC"
+                    nullHandling: "NATIVE"
+                    ascending: true
+                    property: "bank_name"
+                    ignoreCase: false
+                numberOfElements: 10
+                pageable:
+                  offset: 0
+                  sort:
+                    - direction: "ASC"
+                      nullHandling: "NATIVE"
+                      ascending: true
+                      property: "bank_name"
+                      ignoreCase: false
+                  paged: true
+                  pageNumber: 0
+                  pageSize: 10
+                  unpaged: false
+                empty: false
+        '500':
+          $ref: '#/components/responses/Error'
+  /microcredits/old:
+    get:
+      tags: [Microcredits]
+      summary: Получить старые микрофинансы с пагинацией
+      description: |
+        Возвращает список старых микрофинансовых предложений от банков с поддержкой пагинации и сортировки.
+        
+        **Параметры пагинации:**
+        - `page` - номер страницы (начиная с 0, по умолчанию 0)
+        - `size` - размер страницы (1-100, по умолчанию 10)
+        
+        **Параметры сортировки:**
+        - `sort` - поле для сортировки (bank_name, max_amount, rate_max, rate_min, term_months, created_at)
+        - `direction` - направление сортировки (asc, desc, по умолчанию asc)
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Номер страницы (начиная с 0)
+          example: 0
+        - in: query
+          name: size
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Размер страницы
+          example: 10
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [bank_name, max_amount, rate_max, rate_min, term_months, created_at]
+            default: bank_name
+          description: Поле для сортировки
+          example: bank_name
+        - in: query
+          name: direction
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+          description: Направление сортировки
+          example: asc
+      responses:
+        '200':
+          description: Успешный ответ с пагинированными данными
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MicrocreditPaginationResponse'
+              example:
+                totalPages: 3
+                totalElements: 25
+                first: true
+                last: false
+                size: 10
+                content:
+                  - id: 1
+                    bank_name: "Aloqa Bank"
+                    max_amount: 40000000
+                    rate_max: 26.0
+                    rate_min: 19.5
+                    term_months: 18
+                    url: "https://aloqabank.uz/uz/private/crediting/onlayn-mikroqarz/"
+                    created_at: "2024-01-10T09:15:00Z"
+                  - id: 2
+                    bank_name: "Hamkor Bank"
+                    max_amount: 25000000
+                    rate_max: 23.5
+                    rate_min: 17.0
+                    term_months: 36
+                    url: "https://hamkorbank.uz/physical/credits/microloan-online/"
+                    created_at: "2024-01-10T10:45:00Z"
+                number: 0
+                sort:
+                  - direction: "ASC"
+                    nullHandling: "NATIVE"
+                    ascending: true
+                    property: "bank_name"
+                    ignoreCase: false
+                numberOfElements: 10
+                pageable:
+                  offset: 0
+                  sort:
+                    - direction: "ASC"
+                      nullHandling: "NATIVE"
+                      ascending: true
+                      property: "bank_name"
+                      ignoreCase: false
+                  paged: true
+                  pageNumber: 0
+                  pageSize: 10
+                  unpaged: false
+                empty: false
+        '500':
           $ref: '#/components/responses/Error'
 components:
   securitySchemes:
@@ -492,6 +715,44 @@ components:
           type: number
           nullable: true
           description: Максимальная процентная ставка
+    CurrencyRate:
+      type: object
+      properties:
+        bank:
+          type: string
+          description: Название банка
+          example: "Asia Alliance Bank"
+        currency:
+          type: string
+          description: Код валюты
+          example: "USD"
+        buy:
+          type: number
+          nullable: true
+          description: Курс покупки
+          example: 12560
+        sell:
+          type: number
+          nullable: true
+          description: Курс продажи
+          example: 12655
+    CurrencyDetails:
+      type: object
+      properties:
+        bank_name:
+          type: string
+          nullable: true
+          description: Название банка из URL
+          example: "bank"
+        url:
+          type: string
+          description: Оригинальный URL
+          example: "https://bank.uz/currency"
+        rates:
+          type: array
+          items:
+            $ref: '#/components/schemas/CurrencyRate'
+          description: Массив курсов валют всех банков
       example:
         bank_name: "ipakyulibank"
         url: "https://ru.ipakyulibank.uz/physical/kredity/mikrozaymy"
@@ -516,6 +777,149 @@ components:
           type: string
         category_id:
           type: integer
+    Microcredit:
+      type: object
+      description: Структура данных микрофинанса
+      properties:
+        id:
+          type: integer
+          description: Уникальный идентификатор
+          example: 1
+        bank_name:
+          type: string
+          description: Название банка
+          example: "TBC Bank"
+        max_amount:
+          type: number
+          format: double
+          description: Максимальная сумма кредита в сумах
+          example: 50000000
+        rate_max:
+          type: number
+          format: double
+          description: Максимальная процентная ставка
+          example: 24.5
+        rate_min:
+          type: number
+          format: double
+          description: Минимальная процентная ставка
+          example: 18.0
+        term_months:
+          type: integer
+          description: Срок кредита в месяцах
+          example: 12
+        url:
+          type: string
+          description: Ссылка на предложение банка
+          example: "https://tbcbank.uz/credit/mikrozajm"
+        created_at:
+          type: string
+          format: date-time
+          description: Дата создания записи
+          example: "2024-01-15T10:30:00Z"
+      required: [id, bank_name, max_amount, rate_max, rate_min, term_months, url, created_at]
+    Sort:
+      type: object
+      description: Параметры сортировки
+      properties:
+        direction:
+          type: string
+          description: Направление сортировки
+          example: "ASC"
+        nullHandling:
+          type: string
+          description: Обработка null значений
+          example: "NATIVE"
+        ascending:
+          type: boolean
+          description: Сортировка по возрастанию
+          example: true
+        property:
+          type: string
+          description: Поле для сортировки
+          example: "bank_name"
+        ignoreCase:
+          type: boolean
+          description: Игнорировать регистр
+          example: false
+    Pageable:
+      type: object
+      description: Параметры пагинации
+      properties:
+        offset:
+          type: integer
+          description: Смещение от начала
+          example: 0
+        sort:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sort'
+          description: Параметры сортировки
+        paged:
+          type: boolean
+          description: Используется ли пагинация
+          example: true
+        pageNumber:
+          type: integer
+          description: Номер страницы
+          example: 0
+        pageSize:
+          type: integer
+          description: Размер страницы
+          example: 10
+        unpaged:
+          type: boolean
+          description: Без пагинации
+          example: false
+    MicrocreditPaginationResponse:
+      type: object
+      description: Ответ с пагинированными данными микрофинансов
+      properties:
+        totalPages:
+          type: integer
+          description: Общее количество страниц
+          example: 5
+        totalElements:
+          type: integer
+          format: int64
+          description: Общее количество элементов
+          example: 47
+        first:
+          type: boolean
+          description: Первая ли это страница
+          example: true
+        last:
+          type: boolean
+          description: Последняя ли это страница
+          example: false
+        size:
+          type: integer
+          description: Размер страницы
+          example: 10
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Microcredit'
+          description: Массив микрофинансов
+        number:
+          type: integer
+          description: Номер текущей страницы
+          example: 0
+        sort:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sort'
+          description: Параметры сортировки
+        numberOfElements:
+          type: integer
+          description: Количество элементов на текущей странице
+          example: 10
+        pageable:
+          $ref: '#/components/schemas/Pageable'
+        empty:
+          type: boolean
+          description: Пустой ли результат
+          example: false
   responses:
     SuccessStatus:
       description: Успешный ответ (статус)
@@ -589,6 +993,34 @@ components:
                 term_months: 60
                 rate_min: 22.9
                 rate_max: 31.9
+              success: true
+    CurrencyParserResponse:
+      description: Результат парсинга курсов валют
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              result:
+                $ref: '#/components/schemas/CurrencyDetails'
+              success:
+                type: boolean
+              error:
+                type: string
+                nullable: true
+            example:
+              result:
+                bank_name: "bank"
+                url: "https://bank.uz/currency"
+                rates:
+                  - bank: "Asia Alliance Bank"
+                    currency: "USD"
+                    buy: 12560
+                    sell: 12655
+                  - bank: "Ipak Yo'li Banki"
+                    currency: "USD"
+                    buy: 12560
+                    sell: 12680
               success: true
     UserProfile:
       description: Профиль пользователя
