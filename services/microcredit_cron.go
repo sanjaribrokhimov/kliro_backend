@@ -1,11 +1,8 @@
 package services
 
 import (
-	"encoding/json"
-	"io/ioutil"
 	"kliro/models"
 	"log"
-	"net/http"
 	"os"
 	"time"
 
@@ -28,26 +25,16 @@ var microcreditURLs = []string{
 
 // Функция для парсинга одного URL
 func parseMicrocreditURL(url string, logger *log.Logger) *models.Microcredit {
-	resp, err := http.Get("http://localhost:8080/parse?url=" + url)
+	// Парсим напрямую, без обращения к API
+	parser := NewMicrocreditParser()
+	credit, err := parser.ParseURL(url)
 	if err != nil {
-		logger.Printf("Ошибка запроса %s: %v", url, err)
-		return nil
-	}
-	defer resp.Body.Close()
-
-	body, _ := ioutil.ReadAll(resp.Body)
-	var parsed struct {
-		Result  models.Microcredit `json:"result"`
-		Success bool               `json:"success"`
-	}
-
-	if err := json.Unmarshal(body, &parsed); err != nil || !parsed.Success {
 		logger.Printf("Ошибка парсинга %s: %v", url, err)
 		return nil
 	}
 
-	parsed.Result.CreatedAt = time.Now()
-	return &parsed.Result
+	credit.CreatedAt = time.Now()
+	return credit
 }
 
 // Инициализация данных (первый запуск)
