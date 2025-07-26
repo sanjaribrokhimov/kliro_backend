@@ -3,6 +3,8 @@ package routes
 import (
 	"kliro/controllers"
 	"kliro/middleware"
+	"kliro/services"
+	"kliro/utils"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -22,6 +24,9 @@ func SetupRouter() *gin.Engine {
 		AllowCredentials: true,
 	}))
 
+	// Инициализируем БД
+	db := utils.GetDB()
+
 	// Здесь инициализируй зависимости (например, Redis)
 	// Для тестов можно использовать in-memory Redis или мок
 	// Пример с реальным Redis:
@@ -32,8 +37,14 @@ func SetupRouter() *gin.Engine {
 	})
 	userController := controllers.NewUserController(rdb)
 	userProfileController := controllers.NewUserProfileController(rdb)
-	parserController := controllers.NewParserController()
+
+	// Инициализируем сервисы
+	currencyService := services.NewCurrencyService(db)
+
+	// Инициализируем контроллеры
+	parserController := controllers.NewParserController(currencyService)
 	microcreditController := controllers.NewMicrocreditController()
+	currencyController := controllers.NewCurrencyController(currencyService)
 
 	r.POST("/auth/register", userController.Register)
 	r.POST("/auth/confirm-otp", userController.ConfirmOTP)
@@ -49,6 +60,9 @@ func SetupRouter() *gin.Engine {
 	r.GET("/microcredits/new", microcreditController.GetNewMicrocredits)
 	r.GET("/microcredits/old", microcreditController.GetOldMicrocredits)
 	r.GET("/parse-currency", parserController.ParseCurrencyPage)
+	r.GET("/currencies/new", currencyController.GetLatestCurrencyRates)
+	r.GET("/currencies/by-date", currencyController.GetCurrencyRatesByDate)
+	
 
 	userGroup := r.Group("/user", middleware.JWTAuthMiddleware())
 	{

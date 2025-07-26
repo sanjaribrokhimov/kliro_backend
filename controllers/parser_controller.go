@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"kliro/services"
+	"log"
 	"net/http"
 	"os"
 	"regexp"
@@ -47,10 +49,14 @@ type DeepSeekResponse struct {
 	} `json:"choices"`
 }
 
-type ParserController struct{}
+type ParserController struct {
+	currencyService *services.CurrencyService
+}
 
-func NewParserController() *ParserController {
-	return &ParserController{}
+func NewParserController(currencyService *services.CurrencyService) *ParserController {
+	return &ParserController{
+		currencyService: currencyService,
+	}
 }
 
 func (pc *ParserController) ParsePage(c *gin.Context) {
@@ -75,6 +81,9 @@ func (pc *ParserController) ParsePage(c *gin.Context) {
 
 	// Удаляем навигацию, футер и прочие неинформативные блоки
 	doc.Find("nav, header, footer, .navbar, .menu, .sidebar, .breadcrumbs, .topbar, .language, .lang-switcher, .mobile-menu, .contact-info").Remove()
+
+	// Удаляем скрипты и стили
+	doc.Find("script, style").Remove()
 
 	// Пытаемся вытащить только релевантные блоки с ключевыми словами
 	var relevantText []string
@@ -209,6 +218,9 @@ func (pc *ParserController) ParseCurrencyPage(c *gin.Context) {
 	// Удаляем навигацию, футер и прочие неинформативные блоки
 	doc.Find("nav, header, footer, .navbar, .menu, .sidebar, .breadcrumbs, .topbar, .language, .lang-switcher, .mobile-menu, .contact-info").Remove()
 
+	// Удаляем скрипты и стили
+	doc.Find("script, style").Remove()
+
 	// Пытаемся вытащить только релевантные блоки с ключевыми словами для валюты
 	var relevantText []string
 	doc.Find("section, div, table, tbody, tr, td").Each(func(i int, s *goquery.Selection) {
@@ -230,24 +242,38 @@ func (pc *ParserController) ParseCurrencyPage(c *gin.Context) {
 	fmt.Println("[PARSE CURRENCY] Очищенный текст для DeepSeek (первые 5000 символов):")
 	fmt.Println(text)
 
-	prompt := fmt.Sprintf(`Извлеки из текста актуальные курсы валют всех банков и верни JSON-объект со следующими полями:
+	prompt := fmt.Sprintf(`Найди таблицу курсов валют после заголовка "Valyuta almashtirish shahobchalaridagi eng yahshi kurslar".
+Извлеки только курсы USD, RUB, KZT, EUR. Игнорируй всё после таблицы курсов.
 
-bank_name: название банка, извлеки из URL (например, если URL — "https://www.ipoteka.uz/credits", то bank_name = "ipoteka"; если невозможно определить — null)
-url: оригинальный URL
-rates: массив объектов вида { bank: "название банка", currency: "USD", buy: число или null, sell: число или null }, где bank — название банка (например: "Poytaxt bank", "Ipak Yo'li Banki", "Asia Alliance Bank"), currency — код валюты (USD, EUR, RUB и т.д.), buy — курс покупки, sell — курс продажи. 
+Верни ТОЧНО такой JSON массив:
+[
+  {
+    "bank": "название банка",
+    "currency": "USD",
+    "buy": 12560,
+    "sell": 12655
+  },
+  {
+    "bank": "название банка", 
+    "currency": "RUB",
+    "buy": 140,
+    "sell": 165
+  }
+]
 
-Важно: извлекай курсы ВСЕХ банков, которые указаны в таблицах или списках. Если на странице есть разделы "Покупка" и "Продажа" — извлекай данные из обоих разделов и сопоставляй банки.
+Правила:
+- currency может быть только: USD, RUB, KZT, EUR
+- buy и sell должны быть числами (не строками)
+- если sell не указан, используй null
+- если банк не найден, используй "Unknown Bank"
 
-Если не найдено — rates: []
-
-Текст: "%s"
-URL: "%s"
-Верни только JSON. Без пояснений. Если какое-то значение не найдено — укажи null.`, text, url)
+Текст: %s
+Только JSON массив.`, text)
 
 	reqBody := DeepSeekRequest{
 		Model:       "deepseek-chat",
 		Messages:    []Message{{Role: "user", Content: prompt}},
-		MaxTokens:   256,
+		MaxTokens:   4096,
 		Temperature: 0.0,
 	}
 
@@ -285,10 +311,50 @@ URL: "%s"
 		raw = strings.TrimSuffix(raw, "```")
 		raw = strings.TrimSpace(raw)
 
-		var result map[string]interface{}
-		if err := json.Unmarshal([]byte(raw), &result); err != nil {
+		var ratesArray []map[string]interface{}
+		if err := json.Unmarshal([]byte(raw), &ratesArray); err != nil {
+			fmt.Printf("[PARSE CURRENCY ERROR] Failed to parse JSON: %v\n", err)
+			fmt.Printf("[PARSE CURRENCY ERROR] Raw response: %s\n", raw)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse final JSON", "raw": raw})
 			return
+		}
+
+		// Группируем по валютам
+		usdRates := []map[string]interface{}{}
+		rubRates := []map[string]interface{}{}
+		kztRates := []map[string]interface{}{}
+		eurRates := []map[string]interface{}{}
+
+		for _, rate := range ratesArray {
+			currency, ok := rate["currency"].(string)
+			if !ok {
+				continue
+			}
+
+			switch currency {
+			case "USD":
+				usdRates = append(usdRates, rate)
+			case "RUB":
+				rubRates = append(rubRates, rate)
+			case "KZT":
+				kztRates = append(kztRates, rate)
+			case "EUR":
+				eurRates = append(eurRates, rate)
+			}
+		}
+
+		// Сохраняем курсы в БД
+		if err := pc.currencyService.SaveCurrencyRates(ratesArray); err != nil {
+			log.Printf("[PARSE CURRENCY ERROR] Ошибка сохранения курсов: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save currency rates"})
+			return
+		}
+
+		result := map[string]interface{}{
+			"USD": usdRates,
+			"RUB": rubRates,
+			"KZT": kztRates,
+			"EUR": eurRates,
 		}
 		c.JSON(http.StatusOK, gin.H{"result": result, "success": true})
 	} else {
@@ -298,12 +364,30 @@ URL: "%s"
 
 // Очистка текста от ссылок, HTML и мусора
 func cleanText(raw string) string {
+	// Удаляем скрипты и стили
+	reScript := regexp.MustCompile(`<script[^>]*>.*?</script>`)
+	reStyle := regexp.MustCompile(`<style[^>]*>.*?</style>`)
 	reLink := regexp.MustCompile(`https?://\S+|ftp://\S+|mailto:\S+`)
 	reTag := regexp.MustCompile(`<[^>]+>`)
 	reSpaces := regexp.MustCompile(`\s+`)
+	reJS := regexp.MustCompile(`javascript:`)
+	reConsole := regexp.MustCompile(`console\.(log|error|warn|info)\([^)]*\)`)
+	reFunction := regexp.MustCompile(`function\s+\w+\s*\([^)]*\)\s*\{[^}]*\}`)
 
-	clean := reLink.ReplaceAllString(raw, "")
+	// Удаляем скрипты и стили
+	clean := reScript.ReplaceAllString(raw, "")
+	clean = reStyle.ReplaceAllString(clean, "")
+
+	// Удаляем ссылки
+	clean = reLink.ReplaceAllString(clean, "")
+
+	// Удаляем HTML теги
 	clean = reTag.ReplaceAllString(clean, "")
+
+	// Удаляем JavaScript код
+	clean = reJS.ReplaceAllString(clean, "")
+	clean = reConsole.ReplaceAllString(clean, "")
+	clean = reFunction.ReplaceAllString(clean, "")
 
 	lines := strings.Split(clean, "\n")
 	var compact []string
@@ -318,8 +402,8 @@ func cleanText(raw string) string {
 	clean = reSpaces.ReplaceAllString(clean, " ")
 	clean = strings.TrimSpace(clean)
 
-	if len(clean) > 5000 {
-		clean = clean[:5000]
+	if len(clean) > 7000 {
+		clean = clean[:7000]
 	}
 	return clean
 }

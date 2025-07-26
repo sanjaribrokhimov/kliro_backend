@@ -15,6 +15,8 @@ tags:
     description: Парсинг кредитных предложений с банковских сайтов
   - name: Microcredits
     description: API для получения микрофинансовых предложений от банков
+  - name: Currencies
+    description: API для получения курсов валют от банков
 paths:
   /auth/register:
     post:
@@ -211,6 +213,151 @@ paths:
           $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'
+  /currencies/new:
+    get:
+      tags: [Currencies]
+      summary: Получить последние курсы валют
+      description: Возвращает курсы валют за последние 24 часа, сгруппированные по валютам (USD, RUB, EUR, KZT)
+      responses:
+        '200':
+          description: Успешный ответ с курсами валют
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      USD:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Currency'
+                      RUB:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Currency'
+                      EUR:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Currency'
+                      KZT:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Currency'
+                  success:
+                    type: boolean
+                    example: true
+              example:
+                result:
+                  USD:
+                    - bank_name: "Asia Alliance Bank"
+                      currency: "USD"
+                      buy_rate: 12560
+                      sell_rate: 12655
+                      created_at: "2024-01-25T20:00:00Z"
+                    - bank_name: "Hamkorbank"
+                      currency: "USD"
+                      buy_rate: 12560
+                      sell_rate: 12640
+                      created_at: "2024-01-25T20:00:00Z"
+                  RUB:
+                    - bank_name: "Kapitalbank"
+                      currency: "RUB"
+                      buy_rate: 148
+                      sell_rate: 161
+                      created_at: "2024-01-25T20:00:00Z"
+                  EUR:
+                    - bank_name: "O'zbekiston Milliy banki"
+                      currency: "EUR"
+                      buy_rate: 14650
+                      sell_rate: 14850
+                      created_at: "2024-01-25T20:00:00Z"
+                  KZT:
+                    - bank_name: "Tenge Bank"
+                      currency: "KZT"
+                      buy_rate: 22
+                      sell_rate: 23.8
+                      created_at: "2024-01-25T20:00:00Z"
+                success: true
+        '500':
+          $ref: '#/components/responses/Error'
+  /currencies/by-date:
+    get:
+      tags: [Currencies]
+      summary: Получить курсы валют за определенную дату
+      description: Возвращает курсы валют за указанную дату, сгруппированные по валютам
+      parameters:
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date
+          required: true
+          description: Дата в формате YYYY-MM-DD
+          example: "2024-01-25"
+      responses:
+        '200':
+          description: Успешный ответ с курсами валют за дату
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      USD:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Currency'
+                      RUB:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Currency'
+                      EUR:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Currency'
+                      KZT:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Currency'
+                  success:
+                    type: boolean
+                    example: true
+              example:
+                result:
+                  USD:
+                    - bank_name: "Asia Alliance Bank"
+                      currency: "USD"
+                      buy_rate: 12560
+                      sell_rate: 12655
+                      created_at: "2024-01-25T20:00:00Z"
+                  RUB:
+                    - bank_name: "Kapitalbank"
+                      currency: "RUB"
+                      buy_rate: 148
+                      sell_rate: 161
+                      created_at: "2024-01-25T20:00:00Z"
+                success: true
+        '400':
+          description: Неверный формат даты
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    nullable: true
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: "Invalid date format. Use YYYY-MM-DD"
+        '500':
+          $ref: '#/components/responses/Error'
   /user/profile:
     get:
       tags: [User]
@@ -398,7 +545,65 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MicrocreditPaginationResponse'
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      totalPages:
+                        type: integer
+                        description: Общее количество страниц
+                        example: 5
+                      totalElements:
+                        type: integer
+                        format: int64
+                        description: Общее количество элементов
+                        example: 47
+                      first:
+                        type: boolean
+                        description: Первая ли это страница
+                        example: true
+                      last:
+                        type: boolean
+                        description: Последняя ли это страница
+                        example: false
+                      size:
+                        type: integer
+                        description: Размер страницы
+                        example: 10
+                      content:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Microcredit'
+                        description: Массив микрофинансов
+                      number:
+                        type: integer
+                        description: Номер текущей страницы
+                        example: 0
+                      sort:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Sort'
+                        description: Параметры сортировки
+                      numberOfElements:
+                        type: integer
+                        description: Количество элементов на текущей странице
+                        example: 10
+                      pageable:
+                        $ref: '#/components/schemas/Pageable'
+                      empty:
+                        type: boolean
+                        description: Пустой ли результат
+                        example: false
+                  success:
+                    type: boolean
+                    description: Успешность операции
+                    example: true
+                  error:
+                    type: string
+                    nullable: true
+                    description: Сообщение об ошибке
+                    example: null
               example:
                 result:
                   totalPages: 5
@@ -502,7 +707,65 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MicrocreditPaginationResponse'
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      totalPages:
+                        type: integer
+                        description: Общее количество страниц
+                        example: 5
+                      totalElements:
+                        type: integer
+                        format: int64
+                        description: Общее количество элементов
+                        example: 47
+                      first:
+                        type: boolean
+                        description: Первая ли это страница
+                        example: true
+                      last:
+                        type: boolean
+                        description: Последняя ли это страница
+                        example: false
+                      size:
+                        type: integer
+                        description: Размер страницы
+                        example: 10
+                      content:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Microcredit'
+                        description: Массив микрофинансов
+                      number:
+                        type: integer
+                        description: Номер текущей страницы
+                        example: 0
+                      sort:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Sort'
+                        description: Параметры сортировки
+                      numberOfElements:
+                        type: integer
+                        description: Количество элементов на текущей странице
+                        example: 10
+                      pageable:
+                        $ref: '#/components/schemas/Pageable'
+                      empty:
+                        type: boolean
+                        description: Пустой ли результат
+                        example: false
+                  success:
+                    type: boolean
+                    description: Успешность операции
+                    example: true
+                  error:
+                    type: string
+                    nullable: true
+                    description: Сообщение об ошибке
+                    example: null
               example:
                 result:
                   totalPages: 3
@@ -783,6 +1046,45 @@ components:
           type: string
         category_id:
           type: integer
+    Currency:
+      type: object
+      description: Структура данных курса валюты
+      properties:
+        id:
+          type: integer
+          description: Уникальный идентификатор
+          example: 1
+        bank_name:
+          type: string
+          description: Название банка
+          example: "Asia Alliance Bank"
+        currency:
+          type: string
+          description: Код валюты
+          enum: [USD, RUB, EUR, KZT]
+          example: "USD"
+        buy_rate:
+          type: number
+          format: double
+          description: Курс покупки валюты
+          example: 12560
+        sell_rate:
+          type: number
+          format: double
+          nullable: true
+          description: Курс продажи валюты (может быть null)
+          example: 12655
+        created_at:
+          type: string
+          format: date-time
+          description: Дата создания записи
+          example: "2024-01-25T20:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: Дата обновления записи
+          example: "2024-01-25T20:00:00Z"
+      required: [id, bank_name, currency, buy_rate, created_at, updated_at]
     Microcredit:
       type: object
       description: Структура данных микрофинанса
@@ -877,67 +1179,7 @@ components:
           type: boolean
           description: Без пагинации
           example: false
-    MicrocreditPaginationResponse:
-      type: object
-      description: Ответ с пагинированными данными микрофинансов
-      properties:
-        result:
-          type: object
-          properties:
-            totalPages:
-              type: integer
-              description: Общее количество страниц
-              example: 5
-            totalElements:
-              type: integer
-              format: int64
-              description: Общее количество элементов
-              example: 47
-            first:
-              type: boolean
-              description: Первая ли это страница
-              example: true
-            last:
-              type: boolean
-              description: Последняя ли это страница
-              example: false
-            size:
-              type: integer
-              description: Размер страницы
-              example: 10
-            content:
-              type: array
-              items:
-                $ref: '#/components/schemas/Microcredit'
-              description: Массив микрофинансов
-            number:
-              type: integer
-              description: Номер текущей страницы
-              example: 0
-            sort:
-              type: array
-              items:
-                $ref: '#/components/schemas/Sort'
-              description: Параметры сортировки
-            numberOfElements:
-              type: integer
-              description: Количество элементов на текущей странице
-              example: 10
-            pageable:
-              $ref: '#/components/schemas/Pageable'
-            empty:
-              type: boolean
-              description: Пустой ли результат
-              example: false
-        success:
-          type: boolean
-          description: Успешность операции
-          example: true
-        error:
-          type: string
-          nullable: true
-          description: Сообщение об ошибке
-          example: null
+
   responses:
     SuccessStatus:
       description: Успешный ответ (статус)
@@ -1020,7 +1262,80 @@ components:
             type: object
             properties:
               result:
-                $ref: '#/components/schemas/CurrencyDetails'
+                type: object
+                properties:
+                  USD:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        bank:
+                          type: string
+                          example: "Asia Alliance Bank"
+                        currency:
+                          type: string
+                          example: "USD"
+                        buy:
+                          type: number
+                          example: 12560
+                        sell:
+                          type: number
+                          nullable: true
+                          example: 12655
+                  RUB:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        bank:
+                          type: string
+                          example: "Kapitalbank"
+                        currency:
+                          type: string
+                          example: "RUB"
+                        buy:
+                          type: number
+                          example: 148
+                        sell:
+                          type: number
+                          nullable: true
+                          example: 161
+                  EUR:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        bank:
+                          type: string
+                          example: "O'zbekiston Milliy banki"
+                        currency:
+                          type: string
+                          example: "EUR"
+                        buy:
+                          type: number
+                          example: 14650
+                        sell:
+                          type: number
+                          nullable: true
+                          example: 14850
+                  KZT:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        bank:
+                          type: string
+                          example: "Tenge Bank"
+                        currency:
+                          type: string
+                          example: "KZT"
+                        buy:
+                          type: number
+                          example: 22
+                        sell:
+                          type: number
+                          nullable: true
+                          example: 23.8
               success:
                 type: boolean
               error:
@@ -1028,17 +1343,30 @@ components:
                 nullable: true
             example:
               result:
-                bank_name: "bank"
-                url: "https://bank.uz/currency"
-                rates:
+                USD:
                   - bank: "Asia Alliance Bank"
                     currency: "USD"
                     buy: 12560
                     sell: 12655
-                  - bank: "Ipak Yo'li Banki"
+                  - bank: "Hamkorbank"
                     currency: "USD"
                     buy: 12560
-                    sell: 12680
+                    sell: 12640
+                RUB:
+                  - bank: "Kapitalbank"
+                    currency: "RUB"
+                    buy: 148
+                    sell: 161
+                EUR:
+                  - bank: "O'zbekiston Milliy banki"
+                    currency: "EUR"
+                    buy: 14650
+                    sell: 14850
+                KZT:
+                  - bank: "Tenge Bank"
+                    currency: "KZT"
+                    buy: 22
+                    sell: 23.8
               success: true
     UserProfile:
       description: Профиль пользователя
