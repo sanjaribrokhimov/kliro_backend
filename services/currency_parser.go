@@ -89,7 +89,7 @@ func (cp *CurrencyParser) ParseAndSaveCurrencyRates() error {
 	text = cp.cleanText(text)
 
 	log.Printf("[CURRENCY PARSER] Очищенный текст для DeepSeek (первые 7000 символов):")
-	log.Printf(text)
+	log.Print(text)
 
 	prompt := fmt.Sprintf(`Найди таблицу курсов валют после заголовка "Valyuta almashtirish shahobchalaridagi eng yahshi kurslar".
 Извлеки только курсы USD, RUB, KZT, EUR. Игнорируй всё после таблицы курсов.
