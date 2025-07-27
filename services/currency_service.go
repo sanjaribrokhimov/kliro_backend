@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"kliro/models"
 	"log"
 	"time"
@@ -27,6 +28,8 @@ func (cs *CurrencyService) SaveCurrencyRates(rates []map[string]interface{}) err
 	}
 
 	var currencies []models.Currency
+	savedCount := 0
+
 	for _, rate := range rates {
 		bankName, ok := rate["bank"].(string)
 		if !ok {
@@ -53,16 +56,44 @@ func (cs *CurrencyService) SaveCurrencyRates(rates []map[string]interface{}) err
 			}
 		}
 
-		currency := models.Currency{
-			BankName:  bankName,
-			Currency:  currencyType,
-			BuyRate:   buyRate,
-			SellRate:  sellRate,
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
-		}
+		// Проверяем, есть ли уже запись для этого банка и валюты
+		var existingCurrency models.Currency
+		err := cs.db.Where("bank_name = ? AND currency = ?", bankName, currencyType).First(&existingCurrency).Error
 
-		currencies = append(currencies, currency)
+		if err == nil {
+			// Запись существует - обновляем значения
+			updates := map[string]interface{}{
+				"buy_rate":   buyRate,
+				"sell_rate":  sellRate,
+				"updated_at": time.Now(),
+			}
+
+			if err := cs.db.Model(&existingCurrency).Updates(updates).Error; err != nil {
+				log.Printf("[CURRENCY SERVICE ERROR] Ошибка обновления записи для %s %s: %v", bankName, currencyType, err)
+				continue
+			}
+
+			log.Printf("[CURRENCY SERVICE INFO] Обновлена запись: %s %s (buy: %.2f, sell: %v)",
+				bankName, currencyType, buyRate, sellRate)
+			savedCount++
+		} else if errors.Is(err, gorm.ErrRecordNotFound) {
+			// Записи нет - добавляем новую
+			currency := models.Currency{
+				BankName:  bankName,
+				Currency:  currencyType,
+				BuyRate:   buyRate,
+				SellRate:  sellRate,
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+			}
+
+			currencies = append(currencies, currency)
+			savedCount++
+		} else {
+			// Произошла ошибка при поиске
+			log.Printf("[CURRENCY SERVICE ERROR] Ошибка поиска существующей записи: %v", err)
+			continue
+		}
 	}
 
 	if len(currencies) > 0 {
@@ -70,9 +101,9 @@ func (cs *CurrencyService) SaveCurrencyRates(rates []map[string]interface{}) err
 			log.Printf("[CURRENCY SERVICE ERROR] Ошибка сохранения курсов: %v", err)
 			return err
 		}
-		log.Printf("[CURRENCY SERVICE] Успешно сохранено %d курсов валют", len(currencies))
+		log.Printf("[CURRENCY SERVICE] Успешно обработано %d записей валют (%d новых, %d обновлений)", savedCount, len(currencies), savedCount-len(currencies))
 	} else {
-		log.Printf("[CURRENCY SERVICE WARNING] Нет данных для сохранения")
+		log.Printf("[CURRENCY SERVICE] Успешно обработано %d записей валют (все обновления)", savedCount)
 	}
 
 	return nil
