@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
+	"kliro/utils"
 )
 
 type AutocreditController struct{}
@@ -15,7 +15,7 @@ func NewAutocreditController() *AutocreditController {
 
 // GetNewAutocredits получает новые автокредиты
 func (ac *AutocreditController) GetNewAutocredits(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := utils.GetDB()
 
 	var autocredits []map[string]interface{}
 	if err := db.Table("new_autocredit").Find(&autocredits).Error; err != nil {
@@ -35,7 +35,7 @@ func (ac *AutocreditController) GetNewAutocredits(c *gin.Context) {
 
 // GetOldAutocredits получает старые автокредиты
 func (ac *AutocreditController) GetOldAutocredits(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := utils.GetDB()
 
 	var autocredits []map[string]interface{}
 	if err := db.Table("old_autocredit").Find(&autocredits).Error; err != nil {

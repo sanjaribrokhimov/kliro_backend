@@ -15,6 +15,8 @@ tags:
     description: Парсинг кредитных предложений с банковских сайтов
   - name: Microcredits
     description: API для получения микрофинансовых предложений от банков
+  - name: Autocredits
+    description: API для получения автокредитных предложений от банков
   - name: Currencies
     description: API для получения курсов валют от банков
 paths:
@@ -815,6 +817,180 @@ paths:
                 error: null
         '500':
           $ref: '#/components/responses/Error'
+  /autocredits/new:
+    get:
+      tags: [Autocredits]
+      summary: Получить новые автокредиты
+      description: |
+        Возвращает список новых автокредитных предложений от банков.
+        
+        **Поля автокредита:**
+        - `bank_name` - название банка
+        - `rate` - годовая процентная ставка
+        - `initial_payment` - первоначальный взнос в процентах
+        - `term_months` - срок кредита в месяцах
+        - `max_amount` - максимальная сумма кредита (число или "VIP" для неограниченной суммы)
+      responses:
+        '200':
+          description: Успешный ответ с автокредитами
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Autocredit'
+                    description: Массив автокредитов
+                  success:
+                    type: boolean
+                    description: Успешность операции
+                    example: true
+                  error:
+                    type: string
+                    nullable: true
+                    description: Сообщение об ошибке
+                    example: null
+              example:
+                result:
+                  - id: 1
+                    bank_name: "aloqabank"
+                    rate: 25.0
+                    initial_payment: 0.0
+                    term_months: 60
+                    max_amount: "300000000"
+                    url: "https://aloqabank.uz/ru/private/crediting/avtokredit-birlamchi-bozor-uchun/"
+                    created_at: "2024-01-25T20:00:00Z"
+                  - id: 2
+                    bank_name: "turonbank"
+                    rate: 25.0
+                    initial_payment: 25.0
+                    term_months: 60
+                    max_amount: "2000000000"
+                    url: "https://turonbank.uz/ru/private/crediting/avtokredit-imkoniyat/"
+                    created_at: "2024-01-25T20:00:00Z"
+                success: true
+                error: null
+        '500':
+          $ref: '#/components/responses/Error'
+  /autocredits/old:
+    get:
+      tags: [Autocredits]
+      summary: Получить старые автокредиты
+      description: |
+        Возвращает список старых автокредитных предложений от банков.
+        
+        **Поля автокредита:**
+        - `bank_name` - название банка
+        - `rate` - годовая процентная ставка
+        - `initial_payment` - первоначальный взнос в процентах
+        - `term_months` - срок кредита в месяцах
+        - `max_amount` - максимальная сумма кредита (число или "VIP" для неограниченной суммы)
+      responses:
+        '200':
+          description: Успешный ответ со старыми автокредитами
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Autocredit'
+                    description: Массив старых автокредитов
+                  success:
+                    type: boolean
+                    description: Успешность операции
+                    example: true
+                  error:
+                    type: string
+                    nullable: true
+                    description: Сообщение об ошибке
+                    example: null
+              example:
+                result:
+                  - id: 1
+                    bank_name: "ipotekabank"
+                    rate: 29.9
+                    initial_payment: 25.0
+                    term_months: 60
+                    max_amount: "480000000"
+                    url: "https://www.ipotekabank.uz/ru/private/crediting/auto_new/"
+                    created_at: "2024-01-20T15:30:00Z"
+                success: true
+                error: null
+        '500':
+          $ref: '#/components/responses/Error'
+  /parse-autocredit:
+    get:
+      tags: [Parser]
+      summary: Парсинг автокредита с банковского сайта
+      description: |
+        Парсит информацию об автокредите с указанного URL банковского сайта.
+        
+        **Извлекаемые данные:**
+        - `bank_name` - название банка (извлекается из URL)
+        - `rate` - годовая процентная ставка
+        - `initial_payment` - первоначальный взнос в процентах
+        - `term_months` - срок кредита в месяцах
+        - `max_amount` - максимальная сумма кредита
+      parameters:
+        - in: query
+          name: url
+          schema:
+            type: string
+          required: true
+          description: URL банковского сайта с автокредитом
+          example: "https://aloqabank.uz/ru/private/crediting/avtokredit-birlamchi-bozor-uchun/"
+      responses:
+        '200':
+          description: Успешный ответ с результатом парсинга
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    $ref: '#/components/schemas/Autocredit'
+                  success:
+                    type: boolean
+                    description: Успешность операции
+                    example: true
+                  error:
+                    type: string
+                    nullable: true
+                    description: Сообщение об ошибке
+                    example: null
+              example:
+                result:
+                  bank_name: "aloqabank"
+                  rate: 25.0
+                  initial_payment: 0.0
+                  term_months: 60
+                  max_amount: "300000000"
+                  url: "https://aloqabank.uz/ru/private/crediting/avtokredit-birlamchi-bozor-uchun/"
+                  created_at: "2024-01-25T20:00:00Z"
+                success: true
+                error: null
+        '400':
+          description: Неверный URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    nullable: true
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: "url parameter is required"
+        '500':
+          $ref: '#/components/responses/Error'
 components:
   securitySchemes:
     bearerAuth:
@@ -1126,6 +1302,46 @@ components:
           description: Дата создания записи
           example: "2024-01-15T10:30:00Z"
       required: [id, bank_name, max_amount, rate_max, rate_min, term_months, url, created_at]
+    Autocredit:
+      type: object
+      description: Структура данных автокредита
+      properties:
+        id:
+          type: integer
+          description: Уникальный идентификатор
+          example: 1
+        bank_name:
+          type: string
+          description: Название банка
+          example: "aloqabank"
+        rate:
+          type: number
+          format: double
+          description: Годовая процентная ставка
+          example: 25.0
+        initial_payment:
+          type: number
+          format: double
+          description: Первоначальный взнос в процентах
+          example: 25.0
+        term_months:
+          type: integer
+          description: Срок кредита в месяцах
+          example: 60
+        max_amount:
+          type: string
+          description: Максимальная сумма кредита (число или "VIP" для неограниченной суммы)
+          example: "300000000"
+        url:
+          type: string
+          description: Ссылка на предложение банка
+          example: "https://aloqabank.uz/ru/private/crediting/avtokredit-birlamchi-bozor-uchun/"
+        created_at:
+          type: string
+          format: date-time
+          description: Дата создания записи
+          example: "2024-01-25T20:00:00Z"
+      required: [id, bank_name, rate, initial_payment, term_months, max_amount, url, created_at]
     Sort:
       type: object
       description: Параметры сортировки
