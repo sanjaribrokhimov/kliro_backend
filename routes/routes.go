@@ -44,6 +44,7 @@ func SetupRouter() *gin.Engine {
 	// Инициализируем контроллеры
 	parserController := controllers.NewParserController(currencyService)
 	microcreditController := controllers.NewMicrocreditController()
+	autocreditController := controllers.NewAutocreditController()
 	currencyController := controllers.NewCurrencyController(currencyService)
 
 	r.POST("/auth/register", userController.Register)
@@ -59,10 +60,12 @@ func SetupRouter() *gin.Engine {
 	r.GET("/parse", parserController.ParsePage)
 	r.GET("/microcredits/new", microcreditController.GetNewMicrocredits)
 	r.GET("/microcredits/old", microcreditController.GetOldMicrocredits)
+	r.GET("/autocredits/new", autocreditController.GetNewAutocredits)
+	r.GET("/autocredits/old", autocreditController.GetOldAutocredits)
 	r.GET("/parse-currency", parserController.ParseCurrencyPage)
+	r.GET("/parse-autocredit", parserController.ParseAutocreditPage)
 	r.GET("/currencies/new", currencyController.GetLatestCurrencyRates)
 	r.GET("/currencies/by-date", currencyController.GetCurrencyRatesByDate)
-	
 
 	userGroup := r.Group("/user", middleware.JWTAuthMiddleware())
 	{

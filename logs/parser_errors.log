@@ -44,3 +44,26 @@
 2025/07/26 06:40:50 Инициализация завершена - заполнены таблицы new_microcredit и old_microcredit
 2025/07/26 07:00:50 Инициализация данных microcredit - таблицы пустые, парсим все сайты...
 2025/07/26 07:02:12 Инициализация завершена - заполнены таблицы new_microcredit и old_microcredit
+2025/07/28 06:55:03 Инициализация данных autocredit - таблицы пустые, парсим все сайты...
+2025/07/28 06:56:35 Инициализация завершена - заполнены таблицы new_autocredit и old_autocredit
+2025/07/28 07:24:34 Инициализация данных autocredit - таблицы пустые, парсим все сайты...
+2025/07/28 07:24:59 Инициализация завершена - заполнены таблицы new_autocredit и old_autocredit
+2025/07/28 07:36:06 Инициализация данных autocredit - таблицы пустые, парсим все сайты...
+2025/07/28 07:39:17 Ошибка парсинга https://nbu.uz/ru/fizicheskim-litsam-kredity/avtokredit/: ошибка получения страницы: Get "https://nbu.uz/ru/fizicheskim-litsam-kredity/avtokredit/": read tcp 192.168.100.199:51594->185.104.210.5:443: read: operation timed out
+2025/07/28 07:39:42 Ошибка парсинга https://www.ipotekabank.uz/ru/private/crediting/auto_new/: ошибка парсинга JSON: json: cannot unmarshal number into Go struct field Autocredit.max_amount of type string
+2025/07/28 07:39:49 Ошибка парсинга https://xb.uz/page/tezkor-avtokredit: ошибка парсинга JSON: json: cannot unmarshal number into Go struct field Autocredit.max_amount of type string
+2025/07/28 07:39:59 Ошибка парсинга https://tengebank.uz/credit/avtokredit-na-novyj-avtomobil: ошибка парсинга JSON: json: cannot unmarshal number into Go struct field Autocredit.max_amount of type string
+2025/07/28 07:40:15 Ошибка парсинга https://hamkorbank.uz/physical/credits/car-financing/: ошибка парсинга JSON: json: cannot unmarshal number into Go struct field Autocredit.max_amount of type string
+2025/07/28 07:40:15 Инициализация завершена - заполнены таблицы new_autocredit и old_autocredit
+2025/07/28 07:47:19 Инициализация данных autocredit - таблицы пустые, парсим все сайты...
+2025/07/28 07:47:28 Ошибка парсинга https://aloqabank.uz/ru/private/crediting/avtokredit-birlamchi-bozor-uchun/: ошибка парсинга JSON: json: cannot unmarshal number into Go struct field Autocredit.max_amount of type string
+2025/07/28 07:47:58 Ошибка парсинга https://nbu.uz/ru/fizicheskim-litsam-kredity/avtokredit/: ошибка получения страницы: Get "https://nbu.uz/ru/fizicheskim-litsam-kredity/avtokredit/": dial tcp 185.104.210.5:443: i/o timeout
+2025/07/28 07:48:13 Ошибка парсинга https://turonbank.uz/ru/private/crediting/avtokredit-imkoniyat/: ошибка парсинга JSON: json: cannot unmarshal number into Go struct field Autocredit.max_amount of type string
+2025/07/28 07:48:21 Ошибка парсинга https://www.ipotekabank.uz/ru/private/crediting/auto_new/: ошибка парсинга JSON: json: cannot unmarshal number into Go struct field Autocredit.max_amount of type string
+2025/07/28 07:48:29 Ошибка парсинга https://xb.uz/page/tezkor-avtokredit: ошибка парсинга JSON: json: cannot unmarshal number into Go struct field Autocredit.max_amount of type string
+2025/07/28 07:48:38 Ошибка парсинга https://tengebank.uz/credit/avtokredit-na-novyj-avtomobil: ошибка парсинга JSON: json: cannot unmarshal number into Go struct field Autocredit.max_amount of type string
+2025/07/28 07:49:00 Ошибка парсинга https://hamkorbank.uz/physical/credits/car-financing/: ошибка парсинга JSON: json: cannot unmarshal number into Go struct field Autocredit.max_amount of type string
+2025/07/28 07:49:00 Инициализация завершена - заполнены таблицы new_autocredit и old_autocredit
+2025/07/28 07:52:51 Инициализация данных autocredit - таблицы пустые, парсим все сайты...
+2025/07/28 07:53:33 Ошибка парсинга https://nbu.uz/ru/fizicheskim-litsam-kredity/avtokredit/: ошибка получения страницы: Get "https://nbu.uz/ru/fizicheskim-litsam-kredity/avtokredit/": dial tcp 185.104.210.5:443: i/o timeout
+2025/07/28 07:54:24 Инициализация завершена - заполнены таблицы new_autocredit и old_autocredit

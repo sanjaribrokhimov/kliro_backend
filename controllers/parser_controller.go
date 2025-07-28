@@ -407,3 +407,21 @@ func cleanText(raw string) string {
 	}
 	return clean
 }
+
+func (pc *ParserController) ParseAutocreditPage(c *gin.Context) {
+	url := c.Query("url")
+	if url == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "url parameter is required"})
+		return
+	}
+
+	// Используем autocredit parser
+	parser := services.NewAutocreditParser()
+	credit, err := parser.ParseURL(url)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to parse autocredit: %v", err)})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"result": credit, "success": true})
+}

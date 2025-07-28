@@ -60,6 +60,10 @@ func main() {
 	services.StartMicrocreditCron(db)
 	log.Println("Microcredit cron started")
 
+	// Запуск autocredit cron
+	services.StartAutocreditCron(db)
+	log.Println("Autocredit cron started")
+
 	// Инициализация валют при запуске (если таблица пустая)
 	currencyService := services.NewCurrencyService(db)
 	if err := currencyService.InitializeCurrencyData(); err != nil {

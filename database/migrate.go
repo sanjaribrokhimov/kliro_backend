@@ -42,6 +42,37 @@ func Migrate(db *gorm.DB) error {
 		return err
 	}
 
+	// Создаем таблицы для autocredit
+	if err := db.Exec(`
+		CREATE TABLE IF NOT EXISTS new_autocredit (
+			id SERIAL PRIMARY KEY,
+			bank_name VARCHAR(255),
+			rate DECIMAL(5,2) DEFAULT 0,
+			initial_payment DECIMAL(10,2) DEFAULT 0,
+			term_months INTEGER DEFAULT 0,
+			max_amount VARCHAR(50) DEFAULT 'VIP',
+			url TEXT,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		)
+	`).Error; err != nil {
+		return err
+	}
+
+	if err := db.Exec(`
+		CREATE TABLE IF NOT EXISTS old_autocredit (
+			id SERIAL PRIMARY KEY,
+			bank_name VARCHAR(255),
+			rate DECIMAL(5,2) DEFAULT 0,
+			initial_payment DECIMAL(10,2) DEFAULT 0,
+			term_months INTEGER DEFAULT 0,
+			max_amount VARCHAR(50) DEFAULT 'VIP',
+			url TEXT,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		)
+	`).Error; err != nil {
+		return err
+	}
+
 	// Создаем таблицу для валют
 	if err := db.Exec(`
 		CREATE TABLE IF NOT EXISTS currencies (
