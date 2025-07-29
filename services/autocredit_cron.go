@@ -11,14 +11,16 @@ import (
 )
 
 var autocreditURLs = []string{
-	"https://aloqabank.uz/ru/private/crediting/autoloan-primary/",
-	"https://nbu.uz/ru/fizicheskim-litsam-kredity/avtokredit/",
-	"https://turonbank.uz/ru/private/crediting/avtokredit-imkoniyat/",
-	"https://www.ipotekabank.uz/ru/private/crediting/auto_new/",
-	"https://xb.uz/page/tezkor-avtokredit",
-	"https://tengebank.uz/credit/avtokredit-na-novyj-avtomobil",
+	"https://www.infinbank.com/ru/private/credits/avto_credit/",
+	"https://sqb.uz/individuals/credits/avtokredit-ru/",
+	"https://aab.uz/ru/private/crediting/avtokredit-vtorichnyy-rynok-/",
+	"https://mkbank.uz/ru/private/crediting/car-loan/",
+	"https://trustbank.uz/ru/private/crediting/auto/",
+	"https://hamkorbank.uz/physical/credits/autolight/",
+	"https://ru.ipakyulibank.uz/physical/kredity/avtokredity/avtokredit-uzauto",
 	"https://asakabank.uz/ru/physical-persons/credits/avtokredit-25",
-	"https://hamkorbank.uz/physical/credits/car-financing/",
+	"https://xb.uz/page/tezkor-avtokredit",
+	"https://turonbank.uz/ru/private/crediting/avtokredit-imkoniyat/",
 }
 
 // Функция для парсинга одного URL
