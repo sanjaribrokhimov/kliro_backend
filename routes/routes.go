@@ -45,6 +45,7 @@ func SetupRouter() *gin.Engine {
 	parserController := controllers.NewParserController(currencyService)
 	microcreditController := controllers.NewMicrocreditController()
 	autocreditController := controllers.NewAutocreditController()
+	transferController := controllers.NewTransferController()
 	currencyController := controllers.NewCurrencyController(currencyService)
 
 	r.POST("/auth/register", userController.Register)
@@ -62,8 +63,11 @@ func SetupRouter() *gin.Engine {
 	r.GET("/microcredits/old", microcreditController.GetOldMicrocredits)
 	r.GET("/autocredits/new", autocreditController.GetNewAutocredits)
 	r.GET("/autocredits/old", autocreditController.GetOldAutocredits)
+	r.GET("/transfers/new", transferController.GetNewTransfers)
+	r.GET("/transfers/old", transferController.GetOldTransfers)
 	r.GET("/parse-currency", parserController.ParseCurrencyPage)
 	r.GET("/parse-autocredit", parserController.ParseAutocreditPage)
+	r.GET("/parse-transfer", parserController.ParseTransferPage)
 	r.GET("/currencies/new", currencyController.GetLatestCurrencyRates)
 	r.GET("/currencies/by-date", currencyController.GetCurrencyRatesByDate)
 

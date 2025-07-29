@@ -100,5 +100,46 @@ func Migrate(db *gorm.DB) error {
 		return err
 	}
 
+	// Создаем таблицы для переводов
+	if err := db.Exec(`
+		CREATE TABLE IF NOT EXISTS new_transfer (
+			id SERIAL PRIMARY KEY,
+			app_name VARCHAR(100) NOT NULL,
+			commission VARCHAR(50) NOT NULL,
+			limit_ru TEXT NOT NULL,
+			limit_uz TEXT NOT NULL,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		)
+	`).Error; err != nil {
+		return err
+	}
+
+	if err := db.Exec(`
+		CREATE TABLE IF NOT EXISTS old_transfer (
+			id SERIAL PRIMARY KEY,
+			app_name VARCHAR(100) NOT NULL,
+			commission VARCHAR(50) NOT NULL,
+			limit_ru TEXT NOT NULL,
+			limit_uz TEXT NOT NULL,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		)
+	`).Error; err != nil {
+		return err
+	}
+
+	// Создаем индексы для переводов
+	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_new_transfer_app_name ON new_transfer(app_name)`).Error; err != nil {
+		return err
+	}
+	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_old_transfer_app_name ON old_transfer(app_name)`).Error; err != nil {
+		return err
+	}
+	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_new_transfer_created_at ON new_transfer(created_at)`).Error; err != nil {
+		return err
+	}
+	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_old_transfer_created_at ON old_transfer(created_at)`).Error; err != nil {
+		return err
+	}
+
 	return nil
 }

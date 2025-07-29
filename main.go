@@ -64,6 +64,10 @@ func main() {
 	services.StartAutocreditCron(db)
 	log.Println("Autocredit cron started")
 
+	// Запуск transfer cron
+	services.StartTransferCron(db)
+	log.Println("Transfer cron started")
+
 	// Инициализация валют при запуске (если таблица пустая)
 	currencyService := services.NewCurrencyService(db)
 	if err := currencyService.InitializeCurrencyData(); err != nil {

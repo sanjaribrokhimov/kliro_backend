@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"kliro/services"
+	"kliro/utils"
 	"log"
 	"net/http"
 	"os"
@@ -424,4 +425,43 @@ func (pc *ParserController) ParseAutocreditPage(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"result": credit, "success": true})
+}
+
+func (pc *ParserController) ParseTransferPage(c *gin.Context) {
+	url := c.Query("url")
+	if url == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "url parameter is required"})
+		return
+	}
+
+	log.Printf("[PARSER CONTROLLER] 🚀 Начинаем парсинг переводов для URL: %s", url)
+
+	// Используем transfer parser
+	parser := services.NewTransferParser()
+	transfers, err := parser.ParseURL(url)
+	if err != nil {
+		log.Printf("[PARSER CONTROLLER] ❌ Ошибка парсинга: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to parse transfer: %v", err)})
+		return
+	}
+
+	log.Printf("[PARSER CONTROLLER] ✅ Парсинг завершен. Получено %d переводов", len(transfers))
+	for i, transfer := range transfers {
+		log.Printf("[PARSER CONTROLLER] 📋 %d. %s - %s", i+1, transfer.AppName, transfer.Commission)
+	}
+
+	// Сохраняем в базу данных
+	db := utils.GetDB()
+	savedCount := 0
+	for _, transfer := range transfers {
+		if err := db.Table("new_transfer").Create(transfer).Error; err != nil {
+			log.Printf("[PARSER CONTROLLER] ❌ Ошибка сохранения %s: %v", transfer.AppName, err)
+		} else {
+			log.Printf("[PARSER CONTROLLER] ✅ Сохранен: %s", transfer.AppName)
+			savedCount++
+		}
+	}
+	log.Printf("[PARSER CONTROLLER] 📊 Сохранено %d/%d переводов", savedCount, len(transfers))
+
+	c.JSON(http.StatusOK, gin.H{"result": transfers, "success": true, "saved": savedCount})
 }

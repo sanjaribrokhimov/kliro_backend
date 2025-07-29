@@ -17,6 +17,8 @@ tags:
     description: API для получения микрофинансовых предложений от банков
   - name: Autocredits
     description: API для получения автокредитных предложений от банков
+  - name: Transfers
+    description: API для получения информации о переводах между приложениями
   - name: Currencies
     description: API для получения курсов валют от банков
 paths:
@@ -820,9 +822,17 @@ paths:
   /autocredits/new:
     get:
       tags: [Autocredits]
-      summary: Получить новые автокредиты
+      summary: Получить новые автокредиты с пагинацией
       description: |
-        Возвращает список новых автокредитных предложений от банков.
+        Возвращает список новых автокредитных предложений от банков с поддержкой пагинации и сортировки.
+        
+        **Параметры пагинации:**
+        - `page` - номер страницы (начиная с 0, по умолчанию 0)
+        - `size` - размер страницы (1-100, по умолчанию 10)
+        
+        **Параметры сортировки:**
+        - `sort` - поле для сортировки (bank_name, rate, initial_payment, term_months, max_amount, created_at)
+        - `direction` - направление сортировки (asc, desc, по умолчанию asc)
         
         **Поля автокредита:**
         - `bank_name` - название банка
@@ -830,19 +840,96 @@ paths:
         - `initial_payment` - первоначальный взнос в процентах
         - `term_months` - срок кредита в месяцах
         - `max_amount` - максимальная сумма кредита (число или "VIP" для неограниченной суммы)
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Номер страницы (начиная с 0)
+          example: 0
+        - in: query
+          name: size
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Размер страницы
+          example: 10
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [bank_name, rate, initial_payment, term_months, max_amount, created_at]
+            default: bank_name
+          description: Поле для сортировки
+          example: bank_name
+        - in: query
+          name: direction
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+          description: Направление сортировки
+          example: asc
       responses:
         '200':
-          description: Успешный ответ с автокредитами
+          description: Успешный ответ с пагинированными данными
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   result:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Autocredit'
-                    description: Массив автокредитов
+                    type: object
+                    properties:
+                      totalPages:
+                        type: integer
+                        description: Общее количество страниц
+                        example: 1
+                      totalElements:
+                        type: integer
+                        format: int64
+                        description: Общее количество элементов
+                        example: 7
+                      first:
+                        type: boolean
+                        description: Первая ли это страница
+                        example: true
+                      last:
+                        type: boolean
+                        description: Последняя ли это страница
+                        example: true
+                      size:
+                        type: integer
+                        description: Размер страницы
+                        example: 10
+                      content:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Autocredit'
+                        description: Массив автокредитов
+                      number:
+                        type: integer
+                        description: Номер текущей страницы
+                        example: 0
+                      sort:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Sort'
+                        description: Параметры сортировки
+                      numberOfElements:
+                        type: integer
+                        description: Количество элементов на текущей странице
+                        example: 7
+                      pageable:
+                        $ref: '#/components/schemas/Pageable'
+                      empty:
+                        type: boolean
+                        description: Пустой ли результат
+                        example: false
                   success:
                     type: boolean
                     description: Успешность операции
@@ -854,22 +941,57 @@ paths:
                     example: null
               example:
                 result:
-                  - id: 1
-                    bank_name: "aloqabank"
-                    rate: 25.0
-                    initial_payment: 0.0
-                    term_months: 60
-                    max_amount: "300000000"
-                    url: "https://aloqabank.uz/ru/private/crediting/avtokredit-birlamchi-bozor-uchun/"
-                    created_at: "2024-01-25T20:00:00Z"
-                  - id: 2
-                    bank_name: "turonbank"
-                    rate: 25.0
-                    initial_payment: 25.0
-                    term_months: 60
-                    max_amount: "2000000000"
-                    url: "https://turonbank.uz/ru/private/crediting/avtokredit-imkoniyat/"
-                    created_at: "2024-01-25T20:00:00Z"
+                  totalPages: 1
+                  totalElements: 7
+                  first: true
+                  last: true
+                  size: 10
+                  content:
+                    - id: 1
+                      bank_name: "aloqabank"
+                      rate: 25.0
+                      initial_payment: 15.0
+                      term_months: 60
+                      max_amount: "VIP"
+                      url: "https://aloqabank.uz/ru/private/crediting/autoloan-primary/"
+                      created_at: "2024-01-25T20:00:00Z"
+                    - id: 2
+                      bank_name: "turonbank"
+                      rate: 25.0
+                      initial_payment: 25.0
+                      term_months: 60
+                      max_amount: "2000"
+                      url: "https://turonbank.uz/ru/private/crediting/avtokredit-imkoniyat/"
+                      created_at: "2024-01-25T20:00:00Z"
+                    - id: 3
+                      bank_name: "ipotekabank"
+                      rate: 29.9
+                      initial_payment: 25.0
+                      term_months: 60
+                      max_amount: "480000000"
+                      url: "https://www.ipotekabank.uz/ru/private/crediting/auto_new/"
+                      created_at: "2024-01-25T20:00:00Z"
+                  number: 0
+                  sort:
+                    - direction: "ASC"
+                      nullHandling: "NATIVE"
+                      ascending: true
+                      property: "bank_name"
+                      ignoreCase: false
+                  numberOfElements: 7
+                  pageable:
+                    offset: 0
+                    sort:
+                      - direction: "ASC"
+                        nullHandling: "NATIVE"
+                        ascending: true
+                        property: "bank_name"
+                        ignoreCase: false
+                    paged: true
+                    pageNumber: 0
+                    pageSize: 10
+                    unpaged: false
+                  empty: false
                 success: true
                 error: null
         '500':
@@ -877,9 +999,17 @@ paths:
   /autocredits/old:
     get:
       tags: [Autocredits]
-      summary: Получить старые автокредиты
+      summary: Получить старые автокредиты с пагинацией
       description: |
-        Возвращает список старых автокредитных предложений от банков.
+        Возвращает список старых автокредитных предложений от банков с поддержкой пагинации и сортировки.
+        
+        **Параметры пагинации:**
+        - `page` - номер страницы (начиная с 0, по умолчанию 0)
+        - `size` - размер страницы (1-100, по умолчанию 10)
+        
+        **Параметры сортировки:**
+        - `sort` - поле для сортировки (bank_name, rate, initial_payment, term_months, max_amount, created_at)
+        - `direction` - направление сортировки (asc, desc, по умолчанию asc)
         
         **Поля автокредита:**
         - `bank_name` - название банка
@@ -887,19 +1017,96 @@ paths:
         - `initial_payment` - первоначальный взнос в процентах
         - `term_months` - срок кредита в месяцах
         - `max_amount` - максимальная сумма кредита (число или "VIP" для неограниченной суммы)
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Номер страницы (начиная с 0)
+          example: 0
+        - in: query
+          name: size
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Размер страницы
+          example: 10
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [bank_name, rate, initial_payment, term_months, max_amount, created_at]
+            default: bank_name
+          description: Поле для сортировки
+          example: bank_name
+        - in: query
+          name: direction
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+          description: Направление сортировки
+          example: asc
       responses:
         '200':
-          description: Успешный ответ со старыми автокредитами
+          description: Успешный ответ с пагинированными данными
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   result:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Autocredit'
-                    description: Массив старых автокредитов
+                    type: object
+                    properties:
+                      totalPages:
+                        type: integer
+                        description: Общее количество страниц
+                        example: 1
+                      totalElements:
+                        type: integer
+                        format: int64
+                        description: Общее количество элементов
+                        example: 3
+                      first:
+                        type: boolean
+                        description: Первая ли это страница
+                        example: true
+                      last:
+                        type: boolean
+                        description: Последняя ли это страница
+                        example: true
+                      size:
+                        type: integer
+                        description: Размер страницы
+                        example: 10
+                      content:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Autocredit'
+                        description: Массив старых автокредитов
+                      number:
+                        type: integer
+                        description: Номер текущей страницы
+                        example: 0
+                      sort:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Sort'
+                        description: Параметры сортировки
+                      numberOfElements:
+                        type: integer
+                        description: Количество элементов на текущей странице
+                        example: 3
+                      pageable:
+                        $ref: '#/components/schemas/Pageable'
+                      empty:
+                        type: boolean
+                        description: Пустой ли результат
+                        example: false
                   success:
                     type: boolean
                     description: Успешность операции
@@ -911,14 +1118,49 @@ paths:
                     example: null
               example:
                 result:
-                  - id: 1
-                    bank_name: "ipotekabank"
-                    rate: 29.9
-                    initial_payment: 25.0
-                    term_months: 60
-                    max_amount: "480000000"
-                    url: "https://www.ipotekabank.uz/ru/private/crediting/auto_new/"
-                    created_at: "2024-01-20T15:30:00Z"
+                  totalPages: 1
+                  totalElements: 3
+                  first: true
+                  last: true
+                  size: 10
+                  content:
+                    - id: 1
+                      bank_name: "ipotekabank"
+                      rate: 29.9
+                      initial_payment: 25.0
+                      term_months: 60
+                      max_amount: "480000000"
+                      url: "https://www.ipotekabank.uz/ru/private/crediting/auto_new/"
+                      created_at: "2024-01-20T15:30:00Z"
+                    - id: 2
+                      bank_name: "hamkorbank"
+                      rate: 23.99
+                      initial_payment: 0.0
+                      term_months: 60
+                      max_amount: "600000000"
+                      url: "https://hamkorbank.uz/physical/credits/car-financing/"
+                      created_at: "2024-01-20T16:45:00Z"
+                  number: 0
+                  sort:
+                    - direction: "ASC"
+                      nullHandling: "NATIVE"
+                      ascending: true
+                      property: "bank_name"
+                      ignoreCase: false
+                  numberOfElements: 3
+                  pageable:
+                    offset: 0
+                    sort:
+                      - direction: "ASC"
+                        nullHandling: "NATIVE"
+                        ascending: true
+                        property: "bank_name"
+                        ignoreCase: false
+                    paged: true
+                    pageNumber: 0
+                    pageSize: 10
+                    unpaged: false
+                  empty: false
                 success: true
                 error: null
         '500':
@@ -991,6 +1233,418 @@ paths:
                     example: "url parameter is required"
         '500':
           $ref: '#/components/responses/Error'
+
+  /transfers/new:
+    get:
+      tags: [Transfers]
+      summary: Получить новые переводы с пагинацией
+      description: |
+        Возвращает список новых переводных приложений с поддержкой пагинации и сортировки.
+        
+        **Параметры пагинации:**
+        - `page` - номер страницы (начиная с 0, по умолчанию 0)
+        - `size` - размер страницы (1-100, по умолчанию 10)
+        
+        **Параметры сортировки:**
+        - `sort` - поле для сортировки (app_name, commission, limit_info, created_at)
+        - `direction` - направление сортировки (asc, desc, по умолчанию asc)
+        
+        **Поля перевода:**
+        - `app_name` - название приложения
+        - `commission` - комиссия за переводы
+        - `limit_info` - информация о лимитах и условиях
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Номер страницы (начиная с 0)
+          example: 0
+        - in: query
+          name: size
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Размер страницы
+          example: 10
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [app_name, commission, limit_info, created_at]
+            default: app_name
+          description: Поле для сортировки
+          example: app_name
+        - in: query
+          name: direction
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+          description: Направление сортировки
+          example: asc
+      responses:
+        '200':
+          description: Успешный ответ с пагинированными данными
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      totalPages:
+                        type: integer
+                        description: Общее количество страниц
+                        example: 1
+                      totalElements:
+                        type: integer
+                        format: int64
+                        description: Общее количество элементов
+                        example: 20
+                      first:
+                        type: boolean
+                        description: Первая ли это страница
+                        example: true
+                      last:
+                        type: boolean
+                        description: Последняя ли это страница
+                        example: true
+                      size:
+                        type: integer
+                        description: Размер страницы
+                        example: 10
+                      content:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Transfer'
+                        description: Массив переводов
+                      number:
+                        type: integer
+                        description: Номер текущей страницы
+                        example: 0
+                      sort:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Sort'
+                        description: Параметры сортировки
+                      numberOfElements:
+                        type: integer
+                        description: Количество элементов на текущей странице
+                        example: 20
+                      pageable:
+                        $ref: '#/components/schemas/Pageable'
+                      empty:
+                        type: boolean
+                        description: Пустой ли результат
+                        example: false
+                  success:
+                    type: boolean
+                    description: Успешность операции
+                    example: true
+                  error:
+                    type: string
+                    nullable: true
+                    description: Сообщение об ошибке
+                    example: null
+              example:
+                result:
+                  totalPages: 1
+                  totalElements: 20
+                  first: true
+                  last: true
+                  size: 10
+                  content:
+                    - id: 1
+                      app_name: "Davr Mobile"
+                      commission: "0%"
+                      limit_ru: "В рамках акции комиссия 0% на сумму до 3.5 млн сум в месяц. Далее 0.35%."
+                      limit_uz: "Aksiya doirasida har oy 3.5 mln so'mgacha komissiya 0%. Undan so'ng 0.35%."
+                      created_at: "2024-01-25T20:00:00Z"
+                    - id: 2
+                      app_name: "Paynet"
+                      commission: "0%"
+                      limit_ru: "В приложении каждый месяц можно бесплатно активировать один из двух пакетов услуг: «переводы без комиссии при месячном лимите 3 млн» или «кэшбэк до 2,2% за платежи»."
+                      limit_uz: "Ilovada har oy bepul ravishda ikkita xizmat paketidan birini faollashtirish mumkin: «oylik 3 mln limit doirasida komissiyasiz o'tkazmalar» yoki «to'lovlar uchun 2,2% gacha keshbek»."
+                      created_at: "2024-01-25T20:00:00Z"
+                  number: 0
+                  sort:
+                    - direction: "ASC"
+                      nullHandling: "NATIVE"
+                      ascending: true
+                      property: "app_name"
+                      ignoreCase: false
+                  numberOfElements: 20
+                  pageable:
+                    offset: 0
+                    sort:
+                      - direction: "ASC"
+                        nullHandling: "NATIVE"
+                        ascending: true
+                        property: "app_name"
+                        ignoreCase: false
+                    paged: true
+                    pageNumber: 0
+                    pageSize: 10
+                    unpaged: false
+                  empty: false
+                success: true
+                error: null
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /transfers/old:
+    get:
+      tags: [Transfers]
+      summary: Получить старые переводы с пагинацией
+      description: |
+        Возвращает список старых переводных приложений с поддержкой пагинации и сортировки.
+        
+        **Параметры пагинации:**
+        - `page` - номер страницы (начиная с 0, по умолчанию 0)
+        - `size` - размер страницы (1-100, по умолчанию 10)
+        
+        **Параметры сортировки:**
+        - `sort` - поле для сортировки (app_name, commission, limit_info, created_at)
+        - `direction` - направление сортировки (asc, desc, по умолчанию asc)
+        
+        **Поля перевода:**
+        - `app_name` - название приложения
+        - `commission` - комиссия за переводы
+        - `limit_info` - информация о лимитах и условиях
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Номер страницы (начиная с 0)
+          example: 0
+        - in: query
+          name: size
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Размер страницы
+          example: 10
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [app_name, commission, limit_info, created_at]
+            default: app_name
+          description: Поле для сортировки
+          example: app_name
+        - in: query
+          name: direction
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+          description: Направление сортировки
+          example: asc
+      responses:
+        '200':
+          description: Успешный ответ с пагинированными данными
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      totalPages:
+                        type: integer
+                        description: Общее количество страниц
+                        example: 1
+                      totalElements:
+                        type: integer
+                        format: int64
+                        description: Общее количество элементов
+                        example: 15
+                      first:
+                        type: boolean
+                        description: Первая ли это страница
+                        example: true
+                      last:
+                        type: boolean
+                        description: Последняя ли это страница
+                        example: true
+                      size:
+                        type: integer
+                        description: Размер страницы
+                        example: 10
+                      content:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Transfer'
+                        description: Массив старых переводов
+                      number:
+                        type: integer
+                        description: Номер текущей страницы
+                        example: 0
+                      sort:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Sort'
+                        description: Параметры сортировки
+                      numberOfElements:
+                        type: integer
+                        description: Количество элементов на текущей странице
+                        example: 15
+                      pageable:
+                        $ref: '#/components/schemas/Pageable'
+                      empty:
+                        type: boolean
+                        description: Пустой ли результат
+                        example: false
+                  success:
+                    type: boolean
+                    description: Успешность операции
+                    example: true
+                  error:
+                    type: string
+                    nullable: true
+                    description: Сообщение об ошибке
+                    example: null
+              example:
+                result:
+                  totalPages: 1
+                  totalElements: 15
+                  first: true
+                  last: true
+                  size: 10
+                  content:
+                    - id: 1
+                      app_name: "xazna"
+                      commission: "0%"
+                      limit_ru: "Ежемесячно за переводы до 5 млн сум комиссия 0%, затем 0.5%."
+                      limit_uz: "Har oy 5 mln so'mgacha o'tkazmalar uchun komissiya 0%, keyin 0.5%."
+                      created_at: "2024-01-20T15:30:00Z"
+                    - id: 2
+                      app_name: "Mavrid"
+                      commission: "0%"
+                      limit_ru: "Ежемесячно до 3 млн сумов комиссия 0%, далее 0.5%."
+                      limit_uz: "Har oy 3 mln so'mgacha komissiya 0%, keyin 0.5%."
+                      created_at: "2024-01-20T16:45:00Z"
+                  number: 0
+                  sort:
+                    - direction: "ASC"
+                      nullHandling: "NATIVE"
+                      ascending: true
+                      property: "app_name"
+                      ignoreCase: false
+                  numberOfElements: 15
+                  pageable:
+                    offset: 0
+                    sort:
+                      - direction: "ASC"
+                        nullHandling: "NATIVE"
+                        ascending: true
+                        property: "app_name"
+                        ignoreCase: false
+                    paged: true
+                    pageNumber: 0
+                    pageSize: 10
+                    unpaged: false
+                  empty: false
+                success: true
+                error: null
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /parse-transfer:
+    get:
+      tags: [Parser]
+      summary: Парсинг переводов по URL
+      description: |
+        Парсит информацию о ВСЕХ переводных приложениях с указанного URL (примерно 50 приложений) и возвращает массив структурированных данных.
+        
+        **Поля перевода:**
+        - `app_name` - название приложения
+        - `commission` - комиссия за переводы
+        - `limit_info` - информация о лимитах и условиях
+      parameters:
+        - in: query
+          name: url
+          required: true
+          schema:
+            type: string
+          description: URL страницы для парсинга
+          example: "https://bank.uz/perevodi"
+      responses:
+        '200':
+          description: Успешный ответ с данными переводов
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Transfer'
+                  success:
+                    type: boolean
+                    description: Успешность операции
+                    example: true
+                  error:
+                    type: string
+                    nullable: true
+                    description: Сообщение об ошибке
+                    example: null
+              example:
+                result:
+                  - id: 1
+                    app_name: "Davr Mobile"
+                    commission: "0%"
+                    limit_ru: "В рамках акции комиссия 0% на сумму до 3.5 млн сум в месяц. Далее 0.35%."
+                    limit_uz: "Aksiya doirasida har oy 3.5 mln so'mgacha komissiya 0%. Undan so'ng 0.35%."
+                    created_at: "2024-01-25T20:00:00Z"
+                  - id: 2
+                    app_name: "Paynet"
+                    commission: "0.5%"
+                    limit_ru: "Комиссия 0.5% за переводы до 10 млн сум в месяц."
+                    limit_uz: "Har oy 10 mln so'mgacha o'tkazmalar uchun komissiya 0.5%."
+                    created_at: "2024-01-25T20:00:00Z"
+                  - id: 3
+                    app_name: "xazna"
+                    commission: "0%"
+                    limit_ru: "Без комиссии на переводы до 5 млн сум в месяц."
+                    limit_uz: "Har oy 5 mln so'mgacha o'tkazmalar uchun komissiyasiz."
+                    created_at: "2024-01-25T20:00:00Z"
+                success: true
+                error: null
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "url parameter is required"
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Failed to parse transfer: error details"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -1342,6 +1996,36 @@ components:
           description: Дата создания записи
           example: "2024-01-25T20:00:00Z"
       required: [id, bank_name, rate, initial_payment, term_months, max_amount, url, created_at]
+    Transfer:
+      type: object
+      description: Структура данных перевода
+      properties:
+        id:
+          type: integer
+          description: Уникальный идентификатор
+          example: 1
+        app_name:
+          type: string
+          description: Название приложения
+          example: "Davr Mobile"
+        commission:
+          type: string
+          description: Комиссия за переводы
+          example: "0%"
+        limit_ru:
+          type: string
+          description: Информация о лимитах и условиях на русском языке
+          example: "В рамках акции комиссия 0% на сумму до 3.5 млн сум в месяц. Далее 0.35%."
+        limit_uz:
+          type: string
+          description: Информация о лимитах и условиях на узбекском языке
+          example: "Aksiya doirasida har oy 3.5 mln so'mgacha komissiya 0%. Undan so'ng 0.35%."
+        created_at:
+          type: string
+          format: date-time
+          description: Дата создания записи
+          example: "2024-01-25T20:00:00Z"
+      required: [id, app_name, commission, limit_ru, limit_uz, created_at]
     Sort:
       type: object
       description: Параметры сортировки
