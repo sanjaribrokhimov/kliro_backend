@@ -17,7 +17,7 @@ func SetupRouter() *gin.Engine {
 
 	// CORS middleware ДО роутов
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "https://kliro.uz", "https://www.kliro.uz"},
+		AllowOrigins:     []string{"http://localhost:3000", "https://kliro.uz", "https://www.kliro.uz", "https://kliro-frontend.vercel.app"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -46,6 +46,8 @@ func SetupRouter() *gin.Engine {
 	microcreditController := controllers.NewMicrocreditController()
 	autocreditController := controllers.NewAutocreditController()
 	transferController := controllers.NewTransferController()
+	mortgageController := controllers.NewMortgageController(db)
+	depositController := controllers.NewDepositController(db)
 	currencyController := controllers.NewCurrencyController(currencyService)
 
 	r.POST("/auth/register", userController.Register)
@@ -65,9 +67,16 @@ func SetupRouter() *gin.Engine {
 	r.GET("/autocredits/old", autocreditController.GetOldAutocredits)
 	r.GET("/transfers/new", transferController.GetNewTransfers)
 	r.GET("/transfers/old", transferController.GetOldTransfers)
+	r.GET("/mortgages/new", mortgageController.GetNewMortgages)
+	r.GET("/mortgages/old", mortgageController.GetOldMortgages)
+	r.GET("/deposits/new", depositController.GetNewDeposits)
+	r.GET("/deposits/old", depositController.GetOldDeposits)
 	r.GET("/parse-currency", parserController.ParseCurrencyPage)
 	r.GET("/parse-autocredit", parserController.ParseAutocreditPage)
 	r.GET("/parse-transfer", parserController.ParseTransferPage)
+	r.GET("/parse-mortgage", parserController.ParseMortgagePage)
+	r.GET("/parse-deposit", parserController.ParseDepositPage)
+	r.GET("/update-transfers", parserController.ParseTransferAndUpdateDatabase)
 	r.GET("/currencies/new", currencyController.GetLatestCurrencyRates)
 	r.GET("/currencies/by-date", currencyController.GetCurrencyRatesByDate)
 

@@ -68,6 +68,14 @@ func main() {
 	services.StartTransferCron(db)
 	log.Println("Transfer cron started")
 
+	// Запуск mortgage cron
+	services.StartMortgageCron(db)
+	log.Println("Mortgage cron started")
+
+	// Запуск deposit cron
+	services.StartDepositCron(db)
+	log.Println("Deposit cron started")
+
 	// Инициализация валют при запуске (если таблица пустая)
 	currencyService := services.NewCurrencyService(db)
 	if err := currencyService.InitializeCurrencyData(); err != nil {

@@ -24,12 +24,12 @@ func NewCurrencyCronService(currencyService *CurrencyService) *CurrencyCronServi
 
 // Start запускает планировщик
 func (ccs *CurrencyCronService) Start() {
-	// Запускаем парсинг каждый день в 20:00 по UTC
-	ccs.cron.AddFunc("0 20 * * *", ccs.ParseAndSaveCurrencyRates)
+	// Запускаем парсинг каждый день в 06:00 по UTC
+	ccs.cron.AddFunc("0 0 6 * * *", ccs.ParseAndSaveCurrencyRates)
 
 	// Запускаем планировщик
 	ccs.cron.Start()
-	log.Printf("[CURRENCY CRON] Планировщик запущен. Парсинг валют будет выполняться каждый день в 20:00 UTC")
+	log.Printf("[CURRENCY CRON] Планировщик запущен. Парсинг валют будет выполняться каждый день в 06:00 UTC")
 }
 
 // Stop останавливает планировщик
@@ -60,5 +60,3 @@ func (ccs *CurrencyCronService) ParseAndSaveCurrencyRates() {
 
 	logger.Printf("[CURRENCY CRON] Парсинг курсов валют завершен успешно")
 }
-
-

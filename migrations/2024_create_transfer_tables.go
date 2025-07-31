@@ -6,8 +6,8 @@ CREATE TABLE IF NOT EXISTS new_transfer (
     id SERIAL PRIMARY KEY,
     app_name VARCHAR(100) NOT NULL,
     commission VARCHAR(50) NOT NULL,
-    limit_info TEXT NOT NULL,
-    url TEXT NOT NULL,
+    limit_ru TEXT NULL,
+    limit_uz TEXT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -16,8 +16,8 @@ CREATE TABLE IF NOT EXISTS old_transfer (
     id SERIAL PRIMARY KEY,
     app_name VARCHAR(100) NOT NULL,
     commission VARCHAR(50) NOT NULL,
-    limit_info TEXT NOT NULL,
-    url TEXT NOT NULL,
+    limit_ru TEXT NULL,
+    limit_uz TEXT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

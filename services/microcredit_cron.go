@@ -67,12 +67,12 @@ func StartMicrocreditCron(db *gorm.DB) {
 	InitializeMicrocreditData(db)
 
 	c := cron.New()
-	c.AddFunc("0 20 * * *", func() {
+	c.AddFunc("0 0 20 */3 * *", func() {
 		logFile, _ := os.OpenFile("logs/parser_errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		logger := log.New(logFile, "", log.LstdFlags)
 		defer logFile.Close()
 
-		logger.Printf("Начало ежедневного парсинга microcredit...")
+		logger.Printf("Начало парсинга microcredit каждые 3 дня...")
 
 		// Копируем new_microcredit в old_microcredit
 		db.Exec("TRUNCATE old_microcredit")
@@ -86,7 +86,8 @@ func StartMicrocreditCron(db *gorm.DB) {
 			}
 		}
 
-		logger.Printf("Ежедневный парсинг microcredit завершен")
+		logger.Printf("Парсинг microcredit каждые 3 дня завершен")
 	})
 	c.Start()
+	log.Printf("[MICROCREDIT CRON] Планировщик запущен. Парсинг будет выполняться каждые 3 дня в 20:00 UTC")
 }

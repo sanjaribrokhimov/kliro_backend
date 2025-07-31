@@ -67,12 +67,12 @@ func StartAutocreditCron(db *gorm.DB) {
 	InitializeAutocreditData(db)
 
 	c := cron.New()
-	c.AddFunc("0 20 * * *", func() {
+	c.AddFunc("0 0 20 */3 * *", func() {
 		logFile, _ := os.OpenFile("logs/parser_errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		logger := log.New(logFile, "", log.LstdFlags)
 		defer logFile.Close()
 
-		logger.Printf("Начало ежедневного парсинга autocredit...")
+		logger.Printf("Начало парсинга autocredit каждые 3 дня...")
 
 		// Копируем new_autocredit в old_autocredit
 		db.Exec("TRUNCATE old_autocredit")
@@ -86,9 +86,9 @@ func StartAutocreditCron(db *gorm.DB) {
 			}
 		}
 
-		logger.Printf("Ежедневный парсинг autocredit завершен")
+		logger.Printf("Парсинг autocredit каждые 3 дня завершен")
 	})
 
 	c.Start()
-	log.Printf("[AUTOCREDIT CRON] Планировщик запущен. Парсинг автокредитов будет выполняться каждый день в 20:00 UTC")
+	log.Printf("[AUTOCREDIT CRON] Планировщик запущен. Парсинг автокредитов будет выполняться каждые 3 дня в 20:00 UTC")
 }

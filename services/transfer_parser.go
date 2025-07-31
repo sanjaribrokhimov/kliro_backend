@@ -23,77 +23,51 @@ func NewTransferParser() *TransferParser {
 }
 
 func (tp *TransferParser) ParseURL(url string) ([]*models.Transfer, error) {
+	log.Printf("[TRANSFER PARSER] 🚀 Начинаем парсинг URL: %s", url)
+
 	// Получаем HTML страницы
+	log.Printf("[TRANSFER PARSER] 🌐 Загружаем страницу...")
 	resp, err := http.Get(url)
 	if err != nil {
+		log.Printf("[TRANSFER PARSER] ❌ Ошибка получения страницы: %v", err)
 		return nil, fmt.Errorf("ошибка получения страницы: %v", err)
 	}
 	defer resp.Body.Close()
 
+	log.Printf("[TRANSFER PARSER] 📡 Статус страницы: %d", resp.StatusCode)
+
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
+		log.Printf("[TRANSFER PARSER] ❌ Ошибка парсинга HTML: %v", err)
 		return nil, fmt.Errorf("ошибка парсинга HTML: %v", err)
 	}
 
-	// Удаляем навигацию, футер и прочие неинформативные блоки
-	doc.Find("nav, header, footer, .navbar, .menu, .sidebar, .breadcrumbs, .topbar, .language, .lang-switcher, .mobile-menu, .contact-info").Remove()
+	// Берем ВЕСЬ текст со страницы
+	text := doc.Find("body").Text()
+	log.Printf("[TRANSFER PARSER] 📄 Исходный текст: %d символов", len(text))
 
-	// Удаляем скрипты и стили
-	doc.Find("script, style").Remove()
-
-	// Пытаемся вытащить только релевантные блоки с ключевыми словами
-	var relevantText []string
-	doc.Find("section, div, p, span, li, td").Each(func(i int, s *goquery.Selection) {
-		txt := strings.ToLower(s.Text())
-		if strings.Contains(txt, "комиссия") || strings.Contains(txt, "лимит") || strings.Contains(txt, "перевод") || strings.Contains(txt, "%") || strings.Contains(txt, "млн") || strings.Contains(txt, "сум") {
-			relevantText = append(relevantText, s.Text())
-		}
-	})
-
-	var text string
-	if len(relevantText) > 0 {
-		text = strings.Join(relevantText, " ")
-	} else {
-		text = doc.Find("body").Text()
-	}
-
+	// Очищаем текст от лишнего
 	text = tp.cleanText(text)
 
-	log.Printf("[TRANSFER PARSER] Очищенный текст для %s (первые 3000 символов):", url)
-	log.Printf(text[:min(len(text), 3000)])
+	log.Printf("[TRANSFER PARSER] Очищенный текст для %s (первые 5000 символов):", url)
+	log.Printf(text[:min(len(text), 5000)])
 	log.Printf("[TRANSFER PARSER] 📏 Общая длина текста: %d символов", len(text))
 
-	// Используем DeepSeek для парсинга ВСЕХ приложений
+	// Простой промпт для DeepSeek
 	prompt := fmt.Sprintf(`Извлеки информацию о ВСЕХ приложениях для переводов из текста и верни JSON-массив объектов.
 
-КРИТИЧЕСКИ ВАЖНО: На странице должно быть 30-50 приложений для переводов. Ты должен найти ВСЕ из них!
-
 Каждый объект должен содержать:
-app_name: название приложения (например, "Davr Mobile", "Paynet", "xazna", "Mavrid", "Milliy", "SQB Mobile", "Anorbank", "Smartbank", "Oq", "Hamkor", "Humans", "My Uztelecom", "Uzum Bank", "AVO", "TBC UZ", "Payme", "Click Up", "Paylov", "A-Pay", "Limon Pay", "Uzum", "TBC", "Humo", "UzCard", "Visa", "Mastercard", "Click", "Payme", "Uzum Bank", "TBC Bank", "Anor Bank", "Hamkor Bank", "SQB Bank", "Milliy Bank", "Ipoteka Bank", "Turon Bank", "Aloqa Bank", "Xalq Bank", "Agro Bank", "Asaka Bank", "NBU", "CBU" и т.д.)
-commission: комиссия за переводы (например, "0%%", "0.5%%", "1%%", "0.7%%" и т.д.)
-limit_ru: информация о лимитах и условиях НА РУССКОМ ЯЗЫКЕ (например, "Ежемесячно за переводы до 5 млн сум комиссия 0%%, затем 0.5%%", "Комиссия за переводы составляет 0%% в пределах лимита 5 млн в месяц, далее 0.5%%" и т.д.)
-limit_uz: информация о лимитах и условиях НА УЗБЕКСКОМ ЯЗЫКЕ (например, "Har oy 5 mln so'mgacha o'tkazmalar uchun komissiya 0%%, keyin 0.5%%", "O'tkazmalar uchun komissiya oylik 5 mln so'm limit doirasida 0%%, keyin 0.5%%" и т.д.)
+app_name: название приложения
+commission: комиссия за переводы (например, "0%%", "0.5%%", "1%%")
+limit_ru: информация о лимитах на русском языке (null если не найдено)
+limit_uz: информация о лимитах на узбекском языке нужно взять из руского и перевести на узбекский (null если не найдено )
 
-ИНСТРУКЦИИ:
-1. Найди ВСЕ приложения для переводов на странице (должно быть 30-50 приложений)
-2. Ищи названия банков, платежных систем, мобильных приложений
-3. Извлекай данные как с русскоязычных, так и с узбекоязычных сайтов
-4. Если какое-то значение не найдено — укажи "Не указано"
-5. Каждое приложение должно быть отдельным объектом в массиве
-6. НЕ ПРОПУСКАЙ НИ ОДНОГО ПРИЛОЖЕНИЯ!
-7. ВАЖНО: limit_ru должен содержать информацию на русском языке, limit_uz на узбекском языке
+Если лимиты не указаны в тексте, используй null вместо пустой строки.
 
-Ключевые слова для поиска:
-комиссия — commission
-лимит — limit
-перевод — transfer
-млн — million
-сум — sum
-месяц — month
-год — year
+Найди ВСЕ приложения для переводов в тексте. Не пропускай ничего.
 
 Текст: "%s"
-Верни только JSON-массив. Без пояснений.`, text)
+Верни только JSON-массив.`, text)
 
 	// Вызываем DeepSeek API
 	reqBody := DeepSeekRequest{
@@ -104,27 +78,45 @@ limit_uz: информация о лимитах и условиях НА УЗБ
 	}
 
 	jsonBody, _ := json.Marshal(reqBody)
-	req, _ := http.NewRequest("POST", DEEPSEEK_API_URL, bytes.NewBuffer(jsonBody))
+	req, _ := http.NewRequest("POST", "https://api.deepseek.com/v1/chat/completions", bytes.NewBuffer(jsonBody))
 	req.Header.Set("Content-Type", "application/json")
 
 	apiKey := os.Getenv("DEEPSEEK_API_KEY")
 	if apiKey == "" {
+		log.Printf("[TRANSFER PARSER] ❌ DEEPSEEK_API_KEY не установлен")
 		return nil, fmt.Errorf("DeepSeek API key not set")
 	}
+	log.Printf("[TRANSFER PARSER] ✅ DEEPSEEK_API_KEY найден (длина: %d)", len(apiKey))
+
 	req.Header.Set("Authorization", "Bearer "+apiKey)
 
+	log.Printf("[TRANSFER PARSER] 🌐 Отправляем запрос к DeepSeek API...")
 	client := &http.Client{}
 	dsResp, err := client.Do(req)
 	if err != nil {
+		log.Printf("[TRANSFER PARSER] ❌ Ошибка HTTP запроса к DeepSeek: %v", err)
 		return nil, fmt.Errorf("ошибка вызова DeepSeek API: %v", err)
 	}
 	defer dsResp.Body.Close()
 
+	log.Printf("[TRANSFER PARSER] 📡 Статус ответа DeepSeek: %d", dsResp.StatusCode)
+
 	body, _ := ioutil.ReadAll(dsResp.Body)
+	log.Printf("[TRANSFER PARSER] 📄 Размер ответа DeepSeek: %d байт", len(body))
+
+	if dsResp.StatusCode != 200 {
+		log.Printf("[TRANSFER PARSER] ❌ Ошибка DeepSeek API (статус %d): %s", dsResp.StatusCode, string(body))
+		return nil, fmt.Errorf("DeepSeek API error (status %d): %s", dsResp.StatusCode, string(body))
+	}
+
 	var deepSeekResponse DeepSeekResponse
 	if err := json.Unmarshal(body, &deepSeekResponse); err != nil {
+		log.Printf("[TRANSFER PARSER] ❌ Ошибка парсинга JSON ответа DeepSeek: %v", err)
+		log.Printf("[TRANSFER PARSER] 📄 Сырой ответ: %s", string(body))
 		return nil, fmt.Errorf("ошибка парсинга ответа DeepSeek: %v", err)
 	}
+
+	log.Printf("[TRANSFER PARSER] 📊 Количество choices в ответе: %d", len(deepSeekResponse.Choices))
 
 	if len(deepSeekResponse.Choices) > 0 {
 		raw := deepSeekResponse.Choices[0].Message.Content
@@ -149,57 +141,129 @@ limit_uz: информация о лимитах и условиях НА УЗБ
 			log.Printf("[TRANSFER PARSER] 📝 Приложение %d: %s (комиссия: %s)", i+1, transfer.AppName, transfer.Commission)
 		}
 
-		log.Printf("[TRANSFER PARSER] ✅ Успешно спарсили %d приложений для %s", len(parsedTransfers), url)
+		// Удаляем дубликаты и улучшаем данные
+		uniqueTransfers := tp.removeDuplicatesAndImprove(parsedTransfers)
 
-		return parsedTransfers, nil
+		log.Printf("[TRANSFER PARSER] ✅ Успешно спарсили %d приложений, после удаления дубликатов: %d", len(parsedTransfers), len(uniqueTransfers))
+
+		return uniqueTransfers, nil
 	}
 
 	return nil, fmt.Errorf("нет ответа от DeepSeek")
 }
 
 func (tp *TransferParser) cleanText(raw string) string {
+	// Удаляем HTML теги
+	reTag := regexp.MustCompile(`<[^>]+>`)
+	clean := reTag.ReplaceAllString(raw, "")
+
 	// Удаляем скрипты и стили
 	reScript := regexp.MustCompile(`<script[^>]*>.*?</script>`)
 	reStyle := regexp.MustCompile(`<style[^>]*>.*?</style>`)
-	reLink := regexp.MustCompile(`https?://\S+|ftp://\S+|mailto:\S+`)
-	reTag := regexp.MustCompile(`<[^>]+>`)
-	reSpaces := regexp.MustCompile(`\s+`)
-	reJS := regexp.MustCompile(`javascript:`)
-	reConsole := regexp.MustCompile(`console\.(log|error|warn|info)\([^)]*\)`)
-	reFunction := regexp.MustCompile(`function\s+\w+\s*\([^)]*\)\s*\{[^}]*\}`)
-
-	// Удаляем скрипты и стили
-	clean := reScript.ReplaceAllString(raw, "")
+	clean = reScript.ReplaceAllString(clean, "")
 	clean = reStyle.ReplaceAllString(clean, "")
 
-	// Удаляем ссылки
-	clean = reLink.ReplaceAllString(clean, "")
-
-	// Удаляем HTML теги
-	clean = reTag.ReplaceAllString(clean, "")
-
-	// Удаляем JavaScript код
-	clean = reJS.ReplaceAllString(clean, "")
-	clean = reConsole.ReplaceAllString(clean, "")
-	clean = reFunction.ReplaceAllString(clean, "")
-
-	lines := strings.Split(clean, "\n")
-	var compact []string
-	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if line != "" && len(line) > 2 {
-			compact = append(compact, line)
-		}
-	}
-
-	clean = strings.Join(compact, " ")
+	// Удаляем лишние пробелы и переносы строк
+	reSpaces := regexp.MustCompile(`\s+`)
 	clean = reSpaces.ReplaceAllString(clean, " ")
 	clean = strings.TrimSpace(clean)
 
-	if len(clean) > 10000 {
-		clean = clean[:10000]
+	// Ограничиваем длину
+	if len(clean) > 20000 {
+		clean = clean[:20000]
 	}
+
 	return clean
+}
+
+// removeDuplicatesAndImprove удаляет дубликаты и улучшает данные
+func (tp *TransferParser) removeDuplicatesAndImprove(transfers []*models.Transfer) []*models.Transfer {
+	seen := make(map[string]bool)
+	var uniqueTransfers []*models.Transfer
+
+	for _, transfer := range transfers {
+		// Нормализуем название приложения
+		normalizedName := tp.normalizeAppName(transfer.AppName)
+
+		// Пропускаем дубликаты
+		if seen[normalizedName] {
+			log.Printf("[TRANSFER PARSER] 🔄 Пропускаем дубликат: %s", transfer.AppName)
+			continue
+		}
+
+		// Улучшаем данные
+		tp.improveTransferData(transfer)
+
+		// Добавляем в результат
+		uniqueTransfers = append(uniqueTransfers, transfer)
+		seen[normalizedName] = true
+	}
+
+	return uniqueTransfers
+}
+
+// normalizeAppName нормализует название приложения для сравнения
+func (tp *TransferParser) normalizeAppName(name string) string {
+	// Приводим к нижнему регистру
+	normalized := strings.ToLower(strings.TrimSpace(name))
+
+	// Удаляем лишние пробелы
+	normalized = strings.Join(strings.Fields(normalized), " ")
+
+	// Убираем общие суффиксы
+	normalized = strings.TrimSuffix(normalized, " mobile")
+	normalized = strings.TrimSuffix(normalized, " bank")
+	normalized = strings.TrimSuffix(normalized, " pay")
+
+	return normalized
+}
+
+// improveTransferData улучшает данные перевода
+func (tp *TransferParser) improveTransferData(transfer *models.Transfer) {
+	// Улучшаем комиссию
+	if transfer.Commission == "Не указано" || transfer.Commission == "" {
+		transfer.Commission = "0%"
+	}
+
+	// Улучшаем лимиты
+	if transfer.LimitRU == nil || *transfer.LimitRU == "Не указано" || *transfer.LimitRU == "" {
+		limitRU := "Информация о лимитах не указана"
+		transfer.LimitRU = &limitRU
+	}
+
+	if transfer.LimitUZ == nil || *transfer.LimitUZ == "Не указано" || *transfer.LimitUZ == "" {
+		limitUZ := "Limit haqida ma'lumot ko'rsatilmagan"
+		transfer.LimitUZ = &limitUZ
+	}
+
+	// Улучшаем название приложения
+	transfer.AppName = tp.cleanAppName(transfer.AppName)
+}
+
+// cleanAppName очищает название приложения
+func (tp *TransferParser) cleanAppName(name string) string {
+	// Убираем лишние пробелы
+	cleaned := strings.TrimSpace(name)
+
+	// Исправляем известные названия
+	nameMap := map[string]string{
+		"Anorbank":    "Anor Bank",
+		"Asakabank":   "Asaka Bank",
+		"Hamkorbank":  "Hamkor Bank",
+		"Ipotekabank": "Ipoteka Bank",
+		"Milliybank":  "Milliy Bank",
+		"Sqbbank":     "SQB Bank",
+		"Turonbank":   "Turon Bank",
+		"Xalqbank":    "Xalq Bank",
+		"Agrobank":    "Agro Bank",
+		"Aloqabank":   "Aloqa Bank",
+	}
+
+	if corrected, exists := nameMap[cleaned]; exists {
+		return corrected
+	}
+
+	return cleaned
 }
 
 func min(a, b int) int {

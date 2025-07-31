@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"kliro/models"
 	"kliro/services"
 	"kliro/utils"
 	"log"
@@ -464,4 +465,106 @@ func (pc *ParserController) ParseTransferPage(c *gin.Context) {
 	log.Printf("[PARSER CONTROLLER] 📊 Сохранено %d/%d переводов", savedCount, len(transfers))
 
 	c.JSON(http.StatusOK, gin.H{"result": transfers, "success": true, "saved": savedCount})
+}
+
+// ParseTransferAndUpdateDatabase парсит переводы и обновляет базу данных
+func (pc *ParserController) ParseTransferAndUpdateDatabase(c *gin.Context) {
+	log.Printf("[PARSER CONTROLLER] 🚀 Начинаем полный парсинг и обновление переводов")
+
+	// Очищаем старые данные
+	db := utils.GetDB()
+	if err := db.Where("1 = 1").Delete(&models.Transfer{}).Error; err != nil {
+		log.Printf("[PARSER CONTROLLER] ❌ Ошибка очистки базы: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to clear database"})
+		return
+	}
+
+	// Парсим переводы
+	parser := services.NewTransferParser()
+	transfers, err := parser.ParseURL("https://bank.uz/perevodi")
+	if err != nil {
+		log.Printf("[PARSER CONTROLLER] ❌ Ошибка парсинга: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to parse transfers: %v", err)})
+		return
+	}
+
+	// Сохраняем новые данные
+	savedCount := 0
+	for _, transfer := range transfers {
+		if err := db.Table("new_transfer").Create(map[string]interface{}{
+			"app_name":   transfer.AppName,
+			"commission": transfer.Commission,
+			"limit_ru":   transfer.LimitRU,
+			"limit_uz":   transfer.LimitUZ,
+			"created_at": transfer.CreatedAt,
+		}).Error; err != nil {
+			log.Printf("[PARSER CONTROLLER] ❌ Ошибка сохранения %s: %v", transfer.AppName, err)
+		} else {
+			log.Printf("[PARSER CONTROLLER] ✅ Сохранен: %s", transfer.AppName)
+			savedCount++
+		}
+	}
+
+	log.Printf("[PARSER CONTROLLER] 📊 Обновление завершено: %d/%d переводов", savedCount, len(transfers))
+
+	c.JSON(http.StatusOK, gin.H{
+		"result":  transfers,
+		"success": true,
+		"saved":   savedCount,
+		"message": "База данных успешно обновлена",
+	})
+}
+
+func (pc *ParserController) ParseMortgagePage(c *gin.Context) {
+	url := c.Query("url")
+	if url == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "url parameter is required"})
+		return
+	}
+
+	log.Printf("[PARSER CONTROLLER] 🏠 Начинаем парсинг ипотеки для URL: %s", url)
+
+	// Используем mortgage parser
+	parser := services.NewMortgageParser()
+	mortgage, err := parser.ParseURL(url)
+	if err != nil {
+		log.Printf("[PARSER CONTROLLER] ❌ Ошибка парсинга ипотеки: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to parse mortgage: %v", err)})
+		return
+	}
+
+	log.Printf("[PARSER CONTROLLER] ✅ Ипотека спарсена: %s (%.1f%%-%.1f%%)", mortgage.BankName, mortgage.RateMin, mortgage.RateMax)
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Mortgage parsed successfully",
+		"data":    mortgage,
+		"success": true,
+	})
+}
+
+func (pc *ParserController) ParseDepositPage(c *gin.Context) {
+	url := c.Query("url")
+	if url == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "url parameter is required"})
+		return
+	}
+
+	log.Printf("[PARSER CONTROLLER] 💰 Начинаем парсинг вклада для URL: %s", url)
+
+	// Используем deposit parser
+	parser := services.NewDepositParser()
+	deposit, err := parser.ParseURL(url)
+	if err != nil {
+		log.Printf("[PARSER CONTROLLER] ❌ Ошибка парсинга вклада: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to parse deposit: %v", err)})
+		return
+	}
+
+	log.Printf("[PARSER CONTROLLER] ✅ Вклад спарсен: %s (%.1f%%)", deposit.BankName, deposit.Rate)
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Deposit parsed successfully",
+		"data":    deposit,
+		"success": true,
+	})
 }

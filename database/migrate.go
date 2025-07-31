@@ -100,14 +100,14 @@ func Migrate(db *gorm.DB) error {
 		return err
 	}
 
-	// Создаем таблицы для переводов
+	// Создаем таблицы для переводов (создаем если не существуют)
 	if err := db.Exec(`
 		CREATE TABLE IF NOT EXISTS new_transfer (
 			id SERIAL PRIMARY KEY,
 			app_name VARCHAR(100) NOT NULL,
 			commission VARCHAR(50) NOT NULL,
-			limit_ru TEXT NOT NULL,
-			limit_uz TEXT NOT NULL,
+			limit_ru TEXT NULL,
+			limit_uz TEXT NULL,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		)
 	`).Error; err != nil {
@@ -119,8 +119,8 @@ func Migrate(db *gorm.DB) error {
 			id SERIAL PRIMARY KEY,
 			app_name VARCHAR(100) NOT NULL,
 			commission VARCHAR(50) NOT NULL,
-			limit_ru TEXT NOT NULL,
-			limit_uz TEXT NOT NULL,
+			limit_ru TEXT NULL,
+			limit_uz TEXT NULL,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		)
 	`).Error; err != nil {
@@ -138,6 +138,82 @@ func Migrate(db *gorm.DB) error {
 		return err
 	}
 	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_old_transfer_created_at ON old_transfer(created_at)`).Error; err != nil {
+		return err
+	}
+
+	// Создаем таблицы для ипотеки
+	if err := db.Exec(`
+		CREATE TABLE IF NOT EXISTS new_mortgage (
+			id SERIAL PRIMARY KEY,
+			bank_name VARCHAR(255),
+			rate_max DECIMAL(5,2),
+			rate_min DECIMAL(5,2),
+			term_years INTEGER,
+			max_amount DECIMAL(15,2),
+			initial_payment DECIMAL(15,2),
+			url TEXT,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		)
+	`).Error; err != nil {
+		return err
+	}
+
+	if err := db.Exec(`
+		CREATE TABLE IF NOT EXISTS old_mortgage (
+			id SERIAL PRIMARY KEY,
+			bank_name VARCHAR(255),
+			rate_max DECIMAL(5,2),
+			rate_min DECIMAL(5,2),
+			term_years INTEGER,
+			max_amount DECIMAL(15,2),
+			initial_payment DECIMAL(15,2),
+			url TEXT,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		)
+	`).Error; err != nil {
+		return err
+	}
+
+	// Создаем таблицы для вкладов
+	if err := db.Exec(`
+		CREATE TABLE IF NOT EXISTS new_deposit (
+			id SERIAL PRIMARY KEY,
+			bank_name VARCHAR(255),
+			rate DECIMAL(5,2),
+			term_months INTEGER,
+			min_amount DECIMAL(15,2),
+			url TEXT,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		)
+	`).Error; err != nil {
+		return err
+	}
+
+	if err := db.Exec(`
+		CREATE TABLE IF NOT EXISTS old_deposit (
+			id SERIAL PRIMARY KEY,
+			bank_name VARCHAR(255),
+			rate DECIMAL(5,2),
+			term_months INTEGER,
+			min_amount DECIMAL(15,2),
+			url TEXT,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		)
+	`).Error; err != nil {
+		return err
+	}
+
+	// Создаем индексы для ипотеки и вкладов
+	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_new_mortgage_bank_name ON new_mortgage(bank_name)`).Error; err != nil {
+		return err
+	}
+	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_old_mortgage_bank_name ON old_mortgage(bank_name)`).Error; err != nil {
+		return err
+	}
+	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_new_deposit_bank_name ON new_deposit(bank_name)`).Error; err != nil {
+		return err
+	}
+	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_old_deposit_bank_name ON old_deposit(bank_name)`).Error; err != nil {
 		return err
 	}
 
