@@ -11,16 +11,16 @@ import (
 )
 
 var mortgageURLs = []string{
-	"https://www.infinbank.com/ru/private/credits/ipoteka/",
-	"https://sqb.uz/individuals/credits/ipoteka-ru/",
-	"https://aab.uz/ru/private/crediting/ipoteka/",
-	"https://mkbank.uz/ru/private/crediting/mortgage/",
-	"https://trustbank.uz/ru/private/crediting/ipoteka/",
-	"https://hamkorbank.uz/physical/credits/ipoteka/",
-	"https://ru.ipakyulibank.uz/physical/kredity/ipoteka/",
+	"https://ru.ipakyulibank.uz/physical/kredity/ipoteka/ipoteka-nrg",
+	"https://xb.uz/page/farovon-hayot-ipoteka-kredit",
+	"https://asakabank.uz/ru/physical-persons/credits/ipoteka",
+	"https://ofb.uz/credits/vygodnaya-ipoteka/",
+	"https://sqb.uz/individuals/ipoteka/hamkor-ipoteka-kredit-ru/",
+	"https://aloqabank.uz/ru/private/crediting/ipoteka-secondary/",
+	"https://hamkorbank.uz/physical/mortgage/uzbekistan-mortgage-criuz/?utm_campaign=uzbekistan-mortgage-criuz_ru_product_catalog_button&utm_term=1111129",
 	"https://asakabank.uz/ru/physical-persons/credits/ipoteka",
 	"https://xb.uz/page/ipoteka",
-	"https://turonbank.uz/ru/private/crediting/ipoteka/",
+	"https://agrobank.uz/ru/person/loans/mortgage",
 }
 
 // Функция для парсинга одного URL

@@ -23,48 +23,39 @@ func NewTransferParser() *TransferParser {
 }
 
 func (tp *TransferParser) ParseURL(url string) ([]*models.Transfer, error) {
-	log.Printf("[TRANSFER PARSER] 🚀 Начинаем парсинг URL: %s", url)
+	log.Printf("[TRANSFER PARSER] Начало парсинга переводов")
 
 	// Получаем HTML страницы
-	log.Printf("[TRANSFER PARSER] 🌐 Загружаем страницу...")
-	resp, err := http.Get(url)
+	httpClient := &http.Client{
+		Timeout: 15 * time.Second,
+	}
+	resp, err := httpClient.Get(url)
 	if err != nil {
-		log.Printf("[TRANSFER PARSER] ❌ Ошибка получения страницы: %v", err)
 		return nil, fmt.Errorf("ошибка получения страницы: %v", err)
 	}
 	defer resp.Body.Close()
 
-	log.Printf("[TRANSFER PARSER] 📡 Статус страницы: %d", resp.StatusCode)
-
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
-		log.Printf("[TRANSFER PARSER] ❌ Ошибка парсинга HTML: %v", err)
 		return nil, fmt.Errorf("ошибка парсинга HTML: %v", err)
 	}
 
-	// Берем ВЕСЬ текст со страницы
+	// Берем весь текст со страницы
 	text := doc.Find("body").Text()
-	log.Printf("[TRANSFER PARSER] 📄 Исходный текст: %d символов", len(text))
 
 	// Очищаем текст от лишнего
 	text = tp.cleanText(text)
 
-	log.Printf("[TRANSFER PARSER] Очищенный текст для %s (первые 5000 символов):", url)
-	log.Printf(text[:min(len(text), 5000)])
-	log.Printf("[TRANSFER PARSER] 📏 Общая длина текста: %d символов", len(text))
-
 	// Простой промпт для DeepSeek
-	prompt := fmt.Sprintf(`Извлеки информацию о ВСЕХ приложениях для переводов из текста и верни JSON-массив объектов.
+	prompt := fmt.Sprintf(`Извлеки информацию о ВСЕХ приложениях для P2P переводов из текста и верни JSON-массив объектов.
 
 Каждый объект должен содержать:
-app_name: название приложения
-commission: комиссия за переводы (например, "0%%", "0.5%%", "1%%")
+app_name: название приложения (например, "Davr Mobile 2.0", "Paynet", "xazna", "Mavrid", "Milliy", "SQB Mobile", "Anorbank", "Uzum Bank", "AVO", "TBC UZ", "Payme", "Click Up", "Paylov", "A-Pay", "Limon Pay")
+commission: комиссия за переводы (например, "0%%", "0.5%%", "1%%", "0.6%%", "0.7%%")
 limit_ru: информация о лимитах на русском языке (null если не найдено)
-limit_uz: информация о лимитах на узбекском языке нужно взять из руского и перевести на узбекский (null если не найдено )
+limit_uz: информация о лимитах на узбекском языке (null если не найдено)
 
-Если лимиты не указаны в тексте, используй null вместо пустой строки.
-
-Найди ВСЕ приложения для переводов в тексте. Не пропускай ничего.
+Найди ВСЕ приложения для переводов в тексте. Обрати внимание на раздел "P2P переводы с карты на карту".
 
 Текст: "%s"
 Верни только JSON-массив.`, text)
@@ -83,40 +74,30 @@ limit_uz: информация о лимитах на узбекском язы�
 
 	apiKey := os.Getenv("DEEPSEEK_API_KEY")
 	if apiKey == "" {
-		log.Printf("[TRANSFER PARSER] ❌ DEEPSEEK_API_KEY не установлен")
 		return nil, fmt.Errorf("DeepSeek API key not set")
 	}
-	log.Printf("[TRANSFER PARSER] ✅ DEEPSEEK_API_KEY найден (длина: %d)", len(apiKey))
 
 	req.Header.Set("Authorization", "Bearer "+apiKey)
 
-	log.Printf("[TRANSFER PARSER] 🌐 Отправляем запрос к DeepSeek API...")
-	client := &http.Client{}
+	client := &http.Client{
+		Timeout: 30 * time.Second,
+	}
 	dsResp, err := client.Do(req)
 	if err != nil {
-		log.Printf("[TRANSFER PARSER] ❌ Ошибка HTTP запроса к DeepSeek: %v", err)
 		return nil, fmt.Errorf("ошибка вызова DeepSeek API: %v", err)
 	}
 	defer dsResp.Body.Close()
 
-	log.Printf("[TRANSFER PARSER] 📡 Статус ответа DeepSeek: %d", dsResp.StatusCode)
-
 	body, _ := ioutil.ReadAll(dsResp.Body)
-	log.Printf("[TRANSFER PARSER] 📄 Размер ответа DeepSeek: %d байт", len(body))
 
 	if dsResp.StatusCode != 200 {
-		log.Printf("[TRANSFER PARSER] ❌ Ошибка DeepSeek API (статус %d): %s", dsResp.StatusCode, string(body))
 		return nil, fmt.Errorf("DeepSeek API error (status %d): %s", dsResp.StatusCode, string(body))
 	}
 
 	var deepSeekResponse DeepSeekResponse
 	if err := json.Unmarshal(body, &deepSeekResponse); err != nil {
-		log.Printf("[TRANSFER PARSER] ❌ Ошибка парсинга JSON ответа DeepSeek: %v", err)
-		log.Printf("[TRANSFER PARSER] 📄 Сырой ответ: %s", string(body))
 		return nil, fmt.Errorf("ошибка парсинга ответа DeepSeek: %v", err)
 	}
-
-	log.Printf("[TRANSFER PARSER] 📊 Количество choices в ответе: %d", len(deepSeekResponse.Choices))
 
 	if len(deepSeekResponse.Choices) > 0 {
 		raw := deepSeekResponse.Choices[0].Message.Content
@@ -126,27 +107,18 @@ limit_uz: информация о лимитах на узбекском язы�
 		raw = strings.TrimSuffix(raw, "```")
 		raw = strings.TrimSpace(raw)
 
-		log.Printf("[TRANSFER PARSER] DeepSeek ответ для %s: %s", url, raw)
-		log.Printf("[TRANSFER PARSER] 📄 Длина ответа DeepSeek: %d символов", len(raw))
-
-		var parsedTransfers []*models.Transfer
-		if err := json.Unmarshal([]byte(raw), &parsedTransfers); err != nil {
-			log.Printf("[TRANSFER PARSER ERROR] Ошибка парсинга JSON для %s: %v, raw: %s", url, err, raw)
+		var transfers []*models.Transfer
+		if err := json.Unmarshal([]byte(raw), &transfers); err != nil {
 			return nil, fmt.Errorf("ошибка парсинга JSON: %v", err)
 		}
 
-		// Устанавливаем время создания для всех записей
-		for i, transfer := range parsedTransfers {
+		// Устанавливаем время создания для каждого перевода
+		for _, transfer := range transfers {
 			transfer.CreatedAt = time.Now()
-			log.Printf("[TRANSFER PARSER] 📝 Приложение %d: %s (комиссия: %s)", i+1, transfer.AppName, transfer.Commission)
+			tp.improveTransferData(transfer)
 		}
 
-		// Удаляем дубликаты и улучшаем данные
-		uniqueTransfers := tp.removeDuplicatesAndImprove(parsedTransfers)
-
-		log.Printf("[TRANSFER PARSER] ✅ Успешно спарсили %d приложений, после удаления дубликатов: %d", len(parsedTransfers), len(uniqueTransfers))
-
-		return uniqueTransfers, nil
+		return transfers, nil
 	}
 
 	return nil, fmt.Errorf("нет ответа от DeepSeek")
@@ -169,53 +141,11 @@ func (tp *TransferParser) cleanText(raw string) string {
 	clean = strings.TrimSpace(clean)
 
 	// Ограничиваем длину
-	if len(clean) > 20000 {
-		clean = clean[:20000]
+	if len(clean) > 8000 {
+		clean = clean[:8000]
 	}
 
 	return clean
-}
-
-// removeDuplicatesAndImprove удаляет дубликаты и улучшает данные
-func (tp *TransferParser) removeDuplicatesAndImprove(transfers []*models.Transfer) []*models.Transfer {
-	seen := make(map[string]bool)
-	var uniqueTransfers []*models.Transfer
-
-	for _, transfer := range transfers {
-		// Нормализуем название приложения
-		normalizedName := tp.normalizeAppName(transfer.AppName)
-
-		// Пропускаем дубликаты
-		if seen[normalizedName] {
-			log.Printf("[TRANSFER PARSER] 🔄 Пропускаем дубликат: %s", transfer.AppName)
-			continue
-		}
-
-		// Улучшаем данные
-		tp.improveTransferData(transfer)
-
-		// Добавляем в результат
-		uniqueTransfers = append(uniqueTransfers, transfer)
-		seen[normalizedName] = true
-	}
-
-	return uniqueTransfers
-}
-
-// normalizeAppName нормализует название приложения для сравнения
-func (tp *TransferParser) normalizeAppName(name string) string {
-	// Приводим к нижнему регистру
-	normalized := strings.ToLower(strings.TrimSpace(name))
-
-	// Удаляем лишние пробелы
-	normalized = strings.Join(strings.Fields(normalized), " ")
-
-	// Убираем общие суффиксы
-	normalized = strings.TrimSuffix(normalized, " mobile")
-	normalized = strings.TrimSuffix(normalized, " bank")
-	normalized = strings.TrimSuffix(normalized, " pay")
-
-	return normalized
 }
 
 // improveTransferData улучшает данные перевода

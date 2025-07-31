@@ -21,6 +21,8 @@ tags:
     description: API для получения информации о переводах между приложениями
   - name: Currencies
     description: API для получения курсов валют от банков
+  - name: Mortgages
+    description: API для получения ипотечных кредитов от банков
 paths:
   /auth/register:
     post:
@@ -1645,6 +1647,242 @@ paths:
                     type: string
                     example: "Failed to parse transfer: error details"
 
+  /mortgages/new:
+    get:
+      tags: [Mortgages]
+      summary: Получить новые ипотечные кредиты
+      description: Возвращает список новых ипотечных кредитов с пагинацией и сортировкой
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы
+          required: false
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          description: Количество записей на странице
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+        - name: sortBy
+          in: query
+          description: Поле для сортировки
+          required: false
+          schema:
+            type: string
+            enum: [bank_name, rate_max, rate_min, term_years, max_amount, initial_payment, created_at]
+            default: created_at
+        - name: sortOrder
+          in: query
+          description: Порядок сортировки
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MortgageData'
+                  pagination:
+                    $ref: '#/components/schemas/PaginationInfo'
+              example:
+                data:
+                  - id: 1
+                    bank_name: "Infin Bank"
+                    rate_max: 18.5
+                    rate_min: 15.0
+                    term_years: 20
+                    max_amount: 500
+                    initial_payment: 20
+                    url: "https://www.infinbank.com/ru/private/credits/ipoteka/"
+                    created_at: "2024-01-15T10:30:00Z"
+                  - id: 2
+                    bank_name: "SQB Bank"
+                    rate_max: 19.0
+                    rate_min: 16.0
+                    term_years: 25
+                    max_amount: 800
+                    initial_payment: 15
+                    url: "https://sqb.uz/individuals/credits/ipoteka-ru/"
+                    created_at: "2024-01-15T10:30:00Z"
+                pagination:
+                  page: 1
+                  limit: 10
+                  total: 25
+                  totalPages: 3
+        '400':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid parameters"
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal server error"
+
+  /mortgages/old:
+    get:
+      tags: [Mortgages]
+      summary: Получить старые ипотечные кредиты
+      description: Возвращает список старых ипотечных кредитов с пагинацией и сортировкой
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы
+          required: false
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          description: Количество записей на странице
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+        - name: sortBy
+          in: query
+          description: Поле для сортировки
+          required: false
+          schema:
+            type: string
+            enum: [bank_name, rate_max, rate_min, term_years, max_amount, initial_payment, created_at]
+            default: created_at
+        - name: sortOrder
+          in: query
+          description: Порядок сортировки
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MortgageData'
+                  pagination:
+                    $ref: '#/components/schemas/PaginationInfo'
+        '400':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid parameters"
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal server error"
+
+  /parse-mortgage:
+    get:
+      tags: [Parser]
+      summary: Парсинг ипотеки
+      description: Парсит информацию об ипотечном кредите с указанного URL
+      parameters:
+        - name: url
+          in: query
+          description: URL страницы для парсинга
+          required: true
+          schema:
+            type: string
+            format: uri
+      responses:
+        '200':
+          description: Успешный парсинг
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Mortgage parsed successfully"
+                  data:
+                    $ref: '#/components/schemas/MortgageData'
+                  success:
+                    type: boolean
+                    example: true
+              example:
+                message: "Mortgage parsed successfully"
+                data:
+                  id: 0
+                  bank_name: "Infin Bank"
+                  rate_max: 18.5
+                  rate_min: 15.0
+                  term_years: 20
+                  max_amount: 500
+                  initial_payment: 20
+                  url: "https://www.infinbank.com/ru/private/credits/ipoteka/"
+                  created_at: "2024-01-15T10:30:00Z"
+                success: true
+        '400':
+          description: Отсутствует URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "url parameter is required"
+        '500':
+          description: Ошибка парсинга
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Failed to parse mortgage: error details"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -2026,6 +2264,73 @@ components:
           description: Дата создания записи
           example: "2024-01-25T20:00:00Z"
       required: [id, app_name, commission, limit_ru, limit_uz, created_at]
+    MortgageData:
+      type: object
+      description: Структура данных ипотечного кредита
+      properties:
+        id:
+          type: integer
+          description: Уникальный идентификатор
+          example: 1
+        bank_name:
+          type: string
+          description: Название банка
+          example: "Infin Bank"
+        rate_max:
+          type: number
+          format: double
+          description: Максимальная процентная ставка
+          example: 18.5
+        rate_min:
+          type: number
+          format: double
+          description: Минимальная процентная ставка
+          example: 15.0
+        term_years:
+          type: integer
+          description: Срок кредита в годах
+          example: 20
+        max_amount:
+          type: number
+          format: double
+          description: Максимальная сумма кредита (в миллионах)
+          example: 500
+        initial_payment:
+          type: number
+          format: double
+          description: Первоначальный взнос в процентах
+          example: 20
+        url:
+          type: string
+          description: URL источника данных
+          example: "https://www.infinbank.com/ru/private/credits/ipoteka/"
+        created_at:
+          type: string
+          format: date-time
+          description: Дата создания записи
+          example: "2024-01-15T10:30:00Z"
+      required: [id, bank_name, rate_max, rate_min, term_years, max_amount, initial_payment, url, created_at]
+    PaginationInfo:
+      type: object
+      description: Информация о пагинации
+      properties:
+        page:
+          type: integer
+          description: Номер текущей страницы
+          example: 1
+        limit:
+          type: integer
+          description: Количество записей на странице
+          example: 10
+        total:
+          type: integer
+          description: Общее количество записей
+          example: 25
+        totalPages:
+          type: integer
+          description: Общее количество страниц
+          example: 3
+      required: [page, limit, total, totalPages]
     Sort:
       type: object
       description: Параметры сортировки
