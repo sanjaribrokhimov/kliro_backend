@@ -1739,11 +1739,6 @@ paths:
                     type: boolean
                     description: Успешность операции
                     example: true
-                  error:
-                    type: string
-                    nullable: true
-                    description: Сообщение об ошибке
-                    example: null
               example:
                 result:
                   totalPages: 3
@@ -1774,7 +1769,6 @@ paths:
                   numberOfElements: 10
                   empty: false
                 success: true
-                error: null
         '400':
           description: Ошибка валидации
           content:
@@ -1888,11 +1882,6 @@ paths:
                     type: boolean
                     description: Успешность операции
                     example: true
-                  error:
-                    type: string
-                    nullable: true
-                    description: Сообщение об ошибке
-                    example: null
         '400':
           description: Ошибка валидации
           content:
@@ -1956,7 +1945,6 @@ paths:
                   url: "https://www.infinbank.com/ru/private/credits/ipoteka/"
                   created_at: "2024-01-15T10:30:00Z"
                 success: true
-                error: null
         '400':
           description: Отсутствует URL
           content:

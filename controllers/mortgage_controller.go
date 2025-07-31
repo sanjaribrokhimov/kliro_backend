@@ -75,7 +75,6 @@ func getMortgagesWithPagination(c *gin.Context, db *gorm.DB, tableName string) {
 			"empty":            len(mortgages) == 0,
 		},
 		"success": true,
-		"error":   nil,
 	}
 
 	c.JSON(http.StatusOK, response)

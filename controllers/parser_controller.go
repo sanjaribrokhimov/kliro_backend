@@ -538,7 +538,6 @@ func (pc *ParserController) ParseMortgagePage(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"result":  mortgage,
 		"success": true,
-		"error":   nil,
 	})
 }
 
