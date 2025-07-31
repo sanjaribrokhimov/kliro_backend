@@ -59,15 +59,23 @@ func getMortgagesWithPagination(c *gin.Context, db *gorm.DB, tableName string) {
 
 	query.Offset(offset).Limit(limit).Find(&mortgages)
 
-	// Формируем ответ
+	// Формируем ответ в стандартном формате
+	totalPages := (total + int64(limit) - 1) / int64(limit)
+
 	response := gin.H{
-		"data": mortgages,
-		"pagination": gin.H{
-			"page":       page,
-			"limit":      limit,
-			"total":      total,
-			"totalPages": (total + int64(limit) - 1) / int64(limit),
+		"result": gin.H{
+			"totalPages":       totalPages,
+			"totalElements":    total,
+			"first":            page == 1,
+			"last":             page >= int(totalPages),
+			"size":             limit,
+			"content":          mortgages,
+			"number":           page - 1, // Spring Boot использует 0-based индексацию
+			"numberOfElements": len(mortgages),
+			"empty":            len(mortgages) == 0,
 		},
+		"success": true,
+		"error":   nil,
 	}
 
 	c.JSON(http.StatusOK, response)

@@ -1688,43 +1688,93 @@ paths:
             default: desc
       responses:
         '200':
-          description: Успешный ответ
+          description: Успешный ответ с пагинированными данными
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/MortgageData'
-                  pagination:
-                    $ref: '#/components/schemas/PaginationInfo'
+                  result:
+                    type: object
+                    properties:
+                      totalPages:
+                        type: integer
+                        description: Общее количество страниц
+                        example: 3
+                      totalElements:
+                        type: integer
+                        format: int64
+                        description: Общее количество элементов
+                        example: 25
+                      first:
+                        type: boolean
+                        description: Первая ли это страница
+                        example: true
+                      last:
+                        type: boolean
+                        description: Последняя ли это страница
+                        example: false
+                      size:
+                        type: integer
+                        description: Размер страницы
+                        example: 10
+                      content:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/MortgageData'
+                        description: Массив ипотечных кредитов
+                      number:
+                        type: integer
+                        description: Номер текущей страницы
+                        example: 0
+                      numberOfElements:
+                        type: integer
+                        description: Количество элементов на текущей странице
+                        example: 10
+                      empty:
+                        type: boolean
+                        description: Пустой ли результат
+                        example: false
+                  success:
+                    type: boolean
+                    description: Успешность операции
+                    example: true
+                  error:
+                    type: string
+                    nullable: true
+                    description: Сообщение об ошибке
+                    example: null
               example:
-                data:
-                  - id: 1
-                    bank_name: "Infin Bank"
-                    rate_max: 18.5
-                    rate_min: 15.0
-                    term_years: 20
-                    max_amount: 500
-                    initial_payment: 20
-                    url: "https://www.infinbank.com/ru/private/credits/ipoteka/"
-                    created_at: "2024-01-15T10:30:00Z"
-                  - id: 2
-                    bank_name: "SQB Bank"
-                    rate_max: 19.0
-                    rate_min: 16.0
-                    term_years: 25
-                    max_amount: 800
-                    initial_payment: 15
-                    url: "https://sqb.uz/individuals/credits/ipoteka-ru/"
-                    created_at: "2024-01-15T10:30:00Z"
-                pagination:
-                  page: 1
-                  limit: 10
-                  total: 25
+                result:
                   totalPages: 3
+                  totalElements: 25
+                  first: true
+                  last: false
+                  size: 10
+                  content:
+                    - id: 1
+                      bank_name: "Infin Bank"
+                      rate_max: 18.5
+                      rate_min: 15.0
+                      term_years: 20
+                      max_amount: 500
+                      initial_payment: 20
+                      url: "https://www.infinbank.com/ru/private/credits/ipoteka/"
+                      created_at: "2024-01-15T10:30:00Z"
+                    - id: 2
+                      bank_name: "SQB Bank"
+                      rate_max: 19.0
+                      rate_min: 16.0
+                      term_years: 25
+                      max_amount: 800
+                      initial_payment: 15
+                      url: "https://sqb.uz/individuals/credits/ipoteka-ru/"
+                      created_at: "2024-01-15T10:30:00Z"
+                  number: 0
+                  numberOfElements: 10
+                  empty: false
+                success: true
+                error: null
         '400':
           description: Ошибка валидации
           content:
@@ -1787,18 +1837,62 @@ paths:
             default: desc
       responses:
         '200':
-          description: Успешный ответ
+          description: Успешный ответ с пагинированными данными
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/MortgageData'
-                  pagination:
-                    $ref: '#/components/schemas/PaginationInfo'
+                  result:
+                    type: object
+                    properties:
+                      totalPages:
+                        type: integer
+                        description: Общее количество страниц
+                        example: 3
+                      totalElements:
+                        type: integer
+                        format: int64
+                        description: Общее количество элементов
+                        example: 25
+                      first:
+                        type: boolean
+                        description: Первая ли это страница
+                        example: true
+                      last:
+                        type: boolean
+                        description: Последняя ли это страница
+                        example: false
+                      size:
+                        type: integer
+                        description: Размер страницы
+                        example: 10
+                      content:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/MortgageData'
+                        description: Массив ипотечных кредитов
+                      number:
+                        type: integer
+                        description: Номер текущей страницы
+                        example: 0
+                      numberOfElements:
+                        type: integer
+                        description: Количество элементов на текущей странице
+                        example: 10
+                      empty:
+                        type: boolean
+                        description: Пустой ли результат
+                        example: false
+                  success:
+                    type: boolean
+                    description: Успешность операции
+                    example: true
+                  error:
+                    type: string
+                    nullable: true
+                    description: Сообщение об ошибке
+                    example: null
         '400':
           description: Ошибка валидации
           content:
@@ -1841,17 +1935,17 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
-                    type: string
-                    example: "Mortgage parsed successfully"
-                  data:
+                  result:
                     $ref: '#/components/schemas/MortgageData'
                   success:
                     type: boolean
                     example: true
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
               example:
-                message: "Mortgage parsed successfully"
-                data:
+                result:
                   id: 0
                   bank_name: "Infin Bank"
                   rate_max: 18.5
@@ -1862,6 +1956,7 @@ paths:
                   url: "https://www.infinbank.com/ru/private/credits/ipoteka/"
                   created_at: "2024-01-15T10:30:00Z"
                 success: true
+                error: null
         '400':
           description: Отсутствует URL
           content:
@@ -2310,27 +2405,6 @@ components:
           description: Дата создания записи
           example: "2024-01-15T10:30:00Z"
       required: [id, bank_name, rate_max, rate_min, term_years, max_amount, initial_payment, url, created_at]
-    PaginationInfo:
-      type: object
-      description: Информация о пагинации
-      properties:
-        page:
-          type: integer
-          description: Номер текущей страницы
-          example: 1
-        limit:
-          type: integer
-          description: Количество записей на странице
-          example: 10
-        total:
-          type: integer
-          description: Общее количество записей
-          example: 25
-        totalPages:
-          type: integer
-          description: Общее количество страниц
-          example: 3
-      required: [page, limit, total, totalPages]
     Sort:
       type: object
       description: Параметры сортировки
