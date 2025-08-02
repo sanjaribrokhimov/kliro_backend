@@ -11,30 +11,25 @@ import (
 )
 
 var mortgageURLs = []string{
-	"https://ru.ipakyulibank.uz/physical/kredity/ipoteka/ipoteka-nrg",
-	"https://xb.uz/page/farovon-hayot-ipoteka-kredit",
-	"https://asakabank.uz/ru/physical-persons/credits/ipoteka",
 	"https://ofb.uz/credits/vygodnaya-ipoteka/",
-	"https://sqb.uz/individuals/ipoteka/hamkor-ipoteka-kredit-ru/",
+	"https://hamkorbank.uz/physical/mortgage/uzbekistan-mortgage-criuz/",
+	"https://ru.ipakyulibank.uz/physical/kredity/ipoteka/ipoteka-24",
+	"https://www.ipotekabank.uz/about/landing_maqul/",
 	"https://aloqabank.uz/ru/private/crediting/ipoteka-secondary/",
-	"https://hamkorbank.uz/physical/mortgage/uzbekistan-mortgage-criuz/?utm_campaign=uzbekistan-mortgage-criuz_ru_product_catalog_button&utm_term=1111129",
-	"https://asakabank.uz/ru/physical-persons/credits/ipoteka",
-	"https://xb.uz/page/ipoteka",
-	"https://agrobank.uz/ru/person/loans/mortgage",
 }
 
 // Функция для парсинга одного URL
 func parseMortgageURL(url string, logger *log.Logger) *models.Mortgage {
 	// Парсим напрямую, без обращения к API
 	parser := NewMortgageParser()
-	mortgage, err := parser.ParseURL(url)
+	credit, err := parser.ParseURL(url)
 	if err != nil {
 		logger.Printf("Ошибка парсинга %s: %v", url, err)
 		return nil
 	}
 
-	mortgage.CreatedAt = time.Now()
-	return mortgage
+	credit.CreatedAt = time.Now()
+	return credit
 }
 
 // Инициализация данных (первый запуск)
@@ -52,9 +47,9 @@ func InitializeMortgageData(db *gorm.DB) {
 
 		// Парсим все URL'ы и сохраняем в обе таблицы
 		for _, url := range mortgageURLs {
-			if mortgage := parseMortgageURL(url, logger); mortgage != nil {
-				db.Table("new_mortgage").Create(mortgage)
-				db.Table("old_mortgage").Create(mortgage)
+			if credit := parseMortgageURL(url, logger); credit != nil {
+				db.Table("new_mortgage").Create(credit)
+				db.Table("old_mortgage").Create(credit)
 			}
 		}
 
@@ -81,13 +76,13 @@ func StartMortgageCron(db *gorm.DB) {
 
 		// Парсим все URL'ы заново
 		for _, url := range mortgageURLs {
-			if mortgage := parseMortgageURL(url, logger); mortgage != nil {
-				db.Table("new_mortgage").Create(mortgage)
+			if credit := parseMortgageURL(url, logger); credit != nil {
+				db.Table("new_mortgage").Create(credit)
 			}
 		}
 
 		logger.Printf("Парсинг mortgage каждые 3 дня завершен")
 	})
 	c.Start()
-	log.Printf("[MORTGAGE CRON] Планировщик запущен. Парсинг ипотеки будет выполняться каждые 3 дня в 20:00 UTC")
+	log.Printf("[MORTGAGE CRON] Планировщик запущен. Парсинг будет выполняться каждые 3 дня в 20:00 UTC")
 }

@@ -533,7 +533,7 @@ func (pc *ParserController) ParseMortgagePage(c *gin.Context) {
 		return
 	}
 
-	log.Printf("[PARSER CONTROLLER] ✅ Ипотека спарсена: %s (%.1f%%-%.1f%%)", mortgage.BankName, mortgage.RateMin, mortgage.RateMax)
+	log.Printf("[PARSER CONTROLLER] ✅ Ипотека спарсена: %s (%.1f%%)", mortgage.BankName, mortgage.Rate)
 
 	c.JSON(http.StatusOK, gin.H{
 		"result":  mortgage,

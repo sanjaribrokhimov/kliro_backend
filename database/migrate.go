@@ -146,8 +146,7 @@ func Migrate(db *gorm.DB) error {
 		CREATE TABLE IF NOT EXISTS new_mortgage (
 			id SERIAL PRIMARY KEY,
 			bank_name VARCHAR(255),
-			rate_max DECIMAL(5,2),
-			rate_min DECIMAL(5,2),
+			rate DECIMAL(5,2),
 			term_years INTEGER,
 			max_amount DECIMAL(15,2),
 			initial_payment DECIMAL(15,2),
@@ -162,8 +161,7 @@ func Migrate(db *gorm.DB) error {
 		CREATE TABLE IF NOT EXISTS old_mortgage (
 			id SERIAL PRIMARY KEY,
 			bank_name VARCHAR(255),
-			rate_max DECIMAL(5,2),
-			rate_min DECIMAL(5,2),
+			rate DECIMAL(5,2),
 			term_years INTEGER,
 			max_amount DECIMAL(15,2),
 			initial_payment DECIMAL(15,2),
