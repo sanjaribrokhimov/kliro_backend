@@ -1839,13 +1839,51 @@ paths:
               schema:
                 type: object
                 properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/DepositData'
-                    description: Массив банковских вкладов
-                  pagination:
-                    $ref: '#/components/schemas/Pagination'
+                  result:
+                    type: object
+                    properties:
+                      totalPages:
+                        type: integer
+                        description: Общее количество страниц
+                        example: 3
+                      totalElements:
+                        type: integer
+                        format: int64
+                        description: Общее количество элементов
+                        example: 25
+                      first:
+                        type: boolean
+                        description: Первая ли это страница
+                        example: true
+                      last:
+                        type: boolean
+                        description: Последняя ли это страница
+                        example: false
+                      size:
+                        type: integer
+                        description: Размер страницы
+                        example: 10
+                      content:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/DepositData'
+                        description: Массив банковских вкладов
+                      number:
+                        type: integer
+                        description: Номер текущей страницы
+                        example: 0
+                      numberOfElements:
+                        type: integer
+                        description: Количество элементов на текущей странице
+                        example: 10
+                      empty:
+                        type: boolean
+                        description: Пустой ли результат
+                        example: false
+                  success:
+                    type: boolean
+                    description: Успешность операции
+                    example: true
         '400':
           description: Ошибка валидации
           content:
@@ -1914,13 +1952,51 @@ paths:
               schema:
                 type: object
                 properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/DepositData'
-                    description: Массив банковских вкладов
-                  pagination:
-                    $ref: '#/components/schemas/Pagination'
+                  result:
+                    type: object
+                    properties:
+                      totalPages:
+                        type: integer
+                        description: Общее количество страниц
+                        example: 3
+                      totalElements:
+                        type: integer
+                        format: int64
+                        description: Общее количество элементов
+                        example: 25
+                      first:
+                        type: boolean
+                        description: Первая ли это страница
+                        example: true
+                      last:
+                        type: boolean
+                        description: Последняя ли это страница
+                        example: false
+                      size:
+                        type: integer
+                        description: Размер страницы
+                        example: 10
+                      content:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/DepositData'
+                        description: Массив банковских вкладов
+                      number:
+                        type: integer
+                        description: Номер текущей страницы
+                        example: 0
+                      numberOfElements:
+                        type: integer
+                        description: Количество элементов на текущей странице
+                        example: 10
+                      empty:
+                        type: boolean
+                        description: Пустой ли результат
+                        example: false
+                  success:
+                    type: boolean
+                    description: Успешность операции
+                    example: true
         '400':
           description: Ошибка валидации
           content:
