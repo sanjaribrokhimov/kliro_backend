@@ -23,6 +23,8 @@ tags:
     description: API для получения курсов валют от банков
   - name: Mortgages
     description: API для получения ипотечных кредитов от банков
+  - name: Deposits
+    description: API для получения банковских вкладов
 paths:
   /auth/register:
     post:
@@ -1790,6 +1792,156 @@ paths:
                     type: string
                     example: "Internal server error"
 
+  /deposits/new:
+    get:
+      tags: [Deposits]
+      summary: Получить новые банковские вклады
+      description: Возвращает список новых банковских вкладов с пагинацией и сортировкой
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы
+          required: false
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          description: Количество записей на странице
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+        - name: sortBy
+          in: query
+          description: Поле для сортировки
+          required: false
+          schema:
+            type: string
+            enum: [bank_name, rate, term_years, min_amount, title, created_at]
+            default: created_at
+        - name: sortOrder
+          in: query
+          description: Порядок сортировки
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: Успешный ответ с пагинированными данными
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DepositData'
+                    description: Массив банковских вкладов
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid parameters"
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal server error"
+
+  /deposits/old:
+    get:
+      tags: [Deposits]
+      summary: Получить старые банковские вклады
+      description: Возвращает список старых банковских вкладов с пагинацией и сортировкой
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы
+          required: false
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          description: Количество записей на странице
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+        - name: sortBy
+          in: query
+          description: Поле для сортировки
+          required: false
+          schema:
+            type: string
+            enum: [bank_name, rate, term_years, min_amount, title, created_at]
+            default: created_at
+        - name: sortOrder
+          in: query
+          description: Порядок сортировки
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: Успешный ответ с пагинированными данными
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DepositData'
+                    description: Массив банковских вкладов
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid parameters"
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal server error"
+
   /mortgages/old:
     get:
       tags: [Mortgages]
@@ -2393,6 +2545,40 @@ components:
           description: Дата создания записи
           example: "2024-01-15T10:30:00Z"
       required: [id, bank_name, rate_max, rate_min, term_years, max_amount, initial_payment, url, created_at]
+    DepositData:
+      type: object
+      description: Структура данных банковского вклада
+      properties:
+        id:
+          type: integer
+          description: Уникальный идентификатор
+          example: 1
+        bank_name:
+          type: string
+          description: Название банка
+          example: "Anorbank"
+        rate:
+          type: string
+          description: Процентная ставка
+          example: "23 %"
+        term_years:
+          type: string
+          description: Срок вклада
+          example: "2 yil"
+        min_amount:
+          type: string
+          description: Минимальная сумма вклада
+          example: "500 000 so'mdan"
+        title:
+          type: string
+          description: Название вклада
+          example: "Baraka omonati"
+        created_at:
+          type: string
+          format: date-time
+          description: Дата создания записи
+          example: "2024-01-15T10:30:00Z"
+      required: [id, bank_name, rate, term_years, min_amount, title, created_at]
     Sort:
       type: object
       description: Параметры сортировки

@@ -5,11 +5,11 @@ import (
 )
 
 type Deposit struct {
-	ID         uint      `gorm:"primaryKey;table:new_deposit" json:"id"`
-	BankName   string    `json:"bank_name"`
-	Rate       float64   `json:"rate"`
-	TermMonths int       `json:"term_months"`
-	MinAmount  float64   `json:"min_amount"`
-	URL        string    `json:"url"`
-	CreatedAt  time.Time `json:"created_at"`
+	ID        uint      `gorm:"primaryKey;table:new_deposit" json:"id"`
+	BankName  string    `json:"bank_name"`
+	Rate      string   `json:"rate"`
+	TermYears string     `json:"term_years"`
+	MinAmount string   `json:"min_amount"`
+	Title     string    `json:"title"`
+	CreatedAt time.Time `json:"created_at"`
 }

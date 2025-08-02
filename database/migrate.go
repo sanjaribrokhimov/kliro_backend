@@ -1,6 +1,7 @@
 package database
 
 import (
+	"kliro/migrations"
 	"kliro/models"
 
 	"gorm.io/gorm"
@@ -177,10 +178,10 @@ func Migrate(db *gorm.DB) error {
 		CREATE TABLE IF NOT EXISTS new_deposit (
 			id SERIAL PRIMARY KEY,
 			bank_name VARCHAR(255),
-			rate DECIMAL(5,2),
-			term_months INTEGER,
-			min_amount DECIMAL(15,2),
-			url TEXT,
+			rate TEXT,
+			term_years TEXT,
+			min_amount TEXT,
+			title TEXT,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		)
 	`).Error; err != nil {
@@ -191,10 +192,10 @@ func Migrate(db *gorm.DB) error {
 		CREATE TABLE IF NOT EXISTS old_deposit (
 			id SERIAL PRIMARY KEY,
 			bank_name VARCHAR(255),
-			rate DECIMAL(5,2),
-			term_months INTEGER,
-			min_amount DECIMAL(15,2),
-			url TEXT,
+			rate TEXT,
+			term_years TEXT,
+			min_amount TEXT,
+			title TEXT,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		)
 	`).Error; err != nil {
@@ -212,6 +213,11 @@ func Migrate(db *gorm.DB) error {
 		return err
 	}
 	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_old_deposit_bank_name ON old_deposit(bank_name)`).Error; err != nil {
+		return err
+	}
+
+	// Обновляем таблицы вкладов с новой структурой
+	if err := migrations.UpdateDepositTables(db); err != nil {
 		return err
 	}
 

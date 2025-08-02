@@ -548,22 +548,21 @@ func (pc *ParserController) ParseDepositPage(c *gin.Context) {
 		return
 	}
 
-	log.Printf("[PARSER CONTROLLER] 💰 Начинаем парсинг вклада для URL: %s", url)
+	log.Printf("[PARSER CONTROLLER] 💰 Начинаем парсинг вкладов для URL: %s", url)
 
 	// Используем deposit parser
 	parser := services.NewDepositParser()
-	deposit, err := parser.ParseURL(url)
+	deposits, err := parser.ParseURL(url)
 	if err != nil {
-		log.Printf("[PARSER CONTROLLER] ❌ Ошибка парсинга вклада: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to parse deposit: %v", err)})
+		log.Printf("[PARSER CONTROLLER] ❌ Ошибка парсинга вкладов: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to parse deposits: %v", err)})
 		return
 	}
 
-	log.Printf("[PARSER CONTROLLER] ✅ Вклад спарсен: %s (%.1f%%)", deposit.BankName, deposit.Rate)
+	log.Printf("[PARSER CONTROLLER] ✅ Спарсено вкладов: %d", len(deposits))
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Deposit parsed successfully",
-		"data":    deposit,
+		"result":  deposits,
 		"success": true,
 	})
 }

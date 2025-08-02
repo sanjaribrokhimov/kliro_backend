@@ -11,30 +11,37 @@ import (
 )
 
 var depositURLs = []string{
-	"https://www.infinbank.com/ru/private/deposits/",
-	"https://sqb.uz/individuals/deposits/",
-	"https://aab.uz/ru/private/deposits/",
-	"https://mkbank.uz/ru/private/deposits/",
-	"https://trustbank.uz/ru/private/deposits/",
-	"https://hamkorbank.uz/physical/deposits/",
-	"https://ru.ipakyulibank.uz/physical/vklady/",
-	"https://asakabank.uz/ru/physical-persons/deposits/",
-	"https://xb.uz/page/vklady",
-	"https://turonbank.uz/ru/private/deposits/",
+	"https://bank.uz/uz/deposits",
+	"https://bank.uz/uz/deposits?PAGEN_4=2",
+	"https://bank.uz/uz/deposits?PAGEN_4=3",
+	"https://bank.uz/uz/deposits?PAGEN_4=4",
+	"https://bank.uz/uz/deposits?PAGEN_4=5",
+	"https://bank.uz/uz/deposits?PAGEN_4=6",
+	"https://bank.uz/uz/deposits?PAGEN_4=7",
+	"https://bank.uz/uz/deposits?PAGEN_4=8",
+	"https://bank.uz/uz/deposits?PAGEN_4=9",
+	"https://bank.uz/uz/deposits?PAGEN_4=10",
+	"https://bank.uz/uz/deposits?PAGEN_4=11",
+	"https://bank.uz/uz/deposits?PAGEN_4=12",
+	"https://bank.uz/uz/deposits?PAGEN_4=13",
+
 }
 
 // Функция для парсинга одного URL
-func parseDepositURL(url string, logger *log.Logger) *models.Deposit {
+func parseDepositURL(url string, logger *log.Logger) []*models.Deposit {
 	// Парсим напрямую, без обращения к API
 	parser := NewDepositParser()
-	deposit, err := parser.ParseURL(url)
+	deposits, err := parser.ParseURL(url)
 	if err != nil {
 		logger.Printf("Ошибка парсинга %s: %v", url, err)
 		return nil
 	}
 
-	deposit.CreatedAt = time.Now()
-	return deposit
+	// Устанавливаем время создания для всех вкладов
+	for _, deposit := range deposits {
+		deposit.CreatedAt = time.Now()
+	}
+	return deposits
 }
 
 // Инициализация данных (первый запуск)
@@ -43,23 +50,23 @@ func InitializeDepositData(db *gorm.DB) {
 	logger := log.New(logFile, "", log.LstdFlags)
 	defer logFile.Close()
 
-	// Проверяем, есть ли данные в таблицах
-	var count int64
-	db.Table("new_deposit").Count(&count)
+	logger.Printf("Инициализация данных deposit - очищаем базу и парсим заново...")
 
-	if count == 0 {
-		logger.Printf("Инициализация данных deposit - таблицы пустые, парсим все сайты...")
+	// Очищаем обе таблицы
+	db.Exec("TRUNCATE new_deposit")
+	db.Exec("TRUNCATE old_deposit")
 
-		// Парсим все URL'ы и сохраняем в обе таблицы
-		for _, url := range depositURLs {
-			if deposit := parseDepositURL(url, logger); deposit != nil {
+	// Парсим все URL'ы и сохраняем в обе таблицы
+	for _, url := range depositURLs {
+		if deposits := parseDepositURL(url, logger); deposits != nil {
+			for _, deposit := range deposits {
 				db.Table("new_deposit").Create(deposit)
 				db.Table("old_deposit").Create(deposit)
 			}
 		}
-
-		logger.Printf("Инициализация завершена - заполнены таблицы new_deposit и old_deposit")
 	}
+
+	logger.Printf("Инициализация завершена - заполнены таблицы new_deposit и old_deposit")
 }
 
 func StartDepositCron(db *gorm.DB) {
@@ -67,12 +74,12 @@ func StartDepositCron(db *gorm.DB) {
 	InitializeDepositData(db)
 
 	c := cron.New()
-	c.AddFunc("0 0 20 */3 * *", func() {
+	c.AddFunc("0 0 2 * * *", func() { // Каждый день в 02:00 UTC (ночь)
 		logFile, _ := os.OpenFile("logs/parser_errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		logger := log.New(logFile, "", log.LstdFlags)
 		defer logFile.Close()
 
-		logger.Printf("Начало парсинга deposit каждые 3 дня...")
+		logger.Printf("Начало ежедневного парсинга deposit...")
 
 		// Копируем new_deposit в old_deposit
 		db.Exec("TRUNCATE old_deposit")
@@ -81,13 +88,15 @@ func StartDepositCron(db *gorm.DB) {
 
 		// Парсим все URL'ы заново
 		for _, url := range depositURLs {
-			if deposit := parseDepositURL(url, logger); deposit != nil {
-				db.Table("new_deposit").Create(deposit)
+			if deposits := parseDepositURL(url, logger); deposits != nil {
+				for _, deposit := range deposits {
+					db.Table("new_deposit").Create(deposit)
+				}
 			}
 		}
 
-		logger.Printf("Парсинг deposit каждые 3 дня завершен")
+		logger.Printf("Ежедневный парсинг deposit завершен")
 	})
 	c.Start()
-	log.Printf("[DEPOSIT CRON] Планировщик запущен. Парсинг вкладов будет выполняться каждые 3 дня в 20:00 UTC")
+	log.Printf("[DEPOSIT CRON] Планировщик запущен. Парсинг вкладов будет выполняться каждый день в 02:00 UTC")
 }
