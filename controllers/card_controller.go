@@ -10,39 +10,39 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type DepositController struct{}
+type CardController struct{}
 
-func NewDepositController() *DepositController {
-	return &DepositController{}
+func NewCardController() *CardController {
+	return &CardController{}
 }
 
-// DepositResponseByPagination структура ответа с пагинацией для вкладов
-type DepositResponseByPagination struct {
-	TotalPages       int              `json:"totalPages"`
-	TotalElements    int64            `json:"totalElements"`
-	First            bool             `json:"first"`
-	Last             bool             `json:"last"`
-	Size             int              `json:"size"`
-	Content          []models.Deposit `json:"content"`
-	Number           int              `json:"number"`
-	Sort             []Sort           `json:"sort"`
-	NumberOfElements int              `json:"numberOfElements"`
-	Pageable         Pageable         `json:"pageable"`
-	Empty            bool             `json:"empty"`
+// CardResponseByPagination структура ответа с пагинацией для карт
+type CardResponseByPagination struct {
+	TotalPages       int           `json:"totalPages"`
+	TotalElements    int64         `json:"totalElements"`
+	First            bool          `json:"first"`
+	Last             bool          `json:"last"`
+	Size             int           `json:"size"`
+	Content          []models.Card `json:"content"`
+	Number           int           `json:"number"`
+	Sort             []Sort        `json:"sort"`
+	NumberOfElements int           `json:"numberOfElements"`
+	Pageable         Pageable      `json:"pageable"`
+	Empty            bool          `json:"empty"`
 }
 
-// GetNewDeposits godoc
-func (dc *DepositController) GetNewDeposits(c *gin.Context) {
-	dc.getDepositsWithPagination(c, "new_deposit")
+// GetNewCards godoc
+func (cc *CardController) GetNewCards(c *gin.Context) {
+	cc.getCardsWithPagination(c, "new_card")
 }
 
-// GetOldDeposits godoc
-func (dc *DepositController) GetOldDeposits(c *gin.Context) {
-	dc.getDepositsWithPagination(c, "old_deposit")
+// GetOldCards godoc
+func (cc *CardController) GetOldCards(c *gin.Context) {
+	cc.getCardsWithPagination(c, "old_card")
 }
 
-// getDepositsWithPagination общая функция для получения вкладов с пагинацией
-func (dc *DepositController) getDepositsWithPagination(c *gin.Context, tableName string) {
+// getCardsWithPagination общая функция для получения карт с пагинацией и фильтрацией
+func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName string) {
 	db := utils.GetDB()
 
 	// Параметры пагинации
@@ -50,6 +50,10 @@ func (dc *DepositController) getDepositsWithPagination(c *gin.Context, tableName
 	size, _ := strconv.Atoi(c.DefaultQuery("size", "10"))
 	sortBy := c.DefaultQuery("sort", "bank_name")
 	sortDir := c.DefaultQuery("direction", "asc")
+
+	// Параметры фильтрации
+	currency := c.Query("currency")
+	system := c.Query("system")
 
 	// Валидация параметров
 	if page < 0 {
@@ -59,9 +63,19 @@ func (dc *DepositController) getDepositsWithPagination(c *gin.Context, tableName
 		size = 10
 	}
 
-	// Подсчет общего количества записей
+	// Подсчет общего количества записей с фильтрацией
 	var totalElements int64
-	db.Table(tableName).Count(&totalElements)
+	query := db.Table(tableName)
+
+	// Применение фильтров
+	if currency != "" {
+		query = query.Where("currency ILIKE ?", "%"+currency+"%")
+	}
+	if system != "" {
+		query = query.Where("system ILIKE ?", "%"+system+"%")
+	}
+
+	query.Count(&totalElements)
 
 	// Вычисление пагинации
 	totalPages := int((totalElements + int64(size) - 1) / int64(size))
@@ -69,13 +83,13 @@ func (dc *DepositController) getDepositsWithPagination(c *gin.Context, tableName
 
 	// Проверка на пустой результат
 	if totalElements == 0 {
-		response := DepositResponseByPagination{
+		response := CardResponseByPagination{
 			TotalPages:       0,
 			TotalElements:    0,
 			First:            true,
 			Last:             true,
 			Size:             size,
-			Content:          []models.Deposit{},
+			Content:          []models.Card{},
 			Number:           page,
 			Sort:             []Sort{},
 			NumberOfElements: 0,
@@ -101,12 +115,12 @@ func (dc *DepositController) getDepositsWithPagination(c *gin.Context, tableName
 
 	// Валидация поля сортировки
 	allowedSortFields := map[string]string{
-		"bank_name":  "bank_name",
-		"rate":       "rate",
-		"term_years": "term_years",
-		"min_amount": "min_amount",
-		"title":      "title",
-		"created_at": "created_at",
+		"bank_name":    "bank_name",
+		"title":        "title",
+		"currency":     "currency",
+		"system":       "system",
+		"opening_type": "opening_type",
+		"created_at":   "created_at",
 	}
 
 	sortField, exists := allowedSortFields[sortBy]
@@ -114,12 +128,20 @@ func (dc *DepositController) getDepositsWithPagination(c *gin.Context, tableName
 		sortField = "bank_name"
 	}
 
-	// Выполнение запроса с пагинацией и сортировкой
-	var deposits []models.Deposit
-	query := db.Table(tableName)
+	// Выполнение запроса с пагинацией, сортировкой и фильтрацией
+	var cards []models.Card
+	query = db.Table(tableName)
+
+	// Применение фильтров
+	if currency != "" {
+		query = query.Where("currency ILIKE ?", "%"+currency+"%")
+	}
+	if system != "" {
+		query = query.Where("system ILIKE ?", "%"+system+"%")
+	}
 
 	// Применение сортировки
-	if sortField == "bank_name" || sortField == "title" {
+	if sortField == "bank_name" || sortField == "title" || sortField == "currency" || sortField == "system" || sortField == "opening_type" {
 		// Для текстовых полей добавляем COLLATE для правильной сортировки
 		if sortDirection == "ASC" {
 			query = query.Order(sortField + " COLLATE \"C\" ASC")
@@ -133,7 +155,7 @@ func (dc *DepositController) getDepositsWithPagination(c *gin.Context, tableName
 	// Применение пагинации
 	query = query.Offset(offset).Limit(size)
 
-	if err := query.Find(&deposits).Error; err != nil {
+	if err := query.Find(&cards).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при получении данных"})
 		return
 	}
@@ -148,16 +170,16 @@ func (dc *DepositController) getDepositsWithPagination(c *gin.Context, tableName
 	}
 
 	// Формирование ответа
-	response := DepositResponseByPagination{
+	response := CardResponseByPagination{
 		TotalPages:       totalPages,
 		TotalElements:    totalElements,
 		First:            page == 0,
 		Last:             page >= totalPages-1,
 		Size:             size,
-		Content:          deposits,
+		Content:          cards,
 		Number:           page,
 		Sort:             []Sort{sortObj},
-		NumberOfElements: len(deposits),
+		NumberOfElements: len(cards),
 		Pageable: Pageable{
 			Offset:     offset,
 			Sort:       []Sort{sortObj},
@@ -166,7 +188,7 @@ func (dc *DepositController) getDepositsWithPagination(c *gin.Context, tableName
 			PageSize:   size,
 			Unpaged:    false,
 		},
-		Empty: len(deposits) == 0,
+		Empty: len(cards) == 0,
 	}
 
 	c.JSON(http.StatusOK, gin.H{"result": response, "success": true})

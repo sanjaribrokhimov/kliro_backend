@@ -216,8 +216,50 @@ func Migrate(db *gorm.DB) error {
 		return err
 	}
 
+	// Создаем таблицы для карт
+	if err := db.Exec(`
+		CREATE TABLE IF NOT EXISTS new_card (
+			id SERIAL PRIMARY KEY,
+			bank_name VARCHAR(255),
+			title TEXT,
+			currency TEXT,
+			system TEXT,
+			opening_type TEXT,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		)
+	`).Error; err != nil {
+		return err
+	}
+
+	if err := db.Exec(`
+		CREATE TABLE IF NOT EXISTS old_card (
+			id SERIAL PRIMARY KEY,
+			bank_name VARCHAR(255),
+			title TEXT,
+			currency TEXT,
+			system TEXT,
+			opening_type TEXT,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		)
+	`).Error; err != nil {
+		return err
+	}
+
+	// Создаем индексы для карт
+	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_new_card_bank_name ON new_card(bank_name)`).Error; err != nil {
+		return err
+	}
+	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_old_card_bank_name ON old_card(bank_name)`).Error; err != nil {
+		return err
+	}
+
 	// Обновляем таблицы вкладов с новой структурой
 	if err := migrations.UpdateDepositTables(db); err != nil {
+		return err
+	}
+
+	// Удаляем поле description из таблиц карт
+	if err := migrations.RemoveDescriptionFromCardTables(db); err != nil {
 		return err
 	}
 

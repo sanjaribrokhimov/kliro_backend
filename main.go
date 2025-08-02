@@ -76,6 +76,10 @@ func main() {
 	services.StartDepositCron(db)
 	log.Println("Deposit cron started")
 
+	// Запуск card cron
+	services.StartCardCron(db)
+	log.Println("Card cron started")
+
 	// Инициализация валют при запуске (если таблица пустая)
 	currencyService := services.NewCurrencyService(db)
 	if err := currencyService.InitializeCurrencyData(); err != nil {

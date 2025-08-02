@@ -566,3 +566,29 @@ func (pc *ParserController) ParseDepositPage(c *gin.Context) {
 		"success": true,
 	})
 }
+
+func (pc *ParserController) ParseCardPage(c *gin.Context) {
+	url := c.Query("url")
+	if url == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "url parameter is required"})
+		return
+	}
+
+	log.Printf("[PARSER CONTROLLER] 💳 Начинаем парсинг карт для URL: %s", url)
+
+	// Используем card parser
+	parser := services.NewCardParser()
+	cards, err := parser.ParseURL(url)
+	if err != nil {
+		log.Printf("[PARSER CONTROLLER] ❌ Ошибка парсинга карт: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to parse cards: %v", err)})
+		return
+	}
+
+	log.Printf("[PARSER CONTROLLER] ✅ Спарсено карт: %d", len(cards))
+
+	c.JSON(http.StatusOK, gin.H{
+		"result":  cards,
+		"success": true,
+	})
+}
