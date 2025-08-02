@@ -25,6 +25,8 @@ tags:
     description: API для получения ипотечных кредитов от банков
   - name: Deposits
     description: API для получения банковских вкладов
+  - name: Cards
+    description: API для получения банковских карт
 paths:
   /auth/register:
     post:
@@ -366,6 +368,7 @@ paths:
                     example: "Invalid date format. Use YYYY-MM-DD"
         '500':
           $ref: '#/components/responses/Error'
+
   /user/profile:
     get:
       tags: [User]
@@ -1238,6 +1241,684 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
+  /deposits/new:
+    get:
+      tags: [Deposits]
+      summary: Получить новые вклады с пагинацией
+      description: |
+        Возвращает список новых банковских вкладов с поддержкой пагинации и сортировки.
+        
+        **Параметры пагинации:**
+        - `page` - номер страницы (начиная с 0, по умолчанию 0)
+        - `size` - размер страницы (1-100, по умолчанию 10)
+        
+        **Параметры сортировки:**
+        - `sort` - поле для сортировки (bank_name, rate, term_years, min_amount, title, created_at)
+        - `direction` - направление сортировки (asc, desc, по умолчанию asc)
+        
+        **Поля вклада:**
+        - `bank_name` - название банка
+        - `rate` - процентная ставка
+        - `term_years` - срок вклада в годах
+        - `min_amount` - минимальная сумма вклада
+        - `title` - название вклада
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Номер страницы (начиная с 0)
+          example: 0
+        - in: query
+          name: size
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Размер страницы
+          example: 10
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [bank_name, rate, term_years, min_amount, title, created_at]
+            default: bank_name
+          description: Поле для сортировки
+          example: bank_name
+        - in: query
+          name: direction
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+          description: Направление сортировки
+          example: asc
+      responses:
+        '200':
+          description: Успешный ответ с пагинированными данными
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      totalPages:
+                        type: integer
+                        description: Общее количество страниц
+                        example: 3
+                      totalElements:
+                        type: integer
+                        format: int64
+                        description: Общее количество элементов
+                        example: 25
+                      first:
+                        type: boolean
+                        description: Первая ли это страница
+                        example: true
+                      last:
+                        type: boolean
+                        description: Последняя ли это страница
+                        example: false
+                      size:
+                        type: integer
+                        description: Размер страницы
+                        example: 10
+                      content:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Deposit'
+                        description: Массив вкладов
+                      number:
+                        type: integer
+                        description: Номер текущей страницы
+                        example: 0
+                      sort:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Sort'
+                        description: Параметры сортировки
+                      numberOfElements:
+                        type: integer
+                        description: Количество элементов на текущей странице
+                        example: 10
+                      pageable:
+                        $ref: '#/components/schemas/Pageable'
+                      empty:
+                        type: boolean
+                        description: Пустой ли результат
+                        example: false
+                  success:
+                    type: boolean
+                    description: Успешность операции
+                    example: true
+              example:
+                result:
+                  totalPages: 3
+                  totalElements: 25
+                  first: true
+                  last: false
+                  size: 10
+                  content:
+                    - id: 1
+                      bank_name: "O'zbekiston Milliy banki"
+                      rate: "12.5%"
+                      term_years: "1 год"
+                      min_amount: "1000000 сум"
+                      title: "Срочный вклад"
+                      created_at: "2024-01-15T10:30:00Z"
+                    - id: 2
+                      bank_name: "Kapitalbank"
+                      rate: "14.2%"
+                      term_years: "2 года"
+                      min_amount: "500000 сум"
+                      title: "Накопительный вклад"
+                      created_at: "2024-01-15T11:00:00Z"
+                  number: 0
+                  sort:
+                    - direction: "ASC"
+                      nullHandling: "NATIVE"
+                      ascending: true
+                      property: "bank_name"
+                      ignoreCase: false
+                  numberOfElements: 10
+                  pageable:
+                    offset: 0
+                    sort:
+                      - direction: "ASC"
+                        nullHandling: "NATIVE"
+                        ascending: true
+                        property: "bank_name"
+                        ignoreCase: false
+                    paged: true
+                    pageNumber: 0
+                    pageSize: 10
+                    unpaged: false
+                  empty: false
+                success: true
+        '500':
+          $ref: '#/components/responses/Error'
+  /deposits/old:
+    get:
+      tags: [Deposits]
+      summary: Получить старые вклады с пагинацией
+      description: |
+        Возвращает список старых банковских вкладов с поддержкой пагинации и сортировки.
+        
+        **Параметры пагинации:**
+        - `page` - номер страницы (начиная с 0, по умолчанию 0)
+        - `size` - размер страницы (1-100, по умолчанию 10)
+        
+        **Параметры сортировки:**
+        - `sort` - поле для сортировки (bank_name, rate, term_years, min_amount, title, created_at)
+        - `direction` - направление сортировки (asc, desc, по умолчанию asc)
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Номер страницы (начиная с 0)
+          example: 0
+        - in: query
+          name: size
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Размер страницы
+          example: 10
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [bank_name, rate, term_years, min_amount, title, created_at]
+            default: bank_name
+          description: Поле для сортировки
+          example: bank_name
+        - in: query
+          name: direction
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+          description: Направление сортировки
+          example: asc
+      responses:
+        '200':
+          description: Успешный ответ с пагинированными данными
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      totalPages:
+                        type: integer
+                        description: Общее количество страниц
+                        example: 2
+                      totalElements:
+                        type: integer
+                        format: int64
+                        description: Общее количество элементов
+                        example: 15
+                      first:
+                        type: boolean
+                        description: Первая ли это страница
+                        example: true
+                      last:
+                        type: boolean
+                        description: Последняя ли это страница
+                        example: false
+                      size:
+                        type: integer
+                        description: Размер страницы
+                        example: 10
+                      content:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Deposit'
+                        description: Массив вкладов
+                      number:
+                        type: integer
+                        description: Номер текущей страницы
+                        example: 0
+                      sort:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Sort'
+                        description: Параметры сортировки
+                      numberOfElements:
+                        type: integer
+                        description: Количество элементов на текущей странице
+                        example: 10
+                      pageable:
+                        $ref: '#/components/schemas/Pageable'
+                      empty:
+                        type: boolean
+                        description: Пустой ли результат
+                        example: false
+                  success:
+                    type: boolean
+                    description: Успешность операции
+                    example: true
+              example:
+                result:
+                  totalPages: 2
+                  totalElements: 15
+                  first: true
+                  last: false
+                  size: 10
+                  content:
+                    - id: 1
+                      bank_name: "Hamkorbank"
+                      rate: "11.8%"
+                      term_years: "6 месяцев"
+                      min_amount: "200000 сум"
+                      title: "Краткосрочный вклад"
+                      created_at: "2024-01-10T09:30:00Z"
+                    - id: 2
+                      bank_name: "Asia Alliance Bank"
+                      rate: "13.5%"
+                      term_years: "1 год"
+                      min_amount: "1000000 сум"
+                      title: "Долгосрочный вклад"
+                      created_at: "2024-01-10T10:00:00Z"
+                  number: 0
+                  sort:
+                    - direction: "ASC"
+                      nullHandling: "NATIVE"
+                      ascending: true
+                      property: "bank_name"
+                      ignoreCase: false
+                  numberOfElements: 10
+                  pageable:
+                    offset: 0
+                    sort:
+                      - direction: "ASC"
+                        nullHandling: "NATIVE"
+                        ascending: true
+                        property: "bank_name"
+                        ignoreCase: false
+                    paged: true
+                    pageNumber: 0
+                    pageSize: 10
+                    unpaged: false
+                  empty: false
+                success: true
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /cards/new:
+    get:
+      tags: [Cards]
+      summary: Получить новые карты с пагинацией и фильтрацией
+      description: |
+        Возвращает список новых банковских карт с поддержкой пагинации, сортировки и фильтрации.
+        
+        **Параметры пагинации:**
+        - `page` - номер страницы (начиная с 0, по умолчанию 0)
+        - `size` - размер страницы (1-100, по умолчанию 10)
+        
+        **Параметры сортировки:**
+        - `sort` - поле для сортировки (bank_name, title, currency, system, opening_type, created_at)
+        - `direction` - направление сортировки (asc, desc, по умолчанию asc)
+        
+        **Параметры фильтрации:**
+        - `currency` - фильтрация по валюте (например, "UZS", "USD")
+        - `system` - фильтрация по платежной системе (например, "Visa", "MasterCard")
+        
+        **Поля карты:**
+        - `bank_name` - название банка
+        - `title` - название карты
+        - `currency` - валюта карты
+        - `system` - платежная система
+        - `opening_type` - тип открытия (онлайн, в банке)
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Номер страницы (начиная с 0)
+          example: 0
+        - in: query
+          name: size
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Размер страницы
+          example: 10
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [bank_name, title, currency, system, opening_type, created_at]
+            default: bank_name
+          description: Поле для сортировки
+          example: bank_name
+        - in: query
+          name: direction
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+          description: Направление сортировки
+          example: asc
+        - in: query
+          name: currency
+          schema:
+            type: string
+          description: Фильтрация по валюте
+          example: "UZS"
+        - in: query
+          name: system
+          schema:
+            type: string
+          description: Фильтрация по платежной системе
+          example: "Visa"
+      responses:
+        '200':
+          description: Успешный ответ с пагинированными данными
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      totalPages:
+                        type: integer
+                        description: Общее количество страниц
+                        example: 4
+                      totalElements:
+                        type: integer
+                        format: int64
+                        description: Общее количество элементов
+                        example: 35
+                      first:
+                        type: boolean
+                        description: Первая ли это страница
+                        example: true
+                      last:
+                        type: boolean
+                        description: Последняя ли это страница
+                        example: false
+                      size:
+                        type: integer
+                        description: Размер страницы
+                        example: 10
+                      content:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Card'
+                        description: Массив карт
+                      number:
+                        type: integer
+                        description: Номер текущей страницы
+                        example: 0
+                      sort:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Sort'
+                        description: Параметры сортировки
+                      numberOfElements:
+                        type: integer
+                        description: Количество элементов на текущей странице
+                        example: 10
+                      pageable:
+                        $ref: '#/components/schemas/Pageable'
+                      empty:
+                        type: boolean
+                        description: Пустой ли результат
+                        example: false
+                  success:
+                    type: boolean
+                    description: Успешность операции
+                    example: true
+              example:
+                result:
+                  totalPages: 4
+                  totalElements: 35
+                  first: true
+                  last: false
+                  size: 10
+                  content:
+                    - id: 1
+                      bank_name: "O'zbekiston Milliy banki"
+                      title: "HUMO"
+                      currency: "UZS"
+                      system: "HUMO"
+                      opening_type: "Онлайн"
+                      created_at: "2024-01-15T10:30:00Z"
+                    - id: 2
+                      bank_name: "Kapitalbank"
+                      title: "UzCard"
+                      currency: "UZS"
+                      system: "UzCard"
+                      opening_type: "В банке"
+                      created_at: "2024-01-15T11:00:00Z"
+                    - id: 3
+                      bank_name: "Asia Alliance Bank"
+                      title: "Visa Classic"
+                      currency: "USD"
+                      system: "Visa"
+                      opening_type: "Онлайн"
+                      created_at: "2024-01-15T11:30:00Z"
+                  number: 0
+                  sort:
+                    - direction: "ASC"
+                      nullHandling: "NATIVE"
+                      ascending: true
+                      property: "bank_name"
+                      ignoreCase: false
+                  numberOfElements: 10
+                  pageable:
+                    offset: 0
+                    sort:
+                      - direction: "ASC"
+                        nullHandling: "NATIVE"
+                        ascending: true
+                        property: "bank_name"
+                        ignoreCase: false
+                    paged: true
+                    pageNumber: 0
+                    pageSize: 10
+                    unpaged: false
+                  empty: false
+                success: true
+        '500':
+          $ref: '#/components/responses/Error'
+  /cards/old:
+    get:
+      tags: [Cards]
+      summary: Получить старые карты с пагинацией и фильтрацией
+      description: |
+        Возвращает список старых банковских карт с поддержкой пагинации, сортировки и фильтрации.
+        
+        **Параметры пагинации:**
+        - `page` - номер страницы (начиная с 0, по умолчанию 0)
+        - `size` - размер страницы (1-100, по умолчанию 10)
+        
+        **Параметры сортировки:**
+        - `sort` - поле для сортировки (bank_name, title, currency, system, opening_type, created_at)
+        - `direction` - направление сортировки (asc, desc, по умолчанию asc)
+        
+        **Параметры фильтрации:**
+        - `currency` - фильтрация по валюте (например, "UZS", "USD")
+        - `system` - фильтрация по платежной системе (например, "Visa", "MasterCard")
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Номер страницы (начиная с 0)
+          example: 0
+        - in: query
+          name: size
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Размер страницы
+          example: 10
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [bank_name, title, currency, system, opening_type, created_at]
+            default: bank_name
+          description: Поле для сортировки
+          example: bank_name
+        - in: query
+          name: direction
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+          description: Направление сортировки
+          example: asc
+        - in: query
+          name: currency
+          schema:
+            type: string
+          description: Фильтрация по валюте
+          example: "UZS"
+        - in: query
+          name: system
+          schema:
+            type: string
+          description: Фильтрация по платежной системе
+          example: "Visa"
+      responses:
+        '200':
+          description: Успешный ответ с пагинированными данными
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      totalPages:
+                        type: integer
+                        description: Общее количество страниц
+                        example: 3
+                      totalElements:
+                        type: integer
+                        format: int64
+                        description: Общее количество элементов
+                        example: 28
+                      first:
+                        type: boolean
+                        description: Первая ли это страница
+                        example: true
+                      last:
+                        type: boolean
+                        description: Последняя ли это страница
+                        example: false
+                      size:
+                        type: integer
+                        description: Размер страницы
+                        example: 10
+                      content:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Card'
+                        description: Массив карт
+                      number:
+                        type: integer
+                        description: Номер текущей страницы
+                        example: 0
+                      sort:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Sort'
+                        description: Параметры сортировки
+                      numberOfElements:
+                        type: integer
+                        description: Количество элементов на текущей странице
+                        example: 10
+                      pageable:
+                        $ref: '#/components/schemas/Pageable'
+                      empty:
+                        type: boolean
+                        description: Пустой ли результат
+                        example: false
+                  success:
+                    type: boolean
+                    description: Успешность операции
+                    example: true
+              example:
+                result:
+                  totalPages: 3
+                  totalElements: 28
+                  first: true
+                  last: false
+                  size: 10
+                  content:
+                    - id: 1
+                      bank_name: "Hamkorbank"
+                      title: "HUMO"
+                      currency: "UZS"
+                      system: "HUMO"
+                      opening_type: "Онлайн"
+                      created_at: "2024-01-10T09:30:00Z"
+                    - id: 2
+                      bank_name: "Tenge Bank"
+                      title: "UzCard"
+                      currency: "UZS"
+                      system: "UzCard"
+                      opening_type: "В банке"
+                      created_at: "2024-01-10T10:00:00Z"
+                    - id: 3
+                      bank_name: "Asia Alliance Bank"
+                      title: "MasterCard Gold"
+                      currency: "USD"
+                      system: "MasterCard"
+                      opening_type: "Онлайн"
+                      created_at: "2024-01-10T10:30:00Z"
+                  number: 0
+                  sort:
+                    - direction: "ASC"
+                      nullHandling: "NATIVE"
+                      ascending: true
+                      property: "bank_name"
+                      ignoreCase: false
+                  numberOfElements: 10
+                  pageable:
+                    offset: 0
+                    sort:
+                      - direction: "ASC"
+                        nullHandling: "NATIVE"
+                        ascending: true
+                        property: "bank_name"
+                        ignoreCase: false
+                    paged: true
+                    pageNumber: 0
+                    pageSize: 10
+                    unpaged: false
+                  empty: false
+                success: true
+        '500':
+          $ref: '#/components/responses/Error'
+
   /transfers/new:
     get:
       tags: [Transfers]
@@ -1792,10 +2473,10 @@ paths:
                     type: string
                     example: "Internal server error"
 
-  /deposits/new:
+  /mortgages/old:
     get:
-      tags: [Deposits]
-      summary: Получить новые банковские вклады
+      tags: [Mortgages]
+      summary: Получить старые ипотечные кредиты
       description: Возвращает список новых банковских вкладов с пагинацией и сортировкой
       parameters:
         - name: page
@@ -1866,7 +2547,7 @@ paths:
                       content:
                         type: array
                         items:
-                          $ref: '#/components/schemas/DepositData'
+                          $ref: '#/components/schemas/Deposit'
                         description: Массив банковских вкладов
                       number:
                         type: integer
@@ -1905,232 +2586,8 @@ paths:
                     type: string
                     example: "Internal server error"
 
-  /deposits/old:
-    get:
-      tags: [Deposits]
-      summary: Получить старые банковские вклады
-      description: Возвращает список старых банковских вкладов с пагинацией и сортировкой
-      parameters:
-        - name: page
-          in: query
-          description: Номер страницы
-          required: false
-          schema:
-            type: integer
-            default: 1
-            minimum: 1
-        - name: limit
-          in: query
-          description: Количество записей на странице
-          required: false
-          schema:
-            type: integer
-            default: 10
-            minimum: 1
-            maximum: 100
-        - name: sortBy
-          in: query
-          description: Поле для сортировки
-          required: false
-          schema:
-            type: string
-            enum: [bank_name, rate, term_years, min_amount, title, created_at]
-            default: created_at
-        - name: sortOrder
-          in: query
-          description: Порядок сортировки
-          required: false
-          schema:
-            type: string
-            enum: [asc, desc]
-            default: desc
-      responses:
-        '200':
-          description: Успешный ответ с пагинированными данными
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  result:
-                    type: object
-                    properties:
-                      totalPages:
-                        type: integer
-                        description: Общее количество страниц
-                        example: 3
-                      totalElements:
-                        type: integer
-                        format: int64
-                        description: Общее количество элементов
-                        example: 25
-                      first:
-                        type: boolean
-                        description: Первая ли это страница
-                        example: true
-                      last:
-                        type: boolean
-                        description: Последняя ли это страница
-                        example: false
-                      size:
-                        type: integer
-                        description: Размер страницы
-                        example: 10
-                      content:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/DepositData'
-                        description: Массив банковских вкладов
-                      number:
-                        type: integer
-                        description: Номер текущей страницы
-                        example: 0
-                      numberOfElements:
-                        type: integer
-                        description: Количество элементов на текущей странице
-                        example: 10
-                      empty:
-                        type: boolean
-                        description: Пустой ли результат
-                        example: false
-                  success:
-                    type: boolean
-                    description: Успешность операции
-                    example: true
-        '400':
-          description: Ошибка валидации
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Invalid parameters"
-        '500':
-          description: Внутренняя ошибка сервера
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Internal server error"
 
-  /mortgages/old:
-    get:
-      tags: [Mortgages]
-      summary: Получить старые ипотечные кредиты
-      description: Возвращает список старых ипотечных кредитов с пагинацией и сортировкой
-      parameters:
-        - name: page
-          in: query
-          description: Номер страницы
-          required: false
-          schema:
-            type: integer
-            default: 1
-            minimum: 1
-        - name: limit
-          in: query
-          description: Количество записей на странице
-          required: false
-          schema:
-            type: integer
-            default: 10
-            minimum: 1
-            maximum: 100
-        - name: sortBy
-          in: query
-          description: Поле для сортировки
-          required: false
-          schema:
-            type: string
-            enum: [bank_name, rate_max, rate_min, term_years, max_amount, initial_payment, created_at]
-            default: created_at
-        - name: sortOrder
-          in: query
-          description: Порядок сортировки
-          required: false
-          schema:
-            type: string
-            enum: [asc, desc]
-            default: desc
-      responses:
-        '200':
-          description: Успешный ответ с пагинированными данными
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  result:
-                    type: object
-                    properties:
-                      totalPages:
-                        type: integer
-                        description: Общее количество страниц
-                        example: 3
-                      totalElements:
-                        type: integer
-                        format: int64
-                        description: Общее количество элементов
-                        example: 25
-                      first:
-                        type: boolean
-                        description: Первая ли это страница
-                        example: true
-                      last:
-                        type: boolean
-                        description: Последняя ли это страница
-                        example: false
-                      size:
-                        type: integer
-                        description: Размер страницы
-                        example: 10
-                      content:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/MortgageData'
-                        description: Массив ипотечных кредитов
-                      number:
-                        type: integer
-                        description: Номер текущей страницы
-                        example: 0
-                      numberOfElements:
-                        type: integer
-                        description: Количество элементов на текущей странице
-                        example: 10
-                      empty:
-                        type: boolean
-                        description: Пустой ли результат
-                        example: false
-                  success:
-                    type: boolean
-                    description: Успешность операции
-                    example: true
-        '400':
-          description: Ошибка валидации
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Invalid parameters"
-        '500':
-          description: Внутренняя ошибка сервера
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Internal server error"
-
+ 
   /parse-mortgage:
     get:
       tags: [Parser]
@@ -2288,6 +2745,72 @@ components:
       example:
         session_id: "abc123"
         region_id: 1
+    Deposit:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Уникальный идентификатор вклада
+          example: 1
+        bank_name:
+          type: string
+          description: Название банка
+          example: "O'zbekiston Milliy banki"
+        rate:
+          type: string
+          description: Процентная ставка
+          example: "12.5%"
+        term_years:
+          type: string
+          description: Срок вклада в годах
+          example: "1 год"
+        min_amount:
+          type: string
+          description: Минимальная сумма вклада
+          example: "1000000 сум"
+        title:
+          type: string
+          description: Название вклада
+          example: "Срочный вклад"
+        created_at:
+          type: string
+          format: date-time
+          description: Дата создания записи
+          example: "2024-01-15T10:30:00Z"
+      required: [bank_name, rate, term_years, min_amount, title]
+    Card:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Уникальный идентификатор карты
+          example: 1
+        bank_name:
+          type: string
+          description: Название банка
+          example: "O'zbekiston Milliy banki"
+        title:
+          type: string
+          description: Название карты
+          example: "HUMO"
+        currency:
+          type: string
+          description: Валюта карты
+          example: "UZS"
+        system:
+          type: string
+          description: Платежная система
+          example: "HUMO"
+        opening_type:
+          type: string
+          description: Тип открытия карты
+          example: "Онлайн"
+        created_at:
+          type: string
+          format: date-time
+          description: Дата создания записи
+          example: "2024-01-15T10:30:00Z"
+      required: [bank_name, title, currency, system, opening_type]
     UpdateContactRequest:
       type: object
       properties:
@@ -2621,40 +3144,7 @@ components:
           description: Дата создания записи
           example: "2024-01-15T10:30:00Z"
       required: [id, bank_name, rate_max, rate_min, term_years, max_amount, initial_payment, url, created_at]
-    DepositData:
-      type: object
-      description: Структура данных банковского вклада
-      properties:
-        id:
-          type: integer
-          description: Уникальный идентификатор
-          example: 1
-        bank_name:
-          type: string
-          description: Название банка
-          example: "Anorbank"
-        rate:
-          type: string
-          description: Процентная ставка
-          example: "23 %"
-        term_years:
-          type: string
-          description: Срок вклада
-          example: "2 yil"
-        min_amount:
-          type: string
-          description: Минимальная сумма вклада
-          example: "500 000 so'mdan"
-        title:
-          type: string
-          description: Название вклада
-          example: "Baraka omonati"
-        created_at:
-          type: string
-          format: date-time
-          description: Дата создания записи
-          example: "2024-01-15T10:30:00Z"
-      required: [id, bank_name, rate, term_years, min_amount, title, created_at]
+
     Sort:
       type: object
       description: Параметры сортировки
@@ -2938,3 +3428,9 @@ components:
               result: null
               success: false
               error: "Ошибка"
+    Deposit:
+      description: Данные вклада
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Deposit'
