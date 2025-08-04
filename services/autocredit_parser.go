@@ -16,6 +16,8 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
+const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions"
+
 type AutocreditParser struct{}
 
 func NewAutocreditParser() *AutocreditParser {
@@ -101,8 +103,6 @@ func (ap *AutocreditParser) ParseURL(url string) (*models.Autocredit, error) {
 	
 	Верни только JSON. Без пояснений, без текста до и после.
 	`, text, url)
-	
-
 
 	// Вызываем DeepSeek API
 	reqBody := DeepSeekRequest{

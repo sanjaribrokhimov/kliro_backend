@@ -90,6 +90,37 @@ func Migrate(db *gorm.DB) error {
 		return err
 	}
 
+	// Создаем таблицы new_currency и old_currency
+	if err := db.Exec(`
+		CREATE TABLE IF NOT EXISTS new_currency (
+			id SERIAL PRIMARY KEY,
+			bank_name VARCHAR(255) NOT NULL,
+			currency VARCHAR(10) NOT NULL,
+			buy_rate DECIMAL(10,2) NOT NULL,
+			sell_rate DECIMAL(10,2),
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			deleted_at TIMESTAMP
+		)
+	`).Error; err != nil {
+		return err
+	}
+
+	if err := db.Exec(`
+		CREATE TABLE IF NOT EXISTS old_currency (
+			id SERIAL PRIMARY KEY,
+			bank_name VARCHAR(255) NOT NULL,
+			currency VARCHAR(10) NOT NULL,
+			buy_rate DECIMAL(10,2) NOT NULL,
+			sell_rate DECIMAL(10,2),
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			deleted_at TIMESTAMP
+		)
+	`).Error; err != nil {
+		return err
+	}
+
 	// Создаем индексы для валют
 	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_currencies_currency ON currencies(currency)`).Error; err != nil {
 		return err
@@ -98,6 +129,12 @@ func Migrate(db *gorm.DB) error {
 		return err
 	}
 	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_currencies_deleted_at ON currencies(deleted_at)`).Error; err != nil {
+		return err
+	}
+	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_new_currency_currency ON new_currency(currency)`).Error; err != nil {
+		return err
+	}
+	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_old_currency_currency ON old_currency(currency)`).Error; err != nil {
 		return err
 	}
 

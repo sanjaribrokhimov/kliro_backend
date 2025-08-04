@@ -82,6 +82,7 @@ func SetupRouter() *gin.Engine {
 	r.GET("/parse-card", parserController.ParseCardPage)
 	r.GET("/update-transfers", parserController.ParseTransferAndUpdateDatabase)
 	r.GET("/currencies/new", currencyController.GetLatestCurrencyRates)
+	r.GET("/currencies/old", currencyController.GetOldCurrencyRates)
 	r.GET("/currencies/by-date", currencyController.GetCurrencyRatesByDate)
 
 	userGroup := r.Group("/user", middleware.JWTAuthMiddleware())

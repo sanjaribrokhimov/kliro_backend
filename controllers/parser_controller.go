@@ -211,157 +211,68 @@ func (pc *ParserController) ParseCurrencyPage(c *gin.Context) {
 	}
 	defer resp.Body.Close()
 
-	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	// Читаем HTML
+	bodyBytes := make([]byte, 0)
+	buffer := make([]byte, 1024)
+
+	for {
+		n, err := resp.Body.Read(buffer)
+		if n > 0 {
+			bodyBytes = append(bodyBytes, buffer[:n]...)
+		}
+		if err != nil {
+			break
+		}
+	}
+
+	html := string(bodyBytes)
+
+	// Создаем парсер и парсим курсы
+	parser := services.NewCurrencyParser(pc.currencyService)
+	rates, err := parser.ParseCurrencyRates(html)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to parse HTML: %v", err)})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to parse currency rates: %v", err)})
 		return
 	}
 
-	// Удаляем навигацию, футер и прочие неинформативные блоки
-	doc.Find("nav, header, footer, .navbar, .menu, .sidebar, .breadcrumbs, .topbar, .language, .lang-switcher, .mobile-menu, .contact-info").Remove()
+	// Группируем по валютам
+	usdRates := []map[string]interface{}{}
+	rubRates := []map[string]interface{}{}
+	kztRates := []map[string]interface{}{}
+	eurRates := []map[string]interface{}{}
 
-	// Удаляем скрипты и стили
-	doc.Find("script, style").Remove()
-
-	// Пытаемся вытащить только релевантные блоки с ключевыми словами для валюты
-	var relevantText []string
-	doc.Find("section, div, table, tbody, tr, td").Each(func(i int, s *goquery.Selection) {
-		txt := strings.ToLower(s.Text())
-		if strings.Contains(txt, "валют") || strings.Contains(txt, "usd") || strings.Contains(txt, "eur") || strings.Contains(txt, "rub") || strings.Contains(txt, "курс") || strings.Contains(txt, "exchange") {
-			relevantText = append(relevantText, s.Text())
+	for _, rate := range rates {
+		currency, ok := rate["currency"].(string)
+		if !ok {
+			continue
 		}
-	})
 
-	var text string
-	if len(relevantText) > 0 {
-		text = strings.Join(relevantText, " ")
-	} else {
-		text = doc.Find("body").Text()
+		switch currency {
+		case "USD":
+			usdRates = append(usdRates, rate)
+		case "RUB":
+			rubRates = append(rubRates, rate)
+		case "KZT":
+			kztRates = append(kztRates, rate)
+		case "EUR":
+			eurRates = append(eurRates, rate)
+		}
 	}
 
-	text = cleanText(text)
-
-	fmt.Println("[PARSE CURRENCY] Очищенный текст для DeepSeek (первые 5000 символов):")
-	fmt.Println(text)
-
-	prompt := fmt.Sprintf(`Найди таблицу курсов валют после заголовка "Valyuta almashtirish shahobchalaridagi eng yahshi kurslar".
-Извлеки только курсы USD, RUB, KZT, EUR. Игнорируй всё после таблицы курсов.
-
-Верни ТОЧНО такой JSON массив:
-[
-  {
-    "bank": "название банка",
-    "currency": "USD",
-    "buy": 12560,
-    "sell": 12655
-  },
-  {
-    "bank": "название банка", 
-    "currency": "RUB",
-    "buy": 140,
-    "sell": 165
-  }
-]
-
-Правила:
-- currency может быть только: USD, RUB, KZT, EUR
-- buy и sell должны быть числами (не строками)
-- если sell не указан, используй null
-- если банк не найден, используй "Unknown Bank"
-
-Текст: %s
-Только JSON массив.`, text)
-
-	reqBody := DeepSeekRequest{
-		Model:       "deepseek-chat",
-		Messages:    []Message{{Role: "user", Content: prompt}},
-		MaxTokens:   4096,
-		Temperature: 0.0,
-	}
-
-	jsonBody, _ := json.Marshal(reqBody)
-	req, _ := http.NewRequest("POST", DEEPSEEK_API_URL, bytes.NewBuffer(jsonBody))
-	req.Header.Set("Content-Type", "application/json")
-
-	apiKey := os.Getenv("DEEPSEEK_API_KEY")
-	if apiKey == "" {
-		c.JSON(http.StatusInternalServerError, gin.H{"result": nil, "success": false, "error": "DeepSeek API key not set"})
-		return
-	}
-	req.Header.Set("Authorization", "Bearer "+apiKey)
-
-	client := &http.Client{}
-	dsResp, err := client.Do(req)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to call DeepSeek API: %v", err)})
-		return
-	}
-	defer dsResp.Body.Close()
-
-	body, _ := ioutil.ReadAll(dsResp.Body)
-	var deepSeekResponse DeepSeekResponse
-	if err := json.Unmarshal(body, &deepSeekResponse); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse DeepSeek response"})
+	// Сохраняем курсы в БД
+	if err := pc.currencyService.SaveCurrencyRates(rates); err != nil {
+		log.Printf("[PARSE CURRENCY ERROR] Ошибка сохранения курсов: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save currency rates"})
 		return
 	}
 
-	if len(deepSeekResponse.Choices) > 0 {
-		raw := deepSeekResponse.Choices[0].Message.Content
-		raw = strings.TrimSpace(raw)
-		raw = strings.TrimPrefix(raw, "```json")
-		raw = strings.TrimPrefix(raw, "```")
-		raw = strings.TrimSuffix(raw, "```")
-		raw = strings.TrimSpace(raw)
-
-		var ratesArray []map[string]interface{}
-		if err := json.Unmarshal([]byte(raw), &ratesArray); err != nil {
-			fmt.Printf("[PARSE CURRENCY ERROR] Failed to parse JSON: %v\n", err)
-			fmt.Printf("[PARSE CURRENCY ERROR] Raw response: %s\n", raw)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse final JSON", "raw": raw})
-			return
-		}
-
-		// Группируем по валютам
-		usdRates := []map[string]interface{}{}
-		rubRates := []map[string]interface{}{}
-		kztRates := []map[string]interface{}{}
-		eurRates := []map[string]interface{}{}
-
-		for _, rate := range ratesArray {
-			currency, ok := rate["currency"].(string)
-			if !ok {
-				continue
-			}
-
-			switch currency {
-			case "USD":
-				usdRates = append(usdRates, rate)
-			case "RUB":
-				rubRates = append(rubRates, rate)
-			case "KZT":
-				kztRates = append(kztRates, rate)
-			case "EUR":
-				eurRates = append(eurRates, rate)
-			}
-		}
-
-		// Сохраняем курсы в БД
-		if err := pc.currencyService.SaveCurrencyRates(ratesArray); err != nil {
-			log.Printf("[PARSE CURRENCY ERROR] Ошибка сохранения курсов: %v", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save currency rates"})
-			return
-		}
-
-		result := map[string]interface{}{
-			"USD": usdRates,
-			"RUB": rubRates,
-			"KZT": kztRates,
-			"EUR": eurRates,
-		}
-		c.JSON(http.StatusOK, gin.H{"result": result, "success": true})
-	} else {
-		c.JSON(http.StatusInternalServerError, gin.H{"result": nil, "success": false, "error": "No response from DeepSeek"})
+	result := map[string]interface{}{
+		"USD": usdRates,
+		"RUB": rubRates,
+		"KZT": kztRates,
+		"EUR": eurRates,
 	}
+	c.JSON(http.StatusOK, gin.H{"result": result, "success": true})
 }
 
 // Очистка текста от ссылок, HTML и мусора

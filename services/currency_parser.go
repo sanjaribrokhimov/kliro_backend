@@ -1,38 +1,14 @@
 package services
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
-	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
-
-type DeepSeekRequest struct {
-	Model       string    `json:"model"`
-	Messages    []Message `json:"messages"`
-	MaxTokens   int       `json:"max_tokens"`
-	Temperature float64   `json:"temperature"`
-}
-
-type Message struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
-}
-
-type DeepSeekResponse struct {
-	Choices []struct {
-		Message struct {
-			Content string `json:"content"`
-		} `json:"message"`
-	} `json:"choices"`
-}
 
 type CurrencyParser struct {
 	currencyService *CurrencyService
@@ -44,14 +20,20 @@ func NewCurrencyParser(currencyService *CurrencyService) *CurrencyParser {
 	}
 }
 
-// ParseAndSaveCurrencyRates парсит и сохраняет курсы валют
 func (cp *CurrencyParser) ParseAndSaveCurrencyRates() error {
 	log.Printf("[CURRENCY PARSER] Начинаем парсинг курсов валют...")
 
 	url := "https://bank.uz/uz/currency"
 
-	// Получаем HTML страницы
-	resp, err := http.Get(url)
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		log.Printf("[CURRENCY PARSER ERROR] Ошибка создания запроса: %v", err)
+		return err
+	}
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+
+	resp, err := client.Do(req)
 	if err != nil {
 		log.Printf("[CURRENCY PARSER ERROR] Ошибка получения страницы: %v", err)
 		return err
@@ -64,166 +46,155 @@ func (cp *CurrencyParser) ParseAndSaveCurrencyRates() error {
 		return err
 	}
 
-	// Удаляем навигацию, футер и прочие неинформативные блоки
-	doc.Find("nav, header, footer, .navbar, .menu, .sidebar, .breadcrumbs, .topbar, .language, .lang-switcher, .mobile-menu, .contact-info").Remove()
+	rates := cp.ParseCurrencyRatesWithGoquery(doc)
 
-	// Удаляем скрипты и стили
-	doc.Find("script, style").Remove()
-
-	// Пытаемся вытащить только релевантные блоки с ключевыми словами для валюты
-	var relevantText []string
-	doc.Find("section, div, table, tbody, tr, td").Each(func(i int, s *goquery.Selection) {
-		txt := strings.ToLower(s.Text())
-		if strings.Contains(txt, "валют") || strings.Contains(txt, "usd") || strings.Contains(txt, "eur") || strings.Contains(txt, "rub") || strings.Contains(txt, "курс") || strings.Contains(txt, "exchange") {
-			relevantText = append(relevantText, s.Text())
-		}
-	})
-
-	var text string
-	if len(relevantText) > 0 {
-		text = strings.Join(relevantText, " ")
-	} else {
-		text = doc.Find("body").Text()
-	}
-
-	text = cp.cleanText(text)
-
-	log.Printf("[CURRENCY PARSER] Очищенный текст для DeepSeek (первые 7000 символов):")
-	log.Print(text)
-
-	prompt := fmt.Sprintf(`Найди таблицу курсов валют после заголовка "Valyuta almashtirish shahobchalaridagi eng yahshi kurslar".
-Извлеки только курсы USD, RUB, KZT, EUR. Игнорируй всё после таблицы курсов.
-
-Верни ТОЧНО такой JSON массив:
-[
-  {
-    "bank": "название банка",
-    "currency": "USD",
-    "buy": 12560,
-    "sell": 12655
-  },
-  {
-    "bank": "название банка", 
-    "currency": "RUB",
-    "buy": 140,
-    "sell": 165
-  }
-]
-
-Правила:
-- currency может быть только: USD, RUB, KZT, EUR
-- buy и sell должны быть числами (не строками)
-- если sell не указан, используй null
-- если банк не найден, используй "Unknown Bank"
-
-Текст: %s
-Только JSON массив.`, text)
-
-	reqBody := DeepSeekRequest{
-		Model:       "deepseek-chat",
-		Messages:    []Message{{Role: "user", Content: prompt}},
-		MaxTokens:   4096,
-		Temperature: 0.0,
-	}
-
-	jsonBody, _ := json.Marshal(reqBody)
-	req, _ := http.NewRequest("POST", DEEPSEEK_API_URL, bytes.NewBuffer(jsonBody))
-	req.Header.Set("Content-Type", "application/json")
-
-	apiKey := os.Getenv("DEEPSEEK_API_KEY")
-	if apiKey == "" {
-		log.Printf("[CURRENCY PARSER ERROR] DeepSeek API key not set")
-		return fmt.Errorf("DeepSeek API key not set")
-	}
-	req.Header.Set("Authorization", "Bearer "+apiKey)
-
-	client := &http.Client{}
-	dsResp, err := client.Do(req)
-	if err != nil {
-		log.Printf("[CURRENCY PARSER ERROR] Ошибка вызова DeepSeek API: %v", err)
-		return err
-	}
-	defer dsResp.Body.Close()
-
-	body, _ := ioutil.ReadAll(dsResp.Body)
-	var deepSeekResponse DeepSeekResponse
-	if err := json.Unmarshal(body, &deepSeekResponse); err != nil {
-		log.Printf("[CURRENCY PARSER ERROR] Ошибка парсинга ответа DeepSeek: %v", err)
+	if err := cp.currencyService.SaveCurrencyRates(rates); err != nil {
+		log.Printf("[CURRENCY PARSER ERROR] Ошибка сохранения курсов: %v", err)
 		return err
 	}
 
-	if len(deepSeekResponse.Choices) > 0 {
-		raw := deepSeekResponse.Choices[0].Message.Content
-		raw = strings.TrimSpace(raw)
-		raw = strings.TrimPrefix(raw, "```json")
-		raw = strings.TrimPrefix(raw, "```")
-		raw = strings.TrimSuffix(raw, "```")
-		raw = strings.TrimSpace(raw)
-
-		var ratesArray []map[string]interface{}
-		if err := json.Unmarshal([]byte(raw), &ratesArray); err != nil {
-			log.Printf("[CURRENCY PARSER ERROR] Ошибка парсинга JSON: %v", err)
-			log.Printf("[CURRENCY PARSER ERROR] Raw response: %s", raw)
-			return err
-		}
-
-		// Сохраняем курсы в БД
-		if err := cp.currencyService.SaveCurrencyRates(ratesArray); err != nil {
-			log.Printf("[CURRENCY PARSER ERROR] Ошибка сохранения курсов: %v", err)
-			return err
-		}
-
-		log.Printf("[CURRENCY PARSER] Успешно обработано %d курсов валют", len(ratesArray))
-	} else {
-		log.Printf("[CURRENCY PARSER ERROR] Нет ответа от DeepSeek")
-		return fmt.Errorf("no response from DeepSeek")
-	}
-
+	log.Printf("[CURRENCY PARSER] Успешно обработано %d курсов валют", len(rates))
 	return nil
 }
 
-// Очистка текста от ссылок, HTML и мусора
-func (cp *CurrencyParser) cleanText(raw string) string {
-	// Удаляем скрипты и стили
-	reScript := regexp.MustCompile(`<script[^>]*>.*?</script>`)
-	reStyle := regexp.MustCompile(`<style[^>]*>.*?</style>`)
-	reLink := regexp.MustCompile(`https?://\S+|ftp://\S+|mailto:\S+`)
-	reTag := regexp.MustCompile(`<[^>]+>`)
-	reSpaces := regexp.MustCompile(`\s+`)
-	reJS := regexp.MustCompile(`javascript:`)
-	reConsole := regexp.MustCompile(`console\.(log|error|warn|info)\([^)]*\)`)
-	reFunction := regexp.MustCompile(`function\s+\w+\s*\([^)]*\)\s*\{[^}]*\}`)
+func (cp *CurrencyParser) ParseCurrencyRates(html string) ([]map[string]interface{}, error) {
+	// Создаем документ из HTML строки
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+	if err != nil {
+		return nil, fmt.Errorf("ошибка парсинга HTML: %v", err)
+	}
 
-	// Удаляем скрипты и стили
-	clean := reScript.ReplaceAllString(raw, "")
-	clean = reStyle.ReplaceAllString(clean, "")
+	return cp.ParseCurrencyRatesWithGoquery(doc), nil
+}
 
-	// Удаляем ссылки
-	clean = reLink.ReplaceAllString(clean, "")
+func (cp *CurrencyParser) ParseCurrencyRatesWithGoquery(doc *goquery.Document) []map[string]interface{} {
+	var rates []map[string]interface{}
 
-	// Удаляем HTML теги
-	clean = reTag.ReplaceAllString(clean, "")
+	currencies := []string{"USD", "EUR", "RUB", "KZT"}
 
-	// Удаляем JavaScript код
-	clean = reJS.ReplaceAllString(clean, "")
-	clean = reConsole.ReplaceAllString(clean, "")
-	clean = reFunction.ReplaceAllString(clean, "")
+	for _, currency := range currencies {
+		// Находим блок для конкретной валюты
+		currencySelector := fmt.Sprintf("#best_%s", currency)
+		currencyBlock := doc.Find(currencySelector)
 
-	lines := strings.Split(clean, "\n")
-	var compact []string
-	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if line != "" && len(line) > 2 {
-			compact = append(compact, line)
+		if currencyBlock.Length() == 0 {
+			log.Printf("[CURRENCY PARSER] ❌ Не найден блок для валюты %s", currency)
+			continue
+		}
+
+		log.Printf("[CURRENCY PARSER] ✅ Найден блок для валюты %s", currency)
+
+		// Извлекаем курсы покупки (левый блок)
+		buyRates := cp.extractBuyRatesFromBlock(currencyBlock)
+		log.Printf("[CURRENCY PARSER] Найдено %d курсов покупки для %s", len(buyRates), currency)
+
+		// Извлекаем курсы продажи (правый блок)
+		sellRates := cp.extractSellRatesFromBlock(currencyBlock)
+		log.Printf("[CURRENCY PARSER] Найдено %d курсов продажи для %s", len(sellRates), currency)
+
+		// Создаем map для быстрого поиска курсов продажи по банку
+		sellMap := make(map[string]float64)
+		for _, sellRate := range sellRates {
+			sellMap[sellRate.bankName] = sellRate.rate
+		}
+
+		// Объединяем данные
+		for _, buyRate := range buyRates {
+			sellRate, exists := sellMap[buyRate.bankName]
+			if exists {
+				rate := map[string]interface{}{
+					"currency": currency,
+					"bank":     buyRate.bankName,
+					"buy":      buyRate.rate,
+					"sell":     sellRate,
+				}
+				rates = append(rates, rate)
+			}
 		}
 	}
 
-	clean = strings.Join(compact, " ")
-	clean = reSpaces.ReplaceAllString(clean, " ")
-	clean = strings.TrimSpace(clean)
+	return rates
+}
 
-	if len(clean) > 7000 {
-		clean = clean[:7000]
+type RateData struct {
+	bankName string
+	rate     float64
+}
+
+func (cp *CurrencyParser) extractBuyRatesFromBlock(block *goquery.Selection) []RateData {
+	var rates []RateData
+
+	// Находим левый блок с курсами покупки
+	leftBlock := block.Find(".bc-inner-blocks-left")
+	if leftBlock.Length() == 0 {
+		log.Printf("[CURRENCY PARSER] Не найден левый блок покупки")
+		return rates
 	}
-	return clean
+
+	// Извлекаем курсы покупки
+	leftBlock.Find(".bc-inner-block-left-texts").Each(func(i int, s *goquery.Selection) {
+		// Название банка
+		bankName := s.Find(".bc-inner-block-left-text .medium-text").Text()
+		bankName = strings.TrimSpace(bankName)
+
+		// Курс покупки
+		rateText := s.Find(".medium-text.green-date").Text()
+		rateText = strings.TrimSpace(rateText)
+		rateText = strings.ReplaceAll(rateText, " ", "")
+		rateText = strings.ReplaceAll(rateText, "so'm", "")
+
+		if bankName != "" && rateText != "" {
+			rate, err := strconv.ParseFloat(rateText, 64)
+			if err == nil {
+				log.Printf("[CURRENCY PARSER] Курс покупки: %s = %.2f", bankName, rate)
+				rates = append(rates, RateData{
+					bankName: bankName,
+					rate:     rate,
+				})
+			} else {
+				log.Printf("[CURRENCY PARSER] Ошибка парсинга курса покупки: %s -> %s (ошибка: %v)", bankName, rateText, err)
+			}
+		}
+	})
+
+	return rates
+}
+
+func (cp *CurrencyParser) extractSellRatesFromBlock(block *goquery.Selection) []RateData {
+	var rates []RateData
+
+	// Находим правый блок с курсами продажи
+	rightBlock := block.Find(".bc-inner-blocks-right")
+	if rightBlock.Length() == 0 {
+		log.Printf("[CURRENCY PARSER] Не найден правый блок продажи")
+		return rates
+	}
+
+	// Извлекаем курсы продажи
+	rightBlock.Find(".bc-inner-block-left-texts").Each(func(i int, s *goquery.Selection) {
+		// Название банка
+		bankName := s.Find(".bc-inner-block-left-text .medium-text").Text()
+		bankName = strings.TrimSpace(bankName)
+
+		// Курс продажи
+		rateText := s.Find(".medium-text.green-date").Text()
+		rateText = strings.TrimSpace(rateText)
+		rateText = strings.ReplaceAll(rateText, " ", "")
+		rateText = strings.ReplaceAll(rateText, "so'm", "")
+
+		if bankName != "" && rateText != "" {
+			rate, err := strconv.ParseFloat(rateText, 64)
+			if err == nil {
+				log.Printf("[CURRENCY PARSER] Курс продажи: %s = %.2f", bankName, rate)
+				rates = append(rates, RateData{
+					bankName: bankName,
+					rate:     rate,
+				})
+			} else {
+				log.Printf("[CURRENCY PARSER] Ошибка парсинга курса продажи: %s -> %s (ошибка: %v)", bankName, rateText, err)
+			}
+		}
+	})
+
+	return rates
 }

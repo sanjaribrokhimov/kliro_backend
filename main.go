@@ -80,17 +80,8 @@ func main() {
 	services.StartCardCron(db)
 	log.Println("Card cron started")
 
-	// Инициализация валют при запуске (если таблица пустая)
-	currencyService := services.NewCurrencyService(db)
-	if err := currencyService.InitializeCurrencyData(); err != nil {
-		log.Printf("Failed to initialize currency data: %v", err)
-	} else {
-		log.Println("Currency data initialized (if needed)")
-	}
-
 	// Запуск currency cron
-	currencyCronService := services.NewCurrencyCronService(currencyService)
-	currencyCronService.Start()
+	services.StartCurrencyCron(db)
 	log.Println("Currency cron started")
 
 	// Подключение к Redis
