@@ -43,16 +43,23 @@ func Migrate(db *gorm.DB) error {
 		return err
 	}
 
-	// Создаем таблицы для autocredit
+	// Создаем таблицы для autocredit (обновляем структуру)
+	if err := db.Exec(`DROP TABLE IF EXISTS new_autocredit`).Error; err != nil {
+		return err
+	}
+	if err := db.Exec(`DROP TABLE IF EXISTS old_autocredit`).Error; err != nil {
+		return err
+	}
+
 	if err := db.Exec(`
-		CREATE TABLE IF NOT EXISTS new_autocredit (
+		CREATE TABLE new_autocredit (
 			id SERIAL PRIMARY KEY,
 			bank_name VARCHAR(255),
-			rate DECIMAL(5,2) DEFAULT 0,
-			initial_payment DECIMAL(10,2) DEFAULT 0,
-			term_months INTEGER DEFAULT 0,
-			max_amount VARCHAR(50) DEFAULT 'VIP',
-			url TEXT,
+			description TEXT,
+			rate TEXT,
+			term TEXT,
+			amount TEXT,
+			channel TEXT,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		)
 	`).Error; err != nil {
@@ -60,14 +67,14 @@ func Migrate(db *gorm.DB) error {
 	}
 
 	if err := db.Exec(`
-		CREATE TABLE IF NOT EXISTS old_autocredit (
+		CREATE TABLE old_autocredit (
 			id SERIAL PRIMARY KEY,
 			bank_name VARCHAR(255),
-			rate DECIMAL(5,2) DEFAULT 0,
-			initial_payment DECIMAL(10,2) DEFAULT 0,
-			term_months INTEGER DEFAULT 0,
-			max_amount VARCHAR(50) DEFAULT 'VIP',
-			url TEXT,
+			description TEXT,
+			rate TEXT,
+			term TEXT,
+			amount TEXT,
+			channel TEXT,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		)
 	`).Error; err != nil {
@@ -184,11 +191,11 @@ func Migrate(db *gorm.DB) error {
 		CREATE TABLE IF NOT EXISTS new_mortgage (
 			id SERIAL PRIMARY KEY,
 			bank_name VARCHAR(255),
-			rate DECIMAL(5,2),
-			term_years INTEGER,
-			max_amount DECIMAL(15,2),
-			initial_payment DECIMAL(15,2),
-			url TEXT,
+			description TEXT,
+			rate TEXT,
+			term TEXT,
+			amount TEXT,
+			channel TEXT,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		)
 	`).Error; err != nil {
@@ -199,11 +206,11 @@ func Migrate(db *gorm.DB) error {
 		CREATE TABLE IF NOT EXISTS old_mortgage (
 			id SERIAL PRIMARY KEY,
 			bank_name VARCHAR(255),
-			rate DECIMAL(5,2),
-			term_years INTEGER,
-			max_amount DECIMAL(15,2),
-			initial_payment DECIMAL(15,2),
-			url TEXT,
+			description TEXT,
+			rate TEXT,
+			term TEXT,
+			amount TEXT,
+			channel TEXT,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		)
 	`).Error; err != nil {
@@ -304,6 +311,8 @@ func Migrate(db *gorm.DB) error {
 	if err := migrations.UpdateMicrocreditTables(db); err != nil {
 		return err
 	}
+
+	// Таблицы ипотеки уже созданы с правильной структурой выше
 
 	return nil
 }

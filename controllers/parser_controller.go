@@ -328,15 +328,20 @@ func (pc *ParserController) ParseAutocreditPage(c *gin.Context) {
 		return
 	}
 
+	log.Printf("[PARSER CONTROLLER] 🚗 Начинаем парсинг автокредитов для URL: %s", url)
+
 	// Используем autocredit parser
 	parser := services.NewAutocreditParser()
-	credit, err := parser.ParseURL(url)
+	credits, err := parser.ParseURL(url)
 	if err != nil {
+		log.Printf("[PARSER CONTROLLER] ❌ Ошибка парсинга: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to parse autocredit: %v", err)})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"result": credit, "success": true})
+	log.Printf("[PARSER CONTROLLER] ✅ Спарсено автокредитов: %d", len(credits))
+
+	c.JSON(http.StatusOK, gin.H{"result": credits, "success": true})
 }
 
 func (pc *ParserController) ParseTransferPage(c *gin.Context) {
@@ -437,17 +442,17 @@ func (pc *ParserController) ParseMortgagePage(c *gin.Context) {
 
 	// Используем mortgage parser
 	parser := services.NewMortgageParser()
-	mortgage, err := parser.ParseURL(url)
+	mortgages, err := parser.ParseURL(url)
 	if err != nil {
 		log.Printf("[PARSER CONTROLLER] ❌ Ошибка парсинга ипотеки: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to parse mortgage: %v", err)})
 		return
 	}
 
-	log.Printf("[PARSER CONTROLLER] ✅ Ипотека спарсена: %s (%.1f%%)", mortgage.BankName, mortgage.Rate)
+	log.Printf("[PARSER CONTROLLER] ✅ Спарсено ипотек: %d", len(mortgages))
 
 	c.JSON(http.StatusOK, gin.H{
-		"result":  mortgage,
+		"result":  mortgages,
 		"success": true,
 	})
 }

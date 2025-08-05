@@ -61,6 +61,15 @@ func getMortgagesWithPagination(c *gin.Context, db *gorm.DB, tableName string) {
 
 	// Формируем ответ в стандартном формате
 	totalPages := (total + int64(limit) - 1) / int64(limit)
+	// Проверяем, есть ли данные на последней странице
+	if totalPages > 0 {
+		lastPageOffset := int((totalPages - 1) * int64(limit))
+		var lastPageCount int64
+		db.Table(tableName).Offset(lastPageOffset).Limit(limit).Count(&lastPageCount)
+		if lastPageCount == 0 {
+			totalPages = totalPages - 1
+		}
+	}
 
 	response := gin.H{
 		"result": gin.H{

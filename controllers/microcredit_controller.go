@@ -84,6 +84,15 @@ func (mc *MicrocreditController) getMicrocreditsWithPagination(c *gin.Context, t
 
 	// Вычисление пагинации
 	totalPages := int((totalElements + int64(size) - 1) / int64(size))
+	// Проверяем, есть ли данные на последней странице
+	if totalPages > 0 {
+		lastPageOffset := (totalPages - 1) * size
+		var lastPageCount int64
+		db.Table(tableName).Offset(lastPageOffset).Limit(size).Count(&lastPageCount)
+		if lastPageCount == 0 {
+			totalPages = totalPages - 1
+		}
+	}
 	offset := page * size
 
 	// Проверка на пустой результат

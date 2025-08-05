@@ -5,12 +5,12 @@ import (
 )
 
 type Mortgage struct {
-	ID             uint      `gorm:"primaryKey;table:new_mortgage" json:"id"`
-	BankName       string    `json:"bank_name"`
-	Rate           float64   `json:"rate"`
-	TermYears      int       `json:"term_years"`
-	MaxAmount      float64   `json:"max_amount"`
-	InitialPayment float64   `json:"initial_payment"`
-	URL            string    `json:"url"`
-	CreatedAt      time.Time `json:"created_at"`
+	ID          uint      `gorm:"primaryKey" json:"id"`
+	BankName    string    `json:"bank_name"`
+	Description string    `json:"description"`
+	Rate        string    `json:"rate"`
+	Term        string    `json:"term"`
+	Amount      string    `json:"amount"`
+	Channel     string    `json:"channel"`
+	CreatedAt   time.Time `json:"created_at"`
 }

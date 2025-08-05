@@ -11,30 +11,31 @@ import (
 )
 
 var autocreditURLs = []string{
-	"https://www.infinbank.com/ru/private/credits/avto_credit/",
-	"https://sqb.uz/individuals/credits/avtokredit-ru/",
-	"https://aab.uz/ru/private/crediting/avtokredit-vtorichnyy-rynok-/",
-	"https://mkbank.uz/ru/private/crediting/car-loan/",
-	"https://trustbank.uz/ru/private/crediting/auto/",
-	"https://hamkorbank.uz/physical/credits/autolight/",
-	"https://ru.ipakyulibank.uz/physical/kredity/avtokredity/avtokredit-uzauto",
-	"https://asakabank.uz/ru/physical-persons/credits/avtokredit-25",
-	"https://xb.uz/page/tezkor-avtokredit",
-	"https://turonbank.uz/ru/private/crediting/avtokredit-imkoniyat/",
+	"https://bank.uz/uz/credits/avtokredit",
+	"https://bank.uz/uz/credits/avtokredit?PAGEN_3=2",
+	"https://bank.uz/uz/credits/avtokredit?PAGEN_3=3",
+	"https://bank.uz/uz/credits/avtokredit?PAGEN_3=4",
+	"https://bank.uz/uz/credits/avtokredit?PAGEN_3=5",
+	"https://bank.uz/uz/credits/avtokredit?PAGEN_3=6",
+	"https://bank.uz/uz/credits/avtokredit?PAGEN_3=7",
+	"https://bank.uz/uz/credits/avtokredit?PAGEN_3=8",
 }
 
 // Функция для парсинга одного URL
-func parseAutocreditURL(url string, logger *log.Logger) *models.Autocredit {
+func parseAutocreditURL(url string, logger *log.Logger) []*models.Autocredit {
 	// Парсим напрямую, без обращения к API
 	parser := NewAutocreditParser()
-	credit, err := parser.ParseURL(url)
+	credits, err := parser.ParseURL(url)
 	if err != nil {
 		logger.Printf("Ошибка парсинга %s: %v", url, err)
 		return nil
 	}
 
-	credit.CreatedAt = time.Now()
-	return credit
+	// Устанавливаем время создания для всех кредитов
+	for _, credit := range credits {
+		credit.CreatedAt = time.Now()
+	}
+	return credits
 }
 
 // Инициализация данных (первый запуск)
@@ -43,23 +44,23 @@ func InitializeAutocreditData(db *gorm.DB) {
 	logger := log.New(logFile, "", log.LstdFlags)
 	defer logFile.Close()
 
-	// Проверяем, есть ли данные в таблицах
-	var count int64
-	db.Table("new_autocredit").Count(&count)
+	logger.Printf("Инициализация данных autocredit - очищаем базу и парсим заново...")
 
-	if count == 0 {
-		logger.Printf("Инициализация данных autocredit - таблицы пустые, парсим все сайты...")
+	// Очищаем обе таблицы
+	db.Exec("TRUNCATE new_autocredit")
+	db.Exec("TRUNCATE old_autocredit")
 
-		// Парсим все URL'ы и сохраняем в обе таблицы
-		for _, url := range autocreditURLs {
-			if credit := parseAutocreditURL(url, logger); credit != nil {
+	// Парсим все URL'ы и сохраняем в обе таблицы
+	for _, url := range autocreditURLs {
+		if credits := parseAutocreditURL(url, logger); credits != nil {
+			for _, credit := range credits {
 				db.Table("new_autocredit").Create(credit)
 				db.Table("old_autocredit").Create(credit)
 			}
 		}
-
-		logger.Printf("Инициализация завершена - заполнены таблицы new_autocredit и old_autocredit")
 	}
+
+	logger.Printf("Инициализация завершена - заполнены таблицы new_autocredit и old_autocredit")
 }
 
 func StartAutocreditCron(db *gorm.DB) {
@@ -67,12 +68,12 @@ func StartAutocreditCron(db *gorm.DB) {
 	InitializeAutocreditData(db)
 
 	c := cron.New()
-	c.AddFunc("0 0 20 */3 * *", func() {
+	c.AddFunc("0 0 3 * * *", func() { // Каждый день в 03:00 UTC
 		logFile, _ := os.OpenFile("logs/parser_errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		logger := log.New(logFile, "", log.LstdFlags)
 		defer logFile.Close()
 
-		logger.Printf("Начало парсинга autocredit каждые 3 дня...")
+		logger.Printf("Начало ежедневного парсинга autocredit...")
 
 		// Копируем new_autocredit в old_autocredit
 		db.Exec("TRUNCATE old_autocredit")
@@ -81,14 +82,15 @@ func StartAutocreditCron(db *gorm.DB) {
 
 		// Парсим все URL'ы заново
 		for _, url := range autocreditURLs {
-			if credit := parseAutocreditURL(url, logger); credit != nil {
-				db.Table("new_autocredit").Create(credit)
+			if credits := parseAutocreditURL(url, logger); credits != nil {
+				for _, credit := range credits {
+					db.Table("new_autocredit").Create(credit)
+				}
 			}
 		}
 
-		logger.Printf("Парсинг autocredit каждые 3 дня завершен")
+		logger.Printf("Ежедневный парсинг autocredit завершен")
 	})
-
 	c.Start()
-	log.Printf("[AUTOCREDIT CRON] Планировщик запущен. Парсинг автокредитов будет выполняться каждые 3 дня в 20:00 UTC")
+	log.Printf("[AUTOCREDIT CRON] Планировщик запущен. Парсинг автокредитов будет выполняться каждый день в 03:00 UTC")
 }

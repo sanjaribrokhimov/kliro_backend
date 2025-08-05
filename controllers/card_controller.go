@@ -79,6 +79,23 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 
 	// Вычисление пагинации
 	totalPages := int((totalElements + int64(size) - 1) / int64(size))
+	// Проверяем, есть ли данные на последней странице
+	if totalPages > 0 {
+		lastPageOffset := (totalPages - 1) * size
+		var lastPageCount int64
+		lastPageQuery := db.Table(tableName)
+		// Применяем те же фильтры для проверки последней страницы
+		if currency != "" {
+			lastPageQuery = lastPageQuery.Where("currency ILIKE ?", "%"+currency+"%")
+		}
+		if system != "" {
+			lastPageQuery = lastPageQuery.Where("system ILIKE ?", "%"+system+"%")
+		}
+		lastPageQuery.Offset(lastPageOffset).Limit(size).Count(&lastPageCount)
+		if lastPageCount == 0 {
+			totalPages = totalPages - 1
+		}
+	}
 	offset := page * size
 
 	// Проверка на пустой результат

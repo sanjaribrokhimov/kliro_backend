@@ -65,6 +65,15 @@ func (ac *AutocreditController) getAutocreditsWithPagination(c *gin.Context, tab
 
 	// Вычисление пагинации
 	totalPages := int((totalElements + int64(size) - 1) / int64(size))
+	// Проверяем, есть ли данные на последней странице
+	if totalPages > 0 {
+		lastPageOffset := (totalPages - 1) * size
+		var lastPageCount int64
+		db.Table(tableName).Offset(lastPageOffset).Limit(size).Count(&lastPageCount)
+		if lastPageCount == 0 {
+			totalPages = totalPages - 1
+		}
+	}
 	offset := page * size
 
 	// Проверка на пустой результат
@@ -101,12 +110,13 @@ func (ac *AutocreditController) getAutocreditsWithPagination(c *gin.Context, tab
 
 	// Валидация поля сортировки для автокредитов
 	allowedSortFields := map[string]string{
-		"bank_name":       "bank_name",
-		"rate":            "rate",
-		"initial_payment": "initial_payment",
-		"term_months":     "term_months",
-		"max_amount":      "max_amount",
-		"created_at":      "created_at",
+		"bank_name":   "bank_name",
+		"description": "description",
+		"rate":        "rate",
+		"term":        "term",
+		"amount":      "amount",
+		"channel":     "channel",
+		"created_at":  "created_at",
 	}
 
 	sortField, exists := allowedSortFields[sortBy]
