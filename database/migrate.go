@@ -17,11 +17,11 @@ func Migrate(db *gorm.DB) error {
 		CREATE TABLE IF NOT EXISTS new_microcredit (
 			id SERIAL PRIMARY KEY,
 			bank_name VARCHAR(255),
-			max_amount DECIMAL(15,2),
-			rate_max DECIMAL(5,2),
-			rate_min DECIMAL(5,2),
-			term_months INTEGER,
-			url TEXT,
+			description TEXT,
+			rate TEXT,
+			term TEXT,
+			amount TEXT,
+			channel TEXT,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		)
 	`).Error; err != nil {
@@ -32,11 +32,11 @@ func Migrate(db *gorm.DB) error {
 		CREATE TABLE IF NOT EXISTS old_microcredit (
 			id SERIAL PRIMARY KEY,
 			bank_name VARCHAR(255),
-			max_amount DECIMAL(15,2),
-			rate_max DECIMAL(5,2),
-			rate_min DECIMAL(5,2),
-			term_months INTEGER,
-			url TEXT,
+			description TEXT,
+			rate TEXT,
+			term TEXT,
+			amount TEXT,
+			channel TEXT,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		)
 	`).Error; err != nil {
@@ -297,6 +297,11 @@ func Migrate(db *gorm.DB) error {
 
 	// Удаляем поле description из таблиц карт
 	if err := migrations.RemoveDescriptionFromCardTables(db); err != nil {
+		return err
+	}
+
+	// Обновляем таблицы микрокредитов с новой структурой
+	if err := migrations.UpdateMicrocreditTables(db); err != nil {
 		return err
 	}
 

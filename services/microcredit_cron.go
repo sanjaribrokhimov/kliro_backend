@@ -11,30 +11,31 @@ import (
 )
 
 var microcreditURLs = []string{
-	"https://tengebank.uz/credit/mikrozajm-onlajn",
-	"https://ru.ipakyulibank.uz/physical/kredity/mikrozaymy",
-	"https://tbcbank.uz/ru/product/kredity/",
-	"https://aloqabank.uz/uz/private/crediting/onlayn-mikroqarz/",
-	"https://mkbank.uz/uz/private/crediting/microloan/",
-	"https://xb.uz/page/onlayn-mikroqarz",
-	"https://turonbank.uz/ru/private/crediting/mikrokredit-dlya-samozanyatykh-lits/",
-	"https://hamkorbank.uz/physical/credits/microloan-online/",
-	"https://sqb.uz/uz/individuals/credits/mikrozaym-ru/",
-	"https://www.ipotekabank.uz/private/crediting/micro_new/",
+	"https://bank.uz/uz/credits/mikrozaymy",
+	"https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=2",
+	"https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=3",
+	"https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=4",
+	"https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=5",
+	"https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=6",
+	"https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=7",
+	"https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=8",
 }
 
 // Функция для парсинга одного URL
-func parseMicrocreditURL(url string, logger *log.Logger) *models.Microcredit {
+func parseMicrocreditURL(url string, logger *log.Logger) []*models.Microcredit {
 	// Парсим напрямую, без обращения к API
 	parser := NewMicrocreditParser()
-	credit, err := parser.ParseURL(url)
+	credits, err := parser.ParseURL(url)
 	if err != nil {
 		logger.Printf("Ошибка парсинга %s: %v", url, err)
 		return nil
 	}
 
-	credit.CreatedAt = time.Now()
-	return credit
+	// Устанавливаем время создания для всех кредитов
+	for _, credit := range credits {
+		credit.CreatedAt = time.Now()
+	}
+	return credits
 }
 
 // Инициализация данных (первый запуск)
@@ -43,23 +44,23 @@ func InitializeMicrocreditData(db *gorm.DB) {
 	logger := log.New(logFile, "", log.LstdFlags)
 	defer logFile.Close()
 
-	// Проверяем, есть ли данные в таблицах
-	var count int64
-	db.Table("new_microcredit").Count(&count)
+	logger.Printf("Инициализация данных microcredit - очищаем базу и парсим заново...")
 
-	if count == 0 {
-		logger.Printf("Инициализация данных microcredit - таблицы пустые, парсим все сайты...")
+	// Очищаем обе таблицы
+	db.Exec("TRUNCATE new_microcredit")
+	db.Exec("TRUNCATE old_microcredit")
 
-		// Парсим все URL'ы и сохраняем в обе таблицы
-		for _, url := range microcreditURLs {
-			if credit := parseMicrocreditURL(url, logger); credit != nil {
+	// Парсим все URL'ы и сохраняем в обе таблицы
+	for _, url := range microcreditURLs {
+		if credits := parseMicrocreditURL(url, logger); credits != nil {
+			for _, credit := range credits {
 				db.Table("new_microcredit").Create(credit)
 				db.Table("old_microcredit").Create(credit)
 			}
 		}
-
-		logger.Printf("Инициализация завершена - заполнены таблицы new_microcredit и old_microcredit")
 	}
+
+	logger.Printf("Инициализация завершена - заполнены таблицы new_microcredit и old_microcredit")
 }
 
 func StartMicrocreditCron(db *gorm.DB) {
@@ -67,12 +68,12 @@ func StartMicrocreditCron(db *gorm.DB) {
 	InitializeMicrocreditData(db)
 
 	c := cron.New()
-	c.AddFunc("0 0 20 */3 * *", func() {
+	c.AddFunc("0 0 3 * * *", func() { // Каждый день в 03:00 UTC
 		logFile, _ := os.OpenFile("logs/parser_errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		logger := log.New(logFile, "", log.LstdFlags)
 		defer logFile.Close()
 
-		logger.Printf("Начало парсинга microcredit каждые 3 дня...")
+		logger.Printf("Начало ежедневного парсинга microcredit...")
 
 		// Копируем new_microcredit в old_microcredit
 		db.Exec("TRUNCATE old_microcredit")
@@ -81,13 +82,15 @@ func StartMicrocreditCron(db *gorm.DB) {
 
 		// Парсим все URL'ы заново
 		for _, url := range microcreditURLs {
-			if credit := parseMicrocreditURL(url, logger); credit != nil {
-				db.Table("new_microcredit").Create(credit)
+			if credits := parseMicrocreditURL(url, logger); credits != nil {
+				for _, credit := range credits {
+					db.Table("new_microcredit").Create(credit)
+				}
 			}
 		}
 
-		logger.Printf("Парсинг microcredit каждые 3 дня завершен")
+		logger.Printf("Ежедневный парсинг microcredit завершен")
 	})
 	c.Start()
-	log.Printf("[MICROCREDIT CRON] Планировщик запущен. Парсинг будет выполняться каждые 3 дня в 20:00 UTC")
+	log.Printf("[MICROCREDIT CRON] Планировщик запущен. Парсинг микрокредитов будет выполняться каждый день в 03:00 UTC")
 }

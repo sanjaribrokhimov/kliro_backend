@@ -505,16 +505,16 @@ paths:
   /microcredits/new:
     get:
       tags: [Microcredits]
-      summary: Получить новые микрофинансы с пагинацией
+      summary: Получить новые микрокредиты с пагинацией
       description: |
-        Возвращает список новых микрофинансовых предложений от банков с поддержкой пагинации и сортировки.
+        Возвращает список новых микрокредитов от банков с поддержкой пагинации и сортировки.
         
         **Параметры пагинации:**
         - `page` - номер страницы (начиная с 0, по умолчанию 0)
         - `size` - размер страницы (1-100, по умолчанию 10)
         
         **Параметры сортировки:**
-        - `sort` - поле для сортировки (bank_name, max_amount, rate_max, rate_min, term_months, created_at)
+        - `sort` - поле для сортировки (bank_name, description, rate, term, amount, channel, created_at)
         - `direction` - направление сортировки (asc, desc, по умолчанию asc)
       parameters:
         - in: query
@@ -538,7 +538,7 @@ paths:
           name: sort
           schema:
             type: string
-            enum: [bank_name, max_amount, rate_max, rate_min, term_months, created_at]
+            enum: [bank_name, description, rate, term, amount, channel, created_at]
             default: bank_name
           description: Поле для сортировки
           example: bank_name
@@ -586,7 +586,7 @@ paths:
                         type: array
                         items:
                           $ref: '#/components/schemas/Microcredit'
-                        description: Массив микрофинансов
+                        description: Массив микрокредитов
                       number:
                         type: integer
                         description: Номер текущей страницы
@@ -617,28 +617,28 @@ paths:
                     example: null
               example:
                 result:
-                  totalPages: 5
-                  totalElements: 47
+                  totalPages: 22
+                  totalElements: 106
                   first: true
                   last: false
                   size: 10
                   content:
                     - id: 1
-                      bank_name: "TBC Bank"
-                      max_amount: 50000000
-                      rate_max: 24.5
-                      rate_min: 18.0
-                      term_months: 12
-                      url: "https://tbcbank.uz/credit/mikrozajm"
-                      created_at: "2024-01-15T10:30:00Z"
+                      bank_name: "Agrobank"
+                      description: "Mikroqarz"
+                      rate: "30 % dan"
+                      term: "4 yil"
+                      amount: "100 000 000 so'mgacha"
+                      channel: "Bank"
+                      created_at: "2025-08-05T00:57:51.765405Z"
                     - id: 2
-                      bank_name: "Ipak Yo'li Banki"
-                      max_amount: 30000000
-                      rate_max: 22.9
-                      rate_min: 16.5
-                      term_months: 24
-                      url: "https://ru.ipakyulibank.uz/physical/kredity/mikrozaymy"
-                      created_at: "2024-01-15T11:00:00Z"
+                      bank_name: "APEXBANK"
+                      description: "Onlayn kredit"
+                      rate: "32dan - 42 % gacha"
+                      term: "6 oy - 3 yil"
+                      amount: "1 000 000dan - 100 000 000 so'mgacha"
+                      channel: "BankOnlayn"
+                      created_at: "2025-08-05T00:57:53.273873Z"
                   number: 0
                   sort:
                     - direction: "ASC"
@@ -667,16 +667,16 @@ paths:
   /microcredits/old:
     get:
       tags: [Microcredits]
-      summary: Получить старые микрофинансы с пагинацией
+      summary: Получить старые микрокредиты с пагинацией
       description: |
-        Возвращает список старых микрофинансовых предложений от банков с поддержкой пагинации и сортировки.
+        Возвращает список старых микрокредитов от банков с поддержкой пагинации и сортировки.
         
         **Параметры пагинации:**
         - `page` - номер страницы (начиная с 0, по умолчанию 0)
         - `size` - размер страницы (1-100, по умолчанию 10)
         
         **Параметры сортировки:**
-        - `sort` - поле для сортировки (bank_name, max_amount, rate_max, rate_min, term_months, created_at)
+        - `sort` - поле для сортировки (bank_name, description, rate, term, amount, channel, created_at)
         - `direction` - направление сортировки (asc, desc, по умолчанию asc)
       parameters:
         - in: query
@@ -700,7 +700,7 @@ paths:
           name: sort
           schema:
             type: string
-            enum: [bank_name, max_amount, rate_max, rate_min, term_months, created_at]
+            enum: [bank_name, description, rate, term, amount, channel, created_at]
             default: bank_name
           description: Поле для сортировки
           example: bank_name
@@ -748,7 +748,7 @@ paths:
                         type: array
                         items:
                           $ref: '#/components/schemas/Microcredit'
-                        description: Массив микрофинансов
+                        description: Массив микрокредитов
                       number:
                         type: integer
                         description: Номер текущей страницы
@@ -786,21 +786,21 @@ paths:
                   size: 10
                   content:
                     - id: 1
-                      bank_name: "Aloqa Bank"
-                      max_amount: 40000000
-                      rate_max: 26.0
-                      rate_min: 19.5
-                      term_months: 18
-                      url: "https://aloqabank.uz/uz/private/crediting/onlayn-mikroqarz/"
-                      created_at: "2024-01-10T09:15:00Z"
+                      bank_name: "Agrobank"
+                      description: "Mikroqarz"
+                      rate: "30 % dan"
+                      term: "4 yil"
+                      amount: "100 000 000 so'mgacha"
+                      channel: "Bank"
+                      created_at: "2025-08-05T00:57:51.765405Z"
                     - id: 2
-                      bank_name: "Hamkor Bank"
-                      max_amount: 25000000
-                      rate_max: 23.5
-                      rate_min: 17.0
-                      term_months: 36
-                      url: "https://hamkorbank.uz/physical/credits/microloan-online/"
-                      created_at: "2024-01-10T10:45:00Z"
+                      bank_name: "APEXBANK"
+                      description: "Onlayn kredit"
+                      rate: "32dan - 42 % gacha"
+                      term: "6 oy - 3 yil"
+                      amount: "1 000 000dan - 100 000 000 so'mgacha"
+                      channel: "BankOnlayn"
+                      created_at: "2025-08-05T00:57:53.273873Z"
                   number: 0
                   sort:
                     - direction: "ASC"
@@ -824,6 +824,86 @@ paths:
                   empty: false
                 success: true
                 error: null
+        '500':
+          $ref: '#/components/responses/Error'
+  /parse-microcredit:
+    get:
+      tags: [Microcredits]
+      summary: Парсинг микрокредитов
+      description: |
+        Парсит микрокредиты с указанного URL и возвращает список найденных предложений.
+        
+        **Параметры:**
+        - `url` - URL страницы для парсинга (обязательный)
+        
+        **Возвращает:**
+        - Массив микрокредитов с полями: bank_name, description, rate, term, amount, channel
+      parameters:
+        - in: query
+          name: url
+          schema:
+            type: string
+            format: uri
+          required: true
+          description: URL страницы для парсинга микрокредитов
+          example: "https://bank.uz/uz/credits/mikrozaymy"
+      responses:
+        '200':
+          description: Успешный парсинг микрокредитов
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Microcredit'
+                    description: Массив спарсенных микрокредитов
+                  success:
+                    type: boolean
+                    description: Успешность операции
+                    example: true
+                  error:
+                    type: string
+                    nullable: true
+                    description: Сообщение об ошибке
+                    example: null
+              example:
+                result:
+                  - id: 1
+                    bank_name: "Agrobank"
+                    description: "Mikroqarz"
+                    rate: "30 % dan"
+                    term: "4 yil"
+                    amount: "100 000 000 so'mgacha"
+                    channel: "Bank"
+                    created_at: "2025-08-05T00:57:51.765405Z"
+                  - id: 2
+                    bank_name: "APEXBANK"
+                    description: "Onlayn kredit"
+                    rate: "32dan - 42 % gacha"
+                    term: "6 oy - 3 yil"
+                    amount: "1 000 000dan - 100 000 000 so'mgacha"
+                    channel: "BankOnlayn"
+                    created_at: "2025-08-05T00:57:53.273873Z"
+                success: true
+                error: null
+        '400':
+          description: Ошибка в параметрах запроса
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Сообщение об ошибке
+                    example: "URL обязателен для парсинга"
+                  success:
+                    type: boolean
+                    description: Успешность операции
+                    example: false
         '500':
           $ref: '#/components/responses/Error'
   /autocredits/new:
@@ -2989,7 +3069,7 @@ components:
       required: [id, bank_name, currency, buy_rate, created_at, updated_at]
     Microcredit:
       type: object
-      description: Структура данных микрофинанса
+      description: Структура данных микрокредита
       properties:
         id:
           type: integer
@@ -2998,36 +3078,33 @@ components:
         bank_name:
           type: string
           description: Название банка
-          example: "TBC Bank"
-        max_amount:
-          type: number
-          format: double
-          description: Максимальная сумма кредита в сумах
-          example: 50000000
-        rate_max:
-          type: number
-          format: double
-          description: Максимальная процентная ставка
-          example: 24.5
-        rate_min:
-          type: number
-          format: double
-          description: Минимальная процентная ставка
-          example: 18.0
-        term_months:
-          type: integer
-          description: Срок кредита в месяцах
-          example: 12
-        url:
+          example: "Agrobank"
+        description:
           type: string
-          description: Ссылка на предложение банка
-          example: "https://tbcbank.uz/credit/mikrozajm"
+          description: Описание микрокредита
+          example: "Mikroqarz"
+        rate:
+          type: string
+          description: Процентная ставка (как указано на сайте)
+          example: "30 % dan"
+        term:
+          type: string
+          description: Срок кредита (как указано на сайте)
+          example: "4 yil"
+        amount:
+          type: string
+          description: Сумма кредита (как указано на сайте)
+          example: "100 000 000 so'mgacha"
+        channel:
+          type: string
+          description: Канал получения кредита (Банк/Онлайн)
+          example: "Bank"
         created_at:
           type: string
           format: date-time
           description: Дата создания записи
-          example: "2024-01-15T10:30:00Z"
-      required: [id, bank_name, max_amount, rate_max, rate_min, term_months, url, created_at]
+          example: "2025-08-05T00:57:51.765405Z"
+      required: [id, bank_name, description, rate, term, amount, channel, created_at]
     Autocredit:
       type: object
       description: Структура данных автокредита

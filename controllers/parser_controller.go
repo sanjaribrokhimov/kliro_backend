@@ -503,3 +503,29 @@ func (pc *ParserController) ParseCardPage(c *gin.Context) {
 		"success": true,
 	})
 }
+
+func (pc *ParserController) ParseMicrocreditPage(c *gin.Context) {
+	url := c.Query("url")
+	if url == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "url parameter is required"})
+		return
+	}
+
+	log.Printf("[PARSER CONTROLLER] 💰 Начинаем парсинг микрокредитов для URL: %s", url)
+
+	// Используем microcredit parser
+	parser := services.NewMicrocreditParser()
+	microcredits, err := parser.ParseURL(url)
+	if err != nil {
+		log.Printf("[PARSER CONTROLLER] ❌ Ошибка парсинга микрокредитов: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to parse microcredits: %v", err)})
+		return
+	}
+
+	log.Printf("[PARSER CONTROLLER] ✅ Спарсено микрокредитов: %d", len(microcredits))
+
+	c.JSON(http.StatusOK, gin.H{
+		"result":  microcredits,
+		"success": true,
+	})
+}

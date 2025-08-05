@@ -80,6 +80,7 @@ func SetupRouter() *gin.Engine {
 	r.GET("/parse-mortgage", parserController.ParseMortgagePage)
 	r.GET("/parse-deposit", parserController.ParseDepositPage)
 	r.GET("/parse-card", parserController.ParseCardPage)
+	r.GET("/parse-microcredit", parserController.ParseMicrocreditPage)
 	r.GET("/update-transfers", parserController.ParseTransferAndUpdateDatabase)
 	r.GET("/currencies/new", currencyController.GetLatestCurrencyRates)
 	r.GET("/currencies/old", currencyController.GetOldCurrencyRates)
