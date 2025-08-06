@@ -40,30 +40,22 @@ func StartTransferCron(db *gorm.DB) {
 func (tcs *TransferCronService) initializeTransferData() {
 	// Проверяем, есть ли данные в таблицах
 	var newCount int64
-	var oldCount int64
 
 	err1 := tcs.db.Table("new_transfer").Count(&newCount).Error
 	if err1 != nil {
 		log.Printf("[TRANSFER CRON] Ошибка проверки new_transfer: %v", err1)
 	}
 
-	err2 := tcs.db.Table("old_transfer").Count(&oldCount).Error
-	if err2 != nil {
-		log.Printf("[TRANSFER CRON] Ошибка проверки old_transfer: %v", err2)
-	}
+	
 
-	// Если таблицы пустые, парсим данные
-	if newCount == 0 && oldCount == 0 {
-		tcs.parseAllTransferURLs()
-	}
+	
 }
 
 // parseAllTransferURLs парсит все URL переводов
 func (tcs *TransferCronService) parseAllTransferURLs() {
 	parser := NewTransferParser()
 
-	// Перемещаем старые данные
-	tcs.rotateTransferData()
+
 
 	// Парсим только основной URL с переводными приложениями
 	transfers, err := tcs.parseTransferURL("https://bank.uz/uz/perevodi", parser)
@@ -108,27 +100,4 @@ func (tcs *TransferCronService) parseTransferURL(url string, parser *TransferPar
 	return transfers, nil
 }
 
-// rotateTransferData перемещает данные из new_transfer в old_transfer
-func (tcs *TransferCronService) rotateTransferData() {
-	// Очищаем старую таблицу
-	if err := tcs.db.Exec("DELETE FROM old_transfer").Error; err != nil {
-		log.Printf("[TRANSFER CRON] Ошибка очистки old_transfer: %v", err)
-		return
-	}
 
-	// Копируем данные из new в old
-	if err := tcs.db.Exec(`
-		INSERT INTO old_transfer (app_name, commission, limit_ru, limit_uz, created_at)
-		SELECT app_name, commission, limit_ru, limit_uz, created_at
-		FROM new_transfer
-	`).Error; err != nil {
-		log.Printf("[TRANSFER CRON] Ошибка копирования в old_transfer: %v", err)
-		return
-	}
-
-	// Очищаем новую таблицу
-	if err := tcs.db.Exec("DELETE FROM new_transfer").Error; err != nil {
-		log.Printf("[TRANSFER CRON] Ошибка очистки new_transfer: %v", err)
-		return
-	}
-}

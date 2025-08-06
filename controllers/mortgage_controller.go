@@ -23,10 +23,7 @@ func (mc *MortgageController) GetNewMortgages(c *gin.Context) {
 	getMortgagesWithPagination(c, mc.db, "new_mortgage")
 }
 
-// GetOldMortgages получает старые ипотечные кредиты с пагинацией
-func (mc *MortgageController) GetOldMortgages(c *gin.Context) {
-	getMortgagesWithPagination(c, mc.db, "old_mortgage")
-}
+
 
 // ParseMortgage парсит ипотечные кредиты с указанного URL
 func (mc *MortgageController) ParseMortgage(c *gin.Context) {

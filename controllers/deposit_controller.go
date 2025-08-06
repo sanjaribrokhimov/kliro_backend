@@ -36,10 +36,7 @@ func (dc *DepositController) GetNewDeposits(c *gin.Context) {
 	dc.getDepositsWithPagination(c, "new_deposit")
 }
 
-// GetOldDeposits godoc
-func (dc *DepositController) GetOldDeposits(c *gin.Context) {
-	dc.getDepositsWithPagination(c, "old_deposit")
-}
+
 
 // getDepositsWithPagination общая функция для получения вкладов с пагинацией
 func (dc *DepositController) getDepositsWithPagination(c *gin.Context, tableName string) {

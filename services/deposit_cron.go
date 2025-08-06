@@ -53,19 +53,16 @@ func InitializeDepositData(db *gorm.DB) {
 
 	// Очищаем обе таблицы
 	db.Exec("TRUNCATE new_deposit")
-	db.Exec("TRUNCATE old_deposit")
 
 	// Парсим все URL'ы и сохраняем в обе таблицы
 	for _, url := range depositURLs {
 		if deposits := parseDepositURL(url, logger); deposits != nil {
 			for _, deposit := range deposits {
 				db.Table("new_deposit").Create(deposit)
-				db.Table("old_deposit").Create(deposit)
 			}
 		}
 	}
 
-	logger.Printf("Инициализация завершена - заполнены таблицы new_deposit и old_deposit")
 }
 
 func StartDepositCron(db *gorm.DB) {
@@ -80,9 +77,7 @@ func StartDepositCron(db *gorm.DB) {
 
 		logger.Printf("Начало ежедневного парсинга deposit...")
 
-		// Копируем new_deposit в old_deposit
-		db.Exec("TRUNCATE old_deposit")
-		db.Exec("INSERT INTO old_deposit SELECT * FROM new_deposit")
+		// Копируем new_deposit
 		db.Exec("TRUNCATE new_deposit")
 
 		// Парсим все URL'ы заново

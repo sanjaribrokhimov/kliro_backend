@@ -89,15 +89,12 @@ func InitializeCurrencyData(db *gorm.DB) {
 
 	// Очищаем обе таблицы
 	db.Exec("TRUNCATE new_currency")
-	db.Exec("TRUNCATE old_currency")
 
 	// Парсим валюты и сохраняем в обе таблицы
 	if currencies := parseCurrencyData(logger); currencies != nil {
 		for _, currency := range currencies {
 			db.Table("new_currency").Create(currency)
-			db.Table("old_currency").Create(currency)
 		}
-		logger.Printf("Инициализация завершена - заполнены таблицы new_currency и old_currency")
 	} else {
 		logger.Printf("Ошибка при инициализации данных currency")
 	}
@@ -115,9 +112,7 @@ func StartCurrencyCron(db *gorm.DB) {
 
 		logger.Printf("Начало парсинга currency (каждые 3 часа)...")
 
-		// Копируем new_currency в old_currency
-		db.Exec("TRUNCATE old_currency")
-		db.Exec("INSERT INTO old_currency SELECT * FROM new_currency")
+		// Копируем new_currency
 		db.Exec("TRUNCATE new_currency")
 
 		// Парсим валюты заново

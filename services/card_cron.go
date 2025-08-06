@@ -58,21 +58,19 @@ func InitializeCardData(db *gorm.DB) {
 
 	logger.Printf("Инициализация данных card - очищаем базу и парсим заново...")
 
-	// Очищаем обе таблицы
+	// Очищаем таблицу
 	db.Exec("TRUNCATE new_card")
-	db.Exec("TRUNCATE old_card")
 
-	// Парсим все URL'ы и сохраняем в обе таблицы
+	// Парсим все URL'ы и сохраняем в таблицу
 	for _, url := range cardURLs {
 		if cards := parseCardURL(url, logger); cards != nil {
 			for _, card := range cards {
 				db.Table("new_card").Create(card)
-				db.Table("old_card").Create(card)
 			}
 		}
 	}
 
-	logger.Printf("Инициализация завершена - заполнены таблицы new_card и old_card")
+	logger.Printf("Инициализация завершена - заполнена таблица new_card")
 }
 
 func StartCardCron(db *gorm.DB) {
@@ -87,9 +85,7 @@ func StartCardCron(db *gorm.DB) {
 
 		logger.Printf("Начало ежедневного парсинга card...")
 
-		// Копируем new_card в old_card
-		db.Exec("TRUNCATE old_card")
-		db.Exec("INSERT INTO old_card SELECT * FROM new_card")
+		// Очищаем таблицу перед новым парсингом
 		db.Exec("TRUNCATE new_card")
 
 		// Парсим все URL'ы заново

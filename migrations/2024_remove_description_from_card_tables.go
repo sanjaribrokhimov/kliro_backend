@@ -10,10 +10,7 @@ func RemoveDescriptionFromCardTables(db *gorm.DB) error {
 		return err
 	}
 
-	// Удаляем поле description из таблицы old_card
-	if err := db.Exec(`ALTER TABLE old_card DROP COLUMN IF EXISTS description`).Error; err != nil {
-		return err
-	}
+	
 
 	return nil
-}
+} 

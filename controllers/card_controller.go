@@ -36,10 +36,7 @@ func (cc *CardController) GetNewCards(c *gin.Context) {
 	cc.getCardsWithPagination(c, "new_card")
 }
 
-// GetOldCards godoc
-func (cc *CardController) GetOldCards(c *gin.Context) {
-	cc.getCardsWithPagination(c, "old_card")
-}
+
 
 // getCardsWithPagination общая функция для получения карт с пагинацией и фильтрацией
 func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName string) {

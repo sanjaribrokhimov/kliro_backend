@@ -48,19 +48,16 @@ func InitializeMicrocreditData(db *gorm.DB) {
 
 	// Очищаем обе таблицы
 	db.Exec("TRUNCATE new_microcredit")
-	db.Exec("TRUNCATE old_microcredit")
 
 	// Парсим все URL'ы и сохраняем в обе таблицы
 	for _, url := range microcreditURLs {
 		if credits := parseMicrocreditURL(url, logger); credits != nil {
 			for _, credit := range credits {
 				db.Table("new_microcredit").Create(credit)
-				db.Table("old_microcredit").Create(credit)
 			}
 		}
 	}
 
-	logger.Printf("Инициализация завершена - заполнены таблицы new_microcredit и old_microcredit")
 }
 
 func StartMicrocreditCron(db *gorm.DB) {
@@ -75,9 +72,6 @@ func StartMicrocreditCron(db *gorm.DB) {
 
 		logger.Printf("Начало ежедневного парсинга microcredit...")
 
-		// Копируем new_microcredit в old_microcredit
-		db.Exec("TRUNCATE old_microcredit")
-		db.Exec("INSERT INTO old_microcredit SELECT * FROM new_microcredit")
 		db.Exec("TRUNCATE new_microcredit")
 
 		// Парсим все URL'ы заново

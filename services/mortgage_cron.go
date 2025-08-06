@@ -45,21 +45,19 @@ func InitializeMortgageData(db *gorm.DB) {
 
 	logger.Printf("Инициализация данных mortgage - очищаем базу и парсим заново...")
 
-	// Очищаем обе таблицы
+	// Очищаем таблицу
 	db.Exec("TRUNCATE new_mortgage")
-	db.Exec("TRUNCATE old_mortgage")
 
-	// Парсим все URL'ы и сохраняем в обе таблицы
+	// Парсим все URL'ы и сохраняем в таблицу
 	for _, url := range mortgageURLs {
 		if credits := parseMortgageURL(url, logger); credits != nil {
 			for _, credit := range credits {
 				db.Table("new_mortgage").Create(credit)
-				db.Table("old_mortgage").Create(credit)
 			}
 		}
 	}
 
-	logger.Printf("Инициализация завершена - заполнены таблицы new_mortgage и old_mortgage")
+	logger.Printf("Инициализация завершена - заполнена таблица new_mortgage")
 }
 
 func StartMortgageCron(db *gorm.DB) {
@@ -74,9 +72,7 @@ func StartMortgageCron(db *gorm.DB) {
 
 		logger.Printf("Начало ежедневного парсинга mortgage...")
 
-		// Копируем new_mortgage в old_mortgage
-		db.Exec("TRUNCATE old_mortgage")
-		db.Exec("INSERT INTO old_mortgage SELECT * FROM new_mortgage")
+		// Очищаем таблицу перед новым парсингом
 		db.Exec("TRUNCATE new_mortgage")
 
 		// Парсим все URL'ы заново

@@ -2741,6 +2741,7 @@ paths:
                     example: "Internal server error"
 
 
+ 
   /parse-mortgage:
     get:
       tags: [Parser]
@@ -2803,73 +2804,6 @@ paths:
                   error:
                     type: string
                     example: "Failed to parse mortgage: error details"
-
-  /parse-transfer-goquery:
-    get:
-      tags: [Parser]
-      summary: Парсинг переводов с банковского сайта (goquery)
-      description: |
-        Парсит информацию о переводах с указанного URL банковского сайта с использованием goquery.
-        
-        **Извлекаемые данные:**
-        - `app_name` - название приложения для переводов
-        - `commission` - комиссия за переводы
-        - `limit_ru` - информация о лимитах на русском языке
-        - `limit_uz` - информация о лимитах на узбекском языке
-      parameters:
-        - in: query
-          name: url
-          schema:
-            type: string
-          required: true
-          description: URL банковского сайта с информацией о переводах
-          example: "https://bank.uz/uz/perevodi"
-      responses:
-        '200':
-          description: Успешный ответ с результатом парсинга
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  result:
-                    $ref: '#/components/schemas/Transfer'
-                  success:
-                    type: boolean
-                    description: Успешность операции
-                    example: true
-                  error:
-                    type: string
-                    nullable: true
-                    description: Сообщение об ошибке
-                    example: null
-              example:
-                result:
-                  id: 1
-                  app_name: "Davr Mobile"
-                  commission: "0%"
-                  limit_ru: "В рамках акции комиссия 0% на сумму до 3.5 млн сум в месяц"
-                  limit_uz: "Aksiya doirasida har oy 3.5 mln so'mgacha komissiya 0%"
-                  created_at: "2025-08-05T08:46:41.776631Z"
-                success: true
-                error: null
-        '400':
-          description: Неверный URL
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  result:
-                    nullable: true
-                  success:
-                    type: boolean
-                    example: false
-                  error:
-                    type: string
-                    example: "url parameter is required"
-        '500':
-          $ref: '#/components/responses/Error'
 
 components:
   securitySchemes:

@@ -48,19 +48,17 @@ func InitializeAutocreditData(db *gorm.DB) {
 
 	// Очищаем обе таблицы
 	db.Exec("TRUNCATE new_autocredit")
-	db.Exec("TRUNCATE old_autocredit")
 
 	// Парсим все URL'ы и сохраняем в обе таблицы
 	for _, url := range autocreditURLs {
 		if credits := parseAutocreditURL(url, logger); credits != nil {
 			for _, credit := range credits {
 				db.Table("new_autocredit").Create(credit)
-				db.Table("old_autocredit").Create(credit)
 			}
 		}
 	}
 
-	logger.Printf("Инициализация завершена - заполнены таблицы new_autocredit и old_autocredit")
+	logger.Printf("Инициализация завершена - заполнены таблицы new_autocredit ")
 }
 
 func StartAutocreditCron(db *gorm.DB) {
@@ -75,9 +73,7 @@ func StartAutocreditCron(db *gorm.DB) {
 
 		logger.Printf("Начало ежедневного парсинга autocredit...")
 
-		// Копируем new_autocredit в old_autocredit
-		db.Exec("TRUNCATE old_autocredit")
-		db.Exec("INSERT INTO old_autocredit SELECT * FROM new_autocredit")
+		// Копируем new_autocredi
 		db.Exec("TRUNCATE new_autocredit")
 
 		// Парсим все URL'ы заново

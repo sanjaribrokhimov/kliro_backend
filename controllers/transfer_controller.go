@@ -37,10 +37,6 @@ func (tc *TransferController) GetNewTransfers(c *gin.Context) {
 	tc.getTransfersWithPagination(c, "new_transfer")
 }
 
-// GetOldTransfers получает старые переводы с пагинацией
-func (tc *TransferController) GetOldTransfers(c *gin.Context) {
-	tc.getTransfersWithPagination(c, "old_transfer")
-}
 
 // ParseTransfer парсит переводы с указанного URL
 func (tc *TransferController) ParseTransfer(c *gin.Context) {

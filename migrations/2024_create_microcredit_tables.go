@@ -18,6 +18,5 @@ func CreateMicrocreditTables(db *gorm.DB) error {
 	if err := db.Migrator().CreateTable(&Microcredit{}); err != nil {
 		return err
 	}
-	// Создаем копию для old_microcredit
-	return db.Exec(`CREATE TABLE IF NOT EXISTS old_microcredit AS TABLE new_microcredit WITH NO DATA`).Error
+	return nil
 }

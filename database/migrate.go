@@ -28,26 +28,8 @@ func Migrate(db *gorm.DB) error {
 		return err
 	}
 
-	if err := db.Exec(`
-		CREATE TABLE IF NOT EXISTS old_microcredit (
-			id SERIAL PRIMARY KEY,
-			bank_name VARCHAR(255),
-			description TEXT,
-			rate TEXT,
-			term TEXT,
-			amount TEXT,
-			channel TEXT,
-			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-		)
-	`).Error; err != nil {
-		return err
-	}
-
 	// Создаем таблицы для autocredit (обновляем структуру)
 	if err := db.Exec(`DROP TABLE IF EXISTS new_autocredit`).Error; err != nil {
-		return err
-	}
-	if err := db.Exec(`DROP TABLE IF EXISTS old_autocredit`).Error; err != nil {
 		return err
 	}
 
@@ -66,55 +48,11 @@ func Migrate(db *gorm.DB) error {
 		return err
 	}
 
-	if err := db.Exec(`
-		CREATE TABLE old_autocredit (
-			id SERIAL PRIMARY KEY,
-			bank_name VARCHAR(255),
-			description TEXT,
-			rate TEXT,
-			term TEXT,
-			amount TEXT,
-			channel TEXT,
-			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-		)
-	`).Error; err != nil {
-		return err
-	}
-
-	// Создаем таблицу для валют
-	if err := db.Exec(`
-		CREATE TABLE IF NOT EXISTS currencies (
-			id SERIAL PRIMARY KEY,
-			bank_name VARCHAR(255) NOT NULL,
-			currency VARCHAR(10) NOT NULL,
-			buy_rate DECIMAL(10,2) NOT NULL,
-			sell_rate DECIMAL(10,2),
-			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-			deleted_at TIMESTAMP NULL
-		)
-	`).Error; err != nil {
-		return err
-	}
+	
 
 	// Создаем таблицы new_currency и old_currency
 	if err := db.Exec(`
 		CREATE TABLE IF NOT EXISTS new_currency (
-			id SERIAL PRIMARY KEY,
-			bank_name VARCHAR(255) NOT NULL,
-			currency VARCHAR(10) NOT NULL,
-			buy_rate DECIMAL(10,2) NOT NULL,
-			sell_rate DECIMAL(10,2),
-			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-			deleted_at TIMESTAMP
-		)
-	`).Error; err != nil {
-		return err
-	}
-
-	if err := db.Exec(`
-		CREATE TABLE IF NOT EXISTS old_currency (
 			id SERIAL PRIMARY KEY,
 			bank_name VARCHAR(255) NOT NULL,
 			currency VARCHAR(10) NOT NULL,
@@ -141,9 +79,6 @@ func Migrate(db *gorm.DB) error {
 	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_new_currency_currency ON new_currency(currency)`).Error; err != nil {
 		return err
 	}
-	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_old_currency_currency ON old_currency(currency)`).Error; err != nil {
-		return err
-	}
 
 	// Создаем таблицы для переводов (создаем если не существуют)
 	if err := db.Exec(`
@@ -159,51 +94,18 @@ func Migrate(db *gorm.DB) error {
 		return err
 	}
 
-	if err := db.Exec(`
-		CREATE TABLE IF NOT EXISTS old_transfer (
-			id SERIAL PRIMARY KEY,
-			app_name VARCHAR(100) NOT NULL,
-			commission VARCHAR(50) NOT NULL,
-			limit_ru TEXT NULL,
-			limit_uz TEXT NULL,
-			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-		)
-	`).Error; err != nil {
-		return err
-	}
-
 	// Создаем индексы для переводов
 	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_new_transfer_app_name ON new_transfer(app_name)`).Error; err != nil {
 		return err
 	}
-	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_old_transfer_app_name ON old_transfer(app_name)`).Error; err != nil {
-		return err
-	}
+
 	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_new_transfer_created_at ON new_transfer(created_at)`).Error; err != nil {
-		return err
-	}
-	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_old_transfer_created_at ON old_transfer(created_at)`).Error; err != nil {
 		return err
 	}
 
 	// Создаем таблицы для ипотеки
 	if err := db.Exec(`
 		CREATE TABLE IF NOT EXISTS new_mortgage (
-			id SERIAL PRIMARY KEY,
-			bank_name VARCHAR(255),
-			description TEXT,
-			rate TEXT,
-			term TEXT,
-			amount TEXT,
-			channel TEXT,
-			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-		)
-	`).Error; err != nil {
-		return err
-	}
-
-	if err := db.Exec(`
-		CREATE TABLE IF NOT EXISTS old_mortgage (
 			id SERIAL PRIMARY KEY,
 			bank_name VARCHAR(255),
 			description TEXT,
@@ -232,31 +134,12 @@ func Migrate(db *gorm.DB) error {
 		return err
 	}
 
-	if err := db.Exec(`
-		CREATE TABLE IF NOT EXISTS old_deposit (
-			id SERIAL PRIMARY KEY,
-			bank_name VARCHAR(255),
-			rate TEXT,
-			term_years TEXT,
-			min_amount TEXT,
-			title TEXT,
-			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-		)
-	`).Error; err != nil {
-		return err
-	}
-
 	// Создаем индексы для ипотеки и вкладов
 	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_new_mortgage_bank_name ON new_mortgage(bank_name)`).Error; err != nil {
 		return err
 	}
-	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_old_mortgage_bank_name ON old_mortgage(bank_name)`).Error; err != nil {
-		return err
-	}
+
 	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_new_deposit_bank_name ON new_deposit(bank_name)`).Error; err != nil {
-		return err
-	}
-	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_old_deposit_bank_name ON old_deposit(bank_name)`).Error; err != nil {
 		return err
 	}
 
@@ -275,25 +158,8 @@ func Migrate(db *gorm.DB) error {
 		return err
 	}
 
-	if err := db.Exec(`
-		CREATE TABLE IF NOT EXISTS old_card (
-			id SERIAL PRIMARY KEY,
-			bank_name VARCHAR(255),
-			title TEXT,
-			currency TEXT,
-			system TEXT,
-			opening_type TEXT,
-			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-		)
-	`).Error; err != nil {
-		return err
-	}
-
 	// Создаем индексы для карт
 	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_new_card_bank_name ON new_card(bank_name)`).Error; err != nil {
-		return err
-	}
-	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_old_card_bank_name ON old_card(bank_name)`).Error; err != nil {
 		return err
 	}
 

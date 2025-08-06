@@ -36,10 +36,7 @@ func (ac *AutocreditController) GetNewAutocredits(c *gin.Context) {
 	ac.getAutocreditsWithPagination(c, "new_autocredit")
 }
 
-// GetOldAutocredits получает старые автокредиты с пагинацией
-func (ac *AutocreditController) GetOldAutocredits(c *gin.Context) {
-	ac.getAutocreditsWithPagination(c, "old_autocredit")
-}
+
 
 // getAutocreditsWithPagination общая функция для получения автокредитов с пагинацией
 func (ac *AutocreditController) getAutocreditsWithPagination(c *gin.Context, tableName string) {

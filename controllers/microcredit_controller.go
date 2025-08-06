@@ -55,10 +55,7 @@ func (mc *MicrocreditController) GetNewMicrocredits(c *gin.Context) {
 	mc.getMicrocreditsWithPagination(c, "new_microcredit")
 }
 
-// GetOldMicrocredits godoc
-func (mc *MicrocreditController) GetOldMicrocredits(c *gin.Context) {
-	mc.getMicrocreditsWithPagination(c, "old_microcredit")
-}
+
 
 // getMicrocreditsWithPagination общая функция для получения микрофинансов с пагинацией
 func (mc *MicrocreditController) getMicrocreditsWithPagination(c *gin.Context, tableName string) {

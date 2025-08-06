@@ -127,24 +127,6 @@ func (cs *CurrencyService) GetLatestCurrencyRates() (map[string][]models.Currenc
 	return result, nil
 }
 
-// GetOldCurrencyRates получает старые курсы валют из таблицы old_currency
-func (cs *CurrencyService) GetOldCurrencyRates() (map[string][]models.Currency, error) {
-	var currencies []models.Currency
-
-	// Получаем курсы из таблицы old_currency
-	if err := cs.db.Table("old_currency").Find(&currencies).Error; err != nil {
-		return nil, err
-	}
-
-	// Группируем по валютам
-	result := make(map[string][]models.Currency)
-	for _, currency := range currencies {
-		result[currency.Currency] = append(result[currency.Currency], currency)
-	}
-
-	return result, nil
-}
-
 // GetCurrencyRatesByDate получает курсы валют за определенную дату
 func (cs *CurrencyService) GetCurrencyRatesByDate(date time.Time) (map[string][]models.Currency, error) {
 	var currencies []models.Currency

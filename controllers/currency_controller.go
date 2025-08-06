@@ -37,23 +37,7 @@ func (cc *CurrencyController) GetLatestCurrencyRates(c *gin.Context) {
 	})
 }
 
-// GetOldCurrencyRates получает старые курсы валют
-func (cc *CurrencyController) GetOldCurrencyRates(c *gin.Context) {
-	rates, err := cc.currencyService.GetOldCurrencyRates()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"result":  nil,
-			"success": false,
-			"error":   "Failed to get old currency rates",
-		})
-		return
-	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"result":  rates,
-		"success": true,
-	})
-}
 
 // GetCurrencyRatesByDate получает курсы валют за определенную дату
 func (cc *CurrencyController) GetCurrencyRatesByDate(c *gin.Context) {
