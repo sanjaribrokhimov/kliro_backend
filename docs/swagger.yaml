@@ -918,15 +918,16 @@ paths:
         - `size` - размер страницы (1-100, по умолчанию 10)
         
         **Параметры сортировки:**
-        - `sort` - поле для сортировки (bank_name, rate, initial_payment, term_months, max_amount, created_at)
+        - `sort` - поле для сортировки (bank_name, description, rate, term, amount, channel, created_at)
         - `direction` - направление сортировки (asc, desc, по умолчанию asc)
         
         **Поля автокредита:**
         - `bank_name` - название банка
-        - `rate` - годовая процентная ставка
-        - `initial_payment` - первоначальный взнос в процентах
-        - `term_months` - срок кредита в месяцах
-        - `max_amount` - максимальная сумма кредита (число или "VIP" для неограниченной суммы)
+        - `description` - описание автокредита
+        - `rate` - процентная ставка (как указано на сайте)
+        - `term` - срок кредита (как указано на сайте)
+        - `amount` - сумма кредита (как указано на сайте)
+        - `channel` - канал получения кредита (Банк/Онлайн)
       parameters:
         - in: query
           name: page
@@ -949,7 +950,7 @@ paths:
           name: sort
           schema:
             type: string
-            enum: [bank_name, rate, initial_payment, term_months, max_amount, created_at]
+            enum: [bank_name, description, rate, term, amount, channel, created_at]
             default: bank_name
           description: Поле для сортировки
           example: bank_name
@@ -1034,30 +1035,30 @@ paths:
                   last: true
                   size: 10
                   content:
-                    - id: 1
-                      bank_name: "aloqabank"
-                      rate: 25.0
-                      initial_payment: 15.0
-                      term_months: 60
-                      max_amount: "VIP"
-                      url: "https://aloqabank.uz/ru/private/crediting/autoloan-primary/"
-                      created_at: "2024-01-25T20:00:00Z"
-                    - id: 2
-                      bank_name: "turonbank"
-                      rate: 25.0
-                      initial_payment: 25.0
-                      term_months: 60
-                      max_amount: "2000"
-                      url: "https://turonbank.uz/ru/private/crediting/avtokredit-imkoniyat/"
-                      created_at: "2024-01-25T20:00:00Z"
-                    - id: 3
-                      bank_name: "ipotekabank"
-                      rate: 29.9
-                      initial_payment: 25.0
-                      term_months: 60
-                      max_amount: "480000000"
-                      url: "https://www.ipotekabank.uz/ru/private/crediting/auto_new/"
-                      created_at: "2024-01-25T20:00:00Z"
+                    - id: 14
+                      bank_name: "Agrobank"
+                      description: "Avtokredit (Birlamchi bozor)"
+                      rate: "24dan - 27 % gacha"
+                      term: "4 yil - 5 yil"
+                      amount: "Ko'rsatilmagan"
+                      channel: "Bank"
+                      created_at: "2025-08-05T08:46:41.776631Z"
+                    - id: 15
+                      bank_name: "Turonbank"
+                      description: "Avtokredit (Ikkilamchi bozor)"
+                      rate: "25 % dan"
+                      term: "5 yil"
+                      amount: "500 000 000 so'mgacha"
+                      channel: "Bank"
+                      created_at: "2025-08-05T08:46:42.776631Z"
+                    - id: 16
+                      bank_name: "Ipoteka Bank"
+                      description: "Avtokredit (Yangi avtomobillar)"
+                      rate: "29.9 %"
+                      term: "3 yil - 7 yil"
+                      amount: "1 000 000 000 so'mgacha"
+                      channel: "Online"
+                      created_at: "2025-08-05T08:46:43.776631Z"
                   number: 0
                   sort:
                     - direction: "ASC"
@@ -1095,15 +1096,16 @@ paths:
         - `size` - размер страницы (1-100, по умолчанию 10)
         
         **Параметры сортировки:**
-        - `sort` - поле для сортировки (bank_name, rate, initial_payment, term_months, max_amount, created_at)
+        - `sort` - поле для сортировки (bank_name, description, rate, term, amount, channel, created_at)
         - `direction` - направление сортировки (asc, desc, по умолчанию asc)
         
         **Поля автокредита:**
         - `bank_name` - название банка
-        - `rate` - годовая процентная ставка
-        - `initial_payment` - первоначальный взнос в процентах
-        - `term_months` - срок кредита в месяцах
-        - `max_amount` - максимальная сумма кредита (число или "VIP" для неограниченной суммы)
+        - `description` - описание автокредита
+        - `rate` - процентная ставка (как указано на сайте)
+        - `term` - срок кредита (как указано на сайте)
+        - `amount` - сумма кредита (как указано на сайте)
+        - `channel` - канал получения кредита (Банк/Онлайн)
       parameters:
         - in: query
           name: page
@@ -1126,7 +1128,7 @@ paths:
           name: sort
           schema:
             type: string
-            enum: [bank_name, rate, initial_payment, term_months, max_amount, created_at]
+            enum: [bank_name, description, rate, term, amount, channel, created_at]
             default: bank_name
           description: Поле для сортировки
           example: bank_name
@@ -1211,22 +1213,22 @@ paths:
                   last: true
                   size: 10
                   content:
-                    - id: 1
-                      bank_name: "ipotekabank"
-                      rate: 29.9
-                      initial_payment: 25.0
-                      term_months: 60
-                      max_amount: "480000000"
-                      url: "https://www.ipotekabank.uz/ru/private/crediting/auto_new/"
-                      created_at: "2024-01-20T15:30:00Z"
-                    - id: 2
-                      bank_name: "hamkorbank"
-                      rate: 23.99
-                      initial_payment: 0.0
-                      term_months: 60
-                      max_amount: "600000000"
-                      url: "https://hamkorbank.uz/physical/credits/car-financing/"
-                      created_at: "2024-01-20T16:45:00Z"
+                    - id: 17
+                      bank_name: "Ipoteka Bank"
+                      description: "Avtokredit (Eski avtomobillar)"
+                      rate: "29.9 %"
+                      term: "5 yil"
+                      amount: "480 000 000 so'mgacha"
+                      channel: "Bank"
+                      created_at: "2025-08-05T08:46:44.776631Z"
+                    - id: 18
+                      bank_name: "Hamkor Bank"
+                      description: "Avtokredit (Yangi avtomobillar)"
+                      rate: "23.99 %"
+                      term: "5 yil"
+                      amount: "600 000 000 so'mgacha"
+                      channel: "Online"
+                      created_at: "2025-08-05T08:46:45.776631Z"
                   number: 0
                   sort:
                     - direction: "ASC"
@@ -1294,13 +1296,14 @@ paths:
                     example: null
               example:
                 result:
-                  bank_name: "aloqabank"
-                  rate: 25.0
-                  initial_payment: 0.0
-                  term_months: 60
-                  max_amount: "300000000"
-                  url: "https://aloqabank.uz/ru/private/crediting/avtokredit-birlamchi-bozor-uchun/"
-                  created_at: "2024-01-25T20:00:00Z"
+                  id: 19
+                  bank_name: "Agrobank"
+                  description: "Avtokredit (Birlamchi bozor)"
+                  rate: "24dan - 27 % gacha"
+                  term: "4 yil - 5 yil"
+                  amount: "Ko'rsatilmagan"
+                  channel: "Bank"
+                  created_at: "2025-08-05T08:46:41.776631Z"
                 success: true
                 error: null
         '400':
@@ -3112,39 +3115,37 @@ components:
         id:
           type: integer
           description: Уникальный идентификатор
-          example: 1
+          example: 14
         bank_name:
           type: string
           description: Название банка
-          example: "aloqabank"
+          example: "Agrobank"
+        description:
+          type: string
+          description: Описание автокредита
+          example: "Avtokredit (Birlamchi bozor)"
         rate:
-          type: number
-          format: double
-          description: Годовая процентная ставка
-          example: 25.0
-        initial_payment:
-          type: number
-          format: double
-          description: Первоначальный взнос в процентах
-          example: 25.0
-        term_months:
-          type: integer
-          description: Срок кредита в месяцах
-          example: 60
-        max_amount:
           type: string
-          description: Максимальная сумма кредита (число или "VIP" для неограниченной суммы)
-          example: "300000000"
-        url:
+          description: Процентная ставка (как указано на сайте)
+          example: "24dan - 27 % gacha"
+        term:
           type: string
-          description: Ссылка на предложение банка
-          example: "https://aloqabank.uz/ru/private/crediting/avtokredit-birlamchi-bozor-uchun/"
+          description: Срок кредита (как указано на сайте)
+          example: "4 yil - 5 yil"
+        amount:
+          type: string
+          description: Сумма кредита (как указано на сайте)
+          example: "Ko'rsatilmagan"
+        channel:
+          type: string
+          description: Канал получения кредита (Банк/Онлайн)
+          example: "Bank"
         created_at:
           type: string
           format: date-time
           description: Дата создания записи
-          example: "2024-01-25T20:00:00Z"
-      required: [id, bank_name, rate, initial_payment, term_months, max_amount, url, created_at]
+          example: "2025-08-05T08:46:41.776631Z"
+      required: [id, bank_name, description, rate, term, amount, channel, created_at]
     Transfer:
       type: object
       description: Структура данных перевода
