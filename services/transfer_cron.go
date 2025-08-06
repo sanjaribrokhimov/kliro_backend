@@ -66,7 +66,7 @@ func (tcs *TransferCronService) parseAllTransferURLs() {
 	tcs.rotateTransferData()
 
 	// Парсим только основной URL с переводными приложениями
-	transfers, err := tcs.parseTransferURL("https://bank.uz/perevodi", parser)
+	transfers, err := tcs.parseTransferURL("https://bank.uz/uz/perevodi", parser)
 
 	if err != nil {
 		log.Printf("[TRANSFER CRON] Ошибка парсинга: %v", err)
@@ -90,6 +90,10 @@ func (tcs *TransferCronService) parseAllTransferURLs() {
 					seenNames[normalizedName] = true
 				}
 			}
+
+			log.Printf("[TRANSFER CRON] Успешно сохранено переводов: %d", savedCount)
+		} else {
+			log.Printf("[TRANSFER CRON] Переводы не найдены")
 		}
 	}
 }

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"kliro/models"
+	"kliro/services"
 	"net/http"
 	"strconv"
 
@@ -25,6 +26,46 @@ func (mc *MortgageController) GetNewMortgages(c *gin.Context) {
 // GetOldMortgages получает старые ипотечные кредиты с пагинацией
 func (mc *MortgageController) GetOldMortgages(c *gin.Context) {
 	getMortgagesWithPagination(c, mc.db, "old_mortgage")
+}
+
+// ParseMortgage парсит ипотечные кредиты с указанного URL
+func (mc *MortgageController) ParseMortgage(c *gin.Context) {
+	url := c.Query("url")
+	if url == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"result":  nil,
+			"success": false,
+			"error":   "url parameter is required",
+		})
+		return
+	}
+
+	parser := services.NewMortgageParser()
+	mortgages, err := parser.ParseURL(url)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"result":  nil,
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	if len(mortgages) == 0 {
+		c.JSON(http.StatusOK, gin.H{
+			"result":  nil,
+			"success": true,
+			"error":   "No mortgages found",
+		})
+		return
+	}
+
+	// Возвращаем первый найденный ипотечный кредит
+	c.JSON(http.StatusOK, gin.H{
+		"result":  mortgages[0],
+		"success": true,
+		"error":   nil,
+	})
 }
 
 func getMortgagesWithPagination(c *gin.Context, db *gorm.DB, tableName string) {

@@ -16,7 +16,7 @@ import (
 func parseCurrencyData(logger *log.Logger) []*models.Currency {
 	// Парсим напрямую, без обращения к API
 	parser := NewCurrencyParser(nil) // Временно передаем nil, так как нам нужен только парсер
-	
+
 	// Получаем курсы валют напрямую с сайта
 	url := "https://bank.uz/uz/currency"
 	client := &http.Client{}
@@ -39,10 +39,10 @@ func parseCurrencyData(logger *log.Logger) []*models.Currency {
 		logger.Printf("Ошибка парсинга HTML: %v", err)
 		return nil
 	}
-	
+
 	// Получаем курсы валют
 	rates := parser.ParseCurrencyRatesWithGoquery(doc)
-	
+
 	// Конвертируем в модель Currency
 	var currencies []*models.Currency
 	for _, rate := range rates {
@@ -50,22 +50,22 @@ func parseCurrencyData(logger *log.Logger) []*models.Currency {
 		if !ok {
 			continue
 		}
-		
+
 		bank, ok := rate["bank"].(string)
 		if !ok {
 			continue
 		}
-		
+
 		buyRate, ok := rate["buy"].(float64)
 		if !ok {
 			continue
 		}
-		
+
 		sellRate, ok := rate["sell"].(float64)
 		if !ok {
 			sellRate = 0
 		}
-		
+
 		currencies = append(currencies, &models.Currency{
 			BankName:  bank,
 			Currency:  currency,
@@ -74,7 +74,7 @@ func parseCurrencyData(logger *log.Logger) []*models.Currency {
 			CreatedAt: time.Now(),
 		})
 	}
-	
+
 	logger.Printf("Парсинг валют завершен - найдено %d курсов", len(currencies))
 	return currencies
 }

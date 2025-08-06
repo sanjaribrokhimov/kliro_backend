@@ -1,6 +1,3 @@
 .env 
-docs/
 index.html
 test.js
-github_ci
-github_ci.pub

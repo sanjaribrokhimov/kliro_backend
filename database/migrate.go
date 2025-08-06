@@ -312,7 +312,10 @@ func Migrate(db *gorm.DB) error {
 		return err
 	}
 
-	// Таблицы ипотеки уже созданы с правильной структурой выше
+	// Обновляем таблицы ипотеки с новой структурой
+	if err := migrations.UpdateMortgageTables(db); err != nil {
+		return err
+	}
 
 	return nil
 }

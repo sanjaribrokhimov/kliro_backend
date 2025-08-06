@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"kliro/models"
+	"kliro/services"
 	"kliro/utils"
 	"net/http"
 	"strconv"
@@ -39,6 +40,46 @@ func (tc *TransferController) GetNewTransfers(c *gin.Context) {
 // GetOldTransfers получает старые переводы с пагинацией
 func (tc *TransferController) GetOldTransfers(c *gin.Context) {
 	tc.getTransfersWithPagination(c, "old_transfer")
+}
+
+// ParseTransfer парсит переводы с указанного URL
+func (tc *TransferController) ParseTransfer(c *gin.Context) {
+	url := c.Query("url")
+	if url == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"result":  nil,
+			"success": false,
+			"error":   "url parameter is required",
+		})
+		return
+	}
+
+	parser := services.NewTransferParser()
+	transfers, err := parser.ParseURL(url)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"result":  nil,
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	if len(transfers) == 0 {
+		c.JSON(http.StatusOK, gin.H{
+			"result":  nil,
+			"success": true,
+			"error":   "No transfers found",
+		})
+		return
+	}
+
+	// Возвращаем первый найденный перевод
+	c.JSON(http.StatusOK, gin.H{
+		"result":  transfers[0],
+		"success": true,
+		"error":   nil,
+	})
 }
 
 // getTransfersWithPagination общая функция для получения переводов с пагинацией

@@ -11,11 +11,13 @@ import (
 )
 
 var mortgageURLs = []string{
-	"https://bank.uz/uz/credits/ipoteka",
-	"https://bank.uz/uz/credits/ipoteka?PAGEN_3=2",
-	"https://bank.uz/uz/credits/ipoteka?PAGEN_3=3",
-	"https://bank.uz/uz/credits/ipoteka?PAGEN_3=4",
-	"https://bank.uz/uz/credits/ipoteka?PAGEN_3=5",
+	"https://bank.uz/uz/ipoteka",
+	"https://bank.uz/uz/ipoteka?PAGEN_3=2",
+	"https://bank.uz/uz/ipoteka?PAGEN_3=3",
+	"https://bank.uz/uz/ipoteka?PAGEN_3=4",
+	"https://bank.uz/uz/ipoteka?PAGEN_3=5",
+	"https://bank.uz/uz/ipoteka?PAGEN_3=6",
+	"https://bank.uz/uz/ipoteka?PAGEN_3=7",
 }
 
 // Функция для парсинга одного URL

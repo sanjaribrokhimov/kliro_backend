@@ -5,6 +5,7 @@ import (
 	"kliro/models"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -16,8 +17,14 @@ func NewMortgageParser() *MortgageParser {
 }
 
 func (mp *MortgageParser) ParseURL(url string) ([]*models.Mortgage, error) {
-	// Получаем HTML страницы
-	resp, err := http.Get(url)
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("ошибка создания запроса: %v", err)
+	}
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("ошибка получения страницы: %v", err)
 	}
@@ -28,17 +35,23 @@ func (mp *MortgageParser) ParseURL(url string) ([]*models.Mortgage, error) {
 		return nil, fmt.Errorf("ошибка парсинга HTML: %v", err)
 	}
 
+	return mp.ParseMortgagesWithGoquery(doc), nil
+}
+
+func (mp *MortgageParser) ParseMortgagesWithGoquery(doc *goquery.Document) []*models.Mortgage {
 	var mortgages []*models.Mortgage
 
-	// Ищем все карточки ипотечных кредитов
-	doc.Find(".table-card-offers-block").Each(func(i int, s *goquery.Selection) {
-		mortgage := &models.Mortgage{}
+	// Для сайта bank.uz/uz/ipoteka - ищем карточки ипотек
+	doc.Find(".table-card-offers-bottom").Each(func(i int, s *goquery.Selection) {
+		mortgage := &models.Mortgage{
+			CreatedAt: time.Now(),
+		}
 
-		// Название банка (блок 1)
-		bankName := s.Find(".table-card-offers-block1-text").Text()
+		// Название банка
+		bankName := s.Find(".table-card-offers-block1-text > span.medium-text").First().Text()
 		mortgage.BankName = strings.TrimSpace(bankName)
 
-		// Описание (название ипотечного кредита)
+		// Описание (название ипотеки)
 		description := s.Find(".table-card-offers-block1-text a").First().Text()
 		mortgage.Description = strings.TrimSpace(description)
 
@@ -64,5 +77,6 @@ func (mp *MortgageParser) ParseURL(url string) ([]*models.Mortgage, error) {
 		}
 	})
 
-	return mortgages, nil
+	fmt.Printf("[MORTGAGE PARSER] Всего найдено ипотек: %d\n", len(mortgages))
+	return mortgages
 }

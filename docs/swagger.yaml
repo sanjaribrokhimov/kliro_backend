@@ -1324,6 +1324,77 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
+  /parse-mortgage-goquery:
+    get:
+      tags: [Parser]
+      summary: Парсинг ипотеки с банковского сайта (goquery)
+      description: |
+        Парсит информацию об ипотечном кредите с указанного URL банковского сайта с использованием goquery.
+        
+        **Извлекаемые данные:**
+        - `bank_name` - название банка
+        - `description` - описание ипотечного кредита
+        - `rate` - процентная ставка (как указано на сайте)
+        - `term` - срок кредита (как указано на сайте)
+        - `amount` - сумма кредита (как указано на сайте)
+        - `channel` - канал получения кредита (Банк/Онлайн)
+      parameters:
+        - in: query
+          name: url
+          schema:
+            type: string
+          required: true
+          description: URL банковского сайта с ипотечным кредитом
+          example: "https://example.com/mortgage-page"
+      responses:
+        '200':
+          description: Успешный ответ с результатом парсинга
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    $ref: '#/components/schemas/Mortgage'
+                  success:
+                    type: boolean
+                    description: Успешность операции
+                    example: true
+                  error:
+                    type: string
+                    nullable: true
+                    description: Сообщение об ошибке
+                    example: null
+              example:
+                result:
+                  id: 1
+                  bank_name: "Ipoteka Bank"
+                  description: "Ipoteka krediti (Yangi uylar)"
+                  rate: "18.5 %"
+                  term: "20 yil"
+                  amount: "2 000 000 000 so'mgacha"
+                  channel: "Bank"
+                  created_at: "2025-08-05T08:46:41.776631Z"
+                success: true
+                error: null
+        '400':
+          description: Неверный URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    nullable: true
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: "url parameter is required"
+        '500':
+          $ref: '#/components/responses/Error'
+
   /deposits/new:
     get:
       tags: [Deposits]
@@ -2670,7 +2741,6 @@ paths:
                     example: "Internal server error"
 
 
- 
   /parse-mortgage:
     get:
       tags: [Parser]
@@ -2733,6 +2803,73 @@ paths:
                   error:
                     type: string
                     example: "Failed to parse mortgage: error details"
+
+  /parse-transfer-goquery:
+    get:
+      tags: [Parser]
+      summary: Парсинг переводов с банковского сайта (goquery)
+      description: |
+        Парсит информацию о переводах с указанного URL банковского сайта с использованием goquery.
+        
+        **Извлекаемые данные:**
+        - `app_name` - название приложения для переводов
+        - `commission` - комиссия за переводы
+        - `limit_ru` - информация о лимитах на русском языке
+        - `limit_uz` - информация о лимитах на узбекском языке
+      parameters:
+        - in: query
+          name: url
+          schema:
+            type: string
+          required: true
+          description: URL банковского сайта с информацией о переводах
+          example: "https://bank.uz/uz/perevodi"
+      responses:
+        '200':
+          description: Успешный ответ с результатом парсинга
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    $ref: '#/components/schemas/Transfer'
+                  success:
+                    type: boolean
+                    description: Успешность операции
+                    example: true
+                  error:
+                    type: string
+                    nullable: true
+                    description: Сообщение об ошибке
+                    example: null
+              example:
+                result:
+                  id: 1
+                  app_name: "Davr Mobile"
+                  commission: "0%"
+                  limit_ru: "В рамках акции комиссия 0% на сумму до 3.5 млн сум в месяц"
+                  limit_uz: "Aksiya doirasida har oy 3.5 mln so'mgacha komissiya 0%"
+                  created_at: "2025-08-05T08:46:41.776631Z"
+                success: true
+                error: null
+        '400':
+          description: Неверный URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    nullable: true
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: "url parameter is required"
+        '500':
+          $ref: '#/components/responses/Error'
 
 components:
   securitySchemes:
@@ -3222,6 +3359,44 @@ components:
           description: Дата создания записи
           example: "2024-01-15T10:30:00Z"
       required: [id, bank_name, rate_max, rate_min, term_years, max_amount, initial_payment, url, created_at]
+    Mortgage:
+      type: object
+      description: Структура данных ипотечного кредита
+      properties:
+        id:
+          type: integer
+          description: Уникальный идентификатор
+          example: 1
+        bank_name:
+          type: string
+          description: Название банка
+          example: "Ipoteka Bank"
+        description:
+          type: string
+          description: Описание ипотечного кредита
+          example: "Ipoteka krediti (Yangi uylar)"
+        rate:
+          type: string
+          description: Процентная ставка (как указано на сайте)
+          example: "18.5 %"
+        term:
+          type: string
+          description: Срок кредита (как указано на сайте)
+          example: "20 yil"
+        amount:
+          type: string
+          description: Сумма кредита (как указано на сайте)
+          example: "2 000 000 000 so'mgacha"
+        channel:
+          type: string
+          description: Канал получения кредита (Банк/Онлайн)
+          example: "Bank"
+        created_at:
+          type: string
+          format: date-time
+          description: Дата создания записи
+          example: "2025-08-05T08:46:41.776631Z"
+      required: [id, bank_name, description, rate, term, amount, channel, created_at]
 
     Sort:
       type: object

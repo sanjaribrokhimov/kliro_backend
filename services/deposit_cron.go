@@ -24,7 +24,6 @@ var depositURLs = []string{
 	"https://bank.uz/uz/deposits?PAGEN_4=11",
 	"https://bank.uz/uz/deposits?PAGEN_4=12",
 	"https://bank.uz/uz/deposits?PAGEN_4=13",
-
 }
 
 // Функция для парсинга одного URL

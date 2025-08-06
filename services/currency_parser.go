@@ -82,15 +82,15 @@ func (cp *CurrencyParser) ParseCurrencyRatesWithGoquery(doc *goquery.Document) [
 			continue
 		}
 
-		log.Printf("[CURRENCY PARSER] ✅ Найден блок для валюты %s", currency)
+
 
 		// Извлекаем курсы покупки (левый блок)
 		buyRates := cp.extractBuyRatesFromBlock(currencyBlock)
-		log.Printf("[CURRENCY PARSER] Найдено %d курсов покупки для %s", len(buyRates), currency)
 
 		// Извлекаем курсы продажи (правый блок)
 		sellRates := cp.extractSellRatesFromBlock(currencyBlock)
-		log.Printf("[CURRENCY PARSER] Найдено %d курсов продажи для %s", len(sellRates), currency)
+
+		log.Printf("[CURRENCY PARSER] %s: покупка %d, продажа %d", currency, len(buyRates), len(sellRates))
 
 		// Создаем map для быстрого поиска курсов продажи по банку
 		sellMap := make(map[string]float64)
@@ -146,13 +146,10 @@ func (cp *CurrencyParser) extractBuyRatesFromBlock(block *goquery.Selection) []R
 		if bankName != "" && rateText != "" {
 			rate, err := strconv.ParseFloat(rateText, 64)
 			if err == nil {
-				log.Printf("[CURRENCY PARSER] Курс покупки: %s = %.2f", bankName, rate)
 				rates = append(rates, RateData{
 					bankName: bankName,
 					rate:     rate,
 				})
-			} else {
-				log.Printf("[CURRENCY PARSER] Ошибка парсинга курса покупки: %s -> %s (ошибка: %v)", bankName, rateText, err)
 			}
 		}
 	})
@@ -185,13 +182,10 @@ func (cp *CurrencyParser) extractSellRatesFromBlock(block *goquery.Selection) []
 		if bankName != "" && rateText != "" {
 			rate, err := strconv.ParseFloat(rateText, 64)
 			if err == nil {
-				log.Printf("[CURRENCY PARSER] Курс продажи: %s = %.2f", bankName, rate)
 				rates = append(rates, RateData{
 					bankName: bankName,
 					rate:     rate,
 				})
-			} else {
-				log.Printf("[CURRENCY PARSER] Ошибка парсинга курса продажи: %s -> %s (ошибка: %v)", bankName, rateText, err)
 			}
 		}
 	})

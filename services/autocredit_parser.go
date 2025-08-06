@@ -31,7 +31,6 @@ func (ap *AutocreditParser) ParseURL(url string) ([]*models.Autocredit, error) {
 	var autocredits []*models.Autocredit
 
 	// Ищем все карточки автокредитов
-	fmt.Printf("[AUTOCREDIT PARSER] Ищем элементы с классом .table-card-offers-bottom\n")
 	doc.Find(".table-card-offers-bottom").Each(func(i int, s *goquery.Selection) {
 		autocredit := &models.Autocredit{}
 
@@ -62,8 +61,6 @@ func (ap *AutocreditParser) ParseURL(url string) ([]*models.Autocredit, error) {
 		// Добавляем автокредит если есть название банка
 		if autocredit.BankName != "" {
 			autocredits = append(autocredits, autocredit)
-			fmt.Printf("[AUTOCREDIT PARSER] Найден автокредит: %s - %s (ставка: %s, срок: %s, сумма: %s, канал: %s)\n",
-				autocredit.BankName, autocredit.Description, autocredit.Rate, autocredit.Term, autocredit.Amount, autocredit.Channel)
 		}
 	})
 

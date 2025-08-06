@@ -1,14 +1,9 @@
 package services
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"kliro/models"
-	"log"
 	"net/http"
-	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -23,13 +18,14 @@ func NewTransferParser() *TransferParser {
 }
 
 func (tp *TransferParser) ParseURL(url string) ([]*models.Transfer, error) {
-	log.Printf("[TRANSFER PARSER] Начало парсинга переводов")
-
-	// Получаем HTML страницы
-	httpClient := &http.Client{
-		Timeout: 15 * time.Second,
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("ошибка создания запроса: %v", err)
 	}
-	resp, err := httpClient.Get(url)
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("ошибка получения страницы: %v", err)
 	}
@@ -40,88 +36,40 @@ func (tp *TransferParser) ParseURL(url string) ([]*models.Transfer, error) {
 		return nil, fmt.Errorf("ошибка парсинга HTML: %v", err)
 	}
 
-	// Берем весь текст со страницы
-	text := doc.Find("body").Text()
+	return tp.ParseTransfersWithGoquery(doc), nil
+}
 
-	// Очищаем текст от лишнего
-	text = tp.cleanText(text)
+func (tp *TransferParser) ParseTransfersWithGoquery(doc *goquery.Document) []*models.Transfer {
+	var transfers []*models.Transfer
 
-	// Простой промпт для DeepSeek
-	prompt := fmt.Sprintf(`Извлеки информацию о ВСЕХ приложениях для P2P переводов из текста и верни JSON-массив объектов.
-
-Каждый объект должен содержать:
-app_name: название приложения (например, "Davr Mobile 2.0", "Paynet", "xazna", "Mavrid", "Milliy", "SQB Mobile", "Anorbank", "Uzum Bank", "AVO", "TBC UZ", "Payme", "Click Up", "Paylov", "A-Pay", "Limon Pay")
-commission: комиссия за переводы (например, "0%%", "0.5%%", "1%%", "0.6%%", "0.7%%")
-limit_ru: информация о лимитах на русском языке (null если не найдено)
-limit_uz: информация о лимитах на узбекском языке (null если не найдено)
-
-Найди ВСЕ приложения для переводов в тексте. Обрати внимание на раздел "P2P переводы с карты на карту".
-
-Текст: "%s"
-Верни только JSON-массив.`, text)
-
-	// Вызываем DeepSeek API
-	reqBody := DeepSeekRequest{
-		Model:       "deepseek-chat",
-		Messages:    []Message{{Role: "user", Content: prompt}},
-		MaxTokens:   8192,
-		Temperature: 0.0,
-	}
-
-	jsonBody, _ := json.Marshal(reqBody)
-	req, _ := http.NewRequest("POST", "https://api.deepseek.com/v1/chat/completions", bytes.NewBuffer(jsonBody))
-	req.Header.Set("Content-Type", "application/json")
-
-	apiKey := os.Getenv("DEEPSEEK_API_KEY")
-	if apiKey == "" {
-		return nil, fmt.Errorf("DeepSeek API key not set")
-	}
-
-	req.Header.Set("Authorization", "Bearer "+apiKey)
-
-	client := &http.Client{
-		Timeout: 30 * time.Second,
-	}
-	dsResp, err := client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("ошибка вызова DeepSeek API: %v", err)
-	}
-	defer dsResp.Body.Close()
-
-	body, _ := ioutil.ReadAll(dsResp.Body)
-
-	if dsResp.StatusCode != 200 {
-		return nil, fmt.Errorf("DeepSeek API error (status %d): %s", dsResp.StatusCode, string(body))
-	}
-
-	var deepSeekResponse DeepSeekResponse
-	if err := json.Unmarshal(body, &deepSeekResponse); err != nil {
-		return nil, fmt.Errorf("ошибка парсинга ответа DeepSeek: %v", err)
-	}
-
-	if len(deepSeekResponse.Choices) > 0 {
-		raw := deepSeekResponse.Choices[0].Message.Content
-		raw = strings.TrimSpace(raw)
-		raw = strings.TrimPrefix(raw, "```json")
-		raw = strings.TrimPrefix(raw, "```")
-		raw = strings.TrimSuffix(raw, "```")
-		raw = strings.TrimSpace(raw)
-
-		var transfers []*models.Transfer
-		if err := json.Unmarshal([]byte(raw), &transfers); err != nil {
-			return nil, fmt.Errorf("ошибка парсинга JSON: %v", err)
+	// Для сайта bank.uz/uz/perevodi - ищем карточки переводов
+	doc.Find(".banki-p2p__item").Each(func(i int, s *goquery.Selection) {
+		transfer := &models.Transfer{
+			CreatedAt: time.Now(),
 		}
 
-		// Устанавливаем время создания для каждого перевода
-		for _, transfer := range transfers {
-			transfer.CreatedAt = time.Now()
-			tp.improveTransferData(transfer)
+		// Название приложения
+		appName := s.Find(".banki-p2p__name a").First().Text()
+		transfer.AppName = strings.TrimSpace(appName)
+
+		// Комиссия
+		commissionText := s.Find(".banki-p2p__percent span").Last().Text()
+		transfer.Commission = strings.TrimSpace(commissionText)
+
+		// Лимиты
+		limitText := s.Find(".banki-p2p__desc span").Last().Text()
+		if limitText != "" {
+			transfer.LimitRU = &limitText
 		}
 
-		return transfers, nil
-	}
+		// Добавляем перевод если есть название приложения
+		if transfer.AppName != "" {
+			transfers = append(transfers, transfer)
+		}
+	})
 
-	return nil, fmt.Errorf("нет ответа от DeepSeek")
+	fmt.Printf("Найдено переводов: %d\n", len(transfers))
+	return transfers
 }
 
 func (tp *TransferParser) cleanText(raw string) string {
@@ -166,34 +114,6 @@ func (tp *TransferParser) improveTransferData(transfer *models.Transfer) {
 		transfer.LimitUZ = &limitUZ
 	}
 
-	// Улучшаем название приложения
-	transfer.AppName = tp.cleanAppName(transfer.AppName)
-}
-
-// cleanAppName очищает название приложения
-func (tp *TransferParser) cleanAppName(name string) string {
-	// Убираем лишние пробелы
-	cleaned := strings.TrimSpace(name)
-
-	// Исправляем известные названия
-	nameMap := map[string]string{
-		"Anorbank":    "Anor Bank",
-		"Asakabank":   "Asaka Bank",
-		"Hamkorbank":  "Hamkor Bank",
-		"Ipotekabank": "Ipoteka Bank",
-		"Milliybank":  "Milliy Bank",
-		"Sqbbank":     "SQB Bank",
-		"Turonbank":   "Turon Bank",
-		"Xalqbank":    "Xalq Bank",
-		"Agrobank":    "Agro Bank",
-		"Aloqabank":   "Aloqa Bank",
-	}
-
-	if corrected, exists := nameMap[cleaned]; exists {
-		return corrected
-	}
-
-	return cleaned
 }
 
 func min(a, b int) int {

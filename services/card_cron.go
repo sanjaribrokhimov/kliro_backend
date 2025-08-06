@@ -31,7 +31,6 @@ var cardURLs = []string{
 	"https://bank.uz/uz/cards?PAGEN_4=18",
 	"https://bank.uz/uz/cards?PAGEN_4=19",
 	"https://bank.uz/uz/cards?PAGEN_4=20",
-
 }
 
 // Функция для парсинга одного URL
