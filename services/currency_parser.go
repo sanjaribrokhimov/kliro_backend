@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"kliro/utils"
 	"log"
 	"net/http"
 	"strconv"
@@ -82,8 +83,6 @@ func (cp *CurrencyParser) ParseCurrencyRatesWithGoquery(doc *goquery.Document) [
 			continue
 		}
 
-
-
 		// Извлекаем курсы покупки (левый блок)
 		buyRates := cp.extractBuyRatesFromBlock(currencyBlock)
 
@@ -133,9 +132,10 @@ func (cp *CurrencyParser) extractBuyRatesFromBlock(block *goquery.Selection) []R
 
 	// Извлекаем курсы покупки
 	leftBlock.Find(".bc-inner-block-left-texts").Each(func(i int, s *goquery.Selection) {
-		// Название банка
+		// Название банка - нормализуем
 		bankName := s.Find(".bc-inner-block-left-text .medium-text").Text()
-		bankName = strings.TrimSpace(bankName)
+		normalizer := utils.GetBankNormalizer()
+		bankName = normalizer.NormalizeBankName(strings.TrimSpace(bankName))
 
 		// Курс покупки
 		rateText := s.Find(".medium-text.green-date").Text()
@@ -169,9 +169,10 @@ func (cp *CurrencyParser) extractSellRatesFromBlock(block *goquery.Selection) []
 
 	// Извлекаем курсы продажи
 	rightBlock.Find(".bc-inner-block-left-texts").Each(func(i int, s *goquery.Selection) {
-		// Название банка
+		// Название банка - нормализуем
 		bankName := s.Find(".bc-inner-block-left-text .medium-text").Text()
-		bankName = strings.TrimSpace(bankName)
+		normalizer := utils.GetBankNormalizer()
+		bankName = normalizer.NormalizeBankName(strings.TrimSpace(bankName))
 
 		// Курс продажи
 		rateText := s.Find(".medium-text.green-date").Text()

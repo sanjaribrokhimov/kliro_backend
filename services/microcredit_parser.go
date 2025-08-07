@@ -3,6 +3,7 @@ package services
 import (
 	"fmt"
 	"kliro/models"
+	"kliro/utils"
 	"net/http"
 	"strings"
 	"time"
@@ -46,13 +47,21 @@ func (mp *MicrocreditParser) ParseMicrocreditsWithGoquery(doc *goquery.Document)
 			CreatedAt: time.Now(),
 		}
 
-		// Название банка
+		// Название банка - нормализуем
 		bankName := s.Find(".table-card-offers-block1-text > span.medium-text").First().Text()
-		microcredit.BankName = strings.TrimSpace(bankName)
+		normalizer := utils.GetBankNormalizer()
+		microcredit.BankName = normalizer.NormalizeBankName(strings.TrimSpace(bankName))
 
 		// Описание (название микрокредита)
 		description := s.Find(".table-card-offers-block1-text a").First().Text()
 		microcredit.Description = strings.TrimSpace(description)
+
+		// URL ссылки
+		if link := s.Find(".table-card-offers-block1-text a").First(); link.Length() > 0 {
+			if href, exists := link.Attr("href"); exists {
+				microcredit.URL = strings.TrimSpace(href)
+			}
+		}
 
 		// Процентная ставка (блок 2) - сохраняем как есть
 		rateText := s.Find(".table-card-offers-block2 > span.medium-text").First().Text()

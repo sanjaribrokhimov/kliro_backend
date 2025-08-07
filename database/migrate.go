@@ -48,8 +48,6 @@ func Migrate(db *gorm.DB) error {
 		return err
 	}
 
-	
-
 	// Создаем таблицы new_currency и old_currency
 	if err := db.Exec(`
 		CREATE TABLE IF NOT EXISTS new_currency (
@@ -180,6 +178,11 @@ func Migrate(db *gorm.DB) error {
 
 	// Обновляем таблицы ипотеки с новой структурой
 	if err := migrations.UpdateMortgageTables(db); err != nil {
+		return err
+	}
+
+	// Добавляем URL в таблицу микрокредитов
+	if err := migrations.AddURLToMicrocredit(db); err != nil {
 		return err
 	}
 

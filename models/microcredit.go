@@ -12,5 +12,6 @@ type Microcredit struct {
 	Term        string    `json:"term"`
 	Amount      string    `json:"amount"`
 	Channel     string    `json:"channel"`
+	URL         string    `json:"url"`
 	CreatedAt   time.Time `json:"created_at"`
 }

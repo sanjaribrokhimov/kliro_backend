@@ -3,6 +3,7 @@ package services
 import (
 	"fmt"
 	"kliro/models"
+	"kliro/utils"
 	"net/http"
 	"strings"
 	"time"
@@ -46,9 +47,10 @@ func (dp *DepositParser) ParseDepositsWithGoquery(doc *goquery.Document) []*mode
 			CreatedAt: time.Now(),
 		}
 
-		// Название банка - берем как есть
+		// Название банка - нормализуем
 		bankName := s.Find(".table-card-offers-block1-text > span.medium-text").First().Text()
-		deposit.BankName = strings.TrimSpace(bankName)
+		normalizer := utils.GetBankNormalizer()
+		deposit.BankName = normalizer.NormalizeBankName(strings.TrimSpace(bankName))
 
 		// Название депозита - берем как есть
 		depositName := s.Find(".table-card-offers-block1-text a").First().Text()

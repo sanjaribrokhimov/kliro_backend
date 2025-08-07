@@ -3,6 +3,7 @@ package services
 import (
 	"fmt"
 	"kliro/models"
+	"kliro/utils"
 	"net/http"
 	"strings"
 	"time"
@@ -47,9 +48,10 @@ func (mp *MortgageParser) ParseMortgagesWithGoquery(doc *goquery.Document) []*mo
 			CreatedAt: time.Now(),
 		}
 
-		// Название банка
+		// Название банка - нормализуем
 		bankName := s.Find(".table-card-offers-block1-text > span.medium-text").First().Text()
-		mortgage.BankName = strings.TrimSpace(bankName)
+		normalizer := utils.GetBankNormalizer()
+		mortgage.BankName = normalizer.NormalizeBankName(strings.TrimSpace(bankName))
 
 		// Описание (название ипотеки)
 		description := s.Find(".table-card-offers-block1-text a").First().Text()

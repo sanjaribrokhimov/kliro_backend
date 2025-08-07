@@ -3,6 +3,7 @@ package services
 import (
 	"fmt"
 	"kliro/models"
+	"kliro/utils"
 	"net/http"
 	"regexp"
 	"strings"
@@ -48,9 +49,10 @@ func (tp *TransferParser) ParseTransfersWithGoquery(doc *goquery.Document) []*mo
 			CreatedAt: time.Now(),
 		}
 
-		// Название приложения
+		// Название приложения - нормализуем
 		appName := s.Find(".banki-p2p__name a").First().Text()
-		transfer.AppName = strings.TrimSpace(appName)
+		normalizer := utils.GetBankNormalizer()
+		transfer.AppName = normalizer.NormalizeBankName(strings.TrimSpace(appName))
 
 		// Комиссия
 		commissionText := s.Find(".banki-p2p__percent span").Last().Text()
@@ -59,7 +61,7 @@ func (tp *TransferParser) ParseTransfersWithGoquery(doc *goquery.Document) []*mo
 		// Лимиты
 		limitText := s.Find(".banki-p2p__desc span").Last().Text()
 		if limitText != "" {
-			transfer.LimitRU = &limitText
+			transfer.LimitUZ = &limitText
 		}
 
 		// Добавляем перевод если есть название приложения
@@ -104,9 +106,9 @@ func (tp *TransferParser) improveTransferData(transfer *models.Transfer) {
 	}
 
 	// Улучшаем лимиты
-	if transfer.LimitRU == nil || *transfer.LimitRU == "Не указано" || *transfer.LimitRU == "" {
-		limitRU := "Информация о лимитах не указана"
-		transfer.LimitRU = &limitRU
+	if transfer.LimitUZ == nil || *transfer.LimitUZ == "Не указано" || *transfer.LimitUZ == "" {
+		limitUZ := "Информация о лимитах не указана"
+		transfer.LimitUZ = &limitUZ
 	}
 
 	if transfer.LimitUZ == nil || *transfer.LimitUZ == "Не указано" || *transfer.LimitUZ == "" {

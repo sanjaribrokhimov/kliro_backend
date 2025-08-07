@@ -3,6 +3,7 @@ package services
 import (
 	"fmt"
 	"kliro/models"
+	"kliro/utils"
 	"net/http"
 	"strings"
 	"time"
@@ -46,9 +47,10 @@ func (cp *CardParser) ParseCardsWithGoquery(doc *goquery.Document) []*models.Car
 			CreatedAt: time.Now(),
 		}
 
-		// Название банка - берем как есть
+		// Название банка - нормализуем
 		bankName := s.Find(".table-card-offers-block1-text > span.medium-text").First().Text()
-		card.BankName = strings.TrimSpace(bankName)
+		normalizer := utils.GetBankNormalizer()
+		card.BankName = normalizer.NormalizeBankName(strings.TrimSpace(bankName))
 
 		// Название карты - берем как есть
 		cardTitle := s.Find(".table-card-offers-block1-text a").First().Text()

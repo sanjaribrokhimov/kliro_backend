@@ -3,6 +3,7 @@ package services
 import (
 	"fmt"
 	"kliro/models"
+	"kliro/utils"
 	"net/http"
 	"strings"
 
@@ -34,9 +35,10 @@ func (ap *AutocreditParser) ParseURL(url string) ([]*models.Autocredit, error) {
 	doc.Find(".table-card-offers-bottom").Each(func(i int, s *goquery.Selection) {
 		autocredit := &models.Autocredit{}
 
-		// Название банка (блок 1)
+		// Название банка (блок 1) - нормализуем
 		bankName := s.Find(".table-card-offers-block1-text span.medium-text").First().Text()
-		autocredit.BankName = strings.TrimSpace(bankName)
+		normalizer := utils.GetBankNormalizer()
+		autocredit.BankName = normalizer.NormalizeBankName(strings.TrimSpace(bankName))
 
 		// Описание (название автокредита)
 		description := s.Find(".table-card-offers-block1-text a").First().Text()
