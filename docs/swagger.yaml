@@ -11,22 +11,9 @@ tags:
     description: Регистрация, вход, восстановление пароля, Google OAuth
   - name: User
     description: Профиль пользователя и управление аккаунтом
-  - name: Parser
-    description: Парсинг кредитных предложений с банковских сайтов
-  - name: Microcredits
-    description: API для получения микрофинансовых предложений от банков
-  - name: Autocredits
-    description: API для получения автокредитных предложений от банков
-  - name: Transfers
-    description: API для получения информации о переводах между приложениями
-  - name: Currencies
-    description: API для получения курсов валют от банков
-  - name: Mortgages
-    description: API для получения ипотечных кредитов от банков
-  - name: Deposits
-    description: API для получения банковских вкладов
-  - name: Cards
-    description: API для получения банковских карт
+
+  - name: Bank
+    description: API для работы с банковскими данными (парсинг и получение предложений)
 paths:
   /auth/register:
     post:
@@ -185,47 +172,11 @@ paths:
           $ref: '#/components/responses/TokenResponse'
         '400':
           $ref: '#/components/responses/Error'
-  /parse:
+
+
+  /bank/currencies/new:
     get:
-      tags: [Parser]
-      summary: Парсинг кредитных предложений с банковского сайта
-      parameters:
-        - in: query
-          name: url
-          schema:
-            type: string
-          required: true
-          description: URL банковского сайта для парсинга
-          example: "https://ru.ipakyulibank.uz/physical/kredity/mikrozaymy"
-      responses:
-        '200':
-          $ref: '#/components/responses/ParserResponse'
-        '400':
-          $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
-  /parse-currency:
-    get:
-      tags: [Parser]
-      summary: Парсинг курсов валют с банковского сайта
-      parameters:
-        - in: query
-          name: url
-          schema:
-            type: string
-          required: true
-          description: URL банковского сайта с курсами валют
-          example: "https://bank.uz/currency"
-      responses:
-        '200':
-          $ref: '#/components/responses/CurrencyParserResponse'
-        '400':
-          $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
-  /currencies/new:
-    get:
-      tags: [Currencies]
+      tags: [Bank]
       summary: Получить последние курсы валют
       description: Возвращает курсы валют за последние 24 часа, сгруппированные по валютам (USD, RUB, EUR, KZT)
       responses:
@@ -292,9 +243,9 @@ paths:
                 success: true
         '500':
           $ref: '#/components/responses/Error'
-  /currencies/by-date:
+  /bank/currencies/by-date:
     get:
-      tags: [Currencies]
+      tags: [Bank]
       summary: Получить курсы валют за определенную дату
       description: Возвращает курсы валют за указанную дату, сгруппированные по валютам
       parameters:
@@ -502,9 +453,9 @@ paths:
                 error: null
         '400':
           $ref: '#/components/responses/Error'
-  /microcredits/new:
+  /bank/microcredits/new:
     get:
-      tags: [Microcredits]
+      tags: [Bank]
       summary: Получить новые микрокредиты с пагинацией
       description: |
         Возвращает список новых микрокредитов от банков с поддержкой пагинации и сортировки.
@@ -664,251 +615,11 @@ paths:
                 error: null
         '500':
           $ref: '#/components/responses/Error'
-  /microcredits/old:
+
+
+  /bank/autocredits/new:
     get:
-      tags: [Microcredits]
-      summary: Получить старые микрокредиты с пагинацией
-      description: |
-        Возвращает список старых микрокредитов от банков с поддержкой пагинации и сортировки.
-        
-        **Параметры пагинации:**
-        - `page` - номер страницы (начиная с 0, по умолчанию 0)
-        - `size` - размер страницы (1-100, по умолчанию 10)
-        
-        **Параметры сортировки:**
-        - `sort` - поле для сортировки (bank_name, description, rate, term, amount, channel, created_at)
-        - `direction` - направление сортировки (asc, desc, по умолчанию asc)
-      parameters:
-        - in: query
-          name: page
-          schema:
-            type: integer
-            minimum: 0
-            default: 0
-          description: Номер страницы (начиная с 0)
-          example: 0
-        - in: query
-          name: size
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 10
-          description: Размер страницы
-          example: 10
-        - in: query
-          name: sort
-          schema:
-            type: string
-            enum: [bank_name, description, rate, term, amount, channel, created_at]
-            default: bank_name
-          description: Поле для сортировки
-          example: bank_name
-        - in: query
-          name: direction
-          schema:
-            type: string
-            enum: [asc, desc]
-            default: asc
-          description: Направление сортировки
-          example: asc
-      responses:
-        '200':
-          description: Успешный ответ с пагинированными данными
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  result:
-                    type: object
-                    properties:
-                      totalPages:
-                        type: integer
-                        description: Общее количество страниц
-                        example: 5
-                      totalElements:
-                        type: integer
-                        format: int64
-                        description: Общее количество элементов
-                        example: 47
-                      first:
-                        type: boolean
-                        description: Первая ли это страница
-                        example: true
-                      last:
-                        type: boolean
-                        description: Последняя ли это страница
-                        example: false
-                      size:
-                        type: integer
-                        description: Размер страницы
-                        example: 10
-                      content:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Microcredit'
-                        description: Массив микрокредитов
-                      number:
-                        type: integer
-                        description: Номер текущей страницы
-                        example: 0
-                      sort:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Sort'
-                        description: Параметры сортировки
-                      numberOfElements:
-                        type: integer
-                        description: Количество элементов на текущей странице
-                        example: 10
-                      pageable:
-                        $ref: '#/components/schemas/Pageable'
-                      empty:
-                        type: boolean
-                        description: Пустой ли результат
-                        example: false
-                  success:
-                    type: boolean
-                    description: Успешность операции
-                    example: true
-                  error:
-                    type: string
-                    nullable: true
-                    description: Сообщение об ошибке
-                    example: null
-              example:
-                result:
-                  totalPages: 3
-                  totalElements: 25
-                  first: true
-                  last: false
-                  size: 10
-                  content:
-                    - id: 1
-                      bank_name: "Agrobank"
-                      description: "Mikroqarz"
-                      rate: "30 % dan"
-                      term: "4 yil"
-                      amount: "100 000 000 so'mgacha"
-                      channel: "Bank"
-                      created_at: "2025-08-05T00:57:51.765405Z"
-                    - id: 2
-                      bank_name: "APEXBANK"
-                      description: "Onlayn kredit"
-                      rate: "32dan - 42 % gacha"
-                      term: "6 oy - 3 yil"
-                      amount: "1 000 000dan - 100 000 000 so'mgacha"
-                      channel: "BankOnlayn"
-                      created_at: "2025-08-05T00:57:53.273873Z"
-                  number: 0
-                  sort:
-                    - direction: "ASC"
-                      nullHandling: "NATIVE"
-                      ascending: true
-                      property: "bank_name"
-                      ignoreCase: false
-                  numberOfElements: 10
-                  pageable:
-                    offset: 0
-                    sort:
-                      - direction: "ASC"
-                        nullHandling: "NATIVE"
-                        ascending: true
-                        property: "bank_name"
-                        ignoreCase: false
-                    paged: true
-                    pageNumber: 0
-                    pageSize: 10
-                    unpaged: false
-                  empty: false
-                success: true
-                error: null
-        '500':
-          $ref: '#/components/responses/Error'
-  /parse-microcredit:
-    get:
-      tags: [Microcredits]
-      summary: Парсинг микрокредитов
-      description: |
-        Парсит микрокредиты с указанного URL и возвращает список найденных предложений.
-        
-        **Параметры:**
-        - `url` - URL страницы для парсинга (обязательный)
-        
-        **Возвращает:**
-        - Массив микрокредитов с полями: bank_name, description, rate, term, amount, channel
-      parameters:
-        - in: query
-          name: url
-          schema:
-            type: string
-            format: uri
-          required: true
-          description: URL страницы для парсинга микрокредитов
-          example: "https://bank.uz/uz/credits/mikrozaymy"
-      responses:
-        '200':
-          description: Успешный парсинг микрокредитов
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  result:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Microcredit'
-                    description: Массив спарсенных микрокредитов
-                  success:
-                    type: boolean
-                    description: Успешность операции
-                    example: true
-                  error:
-                    type: string
-                    nullable: true
-                    description: Сообщение об ошибке
-                    example: null
-              example:
-                result:
-                  - id: 1
-                    bank_name: "Agrobank"
-                    description: "Mikroqarz"
-                    rate: "30 % dan"
-                    term: "4 yil"
-                    amount: "100 000 000 so'mgacha"
-                    channel: "Bank"
-                    created_at: "2025-08-05T00:57:51.765405Z"
-                  - id: 2
-                    bank_name: "APEXBANK"
-                    description: "Onlayn kredit"
-                    rate: "32dan - 42 % gacha"
-                    term: "6 oy - 3 yil"
-                    amount: "1 000 000dan - 100 000 000 so'mgacha"
-                    channel: "BankOnlayn"
-                    created_at: "2025-08-05T00:57:53.273873Z"
-                success: true
-                error: null
-        '400':
-          description: Ошибка в параметрах запроса
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Сообщение об ошибке
-                    example: "URL обязателен для парсинга"
-                  success:
-                    type: boolean
-                    description: Успешность операции
-                    example: false
-        '500':
-          $ref: '#/components/responses/Error'
-  /autocredits/new:
-    get:
-      tags: [Autocredits]
+      tags: [Bank]
       summary: Получить новые автокредиты с пагинацией
       description: |
         Возвращает список новых автокредитных предложений от банков с поддержкой пагинации и сортировки.
@@ -1084,320 +795,14 @@ paths:
                 error: null
         '500':
           $ref: '#/components/responses/Error'
-  /autocredits/old:
-    get:
-      tags: [Autocredits]
-      summary: Получить старые автокредиты с пагинацией
-      description: |
-        Возвращает список старых автокредитных предложений от банков с поддержкой пагинации и сортировки.
-        
-        **Параметры пагинации:**
-        - `page` - номер страницы (начиная с 0, по умолчанию 0)
-        - `size` - размер страницы (1-100, по умолчанию 10)
-        
-        **Параметры сортировки:**
-        - `sort` - поле для сортировки (bank_name, description, rate, term, amount, channel, created_at)
-        - `direction` - направление сортировки (asc, desc, по умолчанию asc)
-        
-        **Поля автокредита:**
-        - `bank_name` - название банка
-        - `description` - описание автокредита
-        - `rate` - процентная ставка (как указано на сайте)
-        - `term` - срок кредита (как указано на сайте)
-        - `amount` - сумма кредита (как указано на сайте)
-        - `channel` - канал получения кредита (Банк/Онлайн)
-      parameters:
-        - in: query
-          name: page
-          schema:
-            type: integer
-            minimum: 0
-            default: 0
-          description: Номер страницы (начиная с 0)
-          example: 0
-        - in: query
-          name: size
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 10
-          description: Размер страницы
-          example: 10
-        - in: query
-          name: sort
-          schema:
-            type: string
-            enum: [bank_name, description, rate, term, amount, channel, created_at]
-            default: bank_name
-          description: Поле для сортировки
-          example: bank_name
-        - in: query
-          name: direction
-          schema:
-            type: string
-            enum: [asc, desc]
-            default: asc
-          description: Направление сортировки
-          example: asc
-      responses:
-        '200':
-          description: Успешный ответ с пагинированными данными
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  result:
-                    type: object
-                    properties:
-                      totalPages:
-                        type: integer
-                        description: Общее количество страниц
-                        example: 1
-                      totalElements:
-                        type: integer
-                        format: int64
-                        description: Общее количество элементов
-                        example: 3
-                      first:
-                        type: boolean
-                        description: Первая ли это страница
-                        example: true
-                      last:
-                        type: boolean
-                        description: Последняя ли это страница
-                        example: true
-                      size:
-                        type: integer
-                        description: Размер страницы
-                        example: 10
-                      content:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Autocredit'
-                        description: Массив старых автокредитов
-                      number:
-                        type: integer
-                        description: Номер текущей страницы
-                        example: 0
-                      sort:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Sort'
-                        description: Параметры сортировки
-                      numberOfElements:
-                        type: integer
-                        description: Количество элементов на текущей странице
-                        example: 3
-                      pageable:
-                        $ref: '#/components/schemas/Pageable'
-                      empty:
-                        type: boolean
-                        description: Пустой ли результат
-                        example: false
-                  success:
-                    type: boolean
-                    description: Успешность операции
-                    example: true
-                  error:
-                    type: string
-                    nullable: true
-                    description: Сообщение об ошибке
-                    example: null
-              example:
-                result:
-                  totalPages: 1
-                  totalElements: 3
-                  first: true
-                  last: true
-                  size: 10
-                  content:
-                    - id: 17
-                      bank_name: "Ipoteka Bank"
-                      description: "Avtokredit (Eski avtomobillar)"
-                      rate: "29.9 %"
-                      term: "5 yil"
-                      amount: "480 000 000 so'mgacha"
-                      channel: "Bank"
-                      created_at: "2025-08-05T08:46:44.776631Z"
-                    - id: 18
-                      bank_name: "Hamkor Bank"
-                      description: "Avtokredit (Yangi avtomobillar)"
-                      rate: "23.99 %"
-                      term: "5 yil"
-                      amount: "600 000 000 so'mgacha"
-                      channel: "Online"
-                      created_at: "2025-08-05T08:46:45.776631Z"
-                  number: 0
-                  sort:
-                    - direction: "ASC"
-                      nullHandling: "NATIVE"
-                      ascending: true
-                      property: "bank_name"
-                      ignoreCase: false
-                  numberOfElements: 3
-                  pageable:
-                    offset: 0
-                    sort:
-                      - direction: "ASC"
-                        nullHandling: "NATIVE"
-                        ascending: true
-                        property: "bank_name"
-                        ignoreCase: false
-                    paged: true
-                    pageNumber: 0
-                    pageSize: 10
-                    unpaged: false
-                  empty: false
-                success: true
-                error: null
-        '500':
-          $ref: '#/components/responses/Error'
-  /parse-autocredit:
-    get:
-      tags: [Parser]
-      summary: Парсинг автокредита с банковского сайта
-      description: |
-        Парсит информацию об автокредите с указанного URL банковского сайта.
-        
-        **Извлекаемые данные:**
-        - `bank_name` - название банка (извлекается из URL)
-        - `rate` - годовая процентная ставка
-        - `initial_payment` - первоначальный взнос в процентах
-        - `term_months` - срок кредита в месяцах
-        - `max_amount` - максимальная сумма кредита
-      parameters:
-        - in: query
-          name: url
-          schema:
-            type: string
-          required: true
-          description: URL банковского сайта с автокредитом
-          example: "https://aloqabank.uz/ru/private/crediting/avtokredit-birlamchi-bozor-uchun/"
-      responses:
-        '200':
-          description: Успешный ответ с результатом парсинга
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  result:
-                    $ref: '#/components/schemas/Autocredit'
-                  success:
-                    type: boolean
-                    description: Успешность операции
-                    example: true
-                  error:
-                    type: string
-                    nullable: true
-                    description: Сообщение об ошибке
-                    example: null
-              example:
-                result:
-                  id: 19
-                  bank_name: "Agrobank"
-                  description: "Avtokredit (Birlamchi bozor)"
-                  rate: "24dan - 27 % gacha"
-                  term: "4 yil - 5 yil"
-                  amount: "Ko'rsatilmagan"
-                  channel: "Bank"
-                  created_at: "2025-08-05T08:46:41.776631Z"
-                success: true
-                error: null
-        '400':
-          description: Неверный URL
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  result:
-                    nullable: true
-                  success:
-                    type: boolean
-                    example: false
-                  error:
-                    type: string
-                    example: "url parameter is required"
-        '500':
-          $ref: '#/components/responses/Error'
 
-  /parse-mortgage-goquery:
-    get:
-      tags: [Parser]
-      summary: Парсинг ипотеки с банковского сайта (goquery)
-      description: |
-        Парсит информацию об ипотечном кредите с указанного URL банковского сайта с использованием goquery.
-        
-        **Извлекаемые данные:**
-        - `bank_name` - название банка
-        - `description` - описание ипотечного кредита
-        - `rate` - процентная ставка (как указано на сайте)
-        - `term` - срок кредита (как указано на сайте)
-        - `amount` - сумма кредита (как указано на сайте)
-        - `channel` - канал получения кредита (Банк/Онлайн)
-      parameters:
-        - in: query
-          name: url
-          schema:
-            type: string
-          required: true
-          description: URL банковского сайта с ипотечным кредитом
-          example: "https://example.com/mortgage-page"
-      responses:
-        '200':
-          description: Успешный ответ с результатом парсинга
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  result:
-                    $ref: '#/components/schemas/Mortgage'
-                  success:
-                    type: boolean
-                    description: Успешность операции
-                    example: true
-                  error:
-                    type: string
-                    nullable: true
-                    description: Сообщение об ошибке
-                    example: null
-              example:
-                result:
-                  id: 1
-                  bank_name: "Ipoteka Bank"
-                  description: "Ipoteka krediti (Yangi uylar)"
-                  rate: "18.5 %"
-                  term: "20 yil"
-                  amount: "2 000 000 000 so'mgacha"
-                  channel: "Bank"
-                  created_at: "2025-08-05T08:46:41.776631Z"
-                success: true
-                error: null
-        '400':
-          description: Неверный URL
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  result:
-                    nullable: true
-                  success:
-                    type: boolean
-                    example: false
-                  error:
-                    type: string
-                    example: "url parameter is required"
-        '500':
-          $ref: '#/components/responses/Error'
 
-  /deposits/new:
+
+
+
+  /bank/deposits/new:
     get:
-      tags: [Deposits]
+      tags: [Bank]
       summary: Получить новые вклады с пагинацией
       description: |
         Возвращает список новых банковских вкладов с поддержкой пагинации и сортировки.
@@ -1556,164 +961,11 @@ paths:
                 success: true
         '500':
           $ref: '#/components/responses/Error'
-  /deposits/old:
-    get:
-      tags: [Deposits]
-      summary: Получить старые вклады с пагинацией
-      description: |
-        Возвращает список старых банковских вкладов с поддержкой пагинации и сортировки.
-        
-        **Параметры пагинации:**
-        - `page` - номер страницы (начиная с 0, по умолчанию 0)
-        - `size` - размер страницы (1-100, по умолчанию 10)
-        
-        **Параметры сортировки:**
-        - `sort` - поле для сортировки (bank_name, rate, term_years, min_amount, title, created_at)
-        - `direction` - направление сортировки (asc, desc, по умолчанию asc)
-      parameters:
-        - in: query
-          name: page
-          schema:
-            type: integer
-            minimum: 0
-            default: 0
-          description: Номер страницы (начиная с 0)
-          example: 0
-        - in: query
-          name: size
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 10
-          description: Размер страницы
-          example: 10
-        - in: query
-          name: sort
-          schema:
-            type: string
-            enum: [bank_name, rate, term_years, min_amount, title, created_at]
-            default: bank_name
-          description: Поле для сортировки
-          example: bank_name
-        - in: query
-          name: direction
-          schema:
-            type: string
-            enum: [asc, desc]
-            default: asc
-          description: Направление сортировки
-          example: asc
-      responses:
-        '200':
-          description: Успешный ответ с пагинированными данными
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  result:
-                    type: object
-                    properties:
-                      totalPages:
-                        type: integer
-                        description: Общее количество страниц
-                        example: 2
-                      totalElements:
-                        type: integer
-                        format: int64
-                        description: Общее количество элементов
-                        example: 15
-                      first:
-                        type: boolean
-                        description: Первая ли это страница
-                        example: true
-                      last:
-                        type: boolean
-                        description: Последняя ли это страница
-                        example: false
-                      size:
-                        type: integer
-                        description: Размер страницы
-                        example: 10
-                      content:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Deposit'
-                        description: Массив вкладов
-                      number:
-                        type: integer
-                        description: Номер текущей страницы
-                        example: 0
-                      sort:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Sort'
-                        description: Параметры сортировки
-                      numberOfElements:
-                        type: integer
-                        description: Количество элементов на текущей странице
-                        example: 10
-                      pageable:
-                        $ref: '#/components/schemas/Pageable'
-                      empty:
-                        type: boolean
-                        description: Пустой ли результат
-                        example: false
-                  success:
-                    type: boolean
-                    description: Успешность операции
-                    example: true
-              example:
-                result:
-                  totalPages: 2
-                  totalElements: 15
-                  first: true
-                  last: false
-                  size: 10
-                  content:
-                    - id: 1
-                      bank_name: "Hamkorbank"
-                      rate: "11.8%"
-                      term_years: "6 месяцев"
-                      min_amount: "200000 сум"
-                      title: "Краткосрочный вклад"
-                      created_at: "2024-01-10T09:30:00Z"
-                    - id: 2
-                      bank_name: "Asia Alliance Bank"
-                      rate: "13.5%"
-                      term_years: "1 год"
-                      min_amount: "1000000 сум"
-                      title: "Долгосрочный вклад"
-                      created_at: "2024-01-10T10:00:00Z"
-                  number: 0
-                  sort:
-                    - direction: "ASC"
-                      nullHandling: "NATIVE"
-                      ascending: true
-                      property: "bank_name"
-                      ignoreCase: false
-                  numberOfElements: 10
-                  pageable:
-                    offset: 0
-                    sort:
-                      - direction: "ASC"
-                        nullHandling: "NATIVE"
-                        ascending: true
-                        property: "bank_name"
-                        ignoreCase: false
-                    paged: true
-                    pageNumber: 0
-                    pageSize: 10
-                    unpaged: false
-                  empty: false
-                success: true
-        '500':
-          $ref: '#/components/responses/Error'
 
-  /cards/new:
+
+  /bank/cards/new:
     get:
-      tags: [Cards]
+      tags: [Bank]
       summary: Получить новые карты с пагинацией и фильтрацией
       description: |
         Возвращает список новых банковских карт с поддержкой пагинации, сортировки и фильтрации.
@@ -1895,187 +1147,11 @@ paths:
                 success: true
         '500':
           $ref: '#/components/responses/Error'
-  /cards/old:
-    get:
-      tags: [Cards]
-      summary: Получить старые карты с пагинацией и фильтрацией
-      description: |
-        Возвращает список старых банковских карт с поддержкой пагинации, сортировки и фильтрации.
-        
-        **Параметры пагинации:**
-        - `page` - номер страницы (начиная с 0, по умолчанию 0)
-        - `size` - размер страницы (1-100, по умолчанию 10)
-        
-        **Параметры сортировки:**
-        - `sort` - поле для сортировки (bank_name, title, currency, system, opening_type, created_at)
-        - `direction` - направление сортировки (asc, desc, по умолчанию asc)
-        
-        **Параметры фильтрации:**
-        - `currency` - фильтрация по валюте (например, "UZS", "USD")
-        - `system` - фильтрация по платежной системе (например, "Visa", "MasterCard")
-      parameters:
-        - in: query
-          name: page
-          schema:
-            type: integer
-            minimum: 0
-            default: 0
-          description: Номер страницы (начиная с 0)
-          example: 0
-        - in: query
-          name: size
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 10
-          description: Размер страницы
-          example: 10
-        - in: query
-          name: sort
-          schema:
-            type: string
-            enum: [bank_name, title, currency, system, opening_type, created_at]
-            default: bank_name
-          description: Поле для сортировки
-          example: bank_name
-        - in: query
-          name: direction
-          schema:
-            type: string
-            enum: [asc, desc]
-            default: asc
-          description: Направление сортировки
-          example: asc
-        - in: query
-          name: currency
-          schema:
-            type: string
-          description: Фильтрация по валюте
-          example: "UZS"
-        - in: query
-          name: system
-          schema:
-            type: string
-          description: Фильтрация по платежной системе
-          example: "Visa"
-      responses:
-        '200':
-          description: Успешный ответ с пагинированными данными
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  result:
-                    type: object
-                    properties:
-                      totalPages:
-                        type: integer
-                        description: Общее количество страниц
-                        example: 3
-                      totalElements:
-                        type: integer
-                        format: int64
-                        description: Общее количество элементов
-                        example: 28
-                      first:
-                        type: boolean
-                        description: Первая ли это страница
-                        example: true
-                      last:
-                        type: boolean
-                        description: Последняя ли это страница
-                        example: false
-                      size:
-                        type: integer
-                        description: Размер страницы
-                        example: 10
-                      content:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Card'
-                        description: Массив карт
-                      number:
-                        type: integer
-                        description: Номер текущей страницы
-                        example: 0
-                      sort:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Sort'
-                        description: Параметры сортировки
-                      numberOfElements:
-                        type: integer
-                        description: Количество элементов на текущей странице
-                        example: 10
-                      pageable:
-                        $ref: '#/components/schemas/Pageable'
-                      empty:
-                        type: boolean
-                        description: Пустой ли результат
-                        example: false
-                  success:
-                    type: boolean
-                    description: Успешность операции
-                    example: true
-              example:
-                result:
-                  totalPages: 3
-                  totalElements: 28
-                  first: true
-                  last: false
-                  size: 10
-                  content:
-                    - id: 1
-                      bank_name: "Hamkorbank"
-                      title: "HUMO"
-                      currency: "UZS"
-                      system: "HUMO"
-                      opening_type: "Онлайн"
-                      created_at: "2024-01-10T09:30:00Z"
-                    - id: 2
-                      bank_name: "Tenge Bank"
-                      title: "UzCard"
-                      currency: "UZS"
-                      system: "UzCard"
-                      opening_type: "В банке"
-                      created_at: "2024-01-10T10:00:00Z"
-                    - id: 3
-                      bank_name: "Asia Alliance Bank"
-                      title: "MasterCard Gold"
-                      currency: "USD"
-                      system: "MasterCard"
-                      opening_type: "Онлайн"
-                      created_at: "2024-01-10T10:30:00Z"
-                  number: 0
-                  sort:
-                    - direction: "ASC"
-                      nullHandling: "NATIVE"
-                      ascending: true
-                      property: "bank_name"
-                      ignoreCase: false
-                  numberOfElements: 10
-                  pageable:
-                    offset: 0
-                    sort:
-                      - direction: "ASC"
-                        nullHandling: "NATIVE"
-                        ascending: true
-                        property: "bank_name"
-                        ignoreCase: false
-                    paged: true
-                    pageNumber: 0
-                    pageSize: 10
-                    unpaged: false
-                  empty: false
-                success: true
-        '500':
-          $ref: '#/components/responses/Error'
 
-  /transfers/new:
+
+  /bank/transfers/new:
     get:
-      tags: [Transfers]
+      tags: [Bank]
       summary: Получить новые переводы с пагинацией
       description: |
         Возвращает список новых переводных приложений с поддержкой пагинации и сортировки.
@@ -2237,256 +1313,13 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
-  /transfers/old:
-    get:
-      tags: [Transfers]
-      summary: Получить старые переводы с пагинацией
-      description: |
-        Возвращает список старых переводных приложений с поддержкой пагинации и сортировки.
-        
-        **Параметры пагинации:**
-        - `page` - номер страницы (начиная с 0, по умолчанию 0)
-        - `size` - размер страницы (1-100, по умолчанию 10)
-        
-        **Параметры сортировки:**
-        - `sort` - поле для сортировки (app_name, commission, limit_info, created_at)
-        - `direction` - направление сортировки (asc, desc, по умолчанию asc)
-        
-        **Поля перевода:**
-        - `app_name` - название приложения
-        - `commission` - комиссия за переводы
-        - `limit_info` - информация о лимитах и условиях
-      parameters:
-        - in: query
-          name: page
-          schema:
-            type: integer
-            minimum: 0
-            default: 0
-          description: Номер страницы (начиная с 0)
-          example: 0
-        - in: query
-          name: size
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 10
-          description: Размер страницы
-          example: 10
-        - in: query
-          name: sort
-          schema:
-            type: string
-            enum: [app_name, commission, limit_info, created_at]
-            default: app_name
-          description: Поле для сортировки
-          example: app_name
-        - in: query
-          name: direction
-          schema:
-            type: string
-            enum: [asc, desc]
-            default: asc
-          description: Направление сортировки
-          example: asc
-      responses:
-        '200':
-          description: Успешный ответ с пагинированными данными
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  result:
-                    type: object
-                    properties:
-                      totalPages:
-                        type: integer
-                        description: Общее количество страниц
-                        example: 1
-                      totalElements:
-                        type: integer
-                        format: int64
-                        description: Общее количество элементов
-                        example: 15
-                      first:
-                        type: boolean
-                        description: Первая ли это страница
-                        example: true
-                      last:
-                        type: boolean
-                        description: Последняя ли это страница
-                        example: true
-                      size:
-                        type: integer
-                        description: Размер страницы
-                        example: 10
-                      content:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Transfer'
-                        description: Массив старых переводов
-                      number:
-                        type: integer
-                        description: Номер текущей страницы
-                        example: 0
-                      sort:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Sort'
-                        description: Параметры сортировки
-                      numberOfElements:
-                        type: integer
-                        description: Количество элементов на текущей странице
-                        example: 15
-                      pageable:
-                        $ref: '#/components/schemas/Pageable'
-                      empty:
-                        type: boolean
-                        description: Пустой ли результат
-                        example: false
-                  success:
-                    type: boolean
-                    description: Успешность операции
-                    example: true
-                  error:
-                    type: string
-                    nullable: true
-                    description: Сообщение об ошибке
-                    example: null
-              example:
-                result:
-                  totalPages: 1
-                  totalElements: 15
-                  first: true
-                  last: true
-                  size: 10
-                  content:
-                    - id: 1
-                      app_name: "xazna"
-                      commission: "0%"
-                      limit_ru: "Ежемесячно за переводы до 5 млн сум комиссия 0%, затем 0.5%."
-                      limit_uz: "Har oy 5 mln so'mgacha o'tkazmalar uchun komissiya 0%, keyin 0.5%."
-                      created_at: "2024-01-20T15:30:00Z"
-                    - id: 2
-                      app_name: "Mavrid"
-                      commission: "0%"
-                      limit_ru: "Ежемесячно до 3 млн сумов комиссия 0%, далее 0.5%."
-                      limit_uz: "Har oy 3 mln so'mgacha komissiya 0%, keyin 0.5%."
-                      created_at: "2024-01-20T16:45:00Z"
-                  number: 0
-                  sort:
-                    - direction: "ASC"
-                      nullHandling: "NATIVE"
-                      ascending: true
-                      property: "app_name"
-                      ignoreCase: false
-                  numberOfElements: 15
-                  pageable:
-                    offset: 0
-                    sort:
-                      - direction: "ASC"
-                        nullHandling: "NATIVE"
-                        ascending: true
-                        property: "app_name"
-                        ignoreCase: false
-                    paged: true
-                    pageNumber: 0
-                    pageSize: 10
-                    unpaged: false
-                  empty: false
-                success: true
-                error: null
-        '500':
-          $ref: '#/components/responses/Error'
 
-  /parse-transfer:
-    get:
-      tags: [Parser]
-      summary: Парсинг переводов по URL
-      description: |
-        Парсит информацию о ВСЕХ переводных приложениях с указанного URL (примерно 50 приложений) и возвращает массив структурированных данных.
-        
-        **Поля перевода:**
-        - `app_name` - название приложения
-        - `commission` - комиссия за переводы
-        - `limit_info` - информация о лимитах и условиях
-      parameters:
-        - in: query
-          name: url
-          required: true
-          schema:
-            type: string
-          description: URL страницы для парсинга
-          example: "https://bank.uz/perevodi"
-      responses:
-        '200':
-          description: Успешный ответ с данными переводов
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  result:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Transfer'
-                  success:
-                    type: boolean
-                    description: Успешность операции
-                    example: true
-                  error:
-                    type: string
-                    nullable: true
-                    description: Сообщение об ошибке
-                    example: null
-              example:
-                result:
-                  - id: 1
-                    app_name: "Davr Mobile"
-                    commission: "0%"
-                    limit_ru: "В рамках акции комиссия 0% на сумму до 3.5 млн сум в месяц. Далее 0.35%."
-                    limit_uz: "Aksiya doirasida har oy 3.5 mln so'mgacha komissiya 0%. Undan so'ng 0.35%."
-                    created_at: "2024-01-25T20:00:00Z"
-                  - id: 2
-                    app_name: "Paynet"
-                    commission: "0.5%"
-                    limit_ru: "Комиссия 0.5% за переводы до 10 млн сум в месяц."
-                    limit_uz: "Har oy 10 mln so'mgacha o'tkazmalar uchun komissiya 0.5%."
-                    created_at: "2024-01-25T20:00:00Z"
-                  - id: 3
-                    app_name: "xazna"
-                    commission: "0%"
-                    limit_ru: "Без комиссии на переводы до 5 млн сум в месяц."
-                    limit_uz: "Har oy 5 mln so'mgacha o'tkazmalar uchun komissiyasiz."
-                    created_at: "2024-01-25T20:00:00Z"
-                success: true
-                error: null
-        '400':
-          description: Неверный запрос
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "url parameter is required"
-        '500':
-          description: Внутренняя ошибка сервера
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Failed to parse transfer: error details"
 
-  /mortgages/new:
+
+
+  /bank/mortgages/new:
     get:
-      tags: [Mortgages]
+      tags: [Bank]
       summary: Получить новые ипотечные кредиты
       description: Возвращает список новых ипотечных кредитов с пагинацией и сортировкой
       parameters:
@@ -2627,48 +1460,21 @@ paths:
                     type: string
                     example: "Internal server error"
 
-  /mortgages/old:
+  /bank/parse:
     get:
-      tags: [Mortgages]
-      summary: Получить старые ипотечные кредиты
-      description: Возвращает список новых банковских вкладов с пагинацией и сортировкой
+      tags: [Bank]
+      summary: Парсинг кредитных предложений с банковского сайта
       parameters:
-        - name: page
-          in: query
-          description: Номер страницы
-          required: false
-          schema:
-            type: integer
-            default: 1
-            minimum: 1
-        - name: limit
-          in: query
-          description: Количество записей на странице
-          required: false
-          schema:
-            type: integer
-            default: 10
-            minimum: 1
-            maximum: 100
-        - name: sortBy
-          in: query
-          description: Поле для сортировки
-          required: false
+        - in: query
+          name: url
           schema:
             type: string
-            enum: [bank_name, rate, term_years, min_amount, title, created_at]
-            default: created_at
-        - name: sortOrder
-          in: query
-          description: Порядок сортировки
-          required: false
-          schema:
-            type: string
-            enum: [asc, desc]
-            default: desc
+          required: true
+          description: URL банковского сайта для парсинга
+          example: "https://ru.ipakyulibank.uz/physical/kredity/mikrozaymy"
       responses:
         '200':
-          description: Успешный ответ с пагинированными данными
+          description: Успешный парсинг
           content:
             application/json:
               schema:
@@ -2677,76 +1483,192 @@ paths:
                   result:
                     type: object
                     properties:
-                      totalPages:
-                        type: integer
-                        description: Общее количество страниц
-                        example: 3
-                      totalElements:
-                        type: integer
-                        format: int64
-                        description: Общее количество элементов
-                        example: 25
-                      first:
+                      bank_name:
+                        type: string
+                        description: Название банка
+                      url:
+                        type: string
+                        description: URL страницы
+                      data:
+                        type: object
+                        description: Спарсенные данные
+                  success:
                         type: boolean
-                        description: Первая ли это страница
                         example: true
-                      last:
-                        type: boolean
-                        description: Последняя ли это страница
-                        example: false
-                      size:
-                        type: integer
-                        description: Размер страницы
-                        example: 10
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+          
+  /bank/parse-currency:
+    get:
+      tags: [Bank]
+      summary: Парсинг курсов валют с банковского сайта
+      parameters:
+        - in: query
+          name: url
+          schema:
+            type: string
+          required: true
+          description: URL банковского сайта с курсами валют
+          example: "https://bank.uz/currency"
+      responses:
+        '200':
+          description: Успешный парсинг курсов валют
                       content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      bank_name:
+                        type: string
+                        description: Название банка
+                      url:
+                        type: string
+                        description: URL страницы
+                      rates:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Deposit'
-                        description: Массив банковских вкладов
-                      number:
-                        type: integer
-                        description: Номер текущей страницы
-                        example: 0
-                      numberOfElements:
-                        type: integer
-                        description: Количество элементов на текущей странице
-                        example: 10
-                      empty:
+                          type: object
+                          properties:
+                            currency:
+                              type: string
+                              example: "USD"
+                            buy:
+                              type: number
+                              example: 12560
+                            sell:
+                              type: number
+                              example: 12655
+                  success:
                         type: boolean
-                        description: Пустой ли результат
-                        example: false
+                    example: true
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+          
+  /bank/parse-autocredit:
+    get:
+      tags: [Bank]
+      summary: Парсинг автокредита с банковского сайта
+      parameters:
+        - in: query
+          name: url
+          schema:
+            type: string
+          required: true
+          description: URL банковского сайта с автокредитом
+          example: "https://aloqabank.uz/ru/private/crediting/avtokredit-birlamchi-bozor-uchun/"
+      responses:
+        '200':
+          description: Успешный парсинг автокредита
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    $ref: '#/components/schemas/Autocredit'
                   success:
                     type: boolean
-                    description: Успешность операции
                     example: true
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
         '400':
-          description: Ошибка валидации
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Invalid parameters"
+          $ref: '#/components/responses/Error'
         '500':
-          description: Внутренняя ошибка сервера
+          $ref: '#/components/responses/Error'
+          
+  /bank/parse-transfer:
+    get:
+      tags: [Bank]
+      summary: Парсинг переводов по URL
+      parameters:
+        - in: query
+          name: url
+          required: true
+          schema:
+            type: string
+          description: URL страницы для парсинга
+          example: "https://bank.uz/perevodi"
+      responses:
+        '200':
+          description: Успешный ответ с данными переводов
           content:
             application/json:
               schema:
                 type: object
                 properties:
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Transfer'
+                  success:
+                    type: boolean
+                    example: true
                   error:
                     type: string
-                    example: "Internal server error"
-
-
- 
-  /parse-mortgage:
+                    nullable: true
+                    example: null
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+          
+  /bank/parse-transfer-goquery:
     get:
-      tags: [Parser]
+      tags: [Bank]
+      summary: Парсинг переводов с использованием goquery
+      parameters:
+        - in: query
+          name: url
+          required: true
+          schema:
+            type: string
+          description: URL страницы для парсинга
+          example: "https://bank.uz/perevodi"
+      responses:
+        '200':
+          description: Успешный ответ с данными переводов
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Transfer'
+                  success:
+                    type: boolean
+                    example: true
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+          
+  /bank/parse-mortgage:
+    get:
+      tags: [Bank]
       summary: Парсинг ипотеки
-      description: Парсит информацию об ипотечном кредите с указанного URL
       parameters:
         - name: url
           in: query
@@ -2772,38 +1694,191 @@ paths:
                     type: string
                     nullable: true
                     example: null
-              example:
-                result:
-                  id: 0
-                  bank_name: "Infin Bank"
-                  rate_max: 18.5
-                  rate_min: 15.0
-                  term_years: 20
-                  max_amount: 500
-                  initial_payment: 20
-                  url: "https://www.infinbank.com/ru/private/credits/ipoteka/"
-                  created_at: "2024-01-15T10:30:00Z"
-                success: true
         '400':
-          description: Отсутствует URL
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "url parameter is required"
+          $ref: '#/components/responses/Error'
         '500':
-          description: Ошибка парсинга
+          $ref: '#/components/responses/Error'
+          
+  /bank/parse-mortgage-goquery:
+    get:
+      tags: [Bank]
+      summary: Парсинг ипотеки с использованием goquery
+      parameters:
+        - in: query
+          name: url
+          schema:
+            type: string
+          required: true
+          description: URL банковского сайта с ипотечным кредитом
+          example: "https://example.com/mortgage-page"
+      responses:
+        '200':
+          description: Успешный ответ с результатом парсинга
           content:
             application/json:
               schema:
                 type: object
                 properties:
+                result:
+                    $ref: '#/components/schemas/Mortgage'
+                  success:
+                    type: boolean
+                    example: true
                   error:
                     type: string
-                    example: "Failed to parse mortgage: error details"
+                    nullable: true
+                    example: null
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+          
+  /bank/parse-deposit:
+    get:
+      tags: [Bank]
+      summary: Парсинг вкладов с банковского сайта
+      parameters:
+        - in: query
+          name: url
+          schema:
+            type: string
+          required: true
+          description: URL банковского сайта с вкладами
+          example: "https://bank.uz/deposits"
+      responses:
+        '200':
+          description: Успешный парсинг вкладов
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Deposit'
+                  success:
+                    type: boolean
+                    example: true
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+          
+  /bank/parse-card:
+    get:
+      tags: [Bank]
+      summary: Парсинг карт с банковского сайта
+      parameters:
+        - in: query
+          name: url
+          schema:
+            type: string
+          required: true
+          description: URL банковского сайта с картами
+          example: "https://bank.uz/cards"
+      responses:
+        '200':
+          description: Успешный парсинг карт
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Card'
+                  success:
+                    type: boolean
+                    example: true
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+          
+  /bank/parse-microcredit:
+    get:
+      tags: [Bank]
+      summary: Парсинг микрокредитов
+      parameters:
+        - in: query
+          name: url
+          schema:
+            type: string
+            format: uri
+          required: true
+          description: URL страницы для парсинга микрокредитов
+          example: "https://bank.uz/uz/credits/mikrozaymy"
+      responses:
+        '200':
+          description: Успешный парсинг микрокредитов
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Microcredit'
+                  success:
+                    type: boolean
+                    example: true
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+          
+  /bank/update-transfers:
+    get:
+      tags: [Bank]
+      summary: Обновление переводов в базе данных
+      description: Парсит переводы и обновляет базу данных
+      responses:
+        '200':
+          description: Успешное обновление
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "Transfers updated successfully"
+                      count:
+                        type: integer
+                        example: 50
+                  success:
+                    type: boolean
+                    example: true
+                  error:
+                    type: string
+                    nullable: true
+                    example: null
+                '500':
+          $ref: '#/components/responses/Error'
+
+
+
+
+ 
+
 
 components:
   securitySchemes:
@@ -3014,77 +2089,9 @@ components:
           type: string
       example:
         phone: "+998901234567"
-    LoanOfferDetails:
-      type: object
-      properties:
-        bank_name:
-          type: string
-          nullable: true
-          description: Название банка, извлеченное из URL
-        url:
-          type: string
-          description: Оригинальный URL
-        max_amount:
-          type: number
-          nullable: true
-          description: Максимальная сумма кредита
-        term_months:
-          type: integer
-          nullable: true
-          description: Срок кредита в месяцах
-        rate_min:
-          type: number
-          nullable: true
-          description: Минимальная процентная ставка
-        rate_max:
-          type: number
-          nullable: true
-          description: Максимальная процентная ставка
-    CurrencyRate:
-      type: object
-      properties:
-        bank:
-          type: string
-          description: Название банка
-          example: "Asia Alliance Bank"
-        currency:
-          type: string
-          description: Код валюты
-          example: "USD"
-        buy:
-          type: number
-          nullable: true
-          description: Курс покупки
-          example: 12560
-        sell:
-          type: number
-          nullable: true
-          description: Курс продажи
-          example: 12655
-    CurrencyDetails:
-      type: object
-      properties:
-        bank_name:
-          type: string
-          nullable: true
-          description: Название банка из URL
-          example: "bank"
-        url:
-          type: string
-          description: Оригинальный URL
-          example: "https://bank.uz/currency"
-        rates:
-          type: array
-          items:
-            $ref: '#/components/schemas/CurrencyRate'
-          description: Массив курсов валют всех банков
-      example:
-        bank_name: "ipakyulibank"
-        url: "https://ru.ipakyulibank.uz/physical/kredity/mikrozaymy"
-        max_amount: 100000000
-        term_months: 60
-        rate_min: 22.9
-        rate_max: 31.9
+
+
+
     UserProfileResult:
       type: object
       properties:
@@ -3437,143 +2444,8 @@ components:
                 accessTokenExpiry: 1712345678
                 refreshTokenExpiry: 1712945678
               success: true
-    ParserResponse:
-      description: Результат парсинга кредитного предложения
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              result:
-                $ref: '#/components/schemas/LoanOfferDetails'
-              success:
-                type: boolean
-              error:
-                type: string
-                nullable: true
-            example:
-              result:
-                bank_name: "ipakyulibank"
-                url: "https://ru.ipakyulibank.uz/physical/kredity/mikrozaymy"
-                max_amount: 100000000
-                term_months: 60
-                rate_min: 22.9
-                rate_max: 31.9
-              success: true
-    CurrencyParserResponse:
-      description: Результат парсинга курсов валют
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              result:
-                type: object
-                properties:
-                  USD:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        bank:
-                          type: string
-                          example: "Asia Alliance Bank"
-                        currency:
-                          type: string
-                          example: "USD"
-                        buy:
-                          type: number
-                          example: 12560
-                        sell:
-                          type: number
-                          nullable: true
-                          example: 12655
-                  RUB:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        bank:
-                          type: string
-                          example: "Kapitalbank"
-                        currency:
-                          type: string
-                          example: "RUB"
-                        buy:
-                          type: number
-                          example: 148
-                        sell:
-                          type: number
-                          nullable: true
-                          example: 161
-                  EUR:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        bank:
-                          type: string
-                          example: "O'zbekiston Milliy banki"
-                        currency:
-                          type: string
-                          example: "EUR"
-                        buy:
-                          type: number
-                          example: 14650
-                        sell:
-                          type: number
-                          nullable: true
-                          example: 14850
-                  KZT:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        bank:
-                          type: string
-                          example: "Tenge Bank"
-                        currency:
-                          type: string
-                          example: "KZT"
-                        buy:
-                          type: number
-                          example: 22
-                        sell:
-                          type: number
-                          nullable: true
-                          example: 23.8
-              success:
-                type: boolean
-              error:
-                type: string
-                nullable: true
-            example:
-              result:
-                USD:
-                  - bank: "Asia Alliance Bank"
-                    currency: "USD"
-                    buy: 12560
-                    sell: 12655
-                  - bank: "Hamkorbank"
-                    currency: "USD"
-                    buy: 12560
-                    sell: 12640
-                RUB:
-                  - bank: "Kapitalbank"
-                    currency: "RUB"
-                    buy: 148
-                    sell: 161
-                EUR:
-                  - bank: "O'zbekiston Milliy banki"
-                    currency: "EUR"
-                    buy: 14650
-                    sell: 14850
-                KZT:
-                  - bank: "Tenge Bank"
-                    currency: "KZT"
-                    buy: 22
-                    sell: 23.8
-              success: true
+
+
     UserProfile:
       description: Профиль пользователя
       content:

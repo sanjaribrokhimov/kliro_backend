@@ -3,101 +3,84 @@ package services
 import (
 	"kliro/models"
 	"log"
-	"strings"
+	"os"
+	"time"
 
 	"github.com/robfig/cron/v3"
 	"gorm.io/gorm"
 )
 
-type TransferCronService struct {
-	db *gorm.DB
+var transferURLs = []string{
+	"https://bank.uz/uz/perevodi",
 }
 
-func NewTransferCronService(db *gorm.DB) *TransferCronService {
-	return &TransferCronService{db: db}
-}
-
-// StartTransferCron запускает cron для парсинга переводов
-func StartTransferCron(db *gorm.DB) {
-	service := NewTransferCronService(db)
-
-	// Инициализация данных при запуске
-	service.initializeTransferData()
-
-	// Создаем cron планировщик
-	c := cron.New(cron.WithSeconds())
-
-	// Запускаем парсинг каждые 3 дня в 20:00
-	c.AddFunc("0 0 20 */3 * *", func() {
-		service.parseAllTransferURLs()
-	})
-
-	c.Start()
-	log.Printf("[TRANSFER CRON] Планировщик запущен. Парсинг переводов будет выполняться каждые 3 дня в 20:00 UTC")
-}
-
-// initializeTransferData инициализирует данные переводов при запуске
-func (tcs *TransferCronService) initializeTransferData() {
-	// Проверяем, есть ли данные в таблицах
-	var newCount int64
-
-	err1 := tcs.db.Table("new_transfer").Count(&newCount).Error
-	if err1 != nil {
-		log.Printf("[TRANSFER CRON] Ошибка проверки new_transfer: %v", err1)
-	}
-
-	
-
-	
-}
-
-// parseAllTransferURLs парсит все URL переводов
-func (tcs *TransferCronService) parseAllTransferURLs() {
+// Функция для парсинга одного URL переводов
+func parseTransferURL(url string, logger *log.Logger) []*models.Transfer {
+	// Парсим напрямую, без обращения к API
 	parser := NewTransferParser()
-
-
-
-	// Парсим только основной URL с переводными приложениями
-	transfers, err := tcs.parseTransferURL("https://bank.uz/uz/perevodi", parser)
-
-	if err != nil {
-		log.Printf("[TRANSFER CRON] Ошибка парсинга: %v", err)
-	} else {
-		if len(transfers) > 0 {
-			// Сохраняем все переводы в базу данных с проверкой дубликатов
-			savedCount := 0
-			seenNames := make(map[string]bool)
-
-			for _, transfer := range transfers {
-				// Проверяем на дубликаты в базе данных
-				normalizedName := strings.ToLower(strings.TrimSpace(transfer.AppName))
-				if seenNames[normalizedName] {
-					continue
-				}
-
-				if err := tcs.db.Table("new_transfer").Create(transfer).Error; err != nil {
-					log.Printf("[TRANSFER CRON] Ошибка сохранения: %v", err)
-				} else {
-					savedCount++
-					seenNames[normalizedName] = true
-				}
-			}
-
-			log.Printf("[TRANSFER CRON] Успешно сохранено переводов: %d", savedCount)
-		} else {
-			log.Printf("[TRANSFER CRON] Переводы не найдены")
-		}
-	}
-}
-
-// parseTransferURL парсит конкретный URL перевода
-func (tcs *TransferCronService) parseTransferURL(url string, parser *TransferParser) ([]*models.Transfer, error) {
 	transfers, err := parser.ParseURL(url)
 	if err != nil {
-		return nil, err
+		logger.Printf("Ошибка парсинга переводов %s: %v", url, err)
+		return nil
 	}
 
-	return transfers, nil
+	// Устанавливаем время создания для всех переводов
+	for _, transfer := range transfers {
+		transfer.CreatedAt = time.Now()
+	}
+	return transfers
 }
 
+// Инициализация данных переводов (первый запуск)
+func InitializeTransferData(db *gorm.DB) {
+	logFile, _ := os.OpenFile("logs/parser_errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	logger := log.New(logFile, "", log.LstdFlags)
+	defer logFile.Close()
 
+	logger.Printf("Инициализация данных переводов - очищаем базу и парсим заново...")
+
+	// Очищаем таблицу переводов
+	db.Exec("TRUNCATE new_transfer")
+
+	// Парсим все URL'ы и сохраняем в таблицу
+	for _, url := range transferURLs {
+		if transfers := parseTransferURL(url, logger); transfers != nil {
+			for _, transfer := range transfers {
+				db.Table("new_transfer").Create(transfer)
+			}
+		}
+	}
+
+	logger.Printf("Инициализация переводов завершена - заполнена таблица new_transfer")
+}
+
+// Запуск cron для переводов
+func StartTransferCron(db *gorm.DB) {
+	// Инициализируем данные при первом запуске
+	InitializeTransferData(db)
+
+	c := cron.New()
+	c.AddFunc("0 0 2 * * *", func() { // Каждый день в 02:00 UTC (ночь в Узбекистане)
+		logFile, _ := os.OpenFile("logs/parser_errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		logger := log.New(logFile, "", log.LstdFlags)
+		defer logFile.Close()
+
+		logger.Printf("Начало ежедневного парсинга переводов...")
+
+		// Очищаем таблицу переводов
+		db.Exec("TRUNCATE new_transfer")
+
+		// Парсим все URL'ы заново
+		for _, url := range transferURLs {
+			if transfers := parseTransferURL(url, logger); transfers != nil {
+				for _, transfer := range transfers {
+					db.Table("new_transfer").Create(transfer)
+				}
+			}
+		}
+
+		logger.Printf("Ежедневный парсинг переводов завершен")
+	})
+	c.Start()
+	log.Printf("[TRANSFER CRON] Планировщик запущен. Парсинг переводов будет выполняться каждый день в 02:00 UTC")
+}
