@@ -6,6 +6,9 @@ import (
 	"kliro/services"
 	"kliro/utils"
 
+	"kliro/config"
+	insurancectl "kliro/controllers/insurance"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
@@ -51,6 +54,11 @@ func SetupRouter() *gin.Engine {
 	cardController := controllers.NewCardController()
 	currencyController := controllers.NewCurrencyController(currencyService)
 
+	// Конфиг и контроллер страхования
+	cfg := config.LoadConfig()
+	kaskoController := insurancectl.NewKaskoController(cfg)
+	osagoController := insurancectl.NewOsagoController(cfg)
+
 	r.POST("/auth/register", userController.Register)
 	r.POST("/auth/confirm-otp", userController.ConfirmOTP)
 	r.POST("/auth/confirm-otp-create", userController.ConfirmOTPCreate)
@@ -88,6 +96,35 @@ func SetupRouter() *gin.Engine {
 		bankGroup.GET("/currencies/by-date", currencyController.GetCurrencyRatesByDate)
 	}
 
+	// Insurance group (proxy to NeoInsurance APIs)
+	insuranceGroup := r.Group("/insurance")
+	{
+		kasko := insuranceGroup.Group("/kasko")
+		{
+			kasko.GET("/cars", kaskoController.Cars)
+			kasko.GET("/rates", kaskoController.GetTarif)
+			kasko.POST("/car-price", kaskoController.CarPriceCalc)
+			kasko.POST("/calculate", kaskoController.Calculate)
+			kasko.POST("/save", kaskoController.Save)
+			kasko.POST("/payment-link", kaskoController.GetPaymentLink)
+			kasko.POST("/check-payment", kaskoController.CheckPayment)
+			kasko.POST("/image-upload", kaskoController.ImageUpload)
+		}
+
+		osago := insuranceGroup.Group("/osago")
+		{
+			osago.POST("/calculate", osagoController.Calc)
+			osago.POST("/legal", osagoController.Juridik)
+			osago.POST("/check-person", osagoController.CheckPerson)
+			osago.POST("/save-policy", osagoController.SavePolicy)
+			osago.POST("/confirm", osagoController.ConfirmPolicy)
+			osago.POST("/status", osagoController.ConfirmCheck)
+			// Payment endpoints for OSAGO
+			osago.POST("/payment-link", osagoController.GetPaymentLink)
+			osago.POST("/check-payment", osagoController.CheckPayment)
+		}
+	}
+
 	userGroup := r.Group("/user", middleware.JWTAuthMiddleware())
 	{
 		userGroup.GET("/profile", userProfileController.GetProfile)
@@ -97,6 +134,52 @@ func SetupRouter() *gin.Engine {
 		userGroup.POST("/change-region", userProfileController.ChangeRegion)
 		userGroup.POST("/add-contact", userProfileController.AddContact)
 		userGroup.POST("/logout", userProfileController.Logout)
+	}
+
+	return r
+}
+
+// SetupInsuranceRouterOnly поднимает только страховые маршруты (без БД/кронов)
+func SetupInsuranceRouterOnly() *gin.Engine {
+	r := gin.Default()
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000", "https://kliro.uz", "https://www.kliro.uz", "https://kliro-frontend.vercel.app"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
+
+	cfg := config.LoadConfig()
+	kaskoController := insurancectl.NewKaskoController(cfg)
+	osagoController := insurancectl.NewOsagoController(cfg)
+
+	insuranceGroup := r.Group("/insurance")
+	{
+		kasko := insuranceGroup.Group("/kasko")
+		{
+			kasko.GET("/cars", kaskoController.Cars)
+			kasko.GET("/rates", kaskoController.GetTarif)
+			kasko.POST("/car-price", kaskoController.CarPriceCalc)
+			kasko.POST("/calculate", kaskoController.Calculate)
+			kasko.POST("/save", kaskoController.Save)
+			kasko.POST("/payment-link", kaskoController.GetPaymentLink)
+			kasko.POST("/check-payment", kaskoController.CheckPayment)
+			kasko.POST("/image-upload", kaskoController.ImageUpload)
+		}
+
+		osago := insuranceGroup.Group("/osago")
+		{
+			osago.POST("/calculate", osagoController.Calc)
+			osago.POST("/legal", osagoController.Juridik)
+			osago.POST("/check-person", osagoController.CheckPerson)
+			osago.POST("/save-policy", osagoController.SavePolicy)
+			osago.POST("/confirm", osagoController.ConfirmPolicy)
+			osago.POST("/status", osagoController.ConfirmCheck)
+			// Payment endpoints for OSAGO
+			osago.POST("/payment-link", osagoController.GetPaymentLink)
+			osago.POST("/check-payment", osagoController.CheckPayment)
+		}
 	}
 
 	return r

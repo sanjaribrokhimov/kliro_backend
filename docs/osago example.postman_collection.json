@@ -1,0 +1,299 @@
+{
+	"info": {
+		"_postman_id": "e09d6558-44d9-4fa1-8890-416b8fb00a75",
+		"name": "osago example",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16600899"
+	},
+	"item": [
+		{
+			"name": "hisoblash",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{login}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"gos_number\": \"01J112SB\",\r\n    \"tech_sery\": \"AAG\",\r\n    \"tech_number\": \"1999381\",\r\n    \"period_id\": \"1\",\r\n    \"number_drivers_id\": \"4\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}api/osago-neo/get-calc-osago",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"osago-neo",
+						"get-calc-osago"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "mashina malumotlari va egasi haqidagi malumotlarni olish",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{login}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"gos_number\":\"01Y195DA\",\r\n    \"tech_sery\":\"AAF\",\r\n    \"tech_number\":\"0390422\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}api/osago-neo/osago-juridik",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"osago-neo",
+						"osago-juridik"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "osogo chek person Copy",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{login}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"gos_number\": \"01J112SB\",\r\n  \"tech_sery\": \"AAG\",\r\n  \"tech_number\": \"1999381\",\r\n  \"owner__pass_seria\": \"AA\",\r\n  \"owner__pass_number\": \"6958322\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}api/osago-neo/check-person",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"osago-neo",
+						"check-person"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "saqlash",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{login}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"amount_uzs\": 56000,\r\n  \"gos_number\": \"10511JBA\",\r\n  \"tech_number\": \"6807874\",\r\n  \"tech_sery\": \"AAC\",\r\n  \"drivers\": [\r\n    {\r\n      \"passport__seria\": \"aa\",\r\n      \"passport__number\": \"8776483\",\r\n      \"driver_birthday\": \"15.01.1959\",\r\n      \"relative\": 0,\r\n      \"name\": \"\"\r\n    },\r\n    {\r\n      \"passport__seria\": \"ad\",\r\n      \"passport__number\": \"1989714\",\r\n      \"driver_birthday\": \"10.08.1986\",\r\n      \"relative\": 0,\r\n      \"name\": \"\"\r\n    },\r\n    {\r\n      \"passport__seria\": \"ad\",\r\n      \"passport__number\": \"4552706\",\r\n      \"driver_birthday\": \"26.08.1988\",\r\n      \"relative\": 0,\r\n      \"name\": \"\"\r\n    }\r\n  ],\r\n  \"applicant_is_driver\": false,\r\n  \"period_id\": 1,\r\n  \"number_drivers_id\": \"4\",\r\n  \"phone_number\": \"998998802202\",\r\n  \"owner__inn\": \"301380120\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}api/osago-neo/save-policy/v2",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"osago-neo",
+						"save-policy",
+						"v2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "polisni avtive qilish",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{login}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"order_id\":112355\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}api/osago-neo/confirm-policy",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"osago-neo",
+						"confirm-policy"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "tekshirish polisni olish",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{login}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"order_id\":3355\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}api/osago-neo/confirm-check",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"osago-neo",
+						"confirm-check"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,288 @@
+{
+	"info": {
+		"_postman_id": "4f46e658-60d7-439c-83b7-425d6acde93d",
+		"name": "neoinsurance.uz Risk-Travel All",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41762107"
+	},
+	"item": [
+		{
+			"name": "get-data",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{login}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/travel-risk-neo/get-data",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"travel-risk-neo",
+						"get-data"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Untitled Example",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/travel-risk-neo/get-data",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"travel-risk-neo",
+								"get-data"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Host",
+							"value": "localhost:8000"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/8.3.9"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 07 May 2025 17:57:21 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "phpdebugbar-id",
+							"value": "01JTNYA73NZKA9651HTJRRZPAJ"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"result\": true,\n    \"message\": null,\n    \"response\": {\n        \"accident\": [\n            {\n                \"id\": 1,\n                \"liability\": 10000,\n                \"liability_valyuta\": \"EUR\",\n                \"premium\": 13000,\n                \"premium_valyuta\": \"UZS\",\n                \"premium_foreign\": 1,\n                \"premium_foreign_valyuta\": \"USD\"\n            }\n        ],\n        \"cancel_travel\": [\n            {\n                \"id\": 1,\n                \"liability\": 500,\n                \"liability_valyuta\": \"EUR\",\n                \"premium\": 20000,\n                \"premium_valyuta\": \"UZS\",\n                \"premium_foreign\": 1.5,\n                \"premium_foreign_valyuta\": \"USD\"\n            },\n            {\n                \"id\": 2,\n                \"liability\": 1000,\n                \"liability_valyuta\": \"EUR\",\n                \"premium\": 39000,\n                \"premium_valyuta\": \"UZS\",\n                \"premium_foreign\": 3,\n                \"premium_foreign_valyuta\": \"USD\"\n            },\n            {\n                \"id\": 3,\n                \"liability\": 3000,\n                \"liability_valyuta\": \"EUR\",\n                \"premium\": 104000,\n                \"premium_valyuta\": \"UZS\",\n                \"premium_foreign\": 8,\n                \"premium_foreign_valyuta\": \"USD\"\n            }\n        ],\n        \"person_respon\": [\n            {\n                \"id\": 1,\n                \"liability\": 10000,\n                \"liability_valyuta\": \"EUR\",\n                \"premium\": 26000,\n                \"premium_valyuta\": \"UZS\",\n                \"premium_foreign\": 2,\n                \"premium_foreign_valyuta\": \"USD\"\n            }\n        ],\n        \"delay_travel\": [\n            {\n                \"id\": 1,\n                \"liability\": 200,\n                \"liability_valyuta\": \"EUR\",\n                \"premium\": 26000,\n                \"premium_valyuta\": \"UZS\",\n                \"premium_foreign\": 2,\n                \"premium_foreign_valyuta\": \"USD\"\n            }\n        ],\n        \"luggage\": [\n            {\n                \"id\": 1,\n                \"liability\": 250,\n                \"liability_valyuta\": \"EUR\",\n                \"premium\": 13000,\n                \"premium_valyuta\": \"UZS\",\n                \"premium_foreign\": 1,\n                \"premium_foreign_valyuta\": \"USD\"\n            },\n            {\n                \"id\": 2,\n                \"liability\": 500,\n                \"liability_valyuta\": \"EUR\",\n                \"premium\": 26000,\n                \"premium_valyuta\": \"UZS\",\n                \"premium_foreign\": 2,\n                \"premium_foreign_valyuta\": \"USD\"\n            }\n        ]\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "get-country",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{login}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/accident_one_day-neo/get-country",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"accident_one_day-neo",
+						"get-country"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "get-country",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/accident_one_day-neo/get-country",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"accident_one_day-neo",
+								"get-country"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Host",
+							"value": "127.0.0.1:8000"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 17 Apr 2024 11:22:15 GMT"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 17 Apr 2024 11:22:15 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/8.2.2"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "X-RateLimit-Limit",
+							"value": "10000"
+						},
+						{
+							"key": "X-RateLimit-Remaining",
+							"value": "9998"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"result\": true,\n    \"response\": {\n        \"country\": [\n            {\n                \"id\": 1,\n                \"uz\": \"AVSTRALIYA\",\n                \"ru\": \"АВСТРАЛИЯ\",\n                \"en\": \"AUSTRALIA\"\n            },\n            {\n                \"id\": 3,\n                \"uz\": \"AVSTRIYA, SHENGEN\",\n                \"ru\": \"АВСТРИЯ, ШЕНГЕН\",\n                \"en\": \"AUSTRIA, SCHENGEN\"\n            },\n            {\n                \"id\": 4,\n                \"uz\": \"OZARBAYJON \",\n                \"ru\": \"ОЗАРБАЙЖОН \",\n                \"en\": \"AZERBAIJAN\"\n            },\n            {\n                \"id\": 6,\n                \"uz\": \"ALBANIYA \",\n                \"ru\": \"АЛБАНИЯ \",\n                \"en\": \"ALBANIA\"\n            },\n            {\n                \"id\": 7,\n                \"uz\": \"JAZOIR \",\n                \"ru\": \"ЖАЗОИР \",\n                \"en\": \"ALGERIA\"\n            },\n            {\n                \"id\": 9,\n                \"uz\": \"Anguilla\",\n                \"ru\": \"Ангуилла\",\n                \"en\": \"Anguilla\"\n            },\n            {\n                \"id\": 10,\n                \"uz\": \"AHGOLA XALQ RESPUBLIKASI\",\n                \"ru\": \"АНГОЛА ХАЛК РЕСПУБЛИКАСИ\",\n                \"en\": \"THE PEOPLE'S REPUBLIC OF ANGOLA\"\n            },\n            {\n                \"id\": 11,\n                \"uz\": \"ANDORRA\",\n                \"ru\": \"АНДОРРА\",\n                \"en\": \"ANDORRA\"\n            },\n            {\n                \"id\": 12,\n                \"uz\": \"ANTARKTIKA\",\n                \"ru\": \"АНТАРКТИКА\",\n                \"en\": \"ANTARCTIC\"\n            },\n            {\n                \"id\": 13,\n                \"uz\": \"ANTIGUA VA BARNBUDA\",\n                \"ru\": \"АНТИГУА ВА БАРБУДА\",\n                \"en\": \"ANTIGUA AND BARBUDA\"\n            },\n            {\n                \"id\": 14,\n                \"uz\": \"NIDERLAND ANTIL OROLLARI\",\n                \"ru\": \"НИДЕРЛАНД АНТИЛ ОРОЛЛАРИ\",\n                \"en\": \"NETHERLANDS ANTILL ISLANDS\"\n            },\n            {\n                \"id\": 15,\n                \"uz\": \"MAKAO\",\n                \"ru\": \"МАКАО\",\n                \"en\": \"MACAO\"\n            },\n            {\n                \"id\": 16,\n                \"uz\": \"ARGENTINA \",\n                \"ru\": \"АРГЕНТИНА \",\n                \"en\": \"ARGENTINA\"\n            },\n            {\n                \"id\": 17,\n                \"uz\": \"ARMANISTON \",\n                \"ru\": \"АРМАНИСТОН \",\n                \"en\": \"ARMENIA\"\n            },\n            {\n                \"id\": 18,\n                \"uz\": \"ARUBA \",\n                \"ru\": \"АРУБА \",\n                \"en\": \"ARUBA\"\n            },\n            {\n                \"id\": 19,\n                \"uz\": \"AFG'ONISTON \",\n                \"ru\": \"АФГОНИСТОН \",\n                \"en\": \"AFGHANISTAN\"\n            },\n            {\n                \"id\": 20,\n                \"uz\": \"BAGAM OROLLARI \",\n                \"ru\": \"БАГАМ ОРОЛЛАРИ \",\n                \"en\": \"THE BAHAMAS ISLANDS\"\n            },\n            {\n                \"id\": 21,\n                \"uz\": \"BANGLADESH \",\n                \"ru\": \"БАНГЛАДЕШ \",\n                \"en\": \"BANGLADESH\"\n            },\n            {\n                \"id\": 22,\n                \"uz\": \"BARBADOS\",\n                \"ru\": \"БАРБАДОС\",\n                \"en\": \"BARBADOS\"\n            },\n            {\n                \"id\": 23,\n                \"uz\": \"BAXREYN \",\n                \"ru\": \"БАХРЕЙН \",\n                \"en\": \"BAHRAIN\"\n            },\n            {\n                \"id\": 24,\n                \"uz\": \"BELIZ\",\n                \"ru\": \"БЕЛИЗ\",\n                \"en\": \"BELIZ\"\n            },\n            {\n                \"id\": 25,\n                \"uz\": \"BELORUS \",\n                \"ru\": \"БЕЛОРУС \",\n                \"en\": \"BELARUS\"\n            },\n            {\n                \"id\": 26,\n                \"uz\": \"BELGIYA, SHENGEN\",\n                \"ru\": \"БЕЛЬГИЯ, ШЕНГЕН\",\n                \"en\": \"BELGIUM, SCHENGEN\"\n            },\n            {\n                \"id\": 27,\n                \"uz\": \"BENIN \",\n                \"ru\": \"БЕНИН \",\n                \"en\": \"BENIN\"\n            },\n            {\n                \"id\": 28,\n                \"uz\": \"BERMUD OROLLARI\",\n                \"ru\": \"БЕРМУД ОРОЛЛАРИ\",\n                \"en\": \"BERMUDA\"\n            },\n            {\n                \"id\": 29,\n                \"uz\": \"BOLGARIYA \",\n                \"ru\": \"БОЛГАРИЯ \",\n                \"en\": \"BULGARIA\"\n            },\n            {\n                \"id\": 30,\n                \"uz\": \"BOLIVIYA \",\n                \"ru\": \"БОЛИВИЯ \",\n                \"en\": \"BOLIVIA\"\n            },\n            {\n                \"id\": 31,\n                \"uz\": \"BOSNIYA VA GERTSEGOVINA\",\n                \"ru\": \"БОСНИЯ ВА ГЕРЦЕГОВИНА\",\n                \"en\": \"BOSNIA AND HERZEGOVINA\"\n            },\n            {\n                \"id\": 32,\n                \"uz\": \"BOTSVANA \",\n                \"ru\": \"БОТСВАНА \",\n                \"en\": \"BOTSWANA\"\n            },\n            {\n                \"id\": 33,\n                \"uz\": \"BRAZILIYA \",\n                \"ru\": \"БРАЗИЛИЯ \",\n                \"en\": \"BRAZIL\"\n            },\n            {\n                \"id\": 34,\n                \"uz\": \"HIND OKEANIDAGI BRITANIYA TERRITORIYASI\",\n                \"ru\": \"ХИНД ОКЕАНИДАГИ БРИТАНИЯ ТЕРРИТОРИЯСИ\",\n                \"en\": \"BRITISH TERRITORY IN THE INDIAN OCEAN\"\n            },\n            {\n                \"id\": 35,\n                \"uz\": \"BRUNEY-DORUSSALOM\",\n                \"ru\": \"БРУНЕЙ-ДОРУССАЛОМ\",\n                \"en\": \"BRUNEI-DARUSSALAM\"\n            },\n            {\n                \"id\": 36,\n                \"uz\": \"BUVE OROLI\",\n                \"ru\": \"БУВЕ ОРОЛИ\",\n                \"en\": \"THE ISLAND OF BUE\"\n            },\n            {\n                \"id\": 37,\n                \"uz\": \"BURKINA-FASO\",\n                \"ru\": \"БУРКИНА-ФАСО\",\n                \"en\": \"BURKINA-FASO\"\n            },\n            {\n                \"id\": 38,\n                \"uz\": \"BURUNDI \",\n                \"ru\": \"БУРУНДИ \",\n                \"en\": \"BURUNDI\"\n            },\n            {\n                \"id\": 39,\n                \"uz\": \"BUTAN \",\n                \"ru\": \"БУТАН \",\n                \"en\": \"BUTANE\"\n            },\n            {\n                \"id\": 40,\n                \"uz\": \"VANUATU \",\n                \"ru\": \"ВАНУАТУ\",\n                \"en\": \"VANUATU\"\n            },\n            {\n                \"id\": 41,\n                \"uz\": \"VATIKAN SHAHAR DAVLATI\",\n                \"ru\": \"ВАТИКАН ШАХАР - ДАВЛАТИ\",\n                \"en\": \"VATICAN, CITY STATE\"\n            },\n            {\n                \"id\": 42,\n                \"uz\": \"BUYIK BRITANIYA BIRLASHGAN QIROLLIGI VA SHIMOLIY IRLANDIYA\",\n                \"ru\": \"БУЮК БРИТАНИЯ БИРЛАШГАН КИРОЛЛИГИ ВА ШИМОЛИЙ ИРЛАНДИЯ\",\n                \"en\": \"UNITED KINGDOM OF GREAT BRITAIN AND NORTHERN IRELAND\"\n            },\n            {\n                \"id\": 43,\n                \"uz\": \"VENGRIYA, SHENHEN\",\n                \"ru\": \"ВЕНГРИЯ, ШЕНГЕН\",\n                \"en\": \"HUNGARY, SCHENGEN\"\n            },\n            {\n                \"id\": 44,\n                \"uz\": \"VENESUELLA \",\n                \"ru\": \"ВЕНЕСУЭЛА \",\n                \"en\": \"VENEZUELA\"\n            },\n            {\n                \"id\": 45,\n                \"uz\": \"VIRGINIYA OROLLARI\",\n                \"ru\": \"ВИРГИНИЯ ОРОЛЛАРИ\",\n                \"en\": \"VIRGIN ISLANDS (USA)\"\n            },\n            {\n                \"id\": 46,\n                \"uz\": \"BRITANIYA VIRGINIYA OROLLARI\",\n                \"ru\": \"БРИТАНИЯ ВИРГИНИЯ ОРОЛЛАРИ\",\n                \"en\": \"VIRGIN ISLANDS (BRITISH)\"\n            },\n            {\n                \"id\": 47,\n                \"uz\": \"Sharqiy Samoa\",\n                \"ru\": \"Шарқий Самоа\",\n                \"en\": \"Eastern Samoa\"\n            },\n            {\n                \"id\": 48,\n                \"uz\": \"SHARQIY TIMOR\",\n                \"ru\": \"ШАРКИЙ ТИМОР\",\n                \"en\": \"EAST TIMOR\"\n            },\n            {\n                \"id\": 49,\n                \"uz\": \"V'ETNAM \",\n                \"ru\": \"ВЬЕТНАМ \",\n                \"en\": \"VIETNAM\"\n            },\n            {\n                \"id\": 50,\n                \"uz\": \"GABON \",\n                \"ru\": \"ГАБОН \",\n                \"en\": \"GABON\"\n            },\n            {\n                \"id\": 51,\n                \"uz\": \"GAITI \",\n                \"ru\": \"ГАИТИ \",\n                \"en\": \"HAITI\"\n            },\n            {\n                \"id\": 52,\n                \"uz\": \"GAYANA \",\n                \"ru\": \"ГАЙАНА\",\n                \"en\": \"GUYANA\"\n            },\n            {\n                \"id\": 53,\n                \"uz\": \"GAMBIYA\",\n                \"ru\": \"ГАМБИЯ \",\n                \"en\": \"GAMBIA\"\n            },\n            {\n                \"id\": 54,\n                \"uz\": \"GANA \",\n                \"ru\": \"ГАНА \",\n                \"en\": \"GHANA\"\n            },\n            {\n                \"id\": 55,\n                \"uz\": \"GVADELUPA\",\n                \"ru\": \"ГВАДЕЛУПА\",\n                \"en\": \"GUADELUPA\"\n            },\n            {\n                \"id\": 56,\n                \"uz\": \"GVATEMALA \",\n                \"ru\": \"ГВАТЕМАЛА \",\n                \"en\": \"GUATEMALA\"\n            },\n            {\n                \"id\": 57,\n                \"uz\": \"Gviana\",\n                \"ru\": \"Гвиана\",\n                \"en\": \"Guiana\"\n            },\n            {\n                \"id\": 58,\n                \"uz\": \"GVINEYA \",\n                \"ru\": \"ГВИНЕЯ \",\n                \"en\": \"GUINEA\"\n            },\n            {\n                \"id\": 59,\n                \"uz\": \"GVINEYA-BISAU \",\n                \"ru\": \"ГВИНЕЯ-БИСАУ \",\n                \"en\": \"GUINEA-BISSAU\"\n            },\n            {\n                \"id\": 60,\n                \"uz\": \"GERMANIYA, SHENGEN\",\n                \"ru\": \"ГЕРМАНИЯ, ШЕНГЕН\",\n                \"en\": \"GERMANY, SCHENGEN\"\n            },\n            {\n                \"id\": 61,\n                \"uz\": \"GIBRALTAR\",\n                \"ru\": \"ГИБРАЛТАР\",\n                \"en\": \"GIBRALTAR\"\n            },\n            {\n                \"id\": 62,\n                \"uz\": \"GONDURAS \",\n                \"ru\": \"ГОНДУРАС \",\n                \"en\": \"HONDURAS\"\n            },\n            {\n                \"id\": 63,\n                \"uz\": \"GRENADA\",\n                \"ru\": \"ГРЕНАДА\",\n                \"en\": \"GRENADA\"\n            },\n            {\n                \"id\": 64,\n                \"uz\": \"GRENLANDIYA\",\n                \"ru\": \"ГРЕНЛАНДИЯ\",\n                \"en\": \"GREENLAND\"\n            },\n            {\n                \"id\": 65,\n                \"uz\": \"GRESIYA, SHENGEN\",\n                \"ru\": \"ГРЕЦИЯ, ШЕНГЕН\",\n                \"en\": \"GREECE, SCHENGEN\"\n            },\n            {\n                \"id\": 66,\n                \"uz\": \"GRUZIYA \",\n                \"ru\": \"ГРУЗИЯ \",\n                \"en\": \"GEORGIA\"\n            },\n            {\n                \"id\": 67,\n                \"uz\": \"GUAM\",\n                \"ru\": \"ГУАМ\",\n                \"en\": \"GUAM\"\n            },\n            {\n                \"id\": 68,\n                \"uz\": \"DANIYA,SHENGEN\",\n                \"ru\": \"ДАНИЯ, ШЕНГЕН\",\n                \"en\": \"DENMARK, SCHENGEN\"\n            },\n            {\n                \"id\": 69,\n                \"uz\": \"DJIBUTI \",\n                \"ru\": \"ДЖИБУТИ \",\n                \"en\": \"JIBOUTI\"\n            },\n            {\n                \"id\": 70,\n                \"uz\": \"DOMINIKA \",\n                \"ru\": \"ДОМИНИКА \",\n                \"en\": \"DOMINICA\"\n            },\n            {\n                \"id\": 71,\n                \"uz\": \"DOMINIKAN RESPUBLIKASI\",\n                \"ru\": \"ДОМИНИКАН РЕСПУБЛИКАСИ\",\n                \"en\": \"DOMINICAN REPUBLIC\"\n            },\n            {\n                \"id\": 72,\n                \"uz\": \"MISR \",\n                \"ru\": \"МИСР \",\n                \"en\": \"EGYPT\"\n            },\n            {\n                \"id\": 73,\n                \"uz\": \"KONGO \",\n                \"ru\": \"КОНГО \",\n                \"en\": \"CONGO\"\n            },\n            {\n                \"id\": 74,\n                \"uz\": \"ZAMBIYA \",\n                \"ru\": \"ЗАМБИЯ \",\n                \"en\": \"ZAMBIA\"\n            },\n            {\n                \"id\": 75,\n                \"uz\": \"G'ARBIY SAXARA\",\n                \"ru\": \"ГАРБИЙ САХАРА\",\n                \"en\": \"WEST SAHARA\"\n            },\n            {\n                \"id\": 76,\n                \"uz\": \"SAMOA\",\n                \"ru\": \"САМОА\",\n                \"en\": \"SAMOA\"\n            },\n            {\n                \"id\": 77,\n                \"uz\": \"ZIMBABVE \",\n                \"ru\": \"ЗИМБАБВЕ \",\n                \"en\": \"ZIMBABWE\"\n            },\n            {\n                \"id\": 78,\n                \"uz\": \"ISROIL \",\n                \"ru\": \"ИСРОИЛ \",\n                \"en\": \"ISRAEL\"\n            },\n            {\n                \"id\": 79,\n                \"uz\": \"HINDISTON \",\n                \"ru\": \"ХИНДИСТОН \",\n                \"en\": \"INDIA\"\n            },\n            {\n                \"id\": 80,\n                \"uz\": \"INDONEZIYA \",\n                \"ru\": \"ИНДОНЕЗИЯ \",\n                \"en\": \"INDONESIA\"\n            },\n            {\n                \"id\": 81,\n                \"uz\": \"IORDANIYA \",\n                \"ru\": \"ИОРДАНИЯ \",\n                \"en\": \"JORDAN\"\n            },\n            {\n                \"id\": 82,\n                \"uz\": \"IROQ \",\n                \"ru\": \"ИРОК \",\n                \"en\": \"IRAQ\"\n            },\n            {\n                \"id\": 83,\n                \"uz\": \"ERON ISLOM RESPUBLIKASI\",\n                \"ru\": \"ЭРОН ИСЛОМ РЕСПУБЛИКАСИ\",\n                \"en\": \"ISLAMIC REPUBLIC OF IRAN\"\n            },\n            {\n                \"id\": 84,\n                \"uz\": \"IRLANDIYA\",\n                \"ru\": \"ИРЛАНДИЯ\",\n                \"en\": \"IRELAND\"\n            },\n            {\n                \"id\": 85,\n                \"uz\": \"ISLANDIYA, SHENGEN\",\n                \"ru\": \"ИСЛАНДИЯ, ШЕНГЕН\",\n                \"en\": \"ICELAND, SCHENGEN\"\n            },\n            {\n                \"id\": 86,\n                \"uz\": \"ISPANIYA, SHENGEN\",\n                \"ru\": \"ИСПАНИЯ, ШЕНГЕН\",\n                \"en\": \"SPAIN, SCHENGEN\"\n            },\n            {\n                \"id\": 87,\n                \"uz\": \"ITALIYA, SHENGEN\",\n                \"ru\": \"ИТАЛИЯ, ШЕНГЕН\",\n                \"en\": \"ITALY, SCHENGEN\"\n            },\n            {\n                \"id\": 88,\n                \"uz\": \"YEMEN \",\n                \"ru\": \"ЙЕМЕН \",\n                \"en\": \"YEMEN\"\n            },\n            {\n                \"id\": 89,\n                \"uz\": \"KABO-VERDE \",\n                \"ru\": \"КАБО-ВЕРДЕ \",\n                \"en\": \"CAPE VERDE\"\n            },\n            {\n                \"id\": 90,\n                \"uz\": \"QOZOG'ISTON \",\n                \"ru\": \"КОЗОГИСТОН \",\n                \"en\": \"KAZAKHSTAN\"\n            },\n            {\n                \"id\": 91,\n                \"uz\": \"KAYMAN OROLLARI\",\n                \"ru\": \"КАЙМАН ОРОЛЛАРИ\",\n                \"en\": \"CAYMAN ISLANDS\"\n            },\n            {\n                \"id\": 92,\n                \"uz\": \"KAMBODJA \",\n                \"ru\": \"КАМБОДЖА \",\n                \"en\": \"CAMBODIA\"\n            },\n            {\n                \"id\": 93,\n                \"uz\": \"KAMERUN \",\n                \"ru\": \"КАМЕРУН \",\n                \"en\": \"CAMEROON\"\n            },\n            {\n                \"id\": 94,\n                \"uz\": \"KANADA\",\n                \"ru\": \"КАНАДА\",\n                \"en\": \"CANADA\"\n            },\n            {\n                \"id\": 95,\n                \"uz\": \"KATAR\",\n                \"ru\": \"КАТАР \",\n                \"en\": \"QATAR\"\n            },\n            {\n                \"id\": 96,\n                \"uz\": \"KENIYA \",\n                \"ru\": \"КЕНИЯ \",\n                \"en\": \"KENYA\"\n            },\n            {\n                \"id\": 97,\n                \"uz\": \"KIPR \",\n                \"ru\": \"КИПР \",\n                \"en\": \"CYPRUS\"\n            },\n            {\n                \"id\": 98,\n                \"uz\": \"QIRG'IZISTON\",\n                \"ru\": \"КИРГИЗИСТОН\",\n                \"en\": \"KYRGYZSTAN\"\n            },\n            {\n                \"id\": 99,\n                \"uz\": \"KIRIBATI \",\n                \"ru\": \"КИРИБАТИ \",\n                \"en\": \"KIRIBATI\"\n            },\n            {\n                \"id\": 100,\n                \"uz\": \"XITOY\",\n                \"ru\": \"ХИТОЙ\",\n                \"en\": \"CHINA\"\n            },\n            {\n                \"id\": 101,\n                \"uz\": \"KOKOS OROLLARI\",\n                \"ru\": \"КОКОС ОРОЛЛАРИ\",\n                \"en\": \"COCONUT ISLANDS\"\n            },\n            {\n                \"id\": 102,\n                \"uz\": \"KOLUMBIYA \",\n                \"ru\": \"КОЛУМБИЯ \",\n                \"en\": \"COLOMBIA\"\n            },\n            {\n                \"id\": 103,\n                \"uz\": \"KOMOR OROLLARI\",\n                \"ru\": \"КОМОР ОРОЛЛАРИ\",\n                \"en\": \"COMOR ISLANDS\"\n            },\n            {\n                \"id\": 104,\n                \"uz\": \"KOREYS XALQ DEMOKRATIK RESPUBLIKASI\",\n                \"ru\": \"КОРЕЙС ХАЛК ДЕМОКРАТИК РЕСПУБЛИКАСИ\",\n                \"en\": \"KOREAN PEOPLE'S DEMOCRATIC REPUBLIC\"\n            },\n            {\n                \"id\": 105,\n                \"uz\": \"KOSTA-RIKA \",\n                \"ru\": \"КОСТА-РИКА \",\n                \"en\": \"COSTA RICA\"\n            },\n            {\n                \"id\": 106,\n                \"uz\": \"KOT-D'IVUAR \",\n                \"ru\": \"КОТ-Д`ИВУАР \",\n                \"en\": \"COTE D'IVOIRE\"\n            },\n            {\n                \"id\": 107,\n                \"uz\": \"KUBA \",\n                \"ru\": \"КУБА \",\n                \"en\": \"CUBA\"\n            },\n            {\n                \"id\": 108,\n                \"uz\": \"QUVAYT \",\n                \"ru\": \"КУВАЙТ \",\n                \"en\": \"KUWAIT\"\n            },\n            {\n                \"id\": 109,\n                \"uz\": \"LAOS XALQ DEMOKRATIK RESPUBLIKASI\",\n                \"ru\": \"ЛАОС ХАЛК ДЕМОКРАТИК РЕСПУБЛИКАСИ\",\n                \"en\": \"LAOS PEOPLE'S DEMOCRATIC REPUBLIC\"\n            },\n            {\n                \"id\": 110,\n                \"uz\": \"LATVIYA, SHENGEN\",\n                \"ru\": \"ЛАТВИЯ , ШЕНГЕН\",\n                \"en\": \"LATVIA, SCHENGEN\"\n            },\n            {\n                \"id\": 111,\n                \"uz\": \"LESOTO \",\n                \"ru\": \"ЛЕСОТО \",\n                \"en\": \"LESOTHO\"\n            },\n            {\n                \"id\": 112,\n                \"uz\": \"LOBERIYA \",\n                \"ru\": \"ЛИБЕРИЯ \",\n                \"en\": \"LIBERIA\"\n            },\n            {\n                \"id\": 113,\n                \"uz\": \"LIVAN \",\n                \"ru\": \"ЛИВАН \",\n                \"en\": \"LEBANON\"\n            },\n            {\n                \"id\": 114,\n                \"uz\": \"LIVIYA ARAB JAMAXIRIYASI\",\n                \"ru\": \"ЛИВИЯ АРАБ ЖАМАХИРИЯСИ\",\n                \"en\": \"LIBYAN ARAB JAMAHIRIYA\"\n            },\n            {\n                \"id\": 115,\n                \"uz\": \"LITVA, SHENGEN \",\n                \"ru\": \"ЛИТВА, ШЕНГЕН\",\n                \"en\": \"LITHUANIA, SCHENGEN\"\n            },\n            {\n                \"id\": 116,\n                \"uz\": \"LIXTENSHTEYN, SHENGEN\",\n                \"ru\": \"ЛИХТЕНШТЕЙН, ШЕНГЕН\",\n                \"en\": \"LIECHTENSTEIN, SCHENGEN\"\n            },\n            {\n                \"id\": 117,\n                \"uz\": \"LYUKSEMBURG, SHENGEN\",\n                \"ru\": \"ЛЮКСЕМБУРГ, ШЕНГЕН\",\n                \"en\": \"LUXEMBOURG, SCHENGEN\"\n            },\n            {\n                \"id\": 118,\n                \"uz\": \"MAVRIKIY\",\n                \"ru\": \"МАВРИКИЙ\",\n                \"en\": \"MAURITIUS\"\n            },\n            {\n                \"id\": 119,\n                \"uz\": \"MAVRITANIYA \",\n                \"ru\": \"МАВРИТАНИЯ \",\n                \"en\": \"MAURITANIA\"\n            },\n            {\n                \"id\": 120,\n                \"uz\": \"MADAGASKAR \",\n                \"ru\": \"МАДАГАСКАР \",\n                \"en\": \"MADAGASCAR\"\n            },\n            {\n                \"id\": 121,\n                \"uz\": \"SHIMOLIY MAKEDONIYA\",\n                \"ru\": \"ШИМОЛИЙ МАКЕДОНИЯ\",\n                \"en\": \"REPUBLIC OF NORTH MACEDONIA\"\n            },\n            {\n                \"id\": 122,\n                \"uz\": \"MALAVI \",\n                \"ru\": \"МАЛАВИ \",\n                \"en\": \"MALAWI\"\n            },\n            {\n                \"id\": 123,\n                \"uz\": \"MALAYZIYA\",\n                \"ru\": \"МАЛАЙЗИЯ\",\n                \"en\": \"MALAYSIA\"\n            },\n            {\n                \"id\": 124,\n                \"uz\": \"MALI \",\n                \"ru\": \"МАЛИ \",\n                \"en\": \"MALI\"\n            },\n            {\n                \"id\": 125,\n                \"uz\": \"AQSH XUDUDIDAGI KICHIK OROLLAR\",\n                \"ru\": \"АКШ ХУДУДИДАГИ КИЧИК ОРОЛЛАР\",\n                \"en\": \"SMALL ISLAND TERRITORIES OF THE USA\"\n            },\n            {\n                \"id\": 126,\n                \"uz\": \"MALDIVI\",\n                \"ru\": \"МАЛДИВИ\",\n                \"en\": \"MALDIVES\"\n            },\n            {\n                \"id\": 127,\n                \"uz\": \"MALTA, SHENGEN\",\n                \"ru\": \"МАЛЬТА, ШЕНГЕН\",\n                \"en\": \"MALTA, SCHENGEN\"\n            },\n            {\n                \"id\": 128,\n                \"uz\": \"SHIMOLIY MARIAN OROLLARI\",\n                \"ru\": \"ШИМОЛИЙ МАРИАН ОРОЛЛАРИ\",\n                \"en\": \"NORTHERN MARIANA ISLANDS\"\n            },\n            {\n                \"id\": 129,\n                \"uz\": \"MAROKKO \",\n                \"ru\": \"МАРОККО \",\n                \"en\": \"MOROCCO\"\n            },\n            {\n                \"id\": 130,\n                \"uz\": \"MARTINIKA\",\n                \"ru\": \"МАРТИНИКА\",\n                \"en\": \"MARTINIQUE\"\n            },\n            {\n                \"id\": 131,\n                \"uz\": \"MARSHAL OROLLARI\",\n                \"ru\": \"МАРШАЛ ОРОЛЛАРИ\",\n                \"en\": \"MARSHALL ISLANDS\"\n            },\n            {\n                \"id\": 132,\n                \"uz\": \"MEKSIKA \",\n                \"ru\": \"МЕКСИКА \",\n                \"en\": \"MEXICO\"\n            },\n            {\n                \"id\": 133,\n                \"uz\": \"MIKRONEZIYA FEDERATIV SHTATLARI\",\n                \"ru\": \"МИКРОНЕЗИЯ ФЕДЕРАТИВ ШТАТЛАРИ\",\n                \"en\": \"MICRONESIA, FEDERAL STATES\"\n            },\n            {\n                \"id\": 134,\n                \"uz\": \"MOZAMBIK \",\n                \"ru\": \"МОЗАМБИК \",\n                \"en\": \"MOZAMBIQUE\"\n            },\n            {\n                \"id\": 135,\n                \"uz\": \"MOLDOVA RESPUBLIKASI\",\n                \"ru\": \"МОЛДОВА РЕСПУБЛИКАСИ\",\n                \"en\": \"THE REPUBLIC OF MOLDOVA\"\n            },\n            {\n                \"id\": 136,\n                \"uz\": \"MONAKO \",\n                \"ru\": \"МОНАКО \",\n                \"en\": \"MONACO\"\n            },\n            {\n                \"id\": 137,\n                \"uz\": \"MO'G'LISTON\",\n                \"ru\": \"МУГИЛИСТОН\",\n                \"en\": \"MONGOLIA\"\n            },\n            {\n                \"id\": 138,\n                \"uz\": \"MONSERRAT\",\n                \"ru\": \"МОНТСЕРРАТ\",\n                \"en\": \"MONTSERRAT\"\n            },\n            {\n                \"id\": 139,\n                \"uz\": \"M'YANMA\",\n                \"ru\": \"МЬЯНМА \",\n                \"en\": \"MYANMAN\"\n            },\n            {\n                \"id\": 140,\n                \"uz\": \"HAMIBIYA\",\n                \"ru\": \"НАМИБИЯ\",\n                \"en\": \"NAMIBIA\"\n            },\n            {\n                \"id\": 141,\n                \"uz\": \"NAURU \",\n                \"ru\": \"НАУРУ \",\n                \"en\": \"NAURU\"\n            },\n            {\n                \"id\": 142,\n                \"uz\": \"NEPAL \",\n                \"ru\": \"НЕПАЛ \",\n                \"en\": \"NEPAL\"\n            },\n            {\n                \"id\": 143,\n                \"uz\": \"NIGER \",\n                \"ru\": \"НИГЕР \",\n                \"en\": \"NIGER\"\n            },\n            {\n                \"id\": 144,\n                \"uz\": \"NIGERIYA \",\n                \"ru\": \"НИГЕРИЯ \",\n                \"en\": \"NIGERIA\"\n            },\n            {\n                \"id\": 145,\n                \"uz\": \"NIDERLAND, SHENGEN\",\n                \"ru\": \"НИДЕРЛАНД, ШЕНГЕН\",\n                \"en\": \"NETHERLANDS, SCHENGEN\"\n            },\n            {\n                \"id\": 146,\n                \"uz\": \"NIKARAGUA \",\n                \"ru\": \"НИКАРАГУА \",\n                \"en\": \"NICARAGUA\"\n            },\n            {\n                \"id\": 147,\n                \"uz\": \"NIUE\",\n                \"ru\": \"НИУЭ\",\n                \"en\": \"NIUE\"\n            },\n            {\n                \"id\": 148,\n                \"uz\": \"YANGI ZELANDIYA\",\n                \"ru\": \"ЯНГИ ЗЕЛАНДИЯ\",\n                \"en\": \"NEW ZEALAND\"\n            },\n            {\n                \"id\": 149,\n                \"uz\": \"YANGI KALEDONIYA\",\n                \"ru\": \"ЯНГИ КАЛЕДОНИЯ\",\n                \"en\": \"NEW CALEDONIA\"\n            },\n            {\n                \"id\": 150,\n                \"uz\": \"NORVEGIYA, SHENGEN\",\n                \"ru\": \"НОРВЕГИЯ, ШЕНГЕН\",\n                \"en\": \"NORWAY, SCHENGEN\"\n            },\n            {\n                \"id\": 151,\n                \"uz\": \"NORFOLK OROLI\",\n                \"ru\": \"НОРФОЛК ОРОЛИ\",\n                \"en\": \"NORFOLK ISLAND\"\n            },\n            {\n                \"id\": 152,\n                \"uz\": \"BIRLASHGAN ARAB AMIRLIKLARI\",\n                \"ru\": \"БИРЛАШГАН АРАБ АМИРЛИКЛАРИ\",\n                \"en\": \"UNITED ARAB EMIRATES\"\n            },\n            {\n                \"id\": 153,\n                \"uz\": \"OMON \",\n                \"ru\": \"ОМОН \",\n                \"en\": \"OMAN\"\n            },\n            {\n                \"id\": 154,\n                \"uz\": \"Man oroli\",\n                \"ru\": \"Ман ороли\",\n                \"en\": \"Isle Of Man\"\n            },\n            {\n                \"id\": 155,\n                \"uz\": \"Rojdestvo oroli\",\n                \"ru\": \"рождество ороли\",\n                \"en\": \"Christmas Island\"\n            },\n            {\n                \"id\": 156,\n                \"uz\": \"MUQADDAS ELENA OROLI\",\n                \"ru\": \"МУКАДДАС ЕЛЕНА ОРОЛИ\",\n                \"en\": \"THE ISLAND OF SAINT HELENA\"\n            },\n            {\n                \"id\": 157,\n                \"uz\": \"KUKA OROLLARI\",\n                \"ru\": \"КУКА ОРОЛЛАРИ\",\n                \"en\": \"COOK ISLANDS\"\n            },\n            {\n                \"id\": 158,\n                \"uz\": \"POKISTON \",\n                \"ru\": \"ПОКИСТОН \",\n                \"en\": \"PAKISTAN\"\n            },\n            {\n                \"id\": 159,\n                \"uz\": \"PALAU \",\n                \"ru\": \"ПАЛАУ \",\n                \"en\": \"PALAU\"\n            },\n            {\n                \"id\": 160,\n                \"uz\": \"PANAMA \",\n                \"ru\": \"ПАНАМА \",\n                \"en\": \"PANAMA\"\n            },\n            {\n                \"id\": 161,\n                \"uz\": \"YANGI GVINEA PAPUASLARI\",\n                \"ru\": \"ЯНГИ ГВИНЕЯ ПАПУАСЛАРИ\",\n                \"en\": \"PAPUA NEW GUINEA\"\n            },\n            {\n                \"id\": 162,\n                \"uz\": \"PARAGVAY \",\n                \"ru\": \"ПАРАГВАЙ \",\n                \"en\": \"PARAGUAY\"\n            },\n            {\n                \"id\": 163,\n                \"uz\": \"PERU \",\n                \"ru\": \"ПЕРУ \",\n                \"en\": \"PERU\"\n            },\n            {\n                \"id\": 164,\n                \"uz\": \"PITKERN\",\n                \"ru\": \"ПИТКЭРН\",\n                \"en\": \"PITKERN\"\n            },\n            {\n                \"id\": 165,\n                \"uz\": \"POLSHA, SHENGEN\",\n                \"ru\": \"ПОЛЬША, ШЕНГЕН\",\n                \"en\": \"POLAND, SCHENGEN\"\n            },\n            {\n                \"id\": 166,\n                \"uz\": \"PORTUGALIYA, SHENGEN\",\n                \"ru\": \"ПОРТУГАЛИЯ, ШЕНГЕН\",\n                \"en\": \"PORTUGAL, SCHENGEN\"\n            },\n            {\n                \"id\": 167,\n                \"uz\": \"PUERTO-RIKO\",\n                \"ru\": \"ПУЭРТО-РИКО\",\n                \"en\": \"PUERTO-RICO\"\n            },\n            {\n                \"id\": 168,\n                \"uz\": \"KOREYA RESPUBLIKASI\",\n                \"ru\": \"КОРЕЯ РЕСПУБЛИКАСИ\",\n                \"en\": \"THE REPUBLIC OF KOREA\"\n            },\n            {\n                \"id\": 169,\n                \"uz\": \"GVINEYA EKVATORIAL RESPUBLIKASI\",\n                \"ru\": \"ГВИНЕЯ ЭКВАТОРИАЛ РЕСПУБЛИКАСИ\",\n                \"en\": \"REPUBLIC OF EQUATORIAL GUINEA\"\n            },\n            {\n                \"id\": 170,\n                \"uz\": \"REYUNYON\",\n                \"ru\": \"РЕЮНЬОН\",\n                \"en\": \"REUNION\"\n            },\n            {\n                \"id\": 171,\n                \"uz\": \"ROSSIYA FEDERATSIYASI\",\n                \"ru\": \"РОССИЯ ФЕДЕРАЦИЯСИ\",\n                \"en\": \"RUSSIAN FEDERATION\"\n            },\n            {\n                \"id\": 172,\n                \"uz\": \"RUANDA \",\n                \"ru\": \"РУАНДА\",\n                \"en\": \"RWANDA\"\n            },\n            {\n                \"id\": 173,\n                \"uz\": \"RUMINIYA \",\n                \"ru\": \"РУМИНИЯ \",\n                \"en\": \"ROMANIA\"\n            },\n            {\n                \"id\": 174,\n                \"uz\": \"El Salvador\",\n                \"ru\": \"Эль-Сальвадор\",\n                \"en\": \"El Salvador\"\n            },\n            {\n                \"id\": 175,\n                \"uz\": \"SAN-MARINO \",\n                \"ru\": \"САН-МАРИНО \",\n                \"en\": \"SAN MARINO\"\n            },\n            {\n                \"id\": 176,\n                \"uz\": \"SAN-TOME VA PRISIPI \",\n                \"ru\": \"САН-ТОМЕ ВА ПРИНСИПИ \",\n                \"en\": \"SAN-TOMA AND PRINCIPE\"\n            },\n            {\n                \"id\": 177,\n                \"uz\": \"SAUDIYA ARABISTONI \",\n                \"ru\": \"САУДИЯ АРАБИСТОНИ \",\n                \"en\": \"SAUDI ARABIA\"\n            },\n            {\n                \"id\": 178,\n                \"uz\": \"SVAZILEND \",\n                \"ru\": \"СВАЗИЛЕНД \",\n                \"en\": \"SWAISILAND\"\n            },\n            {\n                \"id\": 179,\n                \"uz\": \"SEYSHEL OROLLARI\",\n                \"ru\": \"СЕЙШЕЛЬ ОРОЛЛАРИ\",\n                \"en\": \"SEYCHELLES ISLANDS\"\n            },\n            {\n                \"id\": 180,\n                \"uz\": \"SENT-PYER VA MIKELON\",\n                \"ru\": \"СЕНТ-ПЬЕР ВА МИКЕЛОН\",\n                \"en\": \"SAINT PIERRE AND MICHELON\"\n            },\n            {\n                \"id\": 181,\n                \"uz\": \"SENEGAL \",\n                \"ru\": \"СЕНЕГАЛ \",\n                \"en\": \"SENEGAL\"\n            },\n            {\n                \"id\": 182,\n                \"uz\": \"SENT-VINCENT VA GRENADINI\",\n                \"ru\": \"СЕНТ-ВИНСЕНТ ВА ГРЕНАДИНЛАР\",\n                \"en\": \"SAINT VINCENT AND GRENADINES\"\n            },\n            {\n                \"id\": 183,\n                \"uz\": \"SENT-KITS VA NEVIS \",\n                \"ru\": \"СЕНТ-КИТС ВА НЕВИС \",\n                \"en\": \"SAINT KITTS AND NEVIS\"\n            },\n            {\n                \"id\": 184,\n                \"uz\": \"SENT-LYUSIYA\",\n                \"ru\": \"СЕНТ-ЛЮСИЯ\",\n                \"en\": \"SAINT-LUCIA\"\n            },\n            {\n                \"id\": 185,\n                \"uz\": \"SIGAPUR \",\n                \"ru\": \"СИНГАПУР \",\n                \"en\": \"SINGAPORE\"\n            },\n            {\n                \"id\": 186,\n                \"uz\": \"SIRIYA ARAB RESPUBLIKASI\",\n                \"ru\": \"СИРИЯ АРАБ РЕСПУБЛИКАСИ\",\n                \"en\": \"SYRIAN ARAB REPUBLIC\"\n            },\n            {\n                \"id\": 187,\n                \"uz\": \"SLOVAKIYA, SHENGEN\",\n                \"ru\": \"СЛОВАКИЯ, ШЕНГЕН\",\n                \"en\": \"SLOVAKIA, SCHENGEN\"\n            },\n            {\n                \"id\": 188,\n                \"uz\": \"SLOVENIYA, SHENGEN\",\n                \"ru\": \"СЛОВЕНИЯ, ШЕНГЕН\",\n                \"en\": \"SLOVENIA, SCHENGEN\"\n            },\n            {\n                \"id\": 189,\n                \"uz\": \"SOLOMONOV OROLLARI\",\n                \"ru\": \"СОЛОМОНОВ ОРОЛЛАРИ\",\n                \"en\": \"SOLOMON ISLANDS\"\n            },\n            {\n                \"id\": 190,\n                \"uz\": \"SOMALI \",\n                \"ru\": \"СОМАЛИ \",\n                \"en\": \"SOMALIA\"\n            },\n            {\n                \"id\": 191,\n                \"uz\": \"SUDAN \",\n                \"ru\": \"СУДАН \",\n                \"en\": \"SUDAN\"\n            },\n            {\n                \"id\": 192,\n                \"uz\": \"SURINAM \",\n                \"ru\": \"СУРИНАМ \",\n                \"en\": \"SURINAME\"\n            },\n            {\n                \"id\": 193,\n                \"uz\": \"AMERIKA QO'SHMA SHTATLARI\",\n                \"ru\": \"АМЕРИКА КУШМА ШТАТЛАРИ\",\n                \"en\": \"UNITED STATES OF AMERICA\"\n            },\n            {\n                \"id\": 194,\n                \"uz\": \"S'ERRA-LEONE \",\n                \"ru\": \"СЬЕРРА-ЛЕОНЕ \",\n                \"en\": \"SIERRA LEONE\"\n            },\n            {\n                \"id\": 195,\n                \"uz\": \"GONKONG\",\n                \"ru\": \"ГОНКОНГ\",\n                \"en\": \"HONG KONG\"\n            },\n            {\n                \"id\": 196,\n                \"uz\": \"TOJIKISTON \",\n                \"ru\": \"ТОЖИКИСТОН \",\n                \"en\": \"TAJIKISTAN\"\n            },\n            {\n                \"id\": 197,\n                \"uz\": \"TAILAND \",\n                \"ru\": \"ТАИЛАНД \",\n                \"en\": \"THAILAND\"\n            },\n            {\n                \"id\": 198,\n                \"uz\": \"TAYVAN\",\n                \"ru\": \"ТАЙВАН\",\n                \"en\": \"TAIWAN\"\n            },\n            {\n                \"id\": 199,\n                \"uz\": \"TANZANIYA BIRLASHGAN RESPUBLIKASI\",\n                \"ru\": \"ТАНЗАНИЯ БИРЛАШГАН РЕСПУБЛИКАСИ\",\n                \"en\": \"UNITED REPUBLIC OF TANZANIA\"\n            },\n            {\n                \"id\": 200,\n                \"uz\": \"TERKS VA KAYKOS OROLLARI\",\n                \"ru\": \"ТЕРКС ВА КАЙКОС ОРОЛЛАРИ\",\n                \"en\": \"THE ISLAND OF TERKS AND CAIKOS\"\n            },\n            {\n                \"id\": 201,\n                \"uz\": \"TONGO\",\n                \"ru\": \"ТОГО\",\n                \"en\": \"TOGO\"\n            },\n            {\n                \"id\": 202,\n                \"uz\": \"TOKELAU\",\n                \"ru\": \"ТОКЕЛАУ\",\n                \"en\": \"TOKELAU\"\n            },\n            {\n                \"id\": 203,\n                \"uz\": \"TONGA \",\n                \"ru\": \"ТОНГА \",\n                \"en\": \"TONGA\"\n            },\n            {\n                \"id\": 204,\n                \"uz\": \"TRINIDAD VA TOBAGO \",\n                \"ru\": \"ТРИНИДАД ВА ТОБАГО \",\n                \"en\": \"TRINIDAD AND TOBAGO\"\n            },\n            {\n                \"id\": 205,\n                \"uz\": \"TUVALU\",\n                \"ru\": \"ТУВАЛУ\",\n                \"en\": \"TUVALU\"\n            },\n            {\n                \"id\": 206,\n                \"uz\": \"TUNIS \",\n                \"ru\": \"ТУНИС \",\n                \"en\": \"TUNISIA\"\n            },\n            {\n                \"id\": 207,\n                \"uz\": \"TURKMANISTON \",\n                \"ru\": \"ТУРКМАНИСТОН \",\n                \"en\": \"TURKMENISTAN\"\n            },\n            {\n                \"id\": 208,\n                \"uz\": \"TURKIYA \",\n                \"ru\": \"ТУРКИЯ \",\n                \"en\": \"TURKEY\"\n            },\n            {\n                \"id\": 209,\n                \"uz\": \"UGANDA \",\n                \"ru\": \"УГАНДА \",\n                \"en\": \"UGANDA\"\n            },\n            {\n                \"id\": 210,\n                \"uz\": \"O'ZBEKISTON \",\n                \"ru\": \"ЎЗБЕКИСТОН \",\n                \"en\": \"UZBEKISTAN\"\n            },\n            {\n                \"id\": 211,\n                \"uz\": \"UKRAINA \",\n                \"ru\": \"УКРАИНА \",\n                \"en\": \"UKRAINE\"\n            },\n            {\n                \"id\": 212,\n                \"uz\": \"UOLLIS VA FUTUNA OROLLARI\",\n                \"ru\": \"УОЛЛИС ВА ФУТУНА ОРОЛЛАРИ\",\n                \"en\": \"ISLAND OF WALLIS AND FUTUNA\"\n            },\n            {\n                \"id\": 213,\n                \"uz\": \"URUGVAY \",\n                \"ru\": \"УРУГВАЙ \",\n                \"en\": \"URUGUAY\"\n            },\n            {\n                \"id\": 214,\n                \"uz\": \"FARER OROLLARI\",\n                \"ru\": \"ФАРЕР ОРОЛЛАРИ\",\n                \"en\": \"FAROE ISLANDS\"\n            },\n            {\n                \"id\": 215,\n                \"uz\": \"FIDJI \",\n                \"ru\": \"ФИДЖИ \",\n                \"en\": \"FIJI\"\n            },\n            {\n                \"id\": 216,\n                \"uz\": \"FILIPPIN \",\n                \"ru\": \"ФИЛИППИН \",\n                \"en\": \"PHILIPPINES\"\n            },\n            {\n                \"id\": 217,\n                \"uz\": \"FINLYANDIYA, SHENGEN \",\n                \"ru\": \"ФИНЛЯНДИЯ, ШЕНГЕНН\",\n                \"en\": \"FINLAND, SCHENGEN\"\n            },\n            {\n                \"id\": 218,\n                \"uz\": \"FOLKLEND OROLLARI\",\n                \"ru\": \"ФОЛКЛЕНД ОРОЛЛАРИ\",\n                \"en\": \"Falkland Islands\"\n            },\n            {\n                \"id\": 219,\n                \"uz\": \"FRANTSIYA, SHENGEN\",\n                \"ru\": \"ФРАНЦИЯ, ШЕНГЕН\",\n                \"en\": \"FRANCE, SCHENGEN\"\n            },\n            {\n                \"id\": 220,\n                \"uz\": \"Fransuz polineziyasi\",\n                \"ru\": \"Франсуз полинезия\",\n                \"en\": \"French polynesia\"\n            },\n            {\n                \"id\": 221,\n                \"uz\": \"Fr. Janubiy hududlar\",\n                \"ru\": \"Фр. Жанубий худудлар\",\n                \"en\": \"Fr. Southern territories\"\n            },\n            {\n                \"id\": 222,\n                \"uz\": \"Xard va Makdonald\",\n                \"ru\": \"Хард ва Макдональд\",\n                \"en\": \"Hurd and Macdonald\"\n            },\n            {\n                \"id\": 223,\n                \"uz\": \"ХОРВАТИЯ, SHENHEN\",\n                \"ru\": \"ХОРВАТИЯ, ШЕНГЕН\",\n                \"en\": \"CROATIA, SCHENGEN\"\n            },\n            {\n                \"id\": 224,\n                \"uz\": \"MARKAZIY AFRIKA RESPUBLIKASI\",\n                \"ru\": \"МАРКАЗИЙ АФРИКА РЕСПУБЛИКАСИ\",\n                \"en\": \"CENTRAL AFRICAN REPUBLIC\"\n            },\n            {\n                \"id\": 225,\n                \"uz\": \"Chad\",\n                \"ru\": \"Чад\",\n                \"en\": \"Chad\"\n            },\n            {\n                \"id\": 226,\n                \"uz\": \"CHEXIYA RESPUBLIKASI, SHENGEN\",\n                \"ru\": \"ЧЕХИЯ РЕСПУБЛИКАСИ, ШЕНГЕН\",\n                \"en\": \"CZECH REPUBLIC, SCHENGEN\"\n            },\n            {\n                \"id\": 227,\n                \"uz\": \"CHILI \",\n                \"ru\": \"ЧИЛИ \",\n                \"en\": \"CHILE\"\n            },\n            {\n                \"id\": 228,\n                \"uz\": \"SHVEYTSARIYA, SHENGEN\",\n                \"ru\": \"ШВЕЙЦАРИЯ, ШЕНГЕН\",\n                \"en\": \"SWITZERLAND, SCHENGEN\"\n            },\n            {\n                \"id\": 229,\n                \"uz\": \"SHVETSIYA, SHENGEN\",\n                \"ru\": \"ШВЕЦИЯ, ШЕНГЕН\",\n                \"en\": \"SWEDEN, SCHENGEN\"\n            },\n            {\n                \"id\": 230,\n                \"uz\": \"Shpitsbergen va Yan Mayen\",\n                \"ru\": \"Шпицберген ва Ян Маен\",\n                \"en\": \"Spitsbergen and Jan Mayen\"\n            },\n            {\n                \"id\": 231,\n                \"uz\": \"SHRI-LANKA \",\n                \"ru\": \"ШРИ-ЛАНКА \",\n                \"en\": \"SRI LANKA\"\n            },\n            {\n                \"id\": 232,\n                \"uz\": \"EKVADOR \",\n                \"ru\": \"ЭКВАДОР \",\n                \"en\": \"ECUADOR\"\n            },\n            {\n                \"id\": 233,\n                \"uz\": \"Eritreya\",\n                \"ru\": \"Эритрея\",\n                \"en\": \"Eritrea\"\n            },\n            {\n                \"id\": 234,\n                \"uz\": \"ESTONIYA, SHENGEN\",\n                \"ru\": \"ЭСТОНИЯ, ШЕНГЕН\",\n                \"en\": \"ESTONIA, SCHENGEN\"\n            },\n            {\n                \"id\": 235,\n                \"uz\": \"EFIOPIYA\",\n                \"ru\": \"ЭФИОПИЯ\",\n                \"en\": \"ETHIOPIA\"\n            },\n            {\n                \"id\": 236,\n                \"uz\": \"JANUBIY AFRIKA RESPUBLIKASI\",\n                \"ru\": \"ЖАНУБИЙ АФРИКА РЕСПУБЛИКАСИ\",\n                \"en\": \"REPUBLIC OF SOUTH AFRICA\"\n            },\n            {\n                \"id\": 237,\n                \"uz\": \"YAMAYKA \",\n                \"ru\": \"ЯМАЙКА \",\n                \"en\": \"JAMAICA\"\n            },\n            {\n                \"id\": 238,\n                \"uz\": \"YAPONIYA\",\n                \"ru\": \"ЯПОНИЯ\",\n                \"en\": \"JAPAN\"\n            },\n            {\n                \"id\": 239,\n                \"uz\": \"Noma'lum\",\n                \"ru\": \"Номаълум\",\n                \"en\": \"Unknown\"\n            },\n            {\n                \"id\": 240,\n                \"uz\": \"MAYOTTA\",\n                \"ru\": \"МАЙОТТА\",\n                \"en\": \"MAYOTTA\"\n            },\n            {\n                \"id\": 241,\n                \"uz\": \"Janubiy Jorjiya va Janubiy Sandvich orollari\",\n                \"ru\": \"Жанубий Жоржия ва Жанубий Сандвич ороллари\",\n                \"en\": \"South Georgia and South Sandwich Islands\"\n            },\n            {\n                \"id\": 242,\n                \"uz\": \"Oland orollari\",\n                \"ru\": \"Оланд ороллари\",\n                \"en\": \"Öland Islands\"\n            },\n            {\n                \"id\": 243,\n                \"uz\": \"FALESTIN\",\n                \"ru\": \"ПАЛЕСТИНА\",\n                \"en\": \"PALESTINE\"\n            },\n            {\n                \"id\": 244,\n                \"uz\": \"CHERNOGORIYA \",\n                \"ru\": \"ЧЕРНОГОРИЯ\",\n                \"en\": \"MONTENEGRO \"\n            },\n            {\n                \"id\": 245,\n                \"uz\": \"SERBIA\",\n                \"ru\": \"СЕРБИЯ\",\n                \"en\": \"SERBIA\"\n            },\n            {\n                \"id\": 246,\n                \"uz\": \"Gernsi\",\n                \"ru\": \"Гернси\",\n                \"en\": \"Guernsey\"\n            },\n            {\n                \"id\": 247,\n                \"uz\": \"JERSI\",\n                \"ru\": \"ДЖЕРСИ\",\n                \"en\": \"JERSEY\"\n            },\n            {\n                \"id\": 248,\n                \"uz\": \"Boshqalar\",\n                \"ru\": \"Бошқалар\",\n                \"en\": \"Different\"\n            },\n            {\n                \"id\": 249,\n                \"uz\": \"SHENGEN\",\n                \"ru\": \"ШЕНГЕН\",\n                \"en\": \"SCHENGEN\"\n            }\n        ]\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "calculator",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{login}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"risklar\": {\r\n        \"accident\" : 1,//tanlanmasa 0\r\n        \"luggage\": 2,\r\n        \"cancel_travel\": 3,\r\n        \"person_respon\": 1,\r\n        \"delay_travel\": 1\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/travel-risk-neo/calculator",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"travel-risk-neo",
+						"calculator"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "save",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{login}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"begin_date\": \"29-12-2024\",\r\n    \"end_date\": \"28-12-2025\",\r\n    // \"sugurtalovchi\": { //uzb fuqarosi\r\n    //     \"type\": 0,\r\n    //     \"passportSeries\": \"AA\",//required\r\n    //     \"passportNumber\": \"4785412\",//required\r\n    //     \"birthday\": \"09-05-1971\",//required\r\n    //     \"phone\": \"946001122\",//required\r\n    //     \"pinfl\": \"41444715350016\",//required\r\n    //     \"last_name\": \"Yusupov\",//required\r\n    //     \"first_name\": \"Akmal\",//required\r\n    //     \"middle_name\": \"Yusupovich\",//required\r\n    //     \"address\": \"Jondor\",//required\r\n    //     \"gender\": 1//required\r\n    // },\r\n    \"sugurtalovchi\": { //chet fuqarosi\r\n        \"type\": 2,\r\n        \"passportSeries\": \"AA\",//required\r\n        \"passportNumber\": \"4785412\",//required\r\n        \"birthday\": \"09-05-1971\",//required\r\n        \"phone\": \"946001122\",//required\r\n        \"last_name\": \"Yusupov\",//required\r\n        \"first_name\": \"Akmal\",//required\r\n        \"middle_name\": \"Yusupovich\",//optional\r\n        \"address\": \"Jondor\",//required\r\n        \"gender\": 1,//required\r\n        \"country_id\": 98 //required\r\n    },\r\n    \"risklar\": {\r\n        \"accident\" : 1,//tanlanmasa 0\r\n        \"luggage\": 2,\r\n        \"cancel_travel\": 3,\r\n        \"person_respon\": 1,\r\n        \"delay_travel\": 1\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/travel-risk-neo/save",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"travel-risk-neo",
+						"save"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

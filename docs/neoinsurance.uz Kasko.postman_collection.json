@@ -1,0 +1,1018 @@
+{
+	"info": {
+		"_postman_id": "c140ff80-1cb1-4ada-8bc9-71f65be92deb",
+		"name": "neoinsurance.uz Kasko",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41762107",
+		"_collection_link": "https://matrix-9353.postman.co/workspace/NEO-API~2a6946d2-ca08-45a6-ade2-872a8a8022c8/collection/41762107-c140ff80-1cb1-4ada-8bc9-71f65be92deb?action=share&source=collection_link&creator=41762107"
+	},
+	"item": [
+		{
+			"name": "get_cars",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{login}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/sayt/kasko/cars",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"sayt",
+						"kasko",
+						"cars"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "get_cars",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/sayt/kasko/cars",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"sayt",
+								"kasko",
+								"cars"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Host",
+							"value": "localhost:8000"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/8.3.9"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 15 Apr 2025 13:01:22 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "phpdebugbar-id",
+							"value": "01JRWRMEZGT96D140P420711N5"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"cars\": [\n        {\n            \"id\": 2,\n            \"status\": 1,\n            \"name\": \"Toyota\",\n            \"created_at\": \"2023-11-01T16:15:42.000000Z\",\n            \"updated_at\": \"2023-11-01T16:15:42.000000Z\",\n            \"car_models\": [\n                {\n                    \"id\": 3,\n                    \"status\": 1,\n                    \"name\": \"Prado\",\n                    \"car_brand_id\": 2,\n                    \"created_at\": \"2023-11-01T16:16:36.000000Z\",\n                    \"updated_at\": \"2023-11-01T16:56:53.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 4,\n                            \"status\": 1,\n                            \"name\": \"150\",\n                            \"price\": 830000000,\n                            \"car_model_id\": 3,\n                            \"created_at\": \"2023-11-01T16:58:50.000000Z\",\n                            \"updated_at\": \"2023-11-01T16:58:50.000000Z\"\n                        },\n                        {\n                            \"id\": 5,\n                            \"status\": 1,\n                            \"name\": \"200\",\n                            \"price\": 1101600000,\n                            \"car_model_id\": 3,\n                            \"created_at\": \"2023-11-01T17:15:13.000000Z\",\n                            \"updated_at\": \"2023-11-01T17:15:13.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 97,\n                    \"status\": 1,\n                    \"name\": \"Corolla\",\n                    \"car_brand_id\": 2,\n                    \"created_at\": \"2024-06-28T11:39:02.000000Z\",\n                    \"updated_at\": \"2024-06-28T11:39:02.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 200,\n                            \"status\": 1,\n                            \"name\": \"Престиж Гибрид\",\n                            \"price\": 427947800,\n                            \"car_model_id\": 97,\n                            \"created_at\": \"2024-06-28T11:40:02.000000Z\",\n                            \"updated_at\": \"2024-06-28T11:45:06.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 98,\n                    \"status\": 1,\n                    \"name\": \"Camry\",\n                    \"car_brand_id\": 2,\n                    \"created_at\": \"2024-06-28T11:47:02.000000Z\",\n                    \"updated_at\": \"2024-06-28T11:47:22.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 201,\n                            \"status\": 1,\n                            \"name\": \"Престиж Гибрид\",\n                            \"price\": 566401500,\n                            \"car_model_id\": 98,\n                            \"created_at\": \"2024-06-28T11:47:46.000000Z\",\n                            \"updated_at\": \"2024-06-28T11:47:46.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 99,\n                    \"status\": 1,\n                    \"name\": \"Highlander\",\n                    \"car_brand_id\": 2,\n                    \"created_at\": \"2024-06-28T11:53:24.000000Z\",\n                    \"updated_at\": \"2024-06-28T11:53:24.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 202,\n                            \"status\": 1,\n                            \"name\": \"Комфорт Гибрид\",\n                            \"price\": 944002500,\n                            \"car_model_id\": 99,\n                            \"created_at\": \"2024-06-28T11:53:52.000000Z\",\n                            \"updated_at\": \"2024-06-28T11:54:07.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 100,\n                    \"status\": 1,\n                    \"name\": \"Hilux\",\n                    \"car_brand_id\": 2,\n                    \"created_at\": \"2024-06-28T11:56:19.000000Z\",\n                    \"updated_at\": \"2024-06-28T11:56:19.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 203,\n                            \"status\": 1,\n                            \"name\": \"Gr Sport\",\n                            \"price\": 970434570,\n                            \"car_model_id\": 100,\n                            \"created_at\": \"2024-06-28T11:56:54.000000Z\",\n                            \"updated_at\": \"2024-06-28T11:56:54.000000Z\"\n                        }\n                    ]\n                }\n            ]\n        },\n        {\n            \"id\": 3,\n            \"status\": 1,\n            \"name\": \"Chevrolet\",\n            \"created_at\": \"2023-11-01T16:15:47.000000Z\",\n            \"updated_at\": \"2023-11-01T16:15:47.000000Z\",\n            \"car_models\": [\n                {\n                    \"id\": 7,\n                    \"status\": 1,\n                    \"name\": \"Malibu 2\",\n                    \"car_brand_id\": 3,\n                    \"created_at\": \"2023-11-01T16:20:06.000000Z\",\n                    \"updated_at\": \"2023-11-02T19:41:32.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 63,\n                            \"status\": 1,\n                            \"name\": \"XL 1 LT 2.0T\",\n                            \"price\": 375000640,\n                            \"car_model_id\": 7,\n                            \"created_at\": \"2023-11-02T19:42:27.000000Z\",\n                            \"updated_at\": \"2024-06-10T21:35:13.000000Z\"\n                        },\n                        {\n                            \"id\": 64,\n                            \"status\": 1,\n                            \"name\": \"XL 2 LT 2.0T\",\n                            \"price\": 390000800,\n                            \"car_model_id\": 7,\n                            \"created_at\": \"2023-11-02T19:44:58.000000Z\",\n                            \"updated_at\": \"2023-11-02T19:44:58.000000Z\"\n                        },\n                        {\n                            \"id\": 65,\n                            \"status\": 1,\n                            \"name\": \"XL LTZ 2.0T\",\n                            \"price\": 419000960,\n                            \"car_model_id\": 7,\n                            \"created_at\": \"2023-11-02T19:45:32.000000Z\",\n                            \"updated_at\": \"2023-11-02T19:45:32.000000Z\"\n                        },\n                        {\n                            \"id\": 136,\n                            \"status\": 1,\n                            \"name\": \"LTZ 2T Premier\",\n                            \"price\": 400000000,\n                            \"car_model_id\": 7,\n                            \"created_at\": \"2024-05-08T10:58:07.000000Z\",\n                            \"updated_at\": \"2024-05-08T10:58:07.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 41,\n                    \"status\": 1,\n                    \"name\": \"Monza\",\n                    \"car_brand_id\": 3,\n                    \"created_at\": \"2023-11-03T12:14:30.000000Z\",\n                    \"updated_at\": \"2023-11-03T12:14:30.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 89,\n                            \"status\": 1,\n                            \"name\": \"1.5\",\n                            \"price\": 250000000,\n                            \"car_model_id\": 41,\n                            \"created_at\": \"2023-11-03T12:14:42.000000Z\",\n                            \"updated_at\": \"2023-11-03T12:14:42.000000Z\"\n                        },\n                        {\n                            \"id\": 90,\n                            \"status\": 1,\n                            \"name\": \"1.3 turbo\",\n                            \"price\": 265000000,\n                            \"car_model_id\": 41,\n                            \"created_at\": \"2023-11-03T12:14:55.000000Z\",\n                            \"updated_at\": \"2023-11-03T12:14:55.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 42,\n                    \"status\": 1,\n                    \"name\": \"ONIX\",\n                    \"car_brand_id\": 3,\n                    \"created_at\": \"2023-11-04T12:36:34.000000Z\",\n                    \"updated_at\": \"2023-11-04T12:36:34.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 91,\n                            \"status\": 1,\n                            \"name\": \"3LT (1.2 MT)\",\n                            \"price\": 184750000,\n                            \"car_model_id\": 42,\n                            \"created_at\": \"2023-11-04T12:36:55.000000Z\",\n                            \"updated_at\": \"2023-11-04T12:36:55.000000Z\"\n                        },\n                        {\n                            \"id\": 92,\n                            \"status\": 1,\n                            \"name\": \"LTZ TURBO AT\",\n                            \"price\": 199899840,\n                            \"car_model_id\": 42,\n                            \"created_at\": \"2023-11-04T12:37:12.000000Z\",\n                            \"updated_at\": \"2024-06-27T16:53:48.000000Z\"\n                        },\n                        {\n                            \"id\": 93,\n                            \"status\": 1,\n                            \"name\": \"Premier 1 Turbo AT\",\n                            \"price\": 206000000,\n                            \"car_model_id\": 42,\n                            \"created_at\": \"2023-11-04T12:37:35.000000Z\",\n                            \"updated_at\": \"2024-09-18T17:51:44.000000Z\"\n                        },\n                        {\n                            \"id\": 177,\n                            \"status\": 1,\n                            \"name\": \"LS MT\",\n                            \"price\": 176900000,\n                            \"car_model_id\": 42,\n                            \"created_at\": \"2024-06-27T16:52:39.000000Z\",\n                            \"updated_at\": \"2024-06-27T16:52:39.000000Z\"\n                        },\n                        {\n                            \"id\": 178,\n                            \"status\": 1,\n                            \"name\": \"1LT MT\",\n                            \"price\": 180761000,\n                            \"car_model_id\": 42,\n                            \"created_at\": \"2024-06-27T16:52:59.000000Z\",\n                            \"updated_at\": \"2024-06-27T16:52:59.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 43,\n                    \"status\": 1,\n                    \"name\": \"COBALT\",\n                    \"car_brand_id\": 3,\n                    \"created_at\": \"2023-11-04T12:38:25.000000Z\",\n                    \"updated_at\": \"2023-11-04T12:38:25.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 94,\n                            \"status\": 1,\n                            \"name\": \"GS-STYLE MT\",\n                            \"price\": 150000000,\n                            \"car_model_id\": 43,\n                            \"created_at\": \"2023-11-04T12:38:49.000000Z\",\n                            \"updated_at\": \"2023-11-06T09:36:53.000000Z\"\n                        },\n                        {\n                            \"id\": 95,\n                            \"status\": 1,\n                            \"name\": \"GS-STYLE AT PLUS\",\n                            \"price\": 170000000,\n                            \"car_model_id\": 43,\n                            \"created_at\": \"2023-11-04T12:39:47.000000Z\",\n                            \"updated_at\": \"2023-11-06T09:40:27.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 44,\n                    \"status\": 1,\n                    \"name\": \"LACETTI\",\n                    \"car_brand_id\": 3,\n                    \"created_at\": \"2023-11-04T12:40:26.000000Z\",\n                    \"updated_at\": \"2023-11-04T12:40:26.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 96,\n                            \"status\": 1,\n                            \"name\": \"L-Style AT PLUS\",\n                            \"price\": 200000000,\n                            \"car_model_id\": 44,\n                            \"created_at\": \"2023-11-04T12:40:54.000000Z\",\n                            \"updated_at\": \"2023-11-06T09:46:52.000000Z\"\n                        },\n                        {\n                            \"id\": 115,\n                            \"status\": 1,\n                            \"name\": \"M/T\",\n                            \"price\": 165000000,\n                            \"car_model_id\": 44,\n                            \"created_at\": \"2023-11-06T09:48:27.000000Z\",\n                            \"updated_at\": \"2023-11-06T09:48:27.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 45,\n                    \"status\": 1,\n                    \"name\": \"DAMAS\",\n                    \"car_brand_id\": 3,\n                    \"created_at\": \"2023-11-04T12:42:17.000000Z\",\n                    \"updated_at\": \"2023-11-04T12:42:17.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 97,\n                            \"status\": 1,\n                            \"name\": \"D2DLX STYLE PLUS\",\n                            \"price\": 96932000,\n                            \"car_model_id\": 45,\n                            \"created_at\": \"2023-11-04T12:42:34.000000Z\",\n                            \"updated_at\": \"2023-11-04T12:42:34.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 46,\n                    \"status\": 1,\n                    \"name\": \"LABO\",\n                    \"car_brand_id\": 3,\n                    \"created_at\": \"2023-11-04T12:43:33.000000Z\",\n                    \"updated_at\": \"2023-11-04T12:43:33.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 98,\n                            \"status\": 1,\n                            \"name\": \"Lb2 PLUS NEW\",\n                            \"price\": 96370000,\n                            \"car_model_id\": 46,\n                            \"created_at\": \"2023-11-04T12:43:53.000000Z\",\n                            \"updated_at\": \"2023-11-04T12:44:17.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 47,\n                    \"status\": 1,\n                    \"name\": \"TRACKER\",\n                    \"car_brand_id\": 3,\n                    \"created_at\": \"2023-11-04T12:45:28.000000Z\",\n                    \"updated_at\": \"2023-11-04T12:45:28.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 99,\n                            \"status\": 1,\n                            \"name\": \"LS PLUS\",\n                            \"price\": 223824160,\n                            \"car_model_id\": 47,\n                            \"created_at\": \"2023-11-04T12:45:54.000000Z\",\n                            \"updated_at\": \"2023-11-04T12:45:54.000000Z\"\n                        },\n                        {\n                            \"id\": 100,\n                            \"status\": 1,\n                            \"name\": \"LTZ PLUS\",\n                            \"price\": 246981280,\n                            \"car_model_id\": 47,\n                            \"created_at\": \"2023-11-04T12:46:12.000000Z\",\n                            \"updated_at\": \"2023-11-04T12:46:12.000000Z\"\n                        },\n                        {\n                            \"id\": 101,\n                            \"status\": 1,\n                            \"name\": \"PREMIER PLUS\",\n                            \"price\": 276016160,\n                            \"car_model_id\": 47,\n                            \"created_at\": \"2023-11-04T12:46:27.000000Z\",\n                            \"updated_at\": \"2023-11-04T12:46:27.000000Z\"\n                        },\n                        {\n                            \"id\": 102,\n                            \"status\": 1,\n                            \"name\": \"REDLINE\",\n                            \"price\": 285834080,\n                            \"car_model_id\": 47,\n                            \"created_at\": \"2023-11-04T12:46:40.000000Z\",\n                            \"updated_at\": \"2023-11-04T12:46:40.000000Z\"\n                        },\n                        {\n                            \"id\": 208,\n                            \"status\": 1,\n                            \"name\": \"LS\",\n                            \"price\": 218286880,\n                            \"car_model_id\": 47,\n                            \"created_at\": \"2024-09-27T17:02:57.000000Z\",\n                            \"updated_at\": \"2024-09-27T17:02:57.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 48,\n                    \"status\": 1,\n                    \"name\": \"EQUINOX\",\n                    \"car_brand_id\": 3,\n                    \"created_at\": \"2023-11-04T12:48:03.000000Z\",\n                    \"updated_at\": \"2023-11-04T12:48:03.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 103,\n                            \"status\": 1,\n                            \"name\": \"1LT FWD\",\n                            \"price\": 408450560,\n                            \"car_model_id\": 48,\n                            \"created_at\": \"2023-11-04T12:48:20.000000Z\",\n                            \"updated_at\": \"2023-11-04T12:48:20.000000Z\"\n                        },\n                        {\n                            \"id\": 104,\n                            \"status\": 1,\n                            \"name\": \"1LT AWD\",\n                            \"price\": 441000000,\n                            \"car_model_id\": 48,\n                            \"created_at\": \"2023-11-04T12:48:35.000000Z\",\n                            \"updated_at\": \"2023-11-04T12:48:35.000000Z\"\n                        },\n                        {\n                            \"id\": 105,\n                            \"status\": 1,\n                            \"name\": \"3LT AWD\",\n                            \"price\": 472500000,\n                            \"car_model_id\": 48,\n                            \"created_at\": \"2023-11-04T12:48:51.000000Z\",\n                            \"updated_at\": \"2023-11-04T12:48:51.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 49,\n                    \"status\": 1,\n                    \"name\": \"TRAVERSE\",\n                    \"car_brand_id\": 3,\n                    \"created_at\": \"2023-11-04T12:49:03.000000Z\",\n                    \"updated_at\": \"2023-11-04T12:49:03.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 106,\n                            \"status\": 1,\n                            \"name\": \"PREMIER 2 AT 3.6L\",\n                            \"price\": 734530720,\n                            \"car_model_id\": 49,\n                            \"created_at\": \"2023-11-04T12:49:20.000000Z\",\n                            \"updated_at\": \"2023-11-04T12:49:20.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 50,\n                    \"status\": 1,\n                    \"name\": \"TAHOE\",\n                    \"car_brand_id\": 3,\n                    \"created_at\": \"2023-11-04T12:49:32.000000Z\",\n                    \"updated_at\": \"2023-11-04T12:49:32.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 107,\n                            \"status\": 1,\n                            \"name\": \"RST 5.3L\",\n                            \"price\": 1109274880,\n                            \"car_model_id\": 50,\n                            \"created_at\": \"2023-11-04T12:49:48.000000Z\",\n                            \"updated_at\": \"2023-11-04T12:49:48.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 51,\n                    \"status\": 1,\n                    \"name\": \"CAPTIVA 5\",\n                    \"car_brand_id\": 3,\n                    \"created_at\": \"2023-11-04T12:50:05.000000Z\",\n                    \"updated_at\": \"2023-11-04T12:50:05.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 108,\n                            \"status\": 1,\n                            \"name\": \"LT 1\",\n                            \"price\": 299900000,\n                            \"car_model_id\": 51,\n                            \"created_at\": \"2023-11-04T12:50:30.000000Z\",\n                            \"updated_at\": \"2023-11-04T12:50:30.000000Z\"\n                        },\n                        {\n                            \"id\": 109,\n                            \"status\": 1,\n                            \"name\": \"LT 2\",\n                            \"price\": 319900000,\n                            \"car_model_id\": 51,\n                            \"created_at\": \"2023-11-04T12:50:49.000000Z\",\n                            \"updated_at\": \"2023-11-04T12:50:49.000000Z\"\n                        },\n                        {\n                            \"id\": 110,\n                            \"status\": 1,\n                            \"name\": \"PREMIER\",\n                            \"price\": 349900000,\n                            \"car_model_id\": 51,\n                            \"created_at\": \"2023-11-04T12:51:08.000000Z\",\n                            \"updated_at\": \"2023-11-04T12:51:08.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 52,\n                    \"status\": 1,\n                    \"name\": \"Spark\",\n                    \"car_brand_id\": 3,\n                    \"created_at\": \"2023-11-06T09:10:46.000000Z\",\n                    \"updated_at\": \"2023-11-06T09:10:46.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 111,\n                            \"status\": 1,\n                            \"name\": \"M/T\",\n                            \"price\": 122500000,\n                            \"car_model_id\": 52,\n                            \"created_at\": \"2023-11-06T09:12:59.000000Z\",\n                            \"updated_at\": \"2023-11-06T09:12:59.000000Z\"\n                        },\n                        {\n                            \"id\": 112,\n                            \"status\": 1,\n                            \"name\": \"A/T\",\n                            \"price\": 155000000,\n                            \"car_model_id\": 52,\n                            \"created_at\": \"2023-11-06T09:14:19.000000Z\",\n                            \"updated_at\": \"2023-11-06T09:14:19.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 53,\n                    \"status\": 1,\n                    \"name\": \"Nexia 3\",\n                    \"car_brand_id\": 3,\n                    \"created_at\": \"2023-11-06T09:14:43.000000Z\",\n                    \"updated_at\": \"2023-11-06T09:14:43.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 113,\n                            \"status\": 1,\n                            \"name\": \"M/T\",\n                            \"price\": 145000000,\n                            \"car_model_id\": 53,\n                            \"created_at\": \"2023-11-06T09:18:45.000000Z\",\n                            \"updated_at\": \"2023-11-06T09:39:03.000000Z\"\n                        },\n                        {\n                            \"id\": 114,\n                            \"status\": 1,\n                            \"name\": \"A/T\",\n                            \"price\": 165000000,\n                            \"car_model_id\": 53,\n                            \"created_at\": \"2023-11-06T09:21:34.000000Z\",\n                            \"updated_at\": \"2023-11-06T09:40:09.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 83,\n                    \"status\": 1,\n                    \"name\": \"Captiva 4\",\n                    \"car_brand_id\": 3,\n                    \"created_at\": \"2024-06-21T12:36:17.000000Z\",\n                    \"updated_at\": \"2024-06-21T12:36:17.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 172,\n                            \"status\": 1,\n                            \"name\": \"LTZ\",\n                            \"price\": 350000000,\n                            \"car_model_id\": 83,\n                            \"created_at\": \"2024-06-21T12:38:21.000000Z\",\n                            \"updated_at\": \"2024-06-21T14:41:01.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 101,\n                    \"status\": 1,\n                    \"name\": \"ORLANDO\",\n                    \"car_brand_id\": 3,\n                    \"created_at\": \"2024-07-26T14:58:39.000000Z\",\n                    \"updated_at\": \"2024-07-26T14:58:39.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 204,\n                            \"status\": 1,\n                            \"name\": \"2\",\n                            \"price\": 316000000,\n                            \"car_model_id\": 101,\n                            \"created_at\": \"2024-07-26T15:12:45.000000Z\",\n                            \"updated_at\": \"2024-07-26T15:12:45.000000Z\"\n                        }\n                    ]\n                }\n            ]\n        },\n        {\n            \"id\": 4,\n            \"status\": 1,\n            \"name\": \"Hyundai\",\n            \"created_at\": \"2023-11-01T16:15:52.000000Z\",\n            \"updated_at\": \"2023-11-01T16:15:52.000000Z\",\n            \"car_models\": [\n                {\n                    \"id\": 25,\n                    \"status\": 1,\n                    \"name\": \"SONATA\",\n                    \"car_brand_id\": 4,\n                    \"created_at\": \"2023-11-02T11:32:35.000000Z\",\n                    \"updated_at\": \"2023-11-02T11:32:35.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 48,\n                            \"status\": 1,\n                            \"name\": \"Style Plus UZ\",\n                            \"price\": 478000000,\n                            \"car_model_id\": 25,\n                            \"created_at\": \"2023-11-02T11:33:01.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:33:01.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 26,\n                    \"status\": 1,\n                    \"name\": \"TUCSON\",\n                    \"car_brand_id\": 4,\n                    \"created_at\": \"2023-11-02T11:35:23.000000Z\",\n                    \"updated_at\": \"2023-11-02T11:35:23.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 49,\n                            \"status\": 1,\n                            \"name\": \"High-Tech\",\n                            \"price\": 520000000,\n                            \"car_model_id\": 26,\n                            \"created_at\": \"2023-11-02T11:35:42.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:35:42.000000Z\"\n                        },\n                        {\n                            \"id\": 50,\n                            \"status\": 1,\n                            \"name\": \"Special Uz\",\n                            \"price\": 529000000,\n                            \"car_model_id\": 26,\n                            \"created_at\": \"2023-11-02T11:35:59.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:35:59.000000Z\"\n                        },\n                        {\n                            \"id\": 170,\n                            \"status\": 1,\n                            \"name\": \"Comfort\",\n                            \"price\": 340000000,\n                            \"car_model_id\": 26,\n                            \"created_at\": \"2024-06-12T08:15:48.000000Z\",\n                            \"updated_at\": \"2024-06-12T08:15:48.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 27,\n                    \"status\": 1,\n                    \"name\": \"Santa Fe\",\n                    \"car_brand_id\": 4,\n                    \"created_at\": \"2023-11-02T11:36:11.000000Z\",\n                    \"updated_at\": \"2023-11-02T11:36:11.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 51,\n                            \"status\": 1,\n                            \"name\": \"High-Tech\",\n                            \"price\": 674000000,\n                            \"car_model_id\": 27,\n                            \"created_at\": \"2023-11-02T11:36:32.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:36:32.000000Z\"\n                        },\n                        {\n                            \"id\": 52,\n                            \"status\": 1,\n                            \"name\": \"Luxe\",\n                            \"price\": 755000000,\n                            \"car_model_id\": 27,\n                            \"created_at\": \"2023-11-02T11:36:46.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:36:46.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 28,\n                    \"status\": 1,\n                    \"name\": \"Staria\",\n                    \"car_brand_id\": 4,\n                    \"created_at\": \"2023-11-02T11:38:00.000000Z\",\n                    \"updated_at\": \"2023-11-02T11:38:00.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 53,\n                            \"status\": 1,\n                            \"name\": \"Luxe\",\n                            \"price\": 764000000,\n                            \"car_model_id\": 28,\n                            \"created_at\": \"2023-11-02T11:38:15.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:38:15.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 71,\n                    \"status\": 1,\n                    \"name\": \"Creta\",\n                    \"car_brand_id\": 4,\n                    \"created_at\": \"2024-06-01T11:07:42.000000Z\",\n                    \"updated_at\": \"2024-06-01T11:07:42.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 151,\n                            \"status\": 1,\n                            \"name\": \"Dynamic UZ\",\n                            \"price\": 296000000,\n                            \"car_model_id\": 71,\n                            \"created_at\": \"2024-06-01T11:13:00.000000Z\",\n                            \"updated_at\": \"2024-06-01T11:13:00.000000Z\"\n                        },\n                        {\n                            \"id\": 152,\n                            \"status\": 1,\n                            \"name\": \"Style UZ\",\n                            \"price\": 322000000,\n                            \"car_model_id\": 71,\n                            \"created_at\": \"2024-06-01T11:13:16.000000Z\",\n                            \"updated_at\": \"2024-06-01T11:13:16.000000Z\"\n                        },\n                        {\n                            \"id\": 153,\n                            \"status\": 1,\n                            \"name\": \"Prime UZ\",\n                            \"price\": 342000000,\n                            \"car_model_id\": 71,\n                            \"created_at\": \"2024-06-01T11:13:32.000000Z\",\n                            \"updated_at\": \"2024-06-01T11:13:32.000000Z\"\n                        },\n                        {\n                            \"id\": 154,\n                            \"status\": 1,\n                            \"name\": \"High-Tech UZ\",\n                            \"price\": 377000000,\n                            \"car_model_id\": 71,\n                            \"created_at\": \"2024-06-01T11:13:47.000000Z\",\n                            \"updated_at\": \"2024-06-01T11:13:47.000000Z\"\n                        },\n                        {\n                            \"id\": 155,\n                            \"status\": 1,\n                            \"name\": \"High-Tech Luxe\",\n                            \"price\": 409000000,\n                            \"car_model_id\": 71,\n                            \"created_at\": \"2024-06-01T11:14:04.000000Z\",\n                            \"updated_at\": \"2024-06-01T11:14:04.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 74,\n                    \"status\": 1,\n                    \"name\": \"i30\",\n                    \"car_brand_id\": 4,\n                    \"created_at\": \"2024-06-04T11:31:15.000000Z\",\n                    \"updated_at\": \"2024-06-04T11:31:15.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 159,\n                            \"status\": 1,\n                            \"name\": \"Comfort 1.5\",\n                            \"price\": 298000000,\n                            \"car_model_id\": 74,\n                            \"created_at\": \"2024-06-04T11:31:41.000000Z\",\n                            \"updated_at\": \"2024-06-04T11:34:36.000000Z\"\n                        },\n                        {\n                            \"id\": 160,\n                            \"status\": 1,\n                            \"name\": \"Elegance 1.5\",\n                            \"price\": 321000000,\n                            \"car_model_id\": 74,\n                            \"created_at\": \"2024-06-04T11:33:21.000000Z\",\n                            \"updated_at\": \"2024-06-04T11:33:21.000000Z\"\n                        },\n                        {\n                            \"id\": 161,\n                            \"status\": 1,\n                            \"name\": \"Premium 1.5\",\n                            \"price\": 344000000,\n                            \"car_model_id\": 74,\n                            \"created_at\": \"2024-06-04T11:33:47.000000Z\",\n                            \"updated_at\": \"2024-06-04T11:33:47.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 87,\n                    \"status\": 1,\n                    \"name\": \"Elantra\",\n                    \"car_brand_id\": 4,\n                    \"created_at\": \"2024-06-27T20:50:50.000000Z\",\n                    \"updated_at\": \"2024-06-27T20:50:50.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 179,\n                            \"status\": 1,\n                            \"name\": \"Elegance Plus\",\n                            \"price\": 340000000,\n                            \"car_model_id\": 87,\n                            \"created_at\": \"2024-06-27T20:51:41.000000Z\",\n                            \"updated_at\": \"2024-06-27T20:58:29.000000Z\"\n                        }\n                    ]\n                }\n            ]\n        },\n        {\n            \"id\": 5,\n            \"status\": 1,\n            \"name\": \"BYD\",\n            \"created_at\": \"2023-11-01T16:15:58.000000Z\",\n            \"updated_at\": \"2023-11-01T16:15:58.000000Z\",\n            \"car_models\": [\n                {\n                    \"id\": 11,\n                    \"status\": 1,\n                    \"name\": \"Chazor DMi\",\n                    \"car_brand_id\": 5,\n                    \"created_at\": \"2023-11-01T16:22:04.000000Z\",\n                    \"updated_at\": \"2023-11-01T16:22:04.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 2,\n                            \"status\": 1,\n                            \"name\": \"Flagship\",\n                            \"price\": 341660000,\n                            \"car_model_id\": 11,\n                            \"created_at\": \"2023-11-01T16:26:08.000000Z\",\n                            \"updated_at\": \"2023-11-01T16:54:45.000000Z\"\n                        },\n                        {\n                            \"id\": 3,\n                            \"status\": 1,\n                            \"name\": \"Comfort\",\n                            \"price\": 323039000,\n                            \"car_model_id\": 11,\n                            \"created_at\": \"2023-11-01T16:54:21.000000Z\",\n                            \"updated_at\": \"2024-06-12T13:11:48.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 12,\n                    \"status\": 1,\n                    \"name\": \"Song Plus DMi\",\n                    \"car_brand_id\": 5,\n                    \"created_at\": \"2023-11-01T16:22:17.000000Z\",\n                    \"updated_at\": \"2023-11-01T16:22:17.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 8,\n                            \"status\": 1,\n                            \"name\": \"110km Comfort\",\n                            \"price\": 367732000,\n                            \"car_model_id\": 12,\n                            \"created_at\": \"2023-11-01T17:19:36.000000Z\",\n                            \"updated_at\": \"2023-11-01T17:19:36.000000Z\"\n                        },\n                        {\n                            \"id\": 9,\n                            \"status\": 1,\n                            \"name\": \"110km Flagship FWD\",\n                            \"price\": 384145000,\n                            \"car_model_id\": 12,\n                            \"created_at\": \"2023-11-01T17:19:58.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:40:53.000000Z\"\n                        },\n                        {\n                            \"id\": 10,\n                            \"status\": 1,\n                            \"name\": \"110km Flagship AWD\",\n                            \"price\": 444526000,\n                            \"car_model_id\": 12,\n                            \"created_at\": \"2023-11-01T17:20:21.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:42:18.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 13,\n                    \"status\": 1,\n                    \"name\": \"Han\",\n                    \"car_brand_id\": 5,\n                    \"created_at\": \"2023-11-01T16:22:27.000000Z\",\n                    \"updated_at\": \"2023-11-01T16:22:27.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 54,\n                            \"status\": 1,\n                            \"name\": \"Flagship FWD 715KM\",\n                            \"price\": 613581000,\n                            \"car_model_id\": 13,\n                            \"created_at\": \"2023-11-02T11:39:22.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:39:22.000000Z\"\n                        },\n                        {\n                            \"id\": 55,\n                            \"status\": 1,\n                            \"name\": \"Flagship AWD 610km\",\n                            \"price\": 655634000,\n                            \"car_model_id\": 13,\n                            \"created_at\": \"2023-11-02T11:39:43.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:39:43.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 55,\n                    \"status\": 1,\n                    \"name\": \"Seal\",\n                    \"car_brand_id\": 5,\n                    \"created_at\": \"2023-11-06T10:14:41.000000Z\",\n                    \"updated_at\": \"2023-11-06T10:14:41.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 117,\n                            \"status\": 1,\n                            \"name\": \"550 km Standard prestige RWd\",\n                            \"price\": 450000000,\n                            \"car_model_id\": 55,\n                            \"created_at\": \"2023-11-06T10:24:03.000000Z\",\n                            \"updated_at\": \"2023-11-06T10:24:03.000000Z\"\n                        },\n                        {\n                            \"id\": 118,\n                            \"status\": 1,\n                            \"name\": \"Long range 700km\",\n                            \"price\": 550000000,\n                            \"car_model_id\": 55,\n                            \"created_at\": \"2023-11-06T10:30:17.000000Z\",\n                            \"updated_at\": \"2023-11-06T10:30:17.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 56,\n                    \"status\": 1,\n                    \"name\": \"Seagull\",\n                    \"car_brand_id\": 5,\n                    \"created_at\": \"2023-11-06T10:42:01.000000Z\",\n                    \"updated_at\": \"2023-11-06T10:42:01.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 119,\n                            \"status\": 1,\n                            \"name\": \"Seagull Flying 405km\",\n                            \"price\": 220000000,\n                            \"car_model_id\": 56,\n                            \"created_at\": \"2023-11-06T10:46:55.000000Z\",\n                            \"updated_at\": \"2023-11-06T10:46:55.000000Z\"\n                        },\n                        {\n                            \"id\": 120,\n                            \"status\": 1,\n                            \"name\": \"Seagull Free 305km\",\n                            \"price\": 210000000,\n                            \"car_model_id\": 56,\n                            \"created_at\": \"2023-11-06T10:47:40.000000Z\",\n                            \"updated_at\": \"2023-11-06T10:47:40.000000Z\"\n                        },\n                        {\n                            \"id\": 121,\n                            \"status\": 1,\n                            \"name\": \"Seagull Dynamic 305km\",\n                            \"price\": 200000000,\n                            \"car_model_id\": 56,\n                            \"created_at\": \"2023-11-06T10:48:44.000000Z\",\n                            \"updated_at\": \"2023-11-06T10:48:44.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 57,\n                    \"status\": 1,\n                    \"name\": \"E2\",\n                    \"car_brand_id\": 5,\n                    \"created_at\": \"2024-04-29T09:17:46.000000Z\",\n                    \"updated_at\": \"2024-04-29T09:17:46.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 122,\n                            \"status\": 1,\n                            \"name\": \"Luxury version\",\n                            \"price\": 235000000,\n                            \"car_model_id\": 57,\n                            \"created_at\": \"2024-04-29T09:27:47.000000Z\",\n                            \"updated_at\": \"2024-04-29T09:27:47.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 58,\n                    \"status\": 1,\n                    \"name\": \"song L\",\n                    \"car_brand_id\": 5,\n                    \"created_at\": \"2024-04-29T09:31:38.000000Z\",\n                    \"updated_at\": \"2024-04-29T09:31:38.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 123,\n                            \"status\": 1,\n                            \"name\": \"550km Transcendent\",\n                            \"price\": 336500000,\n                            \"car_model_id\": 58,\n                            \"created_at\": \"2024-04-29T09:32:20.000000Z\",\n                            \"updated_at\": \"2024-04-29T09:32:20.000000Z\"\n                        },\n                        {\n                            \"id\": 124,\n                            \"status\": 1,\n                            \"name\": \"550km Excellent\",\n                            \"price\": 349000000,\n                            \"car_model_id\": 58,\n                            \"created_at\": \"2024-04-29T09:33:12.000000Z\",\n                            \"updated_at\": \"2024-04-29T09:33:12.000000Z\"\n                        },\n                        {\n                            \"id\": 125,\n                            \"status\": 1,\n                            \"name\": \"662km Transcendent\",\n                            \"price\": 365000000,\n                            \"car_model_id\": 58,\n                            \"created_at\": \"2024-04-29T09:34:01.000000Z\",\n                            \"updated_at\": \"2024-04-29T09:34:01.000000Z\"\n                        },\n                        {\n                            \"id\": 126,\n                            \"status\": 1,\n                            \"name\": \"662km Excellent\",\n                            \"price\": 396000000,\n                            \"car_model_id\": 58,\n                            \"created_at\": \"2024-04-29T09:34:59.000000Z\",\n                            \"updated_at\": \"2024-04-29T09:34:59.000000Z\"\n                        },\n                        {\n                            \"id\": 127,\n                            \"status\": 1,\n                            \"name\": \"602km Excellent4wd\",\n                            \"price\": 428000000,\n                            \"car_model_id\": 58,\n                            \"created_at\": \"2024-04-29T09:35:41.000000Z\",\n                            \"updated_at\": \"2024-04-29T09:35:41.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 60,\n                    \"status\": 1,\n                    \"name\": \"Yuan pro\",\n                    \"car_brand_id\": 5,\n                    \"created_at\": \"2024-04-29T22:30:28.000000Z\",\n                    \"updated_at\": \"2024-04-29T22:33:21.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 135,\n                            \"status\": 1,\n                            \"name\": \"Full 401 km\",\n                            \"price\": 240000000,\n                            \"car_model_id\": 60,\n                            \"created_at\": \"2024-04-29T22:53:24.000000Z\",\n                            \"updated_at\": \"2024-04-29T22:53:24.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 61,\n                    \"status\": 1,\n                    \"name\": \"Yuan Up\",\n                    \"car_brand_id\": 5,\n                    \"created_at\": \"2024-04-29T22:33:39.000000Z\",\n                    \"updated_at\": \"2024-04-29T22:33:39.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 133,\n                            \"status\": 1,\n                            \"name\": \"Full\",\n                            \"price\": 265000000,\n                            \"car_model_id\": 61,\n                            \"created_at\": \"2024-04-29T22:35:16.000000Z\",\n                            \"updated_at\": \"2024-04-29T22:35:16.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 62,\n                    \"status\": 1,\n                    \"name\": \"Yuan plus\",\n                    \"car_brand_id\": 5,\n                    \"created_at\": \"2024-04-29T22:37:43.000000Z\",\n                    \"updated_at\": \"2024-04-29T22:37:43.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 134,\n                            \"status\": 1,\n                            \"name\": \"Champion\",\n                            \"price\": 320000000,\n                            \"car_model_id\": 62,\n                            \"created_at\": \"2024-04-29T22:38:14.000000Z\",\n                            \"updated_at\": \"2024-04-29T22:38:42.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 65,\n                    \"status\": 1,\n                    \"name\": \"Song Pro\",\n                    \"car_brand_id\": 5,\n                    \"created_at\": \"2024-05-17T18:11:58.000000Z\",\n                    \"updated_at\": \"2024-05-17T18:11:58.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 140,\n                            \"status\": 1,\n                            \"name\": \"DMI 71km Flagship\",\n                            \"price\": 321800000,\n                            \"car_model_id\": 65,\n                            \"created_at\": \"2024-05-17T18:12:43.000000Z\",\n                            \"updated_at\": \"2024-05-17T18:12:43.000000Z\"\n                        },\n                        {\n                            \"id\": 141,\n                            \"status\": 1,\n                            \"name\": \"DM-i 110 km Flagship\",\n                            \"price\": 359800000,\n                            \"car_model_id\": 65,\n                            \"created_at\": \"2024-05-17T18:13:48.000000Z\",\n                            \"updated_at\": \"2024-05-17T18:13:48.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 69,\n                    \"status\": 1,\n                    \"name\": \"SONG PLUS CHAMPION\",\n                    \"car_brand_id\": 5,\n                    \"created_at\": \"2024-05-27T20:08:51.000000Z\",\n                    \"updated_at\": \"2024-05-27T20:08:51.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 145,\n                            \"status\": 1,\n                            \"name\": \"EV 605 km\",\n                            \"price\": 429800000,\n                            \"car_model_id\": 69,\n                            \"created_at\": \"2024-05-27T20:10:42.000000Z\",\n                            \"updated_at\": \"2024-05-27T20:10:42.000000Z\"\n                        },\n                        {\n                            \"id\": 146,\n                            \"status\": 1,\n                            \"name\": \"EV 520 km\",\n                            \"price\": 395300000,\n                            \"car_model_id\": 69,\n                            \"created_at\": \"2024-05-27T20:11:06.000000Z\",\n                            \"updated_at\": \"2024-05-27T20:11:06.000000Z\"\n                        },\n                        {\n                            \"id\": 147,\n                            \"status\": 1,\n                            \"name\": \"DM-i 110 km\",\n                            \"price\": 387200000,\n                            \"car_model_id\": 69,\n                            \"created_at\": \"2024-05-27T20:13:20.000000Z\",\n                            \"updated_at\": \"2024-05-27T20:13:20.000000Z\"\n                        },\n                        {\n                            \"id\": 148,\n                            \"status\": 1,\n                            \"name\": \"DM-i 150 km\",\n                            \"price\": 409700000,\n                            \"car_model_id\": 69,\n                            \"created_at\": \"2024-05-27T20:13:36.000000Z\",\n                            \"updated_at\": \"2024-05-27T20:13:36.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 70,\n                    \"status\": 1,\n                    \"name\": \"Tang\",\n                    \"car_brand_id\": 5,\n                    \"created_at\": \"2024-05-30T13:20:04.000000Z\",\n                    \"updated_at\": \"2024-05-30T13:20:04.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 149,\n                            \"status\": 1,\n                            \"name\": \"EV 730KM\",\n                            \"price\": 500000000,\n                            \"car_model_id\": 70,\n                            \"created_at\": \"2024-05-30T13:20:34.000000Z\",\n                            \"updated_at\": \"2024-05-30T13:20:34.000000Z\"\n                        },\n                        {\n                            \"id\": 150,\n                            \"status\": 1,\n                            \"name\": \"EV 4wd 635km\",\n                            \"price\": 580000000,\n                            \"car_model_id\": 70,\n                            \"created_at\": \"2024-05-30T14:06:12.000000Z\",\n                            \"updated_at\": \"2024-05-30T14:06:12.000000Z\"\n                        }\n                    ]\n                }\n            ]\n        },\n        {\n            \"id\": 6,\n            \"status\": 1,\n            \"name\": \"KIA\",\n            \"created_at\": \"2023-11-02T10:39:48.000000Z\",\n            \"updated_at\": \"2023-11-02T10:39:48.000000Z\",\n            \"car_models\": [\n                {\n                    \"id\": 14,\n                    \"status\": 1,\n                    \"name\": \"Cerato\",\n                    \"car_brand_id\": 6,\n                    \"created_at\": \"2023-11-02T10:40:04.000000Z\",\n                    \"updated_at\": \"2023-11-02T10:40:04.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 11,\n                            \"status\": 1,\n                            \"name\": \"Comfort\",\n                            \"price\": 317900000,\n                            \"car_model_id\": 14,\n                            \"created_at\": \"2023-11-02T10:40:44.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:40:44.000000Z\"\n                        },\n                        {\n                            \"id\": 12,\n                            \"status\": 1,\n                            \"name\": \"Luxe\",\n                            \"price\": 359900000,\n                            \"car_model_id\": 14,\n                            \"created_at\": \"2023-11-02T10:41:02.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:41:02.000000Z\"\n                        },\n                        {\n                            \"id\": 13,\n                            \"status\": 1,\n                            \"name\": \"GT-Line\",\n                            \"price\": 407900000,\n                            \"car_model_id\": 14,\n                            \"created_at\": \"2023-11-02T10:41:22.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:41:22.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 15,\n                    \"status\": 1,\n                    \"name\": \"K5\",\n                    \"car_brand_id\": 6,\n                    \"created_at\": \"2023-11-02T10:42:23.000000Z\",\n                    \"updated_at\": \"2023-11-02T10:42:23.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 14,\n                            \"status\": 1,\n                            \"name\": \"Comfort\",\n                            \"price\": 359900000,\n                            \"car_model_id\": 15,\n                            \"created_at\": \"2023-11-02T10:42:41.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:42:41.000000Z\"\n                        },\n                        {\n                            \"id\": 15,\n                            \"status\": 1,\n                            \"name\": \"Luxe Light\",\n                            \"price\": 410900000,\n                            \"car_model_id\": 15,\n                            \"created_at\": \"2023-11-02T10:43:09.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:43:09.000000Z\"\n                        },\n                        {\n                            \"id\": 16,\n                            \"status\": 1,\n                            \"name\": \"Luxe +\",\n                            \"price\": 419900000,\n                            \"car_model_id\": 15,\n                            \"created_at\": \"2023-11-02T10:43:27.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:43:27.000000Z\"\n                        },\n                        {\n                            \"id\": 17,\n                            \"status\": 1,\n                            \"name\": \"Prestige Light\",\n                            \"price\": 444900000,\n                            \"car_model_id\": 15,\n                            \"created_at\": \"2023-11-02T10:43:43.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:47:20.000000Z\"\n                        },\n                        {\n                            \"id\": 18,\n                            \"status\": 1,\n                            \"name\": \"Prestige +\",\n                            \"price\": 455900000,\n                            \"car_model_id\": 15,\n                            \"created_at\": \"2023-11-02T10:47:59.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:47:59.000000Z\"\n                        },\n                        {\n                            \"id\": 19,\n                            \"status\": 1,\n                            \"name\": \"Style Light\",\n                            \"price\": 486900000,\n                            \"car_model_id\": 15,\n                            \"created_at\": \"2023-11-02T10:48:20.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:48:20.000000Z\"\n                        },\n                        {\n                            \"id\": 20,\n                            \"status\": 1,\n                            \"name\": \"Style\",\n                            \"price\": 497900000,\n                            \"car_model_id\": 15,\n                            \"created_at\": \"2023-11-02T10:48:39.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:48:39.000000Z\"\n                        },\n                        {\n                            \"id\": 21,\n                            \"status\": 1,\n                            \"name\": \"GT Line+\",\n                            \"price\": 538900000,\n                            \"car_model_id\": 15,\n                            \"created_at\": \"2023-11-02T10:48:55.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:48:55.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 16,\n                    \"status\": 1,\n                    \"name\": \"EV6\",\n                    \"car_brand_id\": 6,\n                    \"created_at\": \"2023-11-02T10:49:10.000000Z\",\n                    \"updated_at\": \"2023-11-02T10:49:10.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 22,\n                            \"status\": 1,\n                            \"name\": \"Air\",\n                            \"price\": 699900000,\n                            \"car_model_id\": 16,\n                            \"created_at\": \"2023-11-02T10:49:26.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:49:26.000000Z\"\n                        },\n                        {\n                            \"id\": 23,\n                            \"status\": 1,\n                            \"name\": \"GT-Line\",\n                            \"price\": 899900000,\n                            \"car_model_id\": 16,\n                            \"created_at\": \"2023-11-02T10:49:48.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:49:48.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 17,\n                    \"status\": 1,\n                    \"name\": \"K8\",\n                    \"car_brand_id\": 6,\n                    \"created_at\": \"2023-11-02T10:50:16.000000Z\",\n                    \"updated_at\": \"2023-11-02T10:50:16.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 24,\n                            \"status\": 1,\n                            \"name\": \"Signature\",\n                            \"price\": 729900000,\n                            \"car_model_id\": 17,\n                            \"created_at\": \"2023-11-02T10:50:38.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:50:38.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 18,\n                    \"status\": 1,\n                    \"name\": \"Stinger\",\n                    \"car_brand_id\": 6,\n                    \"created_at\": \"2023-11-02T10:50:54.000000Z\",\n                    \"updated_at\": \"2023-11-02T10:50:54.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 25,\n                            \"status\": 1,\n                            \"name\": \"GT\",\n                            \"price\": 789900000,\n                            \"car_model_id\": 18,\n                            \"created_at\": \"2023-11-02T10:51:15.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:51:15.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 19,\n                    \"status\": 1,\n                    \"name\": \"K9\",\n                    \"car_brand_id\": 6,\n                    \"created_at\": \"2023-11-02T10:51:29.000000Z\",\n                    \"updated_at\": \"2023-11-02T10:51:29.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 26,\n                            \"status\": 1,\n                            \"name\": \"Prestige\",\n                            \"price\": 869900000,\n                            \"car_model_id\": 19,\n                            \"created_at\": \"2023-11-02T10:51:51.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:51:51.000000Z\"\n                        },\n                        {\n                            \"id\": 27,\n                            \"status\": 1,\n                            \"name\": \"Premium\",\n                            \"price\": 1129900000,\n                            \"car_model_id\": 19,\n                            \"created_at\": \"2023-11-02T10:52:03.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:52:03.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 20,\n                    \"status\": 1,\n                    \"name\": \"Seltos\",\n                    \"car_brand_id\": 6,\n                    \"created_at\": \"2023-11-02T10:52:22.000000Z\",\n                    \"updated_at\": \"2023-11-02T10:52:22.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 28,\n                            \"status\": 1,\n                            \"name\": \"Style\",\n                            \"price\": 379900000,\n                            \"car_model_id\": 20,\n                            \"created_at\": \"2023-11-02T10:52:37.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:52:37.000000Z\"\n                        },\n                        {\n                            \"id\": 29,\n                            \"status\": 1,\n                            \"name\": \"Prestige\",\n                            \"price\": 409900000,\n                            \"car_model_id\": 20,\n                            \"created_at\": \"2023-11-02T10:52:52.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:52:52.000000Z\"\n                        },\n                        {\n                            \"id\": 30,\n                            \"status\": 1,\n                            \"name\": \"Premium\",\n                            \"price\": 439900000,\n                            \"car_model_id\": 20,\n                            \"created_at\": \"2023-11-02T10:53:06.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:53:06.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 21,\n                    \"status\": 1,\n                    \"name\": \"Sorento\",\n                    \"car_brand_id\": 6,\n                    \"created_at\": \"2023-11-02T10:53:31.000000Z\",\n                    \"updated_at\": \"2023-11-02T10:53:31.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 31,\n                            \"status\": 1,\n                            \"name\": \"Comfort 5 мест\",\n                            \"price\": 566900000,\n                            \"car_model_id\": 21,\n                            \"created_at\": \"2023-11-02T10:53:51.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:53:51.000000Z\"\n                        },\n                        {\n                            \"id\": 32,\n                            \"status\": 1,\n                            \"name\": \"Comfort\",\n                            \"price\": 584900000,\n                            \"car_model_id\": 21,\n                            \"created_at\": \"2023-11-02T10:54:08.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:54:08.000000Z\"\n                        },\n                        {\n                            \"id\": 33,\n                            \"status\": 1,\n                            \"name\": \"Prestige+\",\n                            \"price\": 667900000,\n                            \"car_model_id\": 21,\n                            \"created_at\": \"2023-11-02T10:54:24.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:54:24.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 22,\n                    \"status\": 1,\n                    \"name\": \"Sportage\",\n                    \"car_brand_id\": 6,\n                    \"created_at\": \"2023-11-02T10:54:44.000000Z\",\n                    \"updated_at\": \"2023-11-02T10:54:44.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 34,\n                            \"status\": 1,\n                            \"name\": \"Luxe\",\n                            \"price\": 409900000,\n                            \"car_model_id\": 22,\n                            \"created_at\": \"2023-11-02T10:55:07.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:55:07.000000Z\"\n                        },\n                        {\n                            \"id\": 35,\n                            \"status\": 1,\n                            \"name\": \"Style Light FWD\",\n                            \"price\": 449900000,\n                            \"car_model_id\": 22,\n                            \"created_at\": \"2023-11-02T10:55:30.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:55:30.000000Z\"\n                        },\n                        {\n                            \"id\": 36,\n                            \"status\": 1,\n                            \"name\": \"Style\",\n                            \"price\": 464900000,\n                            \"car_model_id\": 22,\n                            \"created_at\": \"2023-11-02T10:58:51.000000Z\",\n                            \"updated_at\": \"2023-11-02T10:58:51.000000Z\"\n                        },\n                        {\n                            \"id\": 37,\n                            \"status\": 1,\n                            \"name\": \"Style Light\",\n                            \"price\": 464900000,\n                            \"car_model_id\": 22,\n                            \"created_at\": \"2023-11-02T11:00:04.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:00:04.000000Z\"\n                        },\n                        {\n                            \"id\": 38,\n                            \"status\": 1,\n                            \"name\": \"Premium\",\n                            \"price\": 529900000,\n                            \"car_model_id\": 22,\n                            \"created_at\": \"2023-11-02T11:18:25.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:18:25.000000Z\"\n                        },\n                        {\n                            \"id\": 39,\n                            \"status\": 1,\n                            \"name\": \"X-line\",\n                            \"price\": 574900000,\n                            \"car_model_id\": 22,\n                            \"created_at\": \"2023-11-02T11:18:43.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:18:43.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 23,\n                    \"status\": 1,\n                    \"name\": \"Carnival\",\n                    \"car_brand_id\": 6,\n                    \"created_at\": \"2023-11-02T11:18:57.000000Z\",\n                    \"updated_at\": \"2023-11-02T11:18:57.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 40,\n                            \"status\": 1,\n                            \"name\": \"Classic\",\n                            \"price\": 519900000,\n                            \"car_model_id\": 23,\n                            \"created_at\": \"2023-11-02T11:19:24.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:19:24.000000Z\"\n                        },\n                        {\n                            \"id\": 41,\n                            \"status\": 1,\n                            \"name\": \"Comfort\",\n                            \"price\": 603900000,\n                            \"car_model_id\": 23,\n                            \"created_at\": \"2023-11-02T11:19:37.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:19:37.000000Z\"\n                        },\n                        {\n                            \"id\": 42,\n                            \"status\": 1,\n                            \"name\": \"Luxe\",\n                            \"price\": 688900000,\n                            \"car_model_id\": 23,\n                            \"created_at\": \"2023-11-02T11:19:50.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:19:50.000000Z\"\n                        },\n                        {\n                            \"id\": 43,\n                            \"status\": 1,\n                            \"name\": \"Prestige\",\n                            \"price\": 741900000,\n                            \"car_model_id\": 23,\n                            \"created_at\": \"2023-11-02T11:20:04.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:20:04.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 24,\n                    \"status\": 1,\n                    \"name\": \"Bongo\",\n                    \"car_brand_id\": 6,\n                    \"created_at\": \"2023-11-02T11:20:20.000000Z\",\n                    \"updated_at\": \"2023-11-02T11:20:20.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 44,\n                            \"status\": 1,\n                            \"name\": \"Standard Cab (Шасси, без кузова)\",\n                            \"price\": 269900000,\n                            \"car_model_id\": 24,\n                            \"created_at\": \"2023-11-02T11:20:42.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:20:42.000000Z\"\n                        },\n                        {\n                            \"id\": 45,\n                            \"status\": 1,\n                            \"name\": \"Standard Cab\",\n                            \"price\": 279900000,\n                            \"car_model_id\": 24,\n                            \"created_at\": \"2023-11-02T11:21:08.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:21:08.000000Z\"\n                        },\n                        {\n                            \"id\": 46,\n                            \"status\": 1,\n                            \"name\": \"Super Cab\",\n                            \"price\": 284900000,\n                            \"car_model_id\": 24,\n                            \"created_at\": \"2023-11-02T11:21:28.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:21:28.000000Z\"\n                        },\n                        {\n                            \"id\": 47,\n                            \"status\": 1,\n                            \"name\": \"Double Cab\",\n                            \"price\": 304900000,\n                            \"car_model_id\": 24,\n                            \"created_at\": \"2023-11-02T11:21:41.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:21:41.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 72,\n                    \"status\": 1,\n                    \"name\": \"Sonet\",\n                    \"car_brand_id\": 6,\n                    \"created_at\": \"2024-06-04T10:05:36.000000Z\",\n                    \"updated_at\": \"2024-06-04T10:05:36.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 156,\n                            \"status\": 1,\n                            \"name\": \"Classic\",\n                            \"price\": 199900000,\n                            \"car_model_id\": 72,\n                            \"created_at\": \"2024-06-04T10:06:04.000000Z\",\n                            \"updated_at\": \"2024-06-04T10:06:04.000000Z\"\n                        },\n                        {\n                            \"id\": 157,\n                            \"status\": 1,\n                            \"name\": \"Luxe\",\n                            \"price\": 222900000,\n                            \"car_model_id\": 72,\n                            \"created_at\": \"2024-06-04T10:06:17.000000Z\",\n                            \"updated_at\": \"2024-06-04T10:06:17.000000Z\"\n                        },\n                        {\n                            \"id\": 158,\n                            \"status\": 1,\n                            \"name\": \"Prestige\",\n                            \"price\": 249900000,\n                            \"car_model_id\": 72,\n                            \"created_at\": \"2024-06-04T10:06:36.000000Z\",\n                            \"updated_at\": \"2024-06-04T10:06:36.000000Z\"\n                        }\n                    ]\n                }\n            ]\n        },\n        {\n            \"id\": 7,\n            \"status\": 1,\n            \"name\": \"CHERY\",\n            \"created_at\": \"2023-11-02T11:45:49.000000Z\",\n            \"updated_at\": \"2023-11-02T11:45:49.000000Z\",\n            \"car_models\": [\n                {\n                    \"id\": 29,\n                    \"status\": 1,\n                    \"name\": \"ARRIZO 6 PRO\",\n                    \"car_brand_id\": 7,\n                    \"created_at\": \"2023-11-02T11:46:06.000000Z\",\n                    \"updated_at\": \"2023-11-02T11:46:06.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 56,\n                            \"status\": 1,\n                            \"name\": \"Comfort\",\n                            \"price\": 279900000,\n                            \"car_model_id\": 29,\n                            \"created_at\": \"2023-11-02T11:46:22.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:46:22.000000Z\"\n                        },\n                        {\n                            \"id\": 57,\n                            \"status\": 1,\n                            \"name\": \"Intelligence\",\n                            \"price\": 309900000,\n                            \"car_model_id\": 29,\n                            \"created_at\": \"2023-11-02T11:46:51.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:46:51.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 30,\n                    \"status\": 1,\n                    \"name\": \"TIGGO 7 PRO\",\n                    \"car_brand_id\": 7,\n                    \"created_at\": \"2023-11-02T11:48:17.000000Z\",\n                    \"updated_at\": \"2023-11-02T11:48:17.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 58,\n                            \"status\": 1,\n                            \"name\": \"Luxury\",\n                            \"price\": 329900000,\n                            \"car_model_id\": 30,\n                            \"created_at\": \"2023-11-02T11:48:41.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:48:41.000000Z\"\n                        },\n                        {\n                            \"id\": 59,\n                            \"status\": 1,\n                            \"name\": \"Premium\",\n                            \"price\": 369900000,\n                            \"car_model_id\": 30,\n                            \"created_at\": \"2023-11-02T11:49:22.000000Z\",\n                            \"updated_at\": \"2023-11-02T11:49:22.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 31,\n                    \"status\": 1,\n                    \"name\": \"TIGGO 8 PRO\",\n                    \"car_brand_id\": 7,\n                    \"created_at\": \"2023-11-02T12:00:04.000000Z\",\n                    \"updated_at\": \"2023-11-02T12:00:04.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 60,\n                            \"status\": 1,\n                            \"name\": \"Comfort\",\n                            \"price\": 376900000,\n                            \"car_model_id\": 31,\n                            \"created_at\": \"2023-11-02T12:00:22.000000Z\",\n                            \"updated_at\": \"2023-11-02T12:00:22.000000Z\"\n                        },\n                        {\n                            \"id\": 61,\n                            \"status\": 1,\n                            \"name\": \"Luxury\",\n                            \"price\": 439900000,\n                            \"car_model_id\": 31,\n                            \"created_at\": \"2023-11-02T12:00:41.000000Z\",\n                            \"updated_at\": \"2023-11-02T12:00:41.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 32,\n                    \"status\": 1,\n                    \"name\": \"TIGGO 8 PRO MAX\",\n                    \"car_brand_id\": 7,\n                    \"created_at\": \"2023-11-02T12:02:41.000000Z\",\n                    \"updated_at\": \"2023-11-02T12:02:41.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 62,\n                            \"status\": 1,\n                            \"name\": \"Premium\",\n                            \"price\": 509900000,\n                            \"car_model_id\": 32,\n                            \"created_at\": \"2023-11-02T12:03:04.000000Z\",\n                            \"updated_at\": \"2023-11-02T12:03:04.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 86,\n                    \"status\": 1,\n                    \"name\": \"Tiggo 8 Plus\",\n                    \"car_brand_id\": 7,\n                    \"created_at\": \"2024-06-26T15:40:19.000000Z\",\n                    \"updated_at\": \"2024-06-26T15:40:19.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 176,\n                            \"status\": 1,\n                            \"name\": \"Kunpeng E+\",\n                            \"price\": 352419480,\n                            \"car_model_id\": 86,\n                            \"created_at\": \"2024-06-26T15:50:32.000000Z\",\n                            \"updated_at\": \"2024-06-26T15:50:32.000000Z\"\n                        }\n                    ]\n                }\n            ]\n        },\n        {\n            \"id\": 8,\n            \"status\": 1,\n            \"name\": \"JAC\",\n            \"created_at\": \"2023-11-03T11:56:52.000000Z\",\n            \"updated_at\": \"2023-11-03T11:56:52.000000Z\",\n            \"car_models\": [\n                {\n                    \"id\": 33,\n                    \"status\": 1,\n                    \"name\": \"J7\",\n                    \"car_brand_id\": 8,\n                    \"created_at\": \"2023-11-03T11:57:04.000000Z\",\n                    \"updated_at\": \"2023-11-03T11:57:04.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 66,\n                            \"status\": 1,\n                            \"name\": \"Luxury\",\n                            \"price\": 293900000,\n                            \"car_model_id\": 33,\n                            \"created_at\": \"2023-11-03T11:57:22.000000Z\",\n                            \"updated_at\": \"2023-11-03T11:57:22.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 34,\n                    \"status\": 1,\n                    \"name\": \"JS6\",\n                    \"car_brand_id\": 8,\n                    \"created_at\": \"2023-11-03T11:57:34.000000Z\",\n                    \"updated_at\": \"2023-11-03T11:57:34.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 67,\n                            \"status\": 1,\n                            \"name\": \"Luxury\",\n                            \"price\": 369900000,\n                            \"car_model_id\": 34,\n                            \"created_at\": \"2023-11-03T11:57:47.000000Z\",\n                            \"updated_at\": \"2023-11-03T11:57:47.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 35,\n                    \"status\": 1,\n                    \"name\": \"JS8\",\n                    \"car_brand_id\": 8,\n                    \"created_at\": \"2023-11-03T12:02:56.000000Z\",\n                    \"updated_at\": \"2023-11-03T12:02:56.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 68,\n                            \"status\": 1,\n                            \"name\": \"Flagship\",\n                            \"price\": 359900000,\n                            \"car_model_id\": 35,\n                            \"created_at\": \"2023-11-03T12:03:15.000000Z\",\n                            \"updated_at\": \"2023-11-03T12:03:15.000000Z\"\n                        }\n                    ]\n                }\n            ]\n        },\n        {\n            \"id\": 9,\n            \"status\": 1,\n            \"name\": \"SKODA\",\n            \"created_at\": \"2023-11-03T12:03:38.000000Z\",\n            \"updated_at\": \"2023-11-03T12:03:38.000000Z\",\n            \"car_models\": [\n                {\n                    \"id\": 36,\n                    \"status\": 1,\n                    \"name\": \"KODIAQ\",\n                    \"car_brand_id\": 9,\n                    \"created_at\": \"2023-11-03T12:03:49.000000Z\",\n                    \"updated_at\": \"2023-11-03T12:03:49.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 69,\n                            \"status\": 1,\n                            \"name\": \"AMBITION\",\n                            \"price\": 429000000,\n                            \"car_model_id\": 36,\n                            \"created_at\": \"2023-11-03T12:04:04.000000Z\",\n                            \"updated_at\": \"2023-11-03T12:04:04.000000Z\"\n                        },\n                        {\n                            \"id\": 70,\n                            \"status\": 1,\n                            \"name\": \"STYLE\",\n                            \"price\": 499000000,\n                            \"car_model_id\": 36,\n                            \"created_at\": \"2023-11-03T12:05:35.000000Z\",\n                            \"updated_at\": \"2023-11-03T12:05:35.000000Z\"\n                        }\n                    ]\n                }\n            ]\n        },\n        {\n            \"id\": 10,\n            \"status\": 1,\n            \"name\": \"RENAULT\",\n            \"created_at\": \"2023-11-03T12:05:42.000000Z\",\n            \"updated_at\": \"2023-11-03T12:05:42.000000Z\",\n            \"car_models\": [\n                {\n                    \"id\": 37,\n                    \"status\": 1,\n                    \"name\": \"ARKANA\",\n                    \"car_brand_id\": 10,\n                    \"created_at\": \"2023-11-03T12:05:50.000000Z\",\n                    \"updated_at\": \"2023-11-03T12:05:50.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 71,\n                            \"status\": 1,\n                            \"name\": \"Life\",\n                            \"price\": 274966800,\n                            \"car_model_id\": 37,\n                            \"created_at\": \"2023-11-03T12:06:03.000000Z\",\n                            \"updated_at\": \"2023-11-03T12:06:03.000000Z\"\n                        },\n                        {\n                            \"id\": 72,\n                            \"status\": 1,\n                            \"name\": \"Drive 114 л.с.\",\n                            \"price\": 287759200,\n                            \"car_model_id\": 37,\n                            \"created_at\": \"2023-11-03T12:06:17.000000Z\",\n                            \"updated_at\": \"2023-11-03T12:06:17.000000Z\"\n                        },\n                        {\n                            \"id\": 73,\n                            \"status\": 1,\n                            \"name\": \"Drive 150 л.с.\",\n                            \"price\": 310819900,\n                            \"car_model_id\": 37,\n                            \"created_at\": \"2023-11-03T12:06:56.000000Z\",\n                            \"updated_at\": \"2023-11-03T12:06:56.000000Z\"\n                        },\n                        {\n                            \"id\": 74,\n                            \"status\": 1,\n                            \"name\": \"Style 114 л.с.\",\n                            \"price\": 311947800,\n                            \"car_model_id\": 37,\n                            \"created_at\": \"2023-11-03T12:07:21.000000Z\",\n                            \"updated_at\": \"2023-11-03T12:07:21.000000Z\"\n                        },\n                        {\n                            \"id\": 75,\n                            \"status\": 1,\n                            \"name\": \"Style 150 л.с.\",\n                            \"price\": 347169100,\n                            \"car_model_id\": 37,\n                            \"created_at\": \"2023-11-03T12:07:36.000000Z\",\n                            \"updated_at\": \"2023-11-03T12:07:36.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 38,\n                    \"status\": 1,\n                    \"name\": \"KAPTUR\",\n                    \"car_brand_id\": 10,\n                    \"created_at\": \"2023-11-03T12:07:44.000000Z\",\n                    \"updated_at\": \"2023-11-03T12:07:44.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 76,\n                            \"status\": 1,\n                            \"name\": \"Life\",\n                            \"price\": 264857700,\n                            \"car_model_id\": 38,\n                            \"created_at\": \"2023-11-03T12:07:58.000000Z\",\n                            \"updated_at\": \"2023-11-03T12:07:58.000000Z\"\n                        },\n                        {\n                            \"id\": 77,\n                            \"status\": 1,\n                            \"name\": \"Drive 114 л.с.\",\n                            \"price\": 277650100,\n                            \"car_model_id\": 38,\n                            \"created_at\": \"2023-11-03T12:08:13.000000Z\",\n                            \"updated_at\": \"2023-11-03T12:08:13.000000Z\"\n                        },\n                        {\n                            \"id\": 78,\n                            \"status\": 1,\n                            \"name\": \"Drive 150 л.с.\",\n                            \"price\": 300710800,\n                            \"car_model_id\": 38,\n                            \"created_at\": \"2023-11-03T12:08:29.000000Z\",\n                            \"updated_at\": \"2023-11-03T12:08:29.000000Z\"\n                        },\n                        {\n                            \"id\": 79,\n                            \"status\": 1,\n                            \"name\": \"Style 114 л.с.\",\n                            \"price\": 299521900,\n                            \"car_model_id\": 38,\n                            \"created_at\": \"2023-11-03T12:08:43.000000Z\",\n                            \"updated_at\": \"2023-11-03T12:08:43.000000Z\"\n                        },\n                        {\n                            \"id\": 80,\n                            \"status\": 1,\n                            \"name\": \"Style 150 л.с.\",\n                            \"price\": 341740100,\n                            \"car_model_id\": 38,\n                            \"created_at\": \"2023-11-03T12:08:59.000000Z\",\n                            \"updated_at\": \"2023-11-03T12:08:59.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 39,\n                    \"status\": 1,\n                    \"name\": \"DUSTER\",\n                    \"car_brand_id\": 10,\n                    \"created_at\": \"2023-11-03T12:09:15.000000Z\",\n                    \"updated_at\": \"2023-11-03T12:09:15.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 81,\n                            \"status\": 1,\n                            \"name\": \"Life 117 л.с.\",\n                            \"price\": 251071500,\n                            \"car_model_id\": 39,\n                            \"created_at\": \"2023-11-03T12:09:29.000000Z\",\n                            \"updated_at\": \"2023-11-03T12:09:29.000000Z\"\n                        },\n                        {\n                            \"id\": 82,\n                            \"status\": 1,\n                            \"name\": \"Life 150 л.с.\",\n                            \"price\": 282272500,\n                            \"car_model_id\": 39,\n                            \"created_at\": \"2023-11-03T12:09:45.000000Z\",\n                            \"updated_at\": \"2023-11-03T12:09:45.000000Z\"\n                        },\n                        {\n                            \"id\": 83,\n                            \"status\": 1,\n                            \"name\": \"Drive 150 л.с.\",\n                            \"price\": 286392600,\n                            \"car_model_id\": 39,\n                            \"created_at\": \"2023-11-03T12:10:00.000000Z\",\n                            \"updated_at\": \"2023-11-03T12:10:00.000000Z\"\n                        },\n                        {\n                            \"id\": 84,\n                            \"status\": 1,\n                            \"name\": \"Style 150 л.с.\",\n                            \"price\": 306673200,\n                            \"car_model_id\": 39,\n                            \"created_at\": \"2023-11-03T12:10:17.000000Z\",\n                            \"updated_at\": \"2023-11-03T12:10:17.000000Z\"\n                        }\n                    ]\n                }\n            ]\n        },\n        {\n            \"id\": 11,\n            \"status\": 1,\n            \"name\": \"VOLKSWAGEN\",\n            \"created_at\": \"2023-11-03T12:11:00.000000Z\",\n            \"updated_at\": \"2023-11-03T12:11:00.000000Z\",\n            \"car_models\": [\n                {\n                    \"id\": 40,\n                    \"status\": 1,\n                    \"name\": \"CADDY\",\n                    \"car_brand_id\": 11,\n                    \"created_at\": \"2023-11-03T12:11:11.000000Z\",\n                    \"updated_at\": \"2023-11-03T12:11:11.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 85,\n                            \"status\": 1,\n                            \"name\": \"CARGO\",\n                            \"price\": 193100000,\n                            \"car_model_id\": 40,\n                            \"created_at\": \"2023-11-03T12:11:53.000000Z\",\n                            \"updated_at\": \"2023-11-03T12:11:53.000000Z\"\n                        },\n                        {\n                            \"id\": 86,\n                            \"status\": 1,\n                            \"name\": \"KOMBI\",\n                            \"price\": 212500000,\n                            \"car_model_id\": 40,\n                            \"created_at\": \"2023-11-03T12:12:19.000000Z\",\n                            \"updated_at\": \"2023-11-03T12:12:19.000000Z\"\n                        },\n                        {\n                            \"id\": 87,\n                            \"status\": 1,\n                            \"name\": \"REFRIGERATOR\",\n                            \"price\": 226000000,\n                            \"car_model_id\": 40,\n                            \"created_at\": \"2023-11-03T12:12:35.000000Z\",\n                            \"updated_at\": \"2023-11-03T12:12:35.000000Z\"\n                        },\n                        {\n                            \"id\": 88,\n                            \"status\": 1,\n                            \"name\": \"TRENDLINE\",\n                            \"price\": 244000000,\n                            \"car_model_id\": 40,\n                            \"created_at\": \"2023-11-03T12:13:05.000000Z\",\n                            \"updated_at\": \"2023-11-03T12:13:05.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 68,\n                    \"status\": 1,\n                    \"name\": \"ID 4\",\n                    \"car_brand_id\": 11,\n                    \"created_at\": \"2024-05-25T15:41:40.000000Z\",\n                    \"updated_at\": \"2024-05-25T15:41:40.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 144,\n                            \"status\": 1,\n                            \"name\": \"Pure\",\n                            \"price\": 340000000,\n                            \"car_model_id\": 68,\n                            \"created_at\": \"2024-05-25T15:42:01.000000Z\",\n                            \"updated_at\": \"2024-05-25T15:42:01.000000Z\"\n                        }\n                    ]\n                }\n            ]\n        },\n        {\n            \"id\": 12,\n            \"status\": 1,\n            \"name\": \"Honda\",\n            \"created_at\": \"2023-11-06T10:01:40.000000Z\",\n            \"updated_at\": \"2023-11-06T10:01:40.000000Z\",\n            \"car_models\": [\n                {\n                    \"id\": 54,\n                    \"status\": 1,\n                    \"name\": \"Crider\",\n                    \"car_brand_id\": 12,\n                    \"created_at\": \"2023-11-06T10:01:51.000000Z\",\n                    \"updated_at\": \"2023-11-06T10:01:51.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 116,\n                            \"status\": 1,\n                            \"name\": \"1L Turbo\",\n                            \"price\": 225000000,\n                            \"car_model_id\": 54,\n                            \"created_at\": \"2023-11-06T10:02:16.000000Z\",\n                            \"updated_at\": \"2023-11-06T10:02:16.000000Z\"\n                        }\n                    ]\n                }\n            ]\n        },\n        {\n            \"id\": 13,\n            \"status\": 1,\n            \"name\": \"ZEEKR\",\n            \"created_at\": \"2024-05-14T16:30:45.000000Z\",\n            \"updated_at\": \"2024-05-14T16:30:45.000000Z\",\n            \"car_models\": [\n                {\n                    \"id\": 63,\n                    \"status\": 1,\n                    \"name\": \"001\",\n                    \"car_brand_id\": 13,\n                    \"created_at\": \"2024-05-14T16:30:56.000000Z\",\n                    \"updated_at\": \"2024-05-14T16:30:56.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 137,\n                            \"status\": 1,\n                            \"name\": \"Premium\",\n                            \"price\": 711000000,\n                            \"car_model_id\": 63,\n                            \"created_at\": \"2024-05-14T16:32:15.000000Z\",\n                            \"updated_at\": \"2024-05-14T16:32:15.000000Z\"\n                        },\n                        {\n                            \"id\": 138,\n                            \"status\": 1,\n                            \"name\": \"Flagship\",\n                            \"price\": 774000000,\n                            \"car_model_id\": 63,\n                            \"created_at\": \"2024-05-14T16:32:33.000000Z\",\n                            \"updated_at\": \"2024-05-14T16:32:33.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 64,\n                    \"status\": 1,\n                    \"name\": \"X\",\n                    \"car_brand_id\": 13,\n                    \"created_at\": \"2024-05-14T16:31:19.000000Z\",\n                    \"updated_at\": \"2024-05-14T16:31:19.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 139,\n                            \"status\": 1,\n                            \"name\": \"Flagship\",\n                            \"price\": 506000000,\n                            \"car_model_id\": 64,\n                            \"created_at\": \"2024-05-14T16:33:04.000000Z\",\n                            \"updated_at\": \"2024-05-14T16:33:04.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 88,\n                    \"status\": 1,\n                    \"name\": \"007\",\n                    \"car_brand_id\": 13,\n                    \"created_at\": \"2024-06-28T10:28:20.000000Z\",\n                    \"updated_at\": \"2024-06-28T10:28:20.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 180,\n                            \"status\": 1,\n                            \"name\": \"Flagship\",\n                            \"price\": 528641400,\n                            \"car_model_id\": 88,\n                            \"created_at\": \"2024-06-28T10:28:56.000000Z\",\n                            \"updated_at\": \"2024-06-28T10:29:48.000000Z\"\n                        }\n                    ]\n                }\n            ]\n        },\n        {\n            \"id\": 14,\n            \"status\": 1,\n            \"name\": \"JETOUR\",\n            \"created_at\": \"2024-05-17T18:17:15.000000Z\",\n            \"updated_at\": \"2024-05-17T18:17:15.000000Z\",\n            \"car_models\": [\n                {\n                    \"id\": 66,\n                    \"status\": 1,\n                    \"name\": \"X70 PLUS\",\n                    \"car_brand_id\": 14,\n                    \"created_at\": \"2024-05-17T18:17:32.000000Z\",\n                    \"updated_at\": \"2024-05-17T18:17:32.000000Z\",\n                    \"car_positions\": []\n                }\n            ]\n        },\n        {\n            \"id\": 15,\n            \"status\": 1,\n            \"name\": \"Lada\",\n            \"created_at\": \"2024-05-23T12:46:43.000000Z\",\n            \"updated_at\": \"2024-05-23T12:46:43.000000Z\",\n            \"car_models\": [\n                {\n                    \"id\": 67,\n                    \"status\": 1,\n                    \"name\": \"Vesta\",\n                    \"car_brand_id\": 15,\n                    \"created_at\": \"2024-05-23T12:46:54.000000Z\",\n                    \"updated_at\": \"2024-05-23T12:46:54.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 142,\n                            \"status\": 1,\n                            \"name\": \"SW CROSS\",\n                            \"price\": 146000000,\n                            \"car_model_id\": 67,\n                            \"created_at\": \"2024-05-23T12:48:13.000000Z\",\n                            \"updated_at\": \"2024-05-23T12:48:13.000000Z\"\n                        },\n                        {\n                            \"id\": 143,\n                            \"status\": 1,\n                            \"name\": \"CROSS\",\n                            \"price\": 157000000,\n                            \"car_model_id\": 67,\n                            \"created_at\": \"2024-05-23T12:50:37.000000Z\",\n                            \"updated_at\": \"2024-05-23T13:01:22.000000Z\"\n                        }\n                    ]\n                }\n            ]\n        },\n        {\n            \"id\": 16,\n            \"status\": 1,\n            \"name\": \"Changan\",\n            \"created_at\": \"2024-06-06T10:51:20.000000Z\",\n            \"updated_at\": \"2024-06-06T10:51:20.000000Z\",\n            \"car_models\": [\n                {\n                    \"id\": 75,\n                    \"status\": 1,\n                    \"name\": \"CS55\",\n                    \"car_brand_id\": 16,\n                    \"created_at\": \"2024-06-06T10:51:45.000000Z\",\n                    \"updated_at\": \"2024-06-06T10:51:45.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 162,\n                            \"status\": 1,\n                            \"name\": \"Plus\",\n                            \"price\": 390000000,\n                            \"car_model_id\": 75,\n                            \"created_at\": \"2024-06-06T11:00:24.000000Z\",\n                            \"updated_at\": \"2024-06-06T11:00:24.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 77,\n                    \"status\": 1,\n                    \"name\": \"Uni-K\",\n                    \"car_brand_id\": 16,\n                    \"created_at\": \"2024-06-06T11:17:29.000000Z\",\n                    \"updated_at\": \"2024-06-06T11:17:29.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 163,\n                            \"status\": 1,\n                            \"name\": \"Comfort\",\n                            \"price\": 460000000,\n                            \"car_model_id\": 77,\n                            \"created_at\": \"2024-06-06T11:18:15.000000Z\",\n                            \"updated_at\": \"2024-06-06T11:18:15.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 78,\n                    \"status\": 1,\n                    \"name\": \"Deepal Shenlan\",\n                    \"car_brand_id\": 16,\n                    \"created_at\": \"2024-06-06T11:28:28.000000Z\",\n                    \"updated_at\": \"2024-06-06T11:28:28.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 164,\n                            \"status\": 1,\n                            \"name\": \"S7 200Max  (Hybrid)\",\n                            \"price\": 340000000,\n                            \"car_model_id\": 78,\n                            \"created_at\": \"2024-06-06T11:29:30.000000Z\",\n                            \"updated_at\": \"2024-06-06T11:29:30.000000Z\"\n                        },\n                        {\n                            \"id\": 165,\n                            \"status\": 1,\n                            \"name\": \"S 7 620km\",\n                            \"price\": 370000000,\n                            \"car_model_id\": 78,\n                            \"created_at\": \"2024-06-06T11:31:54.000000Z\",\n                            \"updated_at\": \"2024-06-06T11:31:54.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 79,\n                    \"status\": 1,\n                    \"name\": \"Shenlan SL03\",\n                    \"car_brand_id\": 16,\n                    \"created_at\": \"2024-06-06T11:32:54.000000Z\",\n                    \"updated_at\": \"2024-06-06T11:32:54.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 166,\n                            \"status\": 1,\n                            \"name\": \"(Gibrid)\",\n                            \"price\": 325000000,\n                            \"car_model_id\": 79,\n                            \"created_at\": \"2024-06-06T11:33:32.000000Z\",\n                            \"updated_at\": \"2024-06-06T11:33:32.000000Z\"\n                        }\n                    ]\n                }\n            ]\n        },\n        {\n            \"id\": 17,\n            \"status\": 1,\n            \"name\": \"Li\",\n            \"created_at\": \"2024-06-12T10:03:28.000000Z\",\n            \"updated_at\": \"2024-06-12T10:03:28.000000Z\",\n            \"car_models\": [\n                {\n                    \"id\": 80,\n                    \"status\": 1,\n                    \"name\": \"L9\",\n                    \"car_brand_id\": 17,\n                    \"created_at\": \"2024-06-12T10:13:50.000000Z\",\n                    \"updated_at\": \"2024-06-12T10:13:50.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 167,\n                            \"status\": 1,\n                            \"name\": \"Pro\",\n                            \"price\": 800000000,\n                            \"car_model_id\": 80,\n                            \"created_at\": \"2024-06-12T10:14:15.000000Z\",\n                            \"updated_at\": \"2024-06-12T10:14:15.000000Z\"\n                        },\n                        {\n                            \"id\": 168,\n                            \"status\": 1,\n                            \"name\": \"Max\",\n                            \"price\": 850000000,\n                            \"car_model_id\": 80,\n                            \"created_at\": \"2024-06-12T10:15:35.000000Z\",\n                            \"updated_at\": \"2024-06-12T10:15:35.000000Z\"\n                        },\n                        {\n                            \"id\": 169,\n                            \"status\": 1,\n                            \"name\": \"ULTRA restayling\",\n                            \"price\": 870000000,\n                            \"car_model_id\": 80,\n                            \"created_at\": \"2024-06-12T10:16:23.000000Z\",\n                            \"updated_at\": \"2024-06-12T10:16:23.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 81,\n                    \"status\": 1,\n                    \"name\": \"L8\",\n                    \"car_brand_id\": 17,\n                    \"created_at\": \"2024-06-12T10:18:41.000000Z\",\n                    \"updated_at\": \"2024-06-12T10:18:41.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 205,\n                            \"status\": 1,\n                            \"name\": \"Pro 225km\",\n                            \"price\": 640000000,\n                            \"car_model_id\": 81,\n                            \"created_at\": \"2024-08-28T09:44:55.000000Z\",\n                            \"updated_at\": \"2024-08-28T09:44:55.000000Z\"\n                        },\n                        {\n                            \"id\": 206,\n                            \"status\": 1,\n                            \"name\": \"Max 225km\",\n                            \"price\": 685000000,\n                            \"car_model_id\": 81,\n                            \"created_at\": \"2024-08-28T09:46:22.000000Z\",\n                            \"updated_at\": \"2024-08-28T09:46:22.000000Z\"\n                        },\n                        {\n                            \"id\": 207,\n                            \"status\": 1,\n                            \"name\": \"Ultra 280km\",\n                            \"price\": 735000000,\n                            \"car_model_id\": 81,\n                            \"created_at\": \"2024-08-28T09:46:44.000000Z\",\n                            \"updated_at\": \"2024-08-28T09:46:44.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 89,\n                    \"status\": 1,\n                    \"name\": \"L7\",\n                    \"car_brand_id\": 17,\n                    \"created_at\": \"2024-06-28T11:01:48.000000Z\",\n                    \"updated_at\": \"2024-06-28T11:01:48.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 181,\n                            \"status\": 1,\n                            \"name\": \"Ultra\",\n                            \"price\": 736321950,\n                            \"car_model_id\": 89,\n                            \"created_at\": \"2024-06-28T11:02:15.000000Z\",\n                            \"updated_at\": \"2024-06-28T11:02:15.000000Z\"\n                        }\n                    ]\n                }\n            ]\n        },\n        {\n            \"id\": 18,\n            \"status\": 1,\n            \"name\": \"GAC\",\n            \"created_at\": \"2024-06-13T16:35:41.000000Z\",\n            \"updated_at\": \"2024-06-13T16:35:41.000000Z\",\n            \"car_models\": [\n                {\n                    \"id\": 82,\n                    \"status\": 1,\n                    \"name\": \"AION\",\n                    \"car_brand_id\": 18,\n                    \"created_at\": \"2024-06-13T16:35:47.000000Z\",\n                    \"updated_at\": \"2024-06-13T16:35:47.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 171,\n                            \"status\": 1,\n                            \"name\": \"S580\",\n                            \"price\": 260000000,\n                            \"car_model_id\": 82,\n                            \"created_at\": \"2024-06-13T16:36:24.000000Z\",\n                            \"updated_at\": \"2024-06-13T16:36:24.000000Z\"\n                        }\n                    ]\n                }\n            ]\n        },\n        {\n            \"id\": 19,\n            \"status\": 1,\n            \"name\": \"Mercedes-Benz\",\n            \"created_at\": \"2024-06-21T16:51:07.000000Z\",\n            \"updated_at\": \"2024-06-21T16:51:07.000000Z\",\n            \"car_models\": [\n                {\n                    \"id\": 84,\n                    \"status\": 1,\n                    \"name\": \"S-Class\",\n                    \"car_brand_id\": 19,\n                    \"created_at\": \"2024-06-21T16:52:32.000000Z\",\n                    \"updated_at\": \"2024-06-21T16:52:32.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 173,\n                            \"status\": 1,\n                            \"name\": \"560\",\n                            \"price\": 1700000000,\n                            \"car_model_id\": 84,\n                            \"created_at\": \"2024-06-21T18:09:08.000000Z\",\n                            \"updated_at\": \"2024-06-21T18:09:58.000000Z\"\n                        }\n                    ]\n                }\n            ]\n        },\n        {\n            \"id\": 20,\n            \"status\": 1,\n            \"name\": \"Voyah\",\n            \"created_at\": \"2024-06-21T17:29:41.000000Z\",\n            \"updated_at\": \"2024-06-21T18:12:31.000000Z\",\n            \"car_models\": [\n                {\n                    \"id\": 85,\n                    \"status\": 1,\n                    \"name\": \"Free\",\n                    \"car_brand_id\": 20,\n                    \"created_at\": \"2024-06-21T17:31:13.000000Z\",\n                    \"updated_at\": \"2024-06-21T18:12:37.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 174,\n                            \"status\": 1,\n                            \"name\": \"EV\",\n                            \"price\": 516000000,\n                            \"car_model_id\": 85,\n                            \"created_at\": \"2024-06-21T18:17:50.000000Z\",\n                            \"updated_at\": \"2024-06-21T18:17:50.000000Z\"\n                        },\n                        {\n                            \"id\": 175,\n                            \"status\": 1,\n                            \"name\": \"ERV\",\n                            \"price\": 470000000,\n                            \"car_model_id\": 85,\n                            \"created_at\": \"2024-06-21T18:20:13.000000Z\",\n                            \"updated_at\": \"2024-06-21T18:20:13.000000Z\"\n                        }\n                    ]\n                }\n            ]\n        },\n        {\n            \"id\": 21,\n            \"status\": 1,\n            \"name\": \"BMW\",\n            \"created_at\": \"2024-06-28T11:03:19.000000Z\",\n            \"updated_at\": \"2024-06-28T11:03:19.000000Z\",\n            \"car_models\": [\n                {\n                    \"id\": 90,\n                    \"status\": 1,\n                    \"name\": \"M\",\n                    \"car_brand_id\": 21,\n                    \"created_at\": \"2024-06-28T11:03:26.000000Z\",\n                    \"updated_at\": \"2024-06-28T11:03:26.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 182,\n                            \"status\": 1,\n                            \"name\": \"M8 Gran Coupe\",\n                            \"price\": 2831920000,\n                            \"car_model_id\": 90,\n                            \"created_at\": \"2024-06-28T11:07:18.000000Z\",\n                            \"updated_at\": \"2024-06-28T11:07:18.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 91,\n                    \"status\": 1,\n                    \"name\": \"X\",\n                    \"car_brand_id\": 21,\n                    \"created_at\": \"2024-06-28T11:07:34.000000Z\",\n                    \"updated_at\": \"2024-06-28T11:07:34.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 183,\n                            \"status\": 1,\n                            \"name\": \"X5 M60i\",\n                            \"price\": 2073370000,\n                            \"car_model_id\": 91,\n                            \"created_at\": \"2024-06-28T11:07:54.000000Z\",\n                            \"updated_at\": \"2024-06-28T11:07:54.000000Z\"\n                        },\n                        {\n                            \"id\": 184,\n                            \"status\": 1,\n                            \"name\": \"X6 M Competition\",\n                            \"price\": 2642282500,\n                            \"car_model_id\": 91,\n                            \"created_at\": \"2024-06-28T11:08:20.000000Z\",\n                            \"updated_at\": \"2024-06-28T11:08:20.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 92,\n                    \"status\": 1,\n                    \"name\": \"XM\",\n                    \"car_brand_id\": 21,\n                    \"created_at\": \"2024-06-28T11:08:36.000000Z\",\n                    \"updated_at\": \"2024-06-28T11:08:36.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 185,\n                            \"status\": 1,\n                            \"name\": \"XM G09\",\n                            \"price\": 2917875000,\n                            \"car_model_id\": 92,\n                            \"created_at\": \"2024-06-28T11:08:49.000000Z\",\n                            \"updated_at\": \"2024-06-28T11:08:49.000000Z\"\n                        },\n                        {\n                            \"id\": 186,\n                            \"status\": 1,\n                            \"name\": \"XM Label\",\n                            \"price\": 3225350000,\n                            \"car_model_id\": 92,\n                            \"created_at\": \"2024-06-28T11:09:08.000000Z\",\n                            \"updated_at\": \"2024-06-28T11:09:08.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 93,\n                    \"status\": 1,\n                    \"name\": \"eDrive\",\n                    \"car_brand_id\": 21,\n                    \"created_at\": \"2024-06-28T11:09:19.000000Z\",\n                    \"updated_at\": \"2024-06-28T11:09:19.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 187,\n                            \"status\": 1,\n                            \"name\": \"i4 eDrive 40\",\n                            \"price\": 1192250000,\n                            \"car_model_id\": 93,\n                            \"created_at\": \"2024-06-28T11:09:47.000000Z\",\n                            \"updated_at\": \"2024-06-28T11:09:47.000000Z\"\n                        },\n                        {\n                            \"id\": 188,\n                            \"status\": 1,\n                            \"name\": \"i4 eDrive 40 Sedan\",\n                            \"price\": 1374225000,\n                            \"car_model_id\": 93,\n                            \"created_at\": \"2024-06-28T11:10:04.000000Z\",\n                            \"updated_at\": \"2024-06-28T11:10:04.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 94,\n                    \"status\": 1,\n                    \"name\": \"iX\",\n                    \"car_brand_id\": 21,\n                    \"created_at\": \"2024-06-28T11:10:19.000000Z\",\n                    \"updated_at\": \"2024-06-28T11:10:19.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 189,\n                            \"status\": 1,\n                            \"name\": \"iX xDrive50\",\n                            \"price\": 1869950000,\n                            \"car_model_id\": 94,\n                            \"created_at\": \"2024-06-28T11:10:34.000000Z\",\n                            \"updated_at\": \"2024-06-28T11:10:34.000000Z\"\n                        },\n                        {\n                            \"id\": 190,\n                            \"status\": 1,\n                            \"name\": \"iX M60\",\n                            \"price\": 1883732500,\n                            \"car_model_id\": 94,\n                            \"created_at\": \"2024-06-28T11:10:55.000000Z\",\n                            \"updated_at\": \"2024-06-28T11:10:55.000000Z\"\n                        },\n                        {\n                            \"id\": 191,\n                            \"status\": 1,\n                            \"name\": \"iX xDrive40\",\n                            \"price\": 1606400000,\n                            \"car_model_id\": 94,\n                            \"created_at\": \"2024-06-28T11:11:18.000000Z\",\n                            \"updated_at\": \"2024-06-28T11:11:18.000000Z\"\n                        }\n                    ]\n                }\n            ]\n        },\n        {\n            \"id\": 22,\n            \"status\": 1,\n            \"name\": \"Avatr\",\n            \"created_at\": \"2024-06-28T11:12:33.000000Z\",\n            \"updated_at\": \"2024-06-28T11:12:33.000000Z\",\n            \"car_models\": [\n                {\n                    \"id\": 95,\n                    \"status\": 1,\n                    \"name\": \"11\",\n                    \"car_brand_id\": 22,\n                    \"created_at\": \"2024-06-28T11:12:42.000000Z\",\n                    \"updated_at\": \"2024-06-28T11:12:42.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 192,\n                            \"status\": 1,\n                            \"name\": \"Hongmeng 116-degree 4WD version\",\n                            \"price\": 770374080,\n                            \"car_model_id\": 95,\n                            \"created_at\": \"2024-06-28T11:12:55.000000Z\",\n                            \"updated_at\": \"2024-06-28T11:12:55.000000Z\"\n                        },\n                        {\n                            \"id\": 193,\n                            \"status\": 1,\n                            \"name\": \"Hongmeng 116-degree RWD version\",\n                            \"price\": 726210240,\n                            \"car_model_id\": 95,\n                            \"created_at\": \"2024-06-28T11:13:24.000000Z\",\n                            \"updated_at\": \"2024-06-28T11:13:24.000000Z\"\n                        },\n                        {\n                            \"id\": 194,\n                            \"status\": 1,\n                            \"name\": \"Hongmeng 90 degree RWD version\",\n                            \"price\": 676729440,\n                            \"car_model_id\": 95,\n                            \"created_at\": \"2024-06-28T11:13:45.000000Z\",\n                            \"updated_at\": \"2024-06-28T11:13:45.000000Z\"\n                        },\n                        {\n                            \"id\": 195,\n                            \"status\": 1,\n                            \"name\": \"Hongmeng 90 degree 4WD version\",\n                            \"price\": 708402240,\n                            \"car_model_id\": 95,\n                            \"created_at\": \"2024-06-28T11:14:06.000000Z\",\n                            \"updated_at\": \"2024-06-28T11:14:06.000000Z\"\n                        },\n                        {\n                            \"id\": 196,\n                            \"status\": 1,\n                            \"name\": \"MMW joint 4 seats\",\n                            \"price\": 1209875520,\n                            \"car_model_id\": 95,\n                            \"created_at\": \"2024-06-28T11:14:30.000000Z\",\n                            \"updated_at\": \"2024-06-28T11:14:30.000000Z\"\n                        }\n                    ]\n                },\n                {\n                    \"id\": 96,\n                    \"status\": 1,\n                    \"name\": \"12\",\n                    \"car_brand_id\": 22,\n                    \"created_at\": \"2024-06-28T11:14:37.000000Z\",\n                    \"updated_at\": \"2024-06-28T11:14:37.000000Z\",\n                    \"car_positions\": [\n                        {\n                            \"id\": 197,\n                            \"status\": 1,\n                            \"name\": \"650 4WD GT\",\n                            \"price\": 859617600,\n                            \"car_model_id\": 96,\n                            \"created_at\": \"2024-06-28T11:14:54.000000Z\",\n                            \"updated_at\": \"2024-06-28T11:14:54.000000Z\"\n                        },\n                        {\n                            \"id\": 198,\n                            \"status\": 1,\n                            \"name\": \"650 4WD performance\",\n                            \"price\": 735673920,\n                            \"car_model_id\": 96,\n                            \"created_at\": \"2024-06-28T11:15:10.000000Z\",\n                            \"updated_at\": \"2024-06-28T11:15:10.000000Z\"\n                        },\n                        {\n                            \"id\": 199,\n                            \"status\": 1,\n                            \"name\": \"700 RWD Luxury\",\n                            \"price\": 660307920,\n                            \"car_model_id\": 96,\n                            \"created_at\": \"2024-06-28T11:15:28.000000Z\",\n                            \"updated_at\": \"2024-06-28T11:15:28.000000Z\"\n                        }\n                    ]\n                }\n            ]\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "get_tarif",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{login}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}api/kasko-neo/get-tarif",
+					"host": [
+						"{{base_url}}api"
+					],
+					"path": [
+						"kasko-neo",
+						"get-tarif"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "get_tarif",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/kasko-neo/get-tarif",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"kasko-neo",
+								"get-tarif"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 16 Feb 2024 05:20:15 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "nginx/1.25.3"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/8.1.26"
+						},
+						{
+							"key": "X-Ratelimit-Limit",
+							"value": "10000"
+						},
+						{
+							"key": "X-Ratelimit-Remaining",
+							"value": "9991"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"tarif\": [\n        {\n            \"id\": 1,\n            \"name\": \"Basic\",\n            \"percent\": 1\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Comfort\",\n            \"percent\": 1.5\n        },\n        {\n            \"id\": 3,\n            \"name\": \"Premium\",\n            \"percent\": 2.5\n        }\n    ],\n    \"konstruktor\": [\n        {\n            \"id\": 1,\n            \"ru\": \"Гражданская ответственность\",\n            \"uz\": \"Fuqarolik javobgarlik\",\n            \"percent\": 0.003\n        },\n        {\n            \"id\": 2,\n            \"ru\": \"Несчастные случаи с застрахованными лицами\",\n            \"uz\": \"Sug'urtalangan shaxslar bilan baxtsiz xodisa\",\n            \"percent\": 0.002\n        },\n        {\n            \"id\": 3,\n            \"ru\": \"ДТП при вождении в состоянии алкогольного опьянения\",\n            \"uz\": \"Mastlik xolatida YTH ga uchrash\",\n            \"percent\": 0.005\n        },\n        {\n            \"id\": 4,\n            \"ru\": \"Нарушение правил проезда железнодорожных переездов\",\n            \"uz\": \"Temir yo'lni kesib o'tish qoidalarini buzish\",\n            \"percent\": 0.001\n        },\n        {\n            \"id\": 5,\n            \"ru\": \"Проезда на запрещающий сигнал светофора\",\n            \"uz\": \"Svetoforning taqiqlovchi chiroqlariga o'tish\",\n            \"percent\": 0.003\n        },\n        {\n            \"id\": 6,\n            \"ru\": \"Движение против установленного направления\",\n            \"uz\": \"Yo'nalishga qarshi harakatlanish\",\n            \"percent\": 0.003\n        },\n        {\n            \"id\": 7,\n            \"ru\": \"Повреждения/разрушения переднего ветрового (лобового) стекла ТС\",\n            \"uz\": \"Oldi oynaning shikastlanishi/yo'q qilinishi\",\n            \"percent\": 0.003\n        },\n        {\n            \"id\": 8,\n            \"ru\": \"Услуги аварийных комиссаров - доставка топлива, запуск двигателя, замена колеса\",\n            \"uz\": \"Avariya komissarlari xizmati - yoqilg'i etqazish, dvigatelni ishga tushirish, g'ildirak almashtirish\",\n            \"percent\": 0.002\n        },\n        {\n            \"id\": 9,\n            \"ru\": \"Транспортные расходы по услуге такси или аренды ТС при ДТП\",\n            \"uz\": \"YTH sodir bo'lganda taksi xizmatlari yoki transport vositasini ijaraga olish uchun  xarajatlari\",\n            \"percent\": 0.002\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "car_price_cal",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{login}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"car_position_id\": 3,\r\n    \"year\": 2024\r\n    //moshina narxini yilga qarab o'zgartirish\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/kasko-neo/car_price_cal",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"kasko-neo",
+						"car_price_cal"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "car_price_cal",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"car_position_id\": 3,\r\n    \"year\": 2024\r\n    //moshina narxini yilga qarab o'zgartirish\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/kasko-neo/car_price_cal",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"kasko-neo",
+								"car_price_cal"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Host",
+							"value": "localhost:8000"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/8.3.9"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 15 Apr 2025 13:01:48 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "phpdebugbar-id",
+							"value": "01JRWRN8FKK45T88FTXH3DVY2Z"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"result\": true,\n    \"price\": 306887050\n}"
+				}
+			]
+		},
+		{
+			"name": "calculator",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{login}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"price\": 306887050\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/kasko-neo/hisoblash",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"kasko-neo",
+						"hisoblash"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "calculator",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"price\": 251000000,\r\n    \"konstruktor\": [1,2], // tanlangan konstruktorlar id si, umuman tanlanmasa bo'sh array\r\n    \"person_respon_liability\": 1000000,//konstruktor fuqorolik javobgarligi(id=1) tanlanganda jo'natilishi kerak\r\n    \"accident_liability\": 2000000 //konstruktor baxtsiz xodisa(id=2) tanlanganda jo'natilishi kerak\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/kasko-neo/hisoblash",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"kasko-neo",
+								"hisoblash"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Host",
+							"value": "127.0.0.1:8000"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 19 Feb 2024 02:49:38 GMT"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 19 Feb 2024 02:49:38 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/8.2.2"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "X-RateLimit-Limit",
+							"value": "10000"
+						},
+						{
+							"key": "X-RateLimit-Remaining",
+							"value": "9999"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"tarif_1\": 3765000,\n    \"tarif_2\": 5020000,\n    \"tarif_3\": 7530000,\n    \"konstruktor\": 3772000\n}"
+				}
+			]
+		},
+		{
+			"name": "saqlash",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{login}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"sugurtalovchi\": {\r\n        \"passportSeries\": \"Aa\",\r\n        \"passportNumber\": \"1234567\",\r\n        \"birthday\": \"16-12-2001\",\r\n        \"phone\": \"999999999\"\r\n    },\r\n    \"car\": {\r\n        \"car_nomer\": \"01A111AA\",\r\n        \"seria\": \"AAF\",\r\n        \"number\": \"1111111\",\r\n        \"price_of_car\": \"45000000\"\r\n    },\r\n    \"begin_date\": \"23-09-2025\",\r\n    \"liability\": 190000000,// Sug'urta summasi\r\n    \"premium\": 1940000,// Sug'urta mukofoti\r\n    \"tarif_id\": 1,\r\n    \"tarif_type\": 0//har doim 0 boladi\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/kasko-neo/saqlash",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"kasko-neo",
+						"saqlash"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "saqlash",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"sugurtalovchi\": {\r\n        \"passportSeries\": \"AB\",\r\n        \"passportNumber\": \"4523698\",\r\n        \"birthday\": \"16-10-2001\",//d-m-Y\r\n        \"phone\": \"995214566\"//9 xonali\r\n    },\r\n    \"car\": {\r\n        \"car_nomer\": \"01U452AB\",//avtomobil raqami\r\n        \"seria\": \"AAG\",//tex passport seria\r\n        \"number\": \"1444562\"//tex passport raqami\r\n    },\r\n    \"begin_date\": \"30-12-2024\",//1 yillik\r\n    \"liability\": 251000000,//butun son\r\n    \"premium\": 3772000,//butun son\r\n    \"tarif_id\": 1,//basic = 1, comfort = 2, premium = 3,\r\n    \"tarif_type\": 1, //tarif bo'lsa 0, konstruktor bo'lsa 1\r\n    \"konstruktor\": [1,2,6], // tanlangan konstruktorlar id si, umuman tanlanmasa bo'sh array\r\n    \"person_respon_liability\": 1000000,//konstruktor fuqorolik javobgarligi(id=1) tanlanganda jo'natilishi kerak\r\n    \"accident_liability\": 2000000 //konstruktor baxtsiz xodisa(id=2) tanlanganda jo'natilishi kerak\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/kasko-neo/saqlash",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"kasko-neo",
+								"saqlash"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Host",
+							"value": "127.0.0.1:8000"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 18 Feb 2024 17:19:34 GMT"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 18 Feb 2024 17:19:34 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/8.2.2"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "X-RateLimit-Limit",
+							"value": "10000"
+						},
+						{
+							"key": "X-RateLimit-Remaining",
+							"value": "9998"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"result\": true,\n    \"message\": null,\n    \"response\": {\n        \"url_shartnoma\": \"http://127.0.0.1:8000/api/kasko/getShartnoma?check=kasko-MjQ4\",\n        \"order_id\": 248,\n        \"contract_id\": 212527,\n        \"url\": \"https://my.click.uz/services/pay?service_id=28945&merchant_id=21288&amount=3772000&transaction_param=212527\",\n        \"payme_url\": \"https://checkout.paycom.uz/Y3Q9MjAwMDA7bT02NTBkYWE3ZTFlNmM1N2Y3NGE4MDhhZGE7YWMua2V5PTIxMjUyNzthPTM3NzIwMDAwMA==\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "get-payment-link",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{login}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"contract_id\": 718184\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/kasko-neo/get-payment-link",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"kasko-neo",
+						"get-payment-link"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "get-payment-link",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"contract_id\": 718184\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/kasko-neo/get-payment-link",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"kasko-neo",
+								"get-payment-link"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Host",
+							"value": "localhost:8000"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/8.3.9"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 15 Apr 2025 15:21:40 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"result\": true,\n    \"message\": null,\n    \"response\": {\n        \"result\": true,\n        \"url_shartnoma\": \"http://localhost:8000/api/kasko/getShartnoma?check=kasko-MTQyNA==\",\n        \"contract_id\": 718184,\n        \"amount_uzs\": \"1940000.00\",\n        \"click\": \"https://my.click.uz/services/pay?service_id=&merchant_id=&amount=1940000.00&transaction_param=718184&return_url=https://neoinsurance.uz/thank-you/718184\",\n        \"payme\": \"https://checkout.paycom.uz/Yz1odHRwczovL25lb2luc3VyYW5jZS51ei90aGFuay15b3UvNzE4MTg0O2N0PTIwMDAwO209NjUwZGFhN2UxZTZjNTdmNzRhODA4YWRhO2FjLmtleT03MTgxODQ7YT0xOTQwMDAwMDA=\",\n        \"click_base\": \"https://my.click.uz/services/pay?service_id=&merchant_id=&amount=1940000.00&transaction_param=718184&return_url=https://neoinsurance.uz/thank-you/718184\",\n        \"payme_base\": \"https://checkout.paycom.uz/Yz1odHRwczovL25lb2luc3VyYW5jZS51ei90aGFuay15b3UvNzE4MTg0O2N0PTIwMDAwO209NjUwZGFhN2UxZTZjNTdmNzRhODA4YWRhO2FjLmtleT03MTgxODQ7YT0xOTQwMDAwMDA=\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "check_tolov",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{login}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"contract_id\": 718183\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/kasko-neo/check_tolov",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"kasko-neo",
+						"check_tolov"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "not payment",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"contract_id\": 212526\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/kasko-neo/check_tolov",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"kasko-neo",
+								"check_tolov"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Host",
+							"value": "127.0.0.1:8000"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 16 Feb 2024 12:55:10 GMT"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 16 Feb 2024 12:55:10 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/8.2.2"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "X-RateLimit-Limit",
+							"value": "10000"
+						},
+						{
+							"key": "X-RateLimit-Remaining",
+							"value": "9999"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"error\": false,\n    \"check\": false,\n    \"message\": \"To'lov qilinmagan hali\"\n}"
+				},
+				{
+					"name": "paymented",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"contract_id\": 212526\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/kasko-neo/check_tolov",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"kasko-neo",
+								"check_tolov"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Host",
+							"value": "127.0.0.1:8000"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 17 Feb 2024 09:19:01 GMT"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 17 Feb 2024 09:19:01 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/8.2.2"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "X-RateLimit-Limit",
+							"value": "10000"
+						},
+						{
+							"key": "X-RateLimit-Remaining",
+							"value": "9999"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"error\": false,\n    \"check\": true,\n    \"message\": \"To'lov qilingan\",\n    \"url\": \"http://127.0.0.1:8000/api/kasko/view?check=a2Fza28tMjEyNTI2\",\n    \"polis_seria\": \"ENK\",\n    \"polis_number\": \"0000247\"\n}"
+				}
+			]
+		},
+		{
+			"name": "image-upload",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{login}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "photos[]",
+							"type": "file",
+							"src": "/C:/Users/user/Pictures/Фоновые изображения рабочего стола/1. Черный кот с рыбкой.jpg"
+						},
+						{
+							"key": "photos[]",
+							"type": "file",
+							"src": "/C:/Users/user/Pictures/Фоновые изображения рабочего стола/2. Хаски.jpg"
+						},
+						{
+							"key": "photos[]",
+							"type": "file",
+							"src": "/C:/Users/user/Pictures/Фоновые изображения рабочего стола/3. Леопард.jpg"
+						},
+						{
+							"key": "photos[]",
+							"type": "file",
+							"src": "/C:/Users/user/Pictures/Фоновые изображения рабочего стола/4. Кот с наушниками.jpg"
+						},
+						{
+							"key": "photos[]",
+							"type": "file",
+							"src": "/C:/Users/user/Pictures/Фоновые изображения рабочего стола/5. Белый тигренок.jpg"
+						},
+						{
+							"key": "contract_id",
+							"value": "718184",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/api/kasko-neo/image-upload",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"kasko-neo",
+						"image-upload"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "image-upload",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "photos[]",
+									"type": "file",
+									"src": "/C:/Users/user/Pictures/Фоновые изображения рабочего стола/1. Черный кот с рыбкой.jpg"
+								},
+								{
+									"key": "photos[]",
+									"type": "file",
+									"src": "/C:/Users/user/Pictures/Фоновые изображения рабочего стола/2. Хаски.jpg"
+								},
+								{
+									"key": "photos[]",
+									"type": "file",
+									"src": "/C:/Users/user/Pictures/Фоновые изображения рабочего стола/3. Леопард.jpg"
+								},
+								{
+									"key": "photos[]",
+									"type": "file",
+									"src": "/C:/Users/user/Pictures/Фоновые изображения рабочего стола/4. Кот с наушниками.jpg"
+								},
+								{
+									"key": "photos[]",
+									"type": "file",
+									"src": "/C:/Users/user/Pictures/Фоновые изображения рабочего стола/5. Белый тигренок.jpg"
+								},
+								{
+									"key": "contract_id",
+									"value": "718184",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/kasko-neo/image-upload",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"kasko-neo",
+								"image-upload"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Host",
+							"value": "localhost:8000"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/8.3.9"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 15 Apr 2025 15:21:01 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"result\": true,\n    \"message\": null\n}"
+				}
+			]
+		}
+	]
+}

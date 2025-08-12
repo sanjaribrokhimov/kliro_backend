@@ -1519,7 +1519,7 @@ paths:
       responses:
         '200':
           description: Успешный парсинг курсов валют
-                      content:
+          content:
             application/json:
               schema:
                 type: object
@@ -1548,7 +1548,7 @@ paths:
                               type: number
                               example: 12655
                   success:
-                        type: boolean
+                    type: boolean
                     example: true
                   error:
                     type: string
@@ -1719,7 +1719,7 @@ paths:
               schema:
                 type: object
                 properties:
-                result:
+                  result:
                     $ref: '#/components/schemas/Mortgage'
                   success:
                     type: boolean

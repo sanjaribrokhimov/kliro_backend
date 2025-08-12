@@ -24,6 +24,10 @@ type Config struct {
 	GoogleRedirect string
 	EskizEmail     string
 	EskizPassword  string
+	// NeoInsurance external API settings
+	NeoBaseURL  string
+	NeoLogin    string
+	NeoPassword string
 }
 
 func LoadConfig() *Config {
@@ -48,5 +52,16 @@ func LoadConfig() *Config {
 		GoogleRedirect: os.Getenv("GOOGLE_REDIRECT_URI"),
 		EskizEmail:     os.Getenv("ESKIZ_EMAIL"),
 		EskizPassword:  os.Getenv("ESKIZ_PASSWORD"),
+		NeoBaseURL:     getenvOrDefault("NEO_BASE_URL", "https://api.neoinsurance.uz"),
+		NeoLogin:       os.Getenv("NEO_LOGIN"),
+		NeoPassword:    os.Getenv("NEO_PASSWORD"),
 	}
+}
+
+// getenvOrDefault returns the environment variable value if set, otherwise returns def
+func getenvOrDefault(key, def string) string {
+	if v := os.Getenv(key); v != "" {
+		return v
+	}
+	return def
 }

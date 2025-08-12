@@ -1,0 +1,386 @@
+openapi: 3.0.3
+info:
+  title: KLIRO Insurance API
+  version: 1.0.0
+  description: |
+    Прокси-эндпоинты к NeoInsurance (KASKO, OSAGO). Все запросы/ответы транзитно
+    передаются к внешнему API. Структуры тел запросов и ответов зависят от NeoInsurance
+    и могут изменяться без уведомления. Ошибки описаны общим ответом `Error` из основного специфика.
+servers:
+  - url: https://api.kliro.uz
+
+tags:
+  - name: Insurance - KASKO
+    description: Эндпоинты страхования KASKO (прокси к NeoInsurance)
+  - name: Insurance - OSAGO
+    description: Эндпоинты страхования OSAGO (прокси к NeoInsurance)
+
+paths:
+  /insurance/kasko/cars:
+    get:
+      tags: [Insurance - KASKO]
+      summary: Справочник автомобилей (KASKO)
+      description: Проксирует GET /api/sayt/kasko/cars в NeoInsurance.
+      responses:
+        '200':
+          description: Успешный ответ от NeoInsurance (произвольный JSON)
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '../swagger.yaml#/components/responses/Error'
+        '500':
+          $ref: '../swagger.yaml#/components/responses/Error'
+
+  /insurance/kasko/rates:
+    get:
+      tags: [Insurance - KASKO]
+      summary: Получить тарифы KASKO
+      description: Проксирует GET /api/kasko-neo/get-tarif в NeoInsurance.
+      responses:
+        '200':
+          description: Успешный ответ от NeoInsurance (произвольный JSON)
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '../swagger.yaml#/components/responses/Error'
+        '500':
+          $ref: '../swagger.yaml#/components/responses/Error'
+
+  /insurance/kasko/car-price:
+    post:
+      tags: [Insurance - KASKO]
+      summary: Расчет стоимости автомобиля (KASKO)
+      description: Проксирует POST /api/kasko-neo/car_price_cal в NeoInsurance.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Успешный ответ от NeoInsurance (произвольный JSON)
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '../swagger.yaml#/components/responses/Error'
+        '500':
+          $ref: '../swagger.yaml#/components/responses/Error'
+
+  /insurance/kasko/calculate:
+    post:
+      tags: [Insurance - KASKO]
+      summary: Расчет полиса KASKO
+      description: Проксирует POST /api/kasko-neo/hisoblash в NeoInsurance.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Успешный ответ от NeoInsurance (произвольный JSON)
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '../swagger.yaml#/components/responses/Error'
+        '500':
+          $ref: '../swagger.yaml#/components/responses/Error'
+
+  /insurance/kasko/save:
+    post:
+      tags: [Insurance - KASKO]
+      summary: Сохранить заявку на полис KASKO
+      description: Проксирует POST /api/kasko-neo/saqlash в NeoInsurance.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Успешный ответ от NeoInsurance (произвольный JSON)
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '../swagger.yaml#/components/responses/Error'
+        '500':
+          $ref: '../swagger.yaml#/components/responses/Error'
+
+  /insurance/kasko/payment-link:
+    post:
+      tags: [Insurance - KASKO]
+      summary: Получить ссылку на оплату (KASKO)
+      description: Проксирует POST /api/kasko-neo/get-payment-link в NeoInsurance.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Успешный ответ от NeoInsurance (произвольный JSON)
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '../swagger.yaml#/components/responses/Error'
+        '500':
+          $ref: '../swagger.yaml#/components/responses/Error'
+
+  /insurance/kasko/check-payment:
+    post:
+      tags: [Insurance - KASKO]
+      summary: Проверить статус оплаты (KASKO)
+      description: Проксирует POST /api/kasko-neo/check_tolov в NeoInsurance.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Успешный ответ от NeoInsurance (произвольный JSON)
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '../swagger.yaml#/components/responses/Error'
+        '500':
+          $ref: '../swagger.yaml#/components/responses/Error'
+
+  /insurance/kasko/image-upload:
+    post:
+      tags: [Insurance - KASKO]
+      summary: Загрузка фотографий (KASKO)
+      description: Проксирует POST /api/kasko-neo/image-upload в NeoInsurance. Принимает multipart/form-data.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                photos[]:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                contract_id:
+                  type: string
+            encoding:
+              photos[]:
+                contentType: image/*
+      responses:
+        '200':
+          description: Успешный ответ от NeoInsurance (произвольный JSON)
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /insurance/osago/calculate:
+    post:
+      tags: [Insurance - OSAGO]
+      summary: Расчет ОСАГО
+      description: Проксирует POST /api/osago-neo/get-calc-osago в NeoInsurance.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Успешный ответ от NeoInsurance (произвольный JSON)
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /insurance/osago/legal:
+    post:
+      tags: [Insurance - OSAGO]
+      summary: ОСАГО для юридических лиц
+      description: Проксирует POST /api/osago-neo/osago-juridik в NeoInsurance.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Успешный ответ от NeoInsurance (произвольный JSON)
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /insurance/osago/check-person:
+    post:
+      tags: [Insurance - OSAGO]
+      summary: Проверка данных физлица
+      description: Проксирует POST /api/osago-neo/check-person в NeoInsurance.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Успешный ответ от NeoInsurance (произвольный JSON)
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /insurance/osago/save-policy:
+    post:
+      tags: [Insurance - OSAGO]
+      summary: Сохранить полис ОСАГО
+      description: Проксирует POST /api/osago-neo/save-policy/v2 в NeoInsurance.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Успешный ответ от NeoInsurance (произвольный JSON)
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /insurance/osago/confirm:
+    post:
+      tags: [Insurance - OSAGO]
+      summary: Подтвердить полис ОСАГО
+      description: Проксирует POST /api/osago-neo/confirm-policy в NeoInsurance.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Успешный ответ от NeoInsurance (произвольный JSON)
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /insurance/osago/status:
+    post:
+      tags: [Insurance - OSAGO]
+      summary: Проверить статус полиса ОСАГО
+      description: Проксирует POST /api/osago-neo/confirm-check в NeoInsurance.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Успешный ответ от NeoInsurance (произвольный JSON)
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  
+
+ 
+components:
+  responses:
+    Error:
+      description: Ошибка
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              result:
+                nullable: true
+              success:
+                type: boolean
+              error:
+                type: string
+            example:
+              result: null
+              success: false
+              error: "Ошибка"
