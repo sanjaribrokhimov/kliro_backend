@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"io"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -19,7 +18,7 @@ type OsagoController struct {
 func NewOsagoController(cfg *config.Config) *OsagoController {
 	return &OsagoController{
 		cfg: cfg,
-		cl:  &http.Client{Timeout: 30 * time.Second},
+		cl:  &http.Client{Timeout: 30 * 1000000000}, // 30 seconds in nanoseconds
 	}
 }
 
@@ -79,12 +78,4 @@ func (oc *OsagoController) ConfirmPolicy(c *gin.Context) {
 }
 func (oc *OsagoController) ConfirmCheck(c *gin.Context) {
 	oc.proxyRequest(c, http.MethodPost, "/api/osago-neo/confirm-check")
-}
-
-// Add OSAGO payment endpoints
-func (oc *OsagoController) GetPaymentLink(c *gin.Context) {
-	oc.proxyRequest(c, http.MethodPost, "/api/osago-neo/get-payment-link")
-}
-func (oc *OsagoController) CheckPayment(c *gin.Context) {
-	oc.proxyRequest(c, http.MethodPost, "/api/osago-neo/check_tolov")
 }

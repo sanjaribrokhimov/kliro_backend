@@ -58,6 +58,7 @@ func SetupRouter() *gin.Engine {
 	cfg := config.LoadConfig()
 	kaskoController := insurancectl.NewKaskoController(cfg)
 	osagoController := insurancectl.NewOsagoController(cfg)
+	travelController := insurancectl.NewTravelController(cfg)
 
 	r.POST("/auth/register", userController.Register)
 	r.POST("/auth/confirm-otp", userController.ConfirmOTP)
@@ -82,7 +83,6 @@ func SetupRouter() *gin.Engine {
 		bankGroup.GET("/parse-mortgage-goquery", mortgageController.ParseMortgage)
 		bankGroup.GET("/parse-deposit", parserController.ParseDepositPage)
 		bankGroup.GET("/parse-card", parserController.ParseCardPage)
-		bankGroup.GET("/parse-microcredit", parserController.ParseMicrocreditPage)
 		bankGroup.GET("/update-transfers", parserController.ParseTransferAndUpdateDatabase)
 
 		// Data endpoints
@@ -119,9 +119,23 @@ func SetupRouter() *gin.Engine {
 			osago.POST("/save-policy", osagoController.SavePolicy)
 			osago.POST("/confirm", osagoController.ConfirmPolicy)
 			osago.POST("/status", osagoController.ConfirmCheck)
-			// Payment endpoints for OSAGO
-			osago.POST("/payment-link", osagoController.GetPaymentLink)
-			osago.POST("/check-payment", osagoController.CheckPayment)
+		}
+
+		// Travel group (no JWT)
+		travel := insuranceGroup.Group("/travel")
+		{
+			// Simple Travel API (упрощенный продукт)
+			travel.GET("/simple/get-data", travelController.RiskGetData)
+			travel.GET("/simple/get-country", travelController.RiskGetCountry)
+			travel.POST("/simple/calculator", travelController.RiskCalculator)
+			travel.POST("/simple/save", travelController.RiskSave)
+
+			// Full Travel API (полноценный продукт)
+			travel.GET("/full/get-data", travelController.TravelGetData)
+			travel.POST("/full/calculator", travelController.TravelCalculatorTotal)
+			travel.POST("/full/save", travelController.TravelSavePolis)
+			travel.POST("/full/check", travelController.TravelCheckPolis)
+			travel.POST("/full/passport-person", travelController.TravelPassportPerson)
 		}
 	}
 
@@ -176,9 +190,6 @@ func SetupInsuranceRouterOnly() *gin.Engine {
 			osago.POST("/save-policy", osagoController.SavePolicy)
 			osago.POST("/confirm", osagoController.ConfirmPolicy)
 			osago.POST("/status", osagoController.ConfirmCheck)
-			// Payment endpoints for OSAGO
-			osago.POST("/payment-link", osagoController.GetPaymentLink)
-			osago.POST("/check-payment", osagoController.CheckPayment)
 		}
 	}
 
