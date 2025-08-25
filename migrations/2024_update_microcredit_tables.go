@@ -10,7 +10,6 @@ func UpdateMicrocreditTables(db *gorm.DB) error {
 		return err
 	}
 
-
 	// Создаем новые таблицы с правильной структурой
 	if err := db.Exec(`
 		CREATE TABLE new_microcredit (
@@ -27,13 +26,10 @@ func UpdateMicrocreditTables(db *gorm.DB) error {
 		return err
 	}
 
-	
-
 	// Создаем индексы
 	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_new_microcredit_bank_name ON new_microcredit(bank_name)`).Error; err != nil {
 		return err
 	}
-	
 
 	return nil
 }

@@ -21,8 +21,8 @@ func NewCurrencyService(db *gorm.DB) *CurrencyService {
 func (cs *CurrencyService) SaveCurrencyRates(rates []map[string]interface{}) error {
 	log.Printf("[CURRENCY SERVICE] Начинаем сохранение %d курсов валют", len(rates))
 
-	// Удаляем старые записи (старше 1 дня)
-	if err := cs.db.Where("created_at < ?", time.Now().AddDate(0, 0, -1)).Delete(&models.Currency{}).Error; err != nil {
+	// Удаляем старые записи (старше 7 дней)
+	if err := cs.db.Where("created_at < ?", time.Now().AddDate(0, 0, -7)).Delete(&models.Currency{}).Error; err != nil {
 		log.Printf("[CURRENCY SERVICE ERROR] Ошибка удаления старых записей: %v", err)
 		return err
 	}
@@ -61,7 +61,7 @@ func (cs *CurrencyService) SaveCurrencyRates(rates []map[string]interface{}) err
 		err := cs.db.Where("bank_name = ? AND currency = ?", bankName, currencyType).First(&existingCurrency).Error
 
 		if err == nil {
-			// Запись существует - обновляем значения
+			// Запись существует - обновляем значения с новым timestamp
 			updates := map[string]interface{}{
 				"buy_rate":   buyRate,
 				"sell_rate":  sellRate,
@@ -73,8 +73,8 @@ func (cs *CurrencyService) SaveCurrencyRates(rates []map[string]interface{}) err
 				continue
 			}
 
-			log.Printf("[CURRENCY SERVICE INFO] Обновлена запись: %s %s (buy: %.2f, sell: %v)",
-				bankName, currencyType, buyRate, sellRate)
+			log.Printf("[CURRENCY SERVICE INFO] Обновлена запись: %s %s (buy: %.2f, sell: %v, updated_at: %v)",
+				bankName, currencyType, buyRate, sellRate, time.Now().Format("2006-01-02 15:04:05"))
 			savedCount++
 		} else if errors.Is(err, gorm.ErrRecordNotFound) {
 			// Записи нет - добавляем новую
@@ -109,13 +109,17 @@ func (cs *CurrencyService) SaveCurrencyRates(rates []map[string]interface{}) err
 	return nil
 }
 
-// GetLatestCurrencyRates получает последние курсы валют из таблицы new_currency
+// GetLatestCurrencyRates получает последние курсы валют из основной таблицы currencies
 func (cs *CurrencyService) GetLatestCurrencyRates() (map[string][]models.Currency, error) {
 	var currencies []models.Currency
 
-	// Получаем курсы из таблицы new_currency
-	if err := cs.db.Table("new_currency").Find(&currencies).Error; err != nil {
-		return nil, err
+	// Получаем курсы из основной таблицы currencies, отсортированные по дате обновления
+	if err := cs.db.Order("updated_at DESC").Find(&currencies).Error; err != nil {
+		// Если основная таблица пустая, пробуем получить из new_currency
+		log.Printf("[CURRENCY SERVICE] Основная таблица пустая, пробуем получить из new_currency")
+		if err := cs.db.Table("new_currency").Find(&currencies).Error; err != nil {
+			return nil, err
+		}
 	}
 
 	// Группируем по валютам

@@ -17,13 +17,10 @@ func UpdateMortgageTables(db *gorm.DB) error {
 		return err
 	}
 
-	
-
 	// Если поле rate уже существует как numeric, изменяем его тип на TEXT
 	if err := db.Exec(`ALTER TABLE new_mortgage ALTER COLUMN rate TYPE TEXT`).Error; err != nil {
 		// Игнорируем ошибку, если поле не существует или уже имеет правильный тип
 	}
-	
 
 	return nil
 }

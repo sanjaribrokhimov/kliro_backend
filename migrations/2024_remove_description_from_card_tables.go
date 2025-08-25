@@ -13,4 +13,4 @@ func RemoveDescriptionFromCardTables(db *gorm.DB) error {
 	
 
 	return nil
-} 
+}

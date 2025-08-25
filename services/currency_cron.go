@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"kliro/models"
 	"log"
 	"net/http"
@@ -72,11 +73,58 @@ func parseCurrencyData(logger *log.Logger) []*models.Currency {
 			BuyRate:   buyRate,
 			SellRate:  &sellRate,
 			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
 		})
 	}
 
 	logger.Printf("Парсинг валют завершен - найдено %d курсов", len(currencies))
 	return currencies
+}
+
+// Функция для обновления курсов валют в БД
+func updateCurrencyRates(db *gorm.DB, currencies []*models.Currency, logger *log.Logger) {
+	if len(currencies) == 0 {
+		logger.Printf("Нет данных для обновления")
+		return
+	}
+
+	updatedCount := 0
+	newCount := 0
+
+	for _, currency := range currencies {
+		// Проверяем, есть ли уже запись для этого банка и валюты
+		var existingCurrency models.Currency
+		err := db.Where("bank_name = ? AND currency = ?", currency.BankName, currency.Currency).First(&existingCurrency).Error
+
+		if err == nil {
+			// Запись существует - обновляем значения с новым timestamp
+			updates := map[string]interface{}{
+				"buy_rate":   currency.BuyRate,
+				"sell_rate":  currency.SellRate,
+				"updated_at": time.Now(),
+			}
+
+			if err := db.Model(&existingCurrency).Updates(updates).Error; err != nil {
+				logger.Printf("Ошибка обновления записи для %s %s: %v", currency.BankName, currency.Currency, err)
+				continue
+			}
+
+			updatedCount++
+		} else if errors.Is(err, gorm.ErrRecordNotFound) {
+			// Записи нет - добавляем новую
+			if err := db.Create(currency).Error; err != nil {
+				logger.Printf("Ошибка создания записи для %s %s: %v", currency.BankName, currency.Currency, err)
+				continue
+			}
+			newCount++
+		} else {
+			// Произошла ошибка при поиске
+			logger.Printf("Ошибка поиска существующей записи: %v", err)
+			continue
+		}
+	}
+
+	logger.Printf("Обновление валют завершено: %d новых, %d обновлений", newCount, updatedCount)
 }
 
 // Инициализация данных (первый запуск)
@@ -85,18 +133,37 @@ func InitializeCurrencyData(db *gorm.DB) {
 	logger := log.New(logFile, "", log.LstdFlags)
 	defer logFile.Close()
 
-	logger.Printf("Инициализация данных currency - очищаем базу и парсим заново...")
+	logger.Printf("Инициализация данных currency - проверяем наличие данных...")
 
-	// Очищаем обе таблицы
-	db.Exec("TRUNCATE new_currency")
+	// Проверяем, есть ли данные в основной таблице currencies
+	var count int64
+	if err := db.Model(&models.Currency{}).Count(&count).Error; err != nil {
+		logger.Printf("Ошибка проверки таблицы currencies: %v", err)
+		return
+	}
+
+	if count > 0 {
+		logger.Printf("В таблице currencies уже есть %d записей, только обновляем курсы...", count)
+	} else {
+		logger.Printf("Таблица currencies пустая, выполняем первичную загрузку...")
+		// Очищаем таблицу new_currency только при первичной загрузке
+		db.Exec("TRUNCATE new_currency")
+	}
 
 	// Парсим валюты и сохраняем в обе таблицы
 	if currencies := parseCurrencyData(logger); currencies != nil {
+		// Обновляем основную таблицу currencies
+		updateCurrencyRates(db, currencies, logger)
+
+		// Также обновляем таблицу new_currency для совместимости
+		db.Exec("TRUNCATE new_currency")
 		for _, currency := range currencies {
 			db.Table("new_currency").Create(currency)
 		}
+
+		logger.Printf("Инициализация завершена - обновлены таблицы currencies и new_currency")
 	} else {
-		logger.Printf("Ошибка при инициализации данных currency")
+		logger.Printf("Ошибка при парсинге валют")
 	}
 }
 
@@ -112,14 +179,17 @@ func StartCurrencyCron(db *gorm.DB) {
 
 		logger.Printf("Начало парсинга currency (каждые 3 часа)...")
 
-		// Копируем new_currency
-		db.Exec("TRUNCATE new_currency")
-
 		// Парсим валюты заново
 		if currencies := parseCurrencyData(logger); currencies != nil {
+			// Обновляем основную таблицу currencies с правильными timestamp
+			updateCurrencyRates(db, currencies, logger)
+
+			// Также обновляем таблицу new_currency для совместимости
+			db.Exec("TRUNCATE new_currency")
 			for _, currency := range currencies {
 				db.Table("new_currency").Create(currency)
 			}
+
 			logger.Printf("Парсинг currency завершен - обновлено %d записей", len(currencies))
 		} else {
 			logger.Printf("Ошибка при парсинге currency")

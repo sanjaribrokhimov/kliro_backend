@@ -21,7 +21,5 @@ func CreateCurrencyTables(db *gorm.DB) error {
 		return err
 	}
 
-
-
 	return nil
-} 
+}

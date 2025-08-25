@@ -21,7 +21,5 @@ func CreateAutocreditTables(db *gorm.DB) error {
 		return err
 	}
 
-	
-
 	return nil
 }
