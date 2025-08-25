@@ -139,35 +139,22 @@ func InitializeCurrencyData(db *gorm.DB) {
 	logger := log.New(logFile, "", log.LstdFlags)
 	defer logFile.Close()
 
-	logger.Printf("Инициализация данных currency - проверяем наличие данных...")
-
-	// Проверяем, есть ли данные в основной таблице currencies
-	var count int64
-	if err := db.Model(&models.Currency{}).Count(&count).Error; err != nil {
-		logger.Printf("Ошибка проверки таблицы currencies: %v", err)
-		return
-	}
-
-	if count > 0 {
-		logger.Printf("В таблице currencies уже есть %d записей, только обновляем курсы...", count)
-	} else {
-		logger.Printf("Таблица currencies пустая, выполняем первичную загрузку...")
-		// Очищаем таблицу new_currency только при первичной загрузке
-		db.Exec("TRUNCATE new_currency")
-	}
+	logger.Printf("Инициализация данных currency - первичная загрузка new_currency...")
+	// Очищаем таблицу new_currency перед загрузкой
+	db.Exec("TRUNCATE new_currency")
 
 	// Парсим валюты и сохраняем в обе таблицы
 	if currencies := parseCurrencyData(logger); currencies != nil {
-		// Обновляем основную таблицу currencies
-		updateCurrencyRates(db, currencies, logger)
-
-		// Также обновляем таблицу new_currency для совместимости
+		// Полностью перезаписываем new_currency актуальными значениями
 		db.Exec("TRUNCATE new_currency")
 		for _, currency := range currencies {
+			// Проставляем время Узбекистана на каждый insert
+			now := utils.UzbekTime()
+			currency.CreatedAt = now
+			currency.UpdatedAt = now
 			db.Table("new_currency").Create(currency)
 		}
-
-		logger.Printf("Инициализация завершена - обновлены таблицы currencies и new_currency")
+		logger.Printf("Инициализация завершена - заполнена таблица new_currency (Asia/Tashkent)")
 	} else {
 		logger.Printf("Ошибка при парсинге валют")
 	}
@@ -187,16 +174,15 @@ func StartCurrencyCron(db *gorm.DB) {
 
 		// Парсим валюты заново
 		if currencies := parseCurrencyData(logger); currencies != nil {
-			// Обновляем основную таблицу currencies с правильными timestamp
-			updateCurrencyRates(db, currencies, logger)
-
-			// Также обновляем таблицу new_currency для совместимости
+			// Полностью перезаписываем new_currency с временем Asia/Tashkent
 			db.Exec("TRUNCATE new_currency")
 			for _, currency := range currencies {
+				now := utils.UzbekTime()
+				currency.CreatedAt = now
+				currency.UpdatedAt = now
 				db.Table("new_currency").Create(currency)
 			}
-
-			logger.Printf("Парсинг currency завершен - обновлено %d записей", len(currencies))
+			logger.Printf("Парсинг currency завершен - обновлено %d записей в new_currency (Asia/Tashkent)", len(currencies))
 		} else {
 			logger.Printf("Ошибка при парсинге currency")
 		}
