@@ -3,10 +3,10 @@ package services
 import (
 	"errors"
 	"kliro/models"
+	"kliro/utils"
 	"log"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/robfig/cron/v3"
@@ -46,6 +46,8 @@ func parseCurrencyData(logger *log.Logger) []*models.Currency {
 
 	// Конвертируем в модель Currency
 	var currencies []*models.Currency
+	currentTime := utils.UzbekTime() // Получаем время Узбекистана один раз
+
 	for _, rate := range rates {
 		currency, ok := rate["currency"].(string)
 		if !ok {
@@ -72,12 +74,12 @@ func parseCurrencyData(logger *log.Logger) []*models.Currency {
 			Currency:  currency,
 			BuyRate:   buyRate,
 			SellRate:  &sellRate,
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
+			CreatedAt: currentTime,
+			UpdatedAt: currentTime,
 		})
 	}
 
-	logger.Printf("Парсинг валют завершен - найдено %d курсов", len(currencies))
+	logger.Printf("Парсинг валют завершен - найдено %d курсов (время Узбекистана: %s)", len(currencies), currentTime.Format("2006-01-02 15:04:05"))
 	return currencies
 }
 
@@ -90,6 +92,7 @@ func updateCurrencyRates(db *gorm.DB, currencies []*models.Currency, logger *log
 
 	updatedCount := 0
 	newCount := 0
+	currentTime := utils.UzbekTime() // Получаем время Узбекистана один раз
 
 	for _, currency := range currencies {
 		// Проверяем, есть ли уже запись для этого банка и валюты
@@ -97,11 +100,11 @@ func updateCurrencyRates(db *gorm.DB, currencies []*models.Currency, logger *log
 		err := db.Where("bank_name = ? AND currency = ?", currency.BankName, currency.Currency).First(&existingCurrency).Error
 
 		if err == nil {
-			// Запись существует - обновляем значения с новым timestamp
+			// Запись существует - обновляем значения с новым timestamp (время Узбекистана)
 			updates := map[string]interface{}{
 				"buy_rate":   currency.BuyRate,
 				"sell_rate":  currency.SellRate,
-				"updated_at": time.Now(),
+				"updated_at": currentTime,
 			}
 
 			if err := db.Model(&existingCurrency).Updates(updates).Error; err != nil {
@@ -111,7 +114,10 @@ func updateCurrencyRates(db *gorm.DB, currencies []*models.Currency, logger *log
 
 			updatedCount++
 		} else if errors.Is(err, gorm.ErrRecordNotFound) {
-			// Записи нет - добавляем новую
+			// Записи нет - добавляем новую с временем Узбекистана
+			currency.CreatedAt = currentTime
+			currency.UpdatedAt = currentTime
+
 			if err := db.Create(currency).Error; err != nil {
 				logger.Printf("Ошибка создания записи для %s %s: %v", currency.BankName, currency.Currency, err)
 				continue
@@ -124,7 +130,7 @@ func updateCurrencyRates(db *gorm.DB, currencies []*models.Currency, logger *log
 		}
 	}
 
-	logger.Printf("Обновление валют завершено: %d новых, %d обновлений", newCount, updatedCount)
+	logger.Printf("Обновление валют завершено: %d новых, %d обновлений (время Узбекистана: %s)", newCount, updatedCount, currentTime.Format("2006-01-02 15:04:05"))
 }
 
 // Инициализация данных (первый запуск)

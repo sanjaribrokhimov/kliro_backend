@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"kliro/models"
+	"kliro/utils"
 	"log"
 	"time"
 
@@ -22,13 +23,14 @@ func (cs *CurrencyService) SaveCurrencyRates(rates []map[string]interface{}) err
 	log.Printf("[CURRENCY SERVICE] Начинаем сохранение %d курсов валют", len(rates))
 
 	// Удаляем старые записи (старше 7 дней)
-	if err := cs.db.Where("created_at < ?", time.Now().AddDate(0, 0, -7)).Delete(&models.Currency{}).Error; err != nil {
+	if err := cs.db.Where("created_at < ?", utils.UzbekTime().AddDate(0, 0, -7)).Delete(&models.Currency{}).Error; err != nil {
 		log.Printf("[CURRENCY SERVICE ERROR] Ошибка удаления старых записей: %v", err)
 		return err
 	}
 
 	var currencies []models.Currency
 	savedCount := 0
+	currentTime := utils.UzbekTime() // Получаем время Узбекистана один раз
 
 	for _, rate := range rates {
 		bankName, ok := rate["bank"].(string)
@@ -61,11 +63,11 @@ func (cs *CurrencyService) SaveCurrencyRates(rates []map[string]interface{}) err
 		err := cs.db.Where("bank_name = ? AND currency = ?", bankName, currencyType).First(&existingCurrency).Error
 
 		if err == nil {
-			// Запись существует - обновляем значения с новым timestamp
+			// Запись существует - обновляем значения с новым timestamp (время Узбекистана)
 			updates := map[string]interface{}{
 				"buy_rate":   buyRate,
 				"sell_rate":  sellRate,
-				"updated_at": time.Now(),
+				"updated_at": currentTime,
 			}
 
 			if err := cs.db.Model(&existingCurrency).Updates(updates).Error; err != nil {
@@ -74,17 +76,17 @@ func (cs *CurrencyService) SaveCurrencyRates(rates []map[string]interface{}) err
 			}
 
 			log.Printf("[CURRENCY SERVICE INFO] Обновлена запись: %s %s (buy: %.2f, sell: %v, updated_at: %v)",
-				bankName, currencyType, buyRate, sellRate, time.Now().Format("2006-01-02 15:04:05"))
+				bankName, currencyType, buyRate, sellRate, currentTime.Format("2006-01-02 15:04:05"))
 			savedCount++
 		} else if errors.Is(err, gorm.ErrRecordNotFound) {
-			// Записи нет - добавляем новую
+			// Записи нет - добавляем новую с временем Узбекистана
 			currency := models.Currency{
 				BankName:  bankName,
 				Currency:  currencyType,
 				BuyRate:   buyRate,
 				SellRate:  sellRate,
-				CreatedAt: time.Now(),
-				UpdatedAt: time.Now(),
+				CreatedAt: currentTime,
+				UpdatedAt: currentTime,
 			}
 
 			currencies = append(currencies, currency)
@@ -101,9 +103,9 @@ func (cs *CurrencyService) SaveCurrencyRates(rates []map[string]interface{}) err
 			log.Printf("[CURRENCY SERVICE ERROR] Ошибка сохранения курсов: %v", err)
 			return err
 		}
-		log.Printf("[CURRENCY SERVICE] Успешно обработано %d записей валют (%d новых, %d обновлений)", savedCount, len(currencies), savedCount-len(currencies))
+		log.Printf("[CURRENCY SERVICE] Успешно обработано %d записей валют (%d новых, %d обновлений) - время Узбекистана: %s", savedCount, len(currencies), savedCount-len(currencies), currentTime.Format("2006-01-02 15:04:05"))
 	} else {
-		log.Printf("[CURRENCY SERVICE] Успешно обработано %d записей валют (все обновления)", savedCount)
+		log.Printf("[CURRENCY SERVICE] Успешно обработано %d записей валют (все обновления) - время Узбекистана: %s", savedCount, currentTime.Format("2006-01-02 15:04:05"))
 	}
 
 	return nil
