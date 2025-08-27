@@ -11,4 +11,6 @@ type Transfer struct {
 	LimitRU    *string   `gorm:"column:limit_ru" json:"limit_ru"`
 	LimitUZ    *string   `gorm:"column:limit_uz" json:"limit_uz"`
 	CreatedAt  time.Time `json:"created_at"`
+
+	
 }
