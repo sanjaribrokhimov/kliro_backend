@@ -36,8 +36,6 @@ func (cc *CardController) GetNewCards(c *gin.Context) {
 	cc.getCardsWithPagination(c, "new_card")
 }
 
-
-
 // getCardsWithPagination общая функция для получения карт с пагинацией и фильтрацией
 func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName string) {
 	db := utils.GetDB()
@@ -51,6 +49,23 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 	// Параметры фильтрации
 	currency := c.Query("currency")
 	system := c.Query("system")
+	bank := c.Query("bank")
+
+	// Подготовка синонимов валюты к данным в БД
+	currencySynonyms := []string{}
+	if currency != "" {
+		lc := strings.ToLower(strings.TrimSpace(currency))
+		switch lc {
+		case "usd", "dollar", "dollar_usd":
+			currencySynonyms = []string{"AQSH dollari", "USD", "Dollar"}
+		case "eur", "euro":
+			currencySynonyms = []string{"Yevro", "EUR", "Euro"}
+		case "sum", "uzs", "so'm", "som", "soum":
+			currencySynonyms = []string{"So'm", "UZS", "Sum"}
+		default:
+			currencySynonyms = []string{currency}
+		}
+	}
 
 	// Валидация параметров
 	if page < 0 {
@@ -65,11 +80,22 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 	query := db.Table(tableName)
 
 	// Применение фильтров
-	if currency != "" {
-		query = query.Where("currency ILIKE ?", "%"+currency+"%")
+	if len(currencySynonyms) > 0 {
+		// Строим OR по синонимам
+		for i, syn := range currencySynonyms {
+			pattern := "%" + syn + "%"
+			if i == 0 {
+				query = query.Where("currency ILIKE ?", pattern)
+			} else {
+				query = query.Or("currency ILIKE ?", pattern)
+			}
+		}
 	}
 	if system != "" {
 		query = query.Where("system ILIKE ?", "%"+system+"%")
+	}
+	if bank != "" {
+		query = query.Where("bank_name ILIKE ?", "%"+bank+"%")
 	}
 
 	query.Count(&totalElements)
@@ -82,11 +108,21 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 		var lastPageCount int64
 		lastPageQuery := db.Table(tableName)
 		// Применяем те же фильтры для проверки последней страницы
-		if currency != "" {
-			lastPageQuery = lastPageQuery.Where("currency ILIKE ?", "%"+currency+"%")
+		if len(currencySynonyms) > 0 {
+			for i, syn := range currencySynonyms {
+				pattern := "%" + syn + "%"
+				if i == 0 {
+					lastPageQuery = lastPageQuery.Where("currency ILIKE ?", pattern)
+				} else {
+					lastPageQuery = lastPageQuery.Or("currency ILIKE ?", pattern)
+				}
+			}
 		}
 		if system != "" {
 			lastPageQuery = lastPageQuery.Where("system ILIKE ?", "%"+system+"%")
+		}
+		if bank != "" {
+			lastPageQuery = lastPageQuery.Where("bank_name ILIKE ?", "%"+bank+"%")
 		}
 		lastPageQuery.Offset(lastPageOffset).Limit(size).Count(&lastPageCount)
 		if lastPageCount == 0 {
@@ -147,11 +183,21 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 	query = db.Table(tableName)
 
 	// Применение фильтров
-	if currency != "" {
-		query = query.Where("currency ILIKE ?", "%"+currency+"%")
+	if len(currencySynonyms) > 0 {
+		for i, syn := range currencySynonyms {
+			pattern := "%" + syn + "%"
+			if i == 0 {
+				query = query.Where("currency ILIKE ?", pattern)
+			} else {
+				query = query.Or("currency ILIKE ?", pattern)
+			}
+		}
 	}
 	if system != "" {
 		query = query.Where("system ILIKE ?", "%"+system+"%")
+	}
+	if bank != "" {
+		query = query.Where("bank_name ILIKE ?", "%"+bank+"%")
 	}
 
 	// Применение сортировки
