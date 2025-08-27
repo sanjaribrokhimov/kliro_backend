@@ -52,6 +52,42 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 	bank := c.Query("bank")
 	opening := strings.ToLower(strings.TrimSpace(c.DefaultQuery("opening", "all"))) // bank|online|all
 
+	// Нормализация bank camelCase -> точное название (если передан ключ)
+	bankCamelMap := map[string]string{
+		"agroBank":              "Agro Bank",
+		"aloqaBank":             "Aloqa Bank",
+		"anorBank":              "Anor Bank",
+		"asakaBank":             "Asaka Bank",
+		"asiaAllianceBank":      "Asia Alliance Bank",
+		"brb":                   "BRB",
+		"davrBank":              "Davr Bank",
+		"garantBank":            "Garant Bank",
+		"hamkorBank":            "Hamkor Bank",
+		"hayotBank":             "Hayot Bank",
+		"infinBank":             "Infin Bank",
+		"ipakYoliBank":         "Ipak Yo'li Banki",
+		"ipotekaBank":           "Ipoteka Bank",
+		"kapitalBank":           "Kapital Bank",
+		"mkBank":                "MK Bank",
+		"octoBank":              "Octo Bank",
+		"orientFinansBank":      "Orient Finans Bank",
+		"ozbekistonMilliyBank": "O‘zbekiston Milliy Banki",
+		"ozsanoatqurilishBank":  "O‘zsanoatqurilish Bank",
+		"poytaxtBank":           "Poytaxt Bank",
+		"smartBank":             "Smart Bank",
+		"tengeBank":             "Tenge Bank",
+		"trastBank":             "Trast Bank",
+		"turonBank":             "Turon Bank",
+		"universalBank":         "Universal Bank",
+		"xalqBank":             "Xalq Banki",
+	}
+	bankFilter := strings.TrimSpace(bank)
+	if bankFilter != "" {
+		if v, ok := bankCamelMap[bankFilter]; ok {
+			bankFilter = v
+		}
+	}
+
 	// Подготовка синонимов валюты к данным в БД
 	currencySynonyms := []string{}
 	if currency != "" {
@@ -94,8 +130,8 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 	if system != "" {
 		query = query.Where("system ILIKE ?", "%"+system+"%")
 	}
-	if bank != "" {
-		query = query.Where("bank_name ILIKE ?", "%"+bank+"%")
+	if bankFilter != "" {
+		query = query.Where("bank_name ILIKE ?", "%"+bankFilter+"%")
 	}
 	if opening == "bank" {
 		query = query.Where("opening_type ILIKE '%Bank%'").Where("opening_type NOT ILIKE '%Onlayn%'")
@@ -128,8 +164,8 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 		if system != "" {
 			lastPageQuery = lastPageQuery.Where("system ILIKE ?", "%"+system+"%")
 		}
-		if bank != "" {
-			lastPageQuery = lastPageQuery.Where("bank_name ILIKE ?", "%"+bank+"%")
+		if bankFilter != "" {
+			lastPageQuery = lastPageQuery.Where("bank_name ILIKE ?", "%"+bankFilter+"%")
 		}
 		if opening == "bank" {
 			lastPageQuery = lastPageQuery.Where("opening_type ILIKE '%Bank%'").Where("opening_type NOT ILIKE '%Onlayn%'")
@@ -210,8 +246,8 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 	if system != "" {
 		query = query.Where("system ILIKE ?", "%"+system+"%")
 	}
-	if bank != "" {
-		query = query.Where("bank_name ILIKE ?", "%"+bank+"%")
+	if bankFilter != "" {
+		query = query.Where("bank_name ILIKE ?", "%"+bankFilter+"%")
 	}
 	if opening == "bank" {
 		query = query.Where("opening_type ILIKE '%Bank%'").Where("opening_type NOT ILIKE '%Onlayn%'")
@@ -273,4 +309,60 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 	}
 
 	c.JSON(http.StatusOK, gin.H{"result": response, "success": true})
+}
+
+// GetNewCreditCards возвращает кредитные карты с пагинацией
+func (cc *CardController) GetNewCreditCards(c *gin.Context) {
+	cc.getCreditCardsWithPagination(c, "new_credit_card")
+}
+
+func (cc *CardController) getCreditCardsWithPagination(c *gin.Context, tableName string) {
+	db := utils.GetDB()
+
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "0"))
+	size, _ := strconv.Atoi(c.DefaultQuery("size", "10"))
+	if page < 0 {
+		page = 0
+	}
+	if size < 1 || size > 100 {
+		size = 10
+	}
+	offset := page * size
+
+	var total int64
+	db.Table(tableName).Count(&total)
+
+	var items []models.CreditCard
+	if err := db.Table(tableName).Order("created_at DESC").Offset(offset).Limit(size).Find(&items).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при получении данных"})
+		return
+	}
+
+	totalPages := int((total + int64(size) - 1) / int64(size))
+	response := CardResponseByPagination{
+		TotalPages:       totalPages,
+		TotalElements:    total,
+		First:            page == 0,
+		Last:             page >= totalPages-1,
+		Size:             size,
+		Number:           page,
+		Sort:             []Sort{},
+		NumberOfElements: len(items),
+		Pageable:         Pageable{Offset: offset, Sort: []Sort{}, Paged: true, PageNumber: page, PageSize: size, Unpaged: false},
+		Empty:            len(items) == 0,
+	}
+	// Переиспользуем поле Content c приведением типов через интерфейсный ответ
+	c.JSON(http.StatusOK, gin.H{"result": gin.H{
+		"totalPages":       response.TotalPages,
+		"totalElements":    response.TotalElements,
+		"first":            response.First,
+		"last":             response.Last,
+		"size":             response.Size,
+		"content":          items,
+		"number":           response.Number,
+		"sort":             response.Sort,
+		"numberOfElements": response.NumberOfElements,
+		"pageable":         response.Pageable,
+		"empty":            response.Empty,
+	}, "success": true})
 }

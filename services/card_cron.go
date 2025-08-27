@@ -33,6 +33,14 @@ var cardURLs = []string{
 	"https://bank.uz/uz/cards?PAGEN_4=20",
 }
 
+// Кредитные карты: страницы
+var creditCardURLs = []string{
+	"https://bank.uz/uz/cards/kreditnye-karty",
+	"https://bank.uz/uz/cards/kreditnye-karty?PAGEN_4=2",
+	"https://bank.uz/uz/cards/kreditnye-karty?PAGEN_4=3",
+	"https://bank.uz/uz/cards/kreditnye-karty?PAGEN_4=4",
+}
+
 // Функция для парсинга одного URL
 func parseCardURL(url string, logger *log.Logger) []*models.Card {
 	// Парсим напрямую, без обращения к API
@@ -46,6 +54,20 @@ func parseCardURL(url string, logger *log.Logger) []*models.Card {
 	// Устанавливаем время создания для всех карт
 	for _, card := range cards {
 		card.CreatedAt = time.Now()
+	}
+	return cards
+}
+
+// Функция для парсинга одного URL (кредитные)
+func parseCreditCardURL(url string, logger *log.Logger) []*models.CreditCard {
+	parser := NewCardParser()
+	cards, err := parser.ParseCreditCardsURL(url)
+	if err != nil {
+		logger.Printf("Ошибка парсинга (credit) %s: %v", url, err)
+		return nil
+	}
+	for _, cc := range cards {
+		cc.CreatedAt = time.Now()
 	}
 	return cards
 }
@@ -71,6 +93,24 @@ func InitializeCardData(db *gorm.DB) {
 	}
 
 	logger.Printf("Инициализация завершена - заполнена таблица new_card")
+}
+
+// Инициализация данных кредитных карт
+func InitializeCreditCardData(db *gorm.DB) {
+	logFile, _ := os.OpenFile("logs/parser_errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	logger := log.New(logFile, "", log.LstdFlags)
+	defer logFile.Close()
+
+	logger.Printf("Инициализация данных credit_card - очищаем базу и парсим заново...")
+	db.Exec("TRUNCATE new_credit_card")
+	for _, url := range creditCardURLs {
+		if cards := parseCreditCardURL(url, logger); cards != nil {
+			for _, cc := range cards {
+				db.Table("new_credit_card").Create(cc)
+			}
+		}
+	}
+	logger.Printf("Инициализация завершена - заполнена таблица new_credit_card")
 }
 
 func StartCardCron(db *gorm.DB) {
@@ -101,4 +141,29 @@ func StartCardCron(db *gorm.DB) {
 	})
 	c.Start()
 	log.Printf("[CARD CRON] Планировщик запущен. Парсинг карт будет выполняться каждый день в 03:00 UTC")
+}
+
+// Крон кредитных карт
+func StartCreditCardCron(db *gorm.DB) {
+	InitializeCreditCardData(db)
+
+	c := cron.New()
+	c.AddFunc("0 10 3 * * *", func() { // Каждый день в 03:10 UTC
+		logFile, _ := os.OpenFile("logs/parser_errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		logger := log.New(logFile, "", log.LstdFlags)
+		defer logFile.Close()
+
+		logger.Printf("Начало ежедневного парсинга credit_card...")
+		db.Exec("TRUNCATE new_credit_card")
+		for _, url := range creditCardURLs {
+			if cards := parseCreditCardURL(url, logger); cards != nil {
+				for _, cc := range cards {
+					db.Table("new_credit_card").Create(cc)
+				}
+			}
+		}
+		logger.Printf("Ежедневный парсинг credit_card завершен")
+	})
+	c.Start()
+	log.Printf("[CREDIT CARD CRON] Планировщик запущен. Парсинг кредитных карт будет выполняться каждый день в 03:10 UTC")
 }

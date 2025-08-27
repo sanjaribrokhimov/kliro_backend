@@ -156,6 +156,21 @@ func Migrate(db *gorm.DB) error {
 		return err
 	}
 
+	// Создаем таблицу для кредитных карт
+	if err := db.Exec(`
+		CREATE TABLE IF NOT EXISTS new_credit_card (
+			id SERIAL PRIMARY KEY,
+			bank_name VARCHAR(255),
+			title TEXT,
+			rate TEXT,
+			term TEXT,
+			amount TEXT,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		)
+	`).Error; err != nil {
+		return err
+	}
+
 	// Создаем индексы для карт
 	if err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_new_card_bank_name ON new_card(bank_name)`).Error; err != nil {
 		return err

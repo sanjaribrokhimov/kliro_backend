@@ -84,6 +84,10 @@ func main() {
 	services.StartCurrencyCron(db)
 	log.Println("Currency cron started")
 
+	// Запуск credit card cron (инициализация и ежедневный парсинг кредитных карт)
+	services.StartCreditCardCron(db)
+	log.Println("Credit Card cron started")
+
 	// Подключение к Redis
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:6379", os.Getenv("DB_HOST")),

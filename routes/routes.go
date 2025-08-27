@@ -92,6 +92,7 @@ func SetupRouter() *gin.Engine {
 		bankGroup.GET("/mortgages/new", mortgageController.GetNewMortgages)
 		bankGroup.GET("/deposits/new", depositController.GetNewDeposits)
 		bankGroup.GET("/cards/new", cardController.GetNewCards)
+		bankGroup.GET("/credit-cards/new", cardController.GetNewCreditCards)
 		bankGroup.GET("/currencies/new", currencyController.GetLatestCurrencyRates)
 		bankGroup.GET("/currencies/by-date", currencyController.GetCurrencyRatesByDate)
 	}
