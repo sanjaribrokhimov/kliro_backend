@@ -50,6 +50,7 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 	currency := c.Query("currency")
 	system := c.Query("system")
 	bank := c.Query("bank")
+	opening := strings.ToLower(strings.TrimSpace(c.DefaultQuery("opening", "all"))) // bank|online|all
 
 	// Подготовка синонимов валюты к данным в БД
 	currencySynonyms := []string{}
@@ -81,7 +82,6 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 
 	// Применение фильтров
 	if len(currencySynonyms) > 0 {
-		// Строим OR по синонимам
 		for i, syn := range currencySynonyms {
 			pattern := "%" + syn + "%"
 			if i == 0 {
@@ -96,6 +96,13 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 	}
 	if bank != "" {
 		query = query.Where("bank_name ILIKE ?", "%"+bank+"%")
+	}
+	if opening == "bank" {
+		query = query.Where("opening_type ILIKE '%Bank%'").Where("opening_type NOT ILIKE '%Onlayn%'")
+	} else if opening == "online" || opening == "onlayn" {
+		query = query.Where("opening_type ILIKE '%Onlayn%'").Where("opening_type NOT ILIKE '%Bank%'")
+	} else if opening == "all" {
+		query = query.Where("opening_type ILIKE '%Bank%'").Where("opening_type ILIKE '%Onlayn%'")
 	}
 
 	query.Count(&totalElements)
@@ -123,6 +130,13 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 		}
 		if bank != "" {
 			lastPageQuery = lastPageQuery.Where("bank_name ILIKE ?", "%"+bank+"%")
+		}
+		if opening == "bank" {
+			lastPageQuery = lastPageQuery.Where("opening_type ILIKE '%Bank%'").Where("opening_type NOT ILIKE '%Onlayn%'")
+		} else if opening == "online" || opening == "onlayn" {
+			lastPageQuery = lastPageQuery.Where("opening_type ILIKE '%Onlayn%'").Where("opening_type NOT ILIKE '%Bank%'")
+		} else if opening == "all" {
+			lastPageQuery = lastPageQuery.Where("opening_type ILIKE '%Bank%'").Where("opening_type ILIKE '%Onlayn%'")
 		}
 		lastPageQuery.Offset(lastPageOffset).Limit(size).Count(&lastPageCount)
 		if lastPageCount == 0 {
@@ -198,6 +212,13 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 	}
 	if bank != "" {
 		query = query.Where("bank_name ILIKE ?", "%"+bank+"%")
+	}
+	if opening == "bank" {
+		query = query.Where("opening_type ILIKE '%Bank%'").Where("opening_type NOT ILIKE '%Onlayn%'")
+	} else if opening == "online" || opening == "onlayn" {
+		query = query.Where("opening_type ILIKE '%Onlayn%'").Where("opening_type NOT ILIKE '%Bank%'")
+	} else if opening == "all" {
+		query = query.Where("opening_type ILIKE '%Bank%'").Where("opening_type ILIKE '%Onlayn%'")
 	}
 
 	// Применение сортировки
