@@ -2,9 +2,11 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"kliro/models"
 	"kliro/utils"
 	"log"
+	"sort"
 	"time"
 
 	"gorm.io/gorm"
@@ -175,4 +177,88 @@ func (cs *CurrencyService) InitializeCurrencyData() error {
 
 	log.Printf("[CURRENCY SERVICE] Инициализация валют завершена успешно")
 	return nil
+}
+
+// GetSplitSortedCurrencyRates возвращает по каждой валюте два списка: покупка и продажа, отсортированные
+func (cs *CurrencyService) GetSplitSortedCurrencyRates() (map[string]map[string][]map[string]string, error) {
+	var rows []models.Currency
+	if err := cs.db.Table("new_currency").Find(&rows).Error; err != nil {
+		return nil, err
+	}
+
+	// Группируем по валюте
+	grouped := make(map[string][]models.Currency)
+	for _, r := range rows {
+		grouped[r.Currency] = append(grouped[r.Currency], r)
+	}
+
+	result := make(map[string]map[string][]map[string]string)
+	for currency, list := range grouped {
+		// Копии слайсов для сортировок
+		buyList := make([]models.Currency, len(list))
+		copy(buyList, list)
+		sellList := make([]models.Currency, len(list))
+		copy(sellList, list)
+
+		// Сортируем: покупка DESC, при равенстве — по банку ASC
+		sort.Slice(buyList, func(i, j int) bool {
+			if buyList[i].BuyRate == buyList[j].BuyRate {
+				return buyList[i].BankName < buyList[j].BankName
+			}
+			return buyList[i].BuyRate > buyList[j].BuyRate
+		})
+
+		// Сортируем: продажа ASC (nil -> в конец), при равенстве — по банку ASC
+		sort.Slice(sellList, func(i, j int) bool {
+			var si, sj float64
+			if sellList[i].SellRate != nil {
+				si = *sellList[i].SellRate
+			} else {
+				si = 1e15 // очень большое значение, чтобы nil шел в конец
+			}
+			if sellList[j].SellRate != nil {
+				sj = *sellList[j].SellRate
+			} else {
+				sj = 1e15
+			}
+			if si == sj {
+				return sellList[i].BankName < sellList[j].BankName
+			}
+			return si < sj
+		})
+
+		// Формат времени Ташкента
+		uzLoc, _ := time.LoadLocation("Asia/Tashkent")
+
+		// Форматируем строки (и добавляем id, updated_at)
+		buyFormatted := make([]map[string]string, 0, len(buyList))
+		for _, it := range buyList {
+			buyFormatted = append(buyFormatted, map[string]string{
+				"id":         fmt.Sprintf("%d", it.ID),
+				"bank":       it.BankName,
+				"rate":       utils.FormatUZS(it.BuyRate),
+				"updated_at": it.UpdatedAt.In(uzLoc).Format("2006-01-02 15:04:05"),
+			})
+		}
+		sellFormatted := make([]map[string]string, 0, len(sellList))
+		for _, it := range sellList {
+			var sr float64
+			if it.SellRate != nil {
+				sr = *it.SellRate
+			}
+			sellFormatted = append(sellFormatted, map[string]string{
+				"id":         fmt.Sprintf("%d", it.ID),
+				"bank":       it.BankName,
+				"rate":       utils.FormatUZS(sr),
+				"updated_at": it.UpdatedAt.In(uzLoc).Format("2006-01-02 15:04:05"),
+			})
+		}
+
+		result[currency] = map[string][]map[string]string{
+			"buy_sorted":  buyFormatted,
+			"sell_sorted": sellFormatted,
+		}
+	}
+
+	return result, nil
 }

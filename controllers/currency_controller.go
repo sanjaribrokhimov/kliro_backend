@@ -19,9 +19,9 @@ func NewCurrencyController(currencyService *services.CurrencyService) *CurrencyC
 	}
 }
 
-// GetLatestCurrencyRates получает последние курсы валют
+// GetLatestCurrencyRates получает последние курсы валют (split: buy/sell, отсортированные)
 func (cc *CurrencyController) GetLatestCurrencyRates(c *gin.Context) {
-	rates, err := cc.currencyService.GetLatestCurrencyRates()
+	data, err := cc.currencyService.GetSplitSortedCurrencyRates()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"result":  nil,
@@ -32,12 +32,10 @@ func (cc *CurrencyController) GetLatestCurrencyRates(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"result":  rates,
+		"result":  data,
 		"success": true,
 	})
 }
-
-
 
 // GetCurrencyRatesByDate получает курсы валют за определенную дату
 func (cc *CurrencyController) GetCurrencyRatesByDate(c *gin.Context) {
