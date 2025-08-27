@@ -6,6 +6,7 @@ import (
 	"kliro/models"
 	"kliro/utils"
 	"log"
+	"math"
 	"sort"
 	"time"
 
@@ -200,28 +201,44 @@ func (cs *CurrencyService) GetSplitSortedCurrencyRates() (map[string]map[string]
 		sellList := make([]models.Currency, len(list))
 		copy(sellList, list)
 
-		// Сортируем: покупка DESC, при равенстве — по банку ASC
-		sort.Slice(buyList, func(i, j int) bool {
-			if buyList[i].BuyRate == buyList[j].BuyRate {
+		// Сортируем: покупка DESC, при равенстве — по банку ASC (значения <=0 уводим в конец)
+		sort.SliceStable(buyList, func(i, j int) bool {
+			bi := buyList[i].BuyRate
+			bj := buyList[j].BuyRate
+			// невалидные (<=0) в конец
+			if bi <= 0 && bj > 0 {
+				return false
+			}
+			if bj <= 0 && bi > 0 {
+				return true
+			}
+			if math.Abs(bi-bj) < 1e-9 {
 				return buyList[i].BankName < buyList[j].BankName
 			}
-			return buyList[i].BuyRate > buyList[j].BuyRate
+			return bi > bj
 		})
 
-		// Сортируем: продажа ASC (nil -> в конец), при равенстве — по банку ASC
-		sort.Slice(sellList, func(i, j int) bool {
+		// Сортируем: продажа ASC (nil или <=0 -> в конец), при равенстве — по банку ASC
+		sort.SliceStable(sellList, func(i, j int) bool {
 			var si, sj float64
 			if sellList[i].SellRate != nil {
 				si = *sellList[i].SellRate
 			} else {
-				si = 1e15 // очень большое значение, чтобы nil шел в конец
+				si = math.MaxFloat64
 			}
 			if sellList[j].SellRate != nil {
 				sj = *sellList[j].SellRate
 			} else {
-				sj = 1e15
+				sj = math.MaxFloat64
 			}
-			if si == sj {
+			// невалидные (<=0) в конец
+			if si <= 0 {
+				si = math.MaxFloat64
+			}
+			if sj <= 0 {
+				sj = math.MaxFloat64
+			}
+			if math.Abs(si-sj) < 1e-9 {
 				return sellList[i].BankName < sellList[j].BankName
 			}
 			return si < sj
