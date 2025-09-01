@@ -4,6 +4,8 @@ import (
 	"kliro/models"
 	"kliro/utils"
 	"net/http"
+	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -36,8 +38,6 @@ func (dc *DepositController) GetNewDeposits(c *gin.Context) {
 	dc.getDepositsWithPagination(c, "new_deposit")
 }
 
-
-
 // getDepositsWithPagination общая функция для получения вкладов с пагинацией
 func (dc *DepositController) getDepositsWithPagination(c *gin.Context, tableName string) {
 	db := utils.GetDB()
@@ -56,124 +56,151 @@ func (dc *DepositController) getDepositsWithPagination(c *gin.Context, tableName
 		size = 10
 	}
 
-	// Подсчет общего количества записей
-	var totalElements int64
-	db.Table(tableName).Count(&totalElements)
+	// Фильтры
+	bank := c.Query("bank")
+	currency := strings.ToLower(strings.TrimSpace(c.DefaultQuery("currency", ""))) // usd|eur|rub|uzs|sum
+	rateFromStr := c.DefaultQuery("rate_from", "")
+	termFromStr := c.DefaultQuery("term_months_from", "")
+	amountFromStr := c.DefaultQuery("amount_from", "") // в валюте строки (so'm/usd/eur)
 
-	// Вычисление пагинации
-	totalPages := int((totalElements + int64(size) - 1) / int64(size))
-	// Проверяем, есть ли данные на последней странице
-	if totalPages > 0 {
-		lastPageOffset := (totalPages - 1) * size
-		var lastPageCount int64
-		db.Table(tableName).Offset(lastPageOffset).Limit(size).Count(&lastPageCount)
-		if lastPageCount == 0 {
-			totalPages = totalPages - 1
+	// Маппинг банков (camelCase -> точное имя)
+	bankCamelMap := map[string]string{
+		"agroBank":             "Agro Bank",
+		"aloqaBank":            "Aloqa Bank",
+		"anorBank":             "Anor Bank",
+		"asakaBank":            "Asaka Bank",
+		"asiaAllianceBank":     "Asia Alliance Bank",
+		"avoBank":              "AVO Bank",
+		"davrBank":             "Davr Bank",
+		"garantBank":           "Garant Bank",
+		"hamkorBank":           "Hamkor Bank",
+		"infinBank":            "Infin Bank",
+		"ipakYoliBank":         "Ipak Yo'li Banki",
+		"kapitalBank":          "Kapital Bank",
+		"mkBank":               "MK Bank",
+		"orientFinansBank":     "Orient Finans Bank",
+		"ozbekistonMilliyBank": "O‘zbekiston Milliy Banki",
+		"ozsanoatqurilishBank": "O‘zsanoatqurilish Bank",
+		"tbcBank":              "TBC Bank",
+		"tengeBank":            "Tenge Bank",
+		"turonBank":            "Turon Bank",
+		"universalBank":        "Universal Bank",
+		"xalqBank":             "Xalq Banki",
+	}
+	bankFilter := strings.TrimSpace(bank)
+	if bankFilter != "" {
+		if v, ok := bankCamelMap[bankFilter]; ok {
+			bankFilter = v
 		}
 	}
-	offset := page * size
 
-	// Проверка на пустой результат
-	if totalElements == 0 {
-		response := DepositResponseByPagination{
-			TotalPages:       0,
-			TotalElements:    0,
-			First:            true,
-			Last:             true,
-			Size:             size,
-			Content:          []models.Deposit{},
-			Number:           page,
-			Sort:             []Sort{},
-			NumberOfElements: 0,
-			Pageable: Pageable{
-				Offset:     offset,
-				Sort:       []Sort{},
-				Paged:      true,
-				PageNumber: page,
-				PageSize:   size,
-				Unpaged:    false,
-			},
-			Empty: true,
+	// Синонимы валют
+	currencySyn := map[string][]string{
+		"usd": {"aqsh dollar", "usd", "dollar"},
+		"eur": {"yevro", "euro"},
+		"rub": {"rubl", "rub"},
+		"uzs": {"so'm", "som", "sum", "uzs"},
+		"sum": {"so'm", "som", "sum", "uzs"},
+	}
+
+	// Базовый SQL фильтр по банку и валюте (по строке MinAmount)
+	baseQ := db.Table(tableName)
+	if bankFilter != "" {
+		baseQ = baseQ.Where("bank_name ILIKE ?", "%"+bankFilter+"%")
+	}
+	if currency != "" {
+		if words, ok := currencySyn[currency]; ok {
+			or := baseQ
+			first := true
+			for _, w := range words {
+				cond := "min_amount ILIKE ?"
+				if first {
+					baseQ = baseQ.Where(cond, "%"+w+"%")
+					first = false
+				} else {
+					or = or.Or(cond, "%"+w+"%")
+				}
+			}
+			baseQ = or
 		}
-		c.JSON(http.StatusOK, gin.H{"result": response, "success": true})
-		return
 	}
 
-	// Создание сортировки
-	sortDirection := "ASC"
-	if strings.ToLower(sortDir) == "desc" {
-		sortDirection = "DESC"
-	}
-
-	// Валидация поля сортировки
-	allowedSortFields := map[string]string{
-		"bank_name":  "bank_name",
-		"rate":       "rate",
-		"term_years": "term_years",
-		"min_amount": "min_amount",
-		"title":      "title",
-		"created_at": "created_at",
-	}
-
-	sortField, exists := allowedSortFields[sortBy]
-	if !exists {
-		sortField = "bank_name"
-	}
-
-	// Выполнение запроса с пагинацией и сортировкой
-	var deposits []models.Deposit
-	query := db.Table(tableName)
-
-	// Применение сортировки
-	if sortField == "bank_name" || sortField == "title" {
-		// Для текстовых полей добавляем COLLATE для правильной сортировки
-		if sortDirection == "ASC" {
-			query = query.Order(sortField + " COLLATE \"C\" ASC")
-		} else {
-			query = query.Order(sortField + " COLLATE \"C\" DESC")
-		}
-	} else {
-		query = query.Order(sortField + " " + sortDirection)
-	}
-
-	// Применение пагинации
-	query = query.Offset(offset).Limit(size)
-
-	if err := query.Find(&deposits).Error; err != nil {
+	// Загружаем кандидатов
+	var all []models.Deposit
+	if err := baseQ.Find(&all).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при получении данных"})
 		return
 	}
 
-	// Создание объекта сортировки
-	sortObj := Sort{
-		Direction:    strings.ToUpper(sortDir),
-		NullHandling: "NATIVE",
-		Ascending:    strings.ToLower(sortDir) == "asc",
-		Property:     sortBy,
-		IgnoreCase:   false,
+	// Числовые фильтры в памяти
+	rateFrom := utils.ParseFloatSafe(rateFromStr)
+	termFrom := utils.ParseIntSafe(termFromStr)
+	amountFrom := utils.ParseInt64Safe(amountFromStr)
+
+	filtered := make([]models.Deposit, 0, len(all))
+	for _, d := range all {
+		if rateFromStr != "" {
+			minRate := utils.ExtractFirstFloat(d.Rate)
+			if minRate < rateFrom {
+				continue
+			}
+		}
+		if termFromStr != "" {
+			minMonths := utils.ExtractMinMonths(d.TermYears)
+			if minMonths < termFrom {
+				continue
+			}
+		}
+		if amountFromStr != "" && currency != "" {
+			// Применяем amount_from ТОЛЬКО если валюта запроса совпадает с валютой продукта
+			amtCur := utils.DetectCurrencyFromAmount(d.MinAmount)
+			if amtCur == currency {
+				minAmt := utils.ExtractMinAmount(d.MinAmount)
+				if amountFrom < minAmt {
+					continue
+				}
+			}
+		}
+		filtered = append(filtered, d)
 	}
 
-	// Формирование ответа
+	// Сортировка (по bank_name по умолчанию)
+	if strings.EqualFold(sortBy, "bank_name") {
+		sort.SliceStable(filtered, func(i, j int) bool {
+			if strings.ToLower(sortDir) == "desc" {
+				return filtered[i].BankName > filtered[j].BankName
+			}
+			return filtered[i].BankName < filtered[j].BankName
+		})
+	}
+
+	// Пагинация в памяти
+	offset := page * size
+	end := offset + size
+	if offset > len(filtered) {
+		offset = len(filtered)
+	}
+	if end > len(filtered) {
+		end = len(filtered)
+	}
+	pageItems := filtered[offset:end]
+
+	sortObj := Sort{Direction: strings.ToUpper(sortDir), NullHandling: "NATIVE", Ascending: strings.ToLower(sortDir) == "asc", Property: sortBy, IgnoreCase: false}
 	response := DepositResponseByPagination{
-		TotalPages:       totalPages,
-		TotalElements:    totalElements,
+		TotalPages:       int((int64(len(filtered)) + int64(size) - 1) / int64(size)),
+		TotalElements:    int64(len(filtered)),
 		First:            page == 0,
-		Last:             page >= totalPages-1,
+		Last:             (page+1)*size >= len(filtered) && len(filtered) > 0,
 		Size:             size,
-		Content:          deposits,
+		Content:          pageItems,
 		Number:           page,
 		Sort:             []Sort{sortObj},
-		NumberOfElements: len(deposits),
-		Pageable: Pageable{
-			Offset:     offset,
-			Sort:       []Sort{sortObj},
-			Paged:      true,
-			PageNumber: page,
-			PageSize:   size,
-			Unpaged:    false,
-		},
-		Empty: len(deposits) == 0,
+		NumberOfElements: len(pageItems),
+		Pageable:         Pageable{Offset: offset, Sort: []Sort{sortObj}, Paged: true, PageNumber: page, PageSize: size, Unpaged: false},
+		Empty:            len(pageItems) == 0,
 	}
 
 	c.JSON(http.StatusOK, gin.H{"result": response, "success": true})
 }
+
+var _ = regexp.MustCompile // keep import if not used elsewhere
