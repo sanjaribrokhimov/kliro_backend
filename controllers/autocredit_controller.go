@@ -4,6 +4,7 @@ import (
 	"kliro/models"
 	"kliro/utils"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -36,8 +37,6 @@ func (ac *AutocreditController) GetNewAutocredits(c *gin.Context) {
 	ac.getAutocreditsWithPagination(c, "new_autocredit")
 }
 
-
-
 // getAutocreditsWithPagination общая функция для получения автокредитов с пагинацией
 func (ac *AutocreditController) getAutocreditsWithPagination(c *gin.Context, tableName string) {
 	db := utils.GetDB()
@@ -48,7 +47,6 @@ func (ac *AutocreditController) getAutocreditsWithPagination(c *gin.Context, tab
 	sortBy := c.DefaultQuery("sort", "bank_name")
 	sortDir := c.DefaultQuery("direction", "asc")
 
-	// Валидация параметров
 	if page < 0 {
 		page = 0
 	}
@@ -56,124 +54,151 @@ func (ac *AutocreditController) getAutocreditsWithPagination(c *gin.Context, tab
 		size = 10
 	}
 
-	// Подсчет общего количества записей
-	var totalElements int64
-	db.Table(tableName).Count(&totalElements)
+	// Фильтры (строки)
+	bank := c.Query("bank")
+	rateFilter := c.Query("rate")
+	termFilter := c.Query("term")
+	amountFilter := c.Query("amount")
+	opening := strings.ToLower(strings.TrimSpace(c.DefaultQuery("opening", ""))) // bank|online|all
 
-	// Вычисление пагинации
-	totalPages := int((totalElements + int64(size) - 1) / int64(size))
-	// Проверяем, есть ли данные на последней странице
-	if totalPages > 0 {
-		lastPageOffset := (totalPages - 1) * size
-		var lastPageCount int64
-		db.Table(tableName).Offset(lastPageOffset).Limit(size).Count(&lastPageCount)
-		if lastPageCount == 0 {
-			totalPages = totalPages - 1
+	// Числовые фильтры "от"
+	rateFrom := utils.ParseFloatSafe(c.DefaultQuery("rate_from", ""))
+	termFrom := utils.ParseIntSafe(c.DefaultQuery("term_months_from", ""))
+	amountFrom := utils.ParseInt64Safe(c.DefaultQuery("amount_from", ""))
+	useRateFrom := c.DefaultQuery("rate_from", "") != ""
+	useTermFrom := c.DefaultQuery("term_months_from", "") != ""
+	useAmountFrom := c.DefaultQuery("amount_from", "") != ""
+
+	// Маппинг camelCase банк -> точное название
+	bankCamelMap := map[string]string{
+		"agroBank":             "Agro Bank",
+		"aloqaBank":            "Aloqa Bank",
+		"anorBank":             "Anor Bank",
+		"asakaBank":            "Asaka Bank",
+		"asiaAllianceBank":     "Asia Alliance Bank",
+		"brb":                  "BRB",
+		"davrBank":             "Davr Bank",
+		"garantBank":           "Garant Bank",
+		"hamkorBank":           "Hamkor Bank",
+		"hayotBank":            "Hayot Bank",
+		"infinBank":            "Infin Bank",
+		"ipakYoliBank":         "Ipak Yo'li Banki",
+		"ipotekaBank":          "Ipoteka Bank",
+		"kapitalBank":          "Kapital Bank",
+		"mkBank":               "MK Bank",
+		"octoBank":             "Octo Bank",
+		"orientFinansBank":     "Orient Finans Bank",
+		"ozbekistonMilliyBank": "O‘zbekiston Milliy Banki",
+		"ozsanoatqurilishBank": "O‘zsanoatqurilish Bank",
+		"poytaxtBank":          "Poytaxt Bank",
+		"smartBank":            "Smart Bank",
+		"tengeBank":            "Tenge Bank",
+		"trastBank":            "Trast Bank",
+		"turonBank":            "Turon Bank",
+		"universalBank":        "Universal Bank",
+		"xalqBank":             "Xalq Banki",
+	}
+	bankFilter := strings.TrimSpace(bank)
+	if bankFilter != "" {
+		if v, ok := bankCamelMap[bankFilter]; ok {
+			bankFilter = v
 		}
 	}
-	offset := page * size
 
-	// Проверка на пустой результат
-	if totalElements == 0 {
-		response := AutocreditResponseByPagination{
-			TotalPages:       0,
-			TotalElements:    0,
-			First:            true,
-			Last:             true,
-			Size:             size,
-			Content:          []models.Autocredit{},
-			Number:           page,
-			Sort:             []Sort{},
-			NumberOfElements: 0,
-			Pageable: Pageable{
-				Offset:     offset,
-				Sort:       []Sort{},
-				Paged:      true,
-				PageNumber: page,
-				PageSize:   size,
-				Unpaged:    false,
-			},
-			Empty: true,
-		}
-		c.JSON(http.StatusOK, gin.H{"result": response, "success": true})
-		return
+	// Базовый запрос по строковым фильтрам и каналу
+	baseQ := db.Table(tableName)
+	if bankFilter != "" {
+		baseQ = baseQ.Where("bank_name ILIKE ?", "%"+bankFilter+"%")
+	}
+	if rateFilter != "" {
+		baseQ = baseQ.Where("rate ILIKE ?", "%"+rateFilter+"%")
+	}
+	if termFilter != "" {
+		baseQ = baseQ.Where("term ILIKE ?", "%"+termFilter+"%")
+	}
+	if amountFilter != "" {
+		baseQ = baseQ.Where("amount ILIKE ?", "%"+amountFilter+"%")
+	}
+	if opening == "bank" {
+		baseQ = baseQ.Where("channel ILIKE '%Bank%'").Where("channel NOT ILIKE '%Onlayn%'")
+	} else if opening == "online" || opening == "onlayn" {
+		baseQ = baseQ.Where("channel ILIKE '%Onlayn%'").Where("channel NOT ILIKE '%Bank%'")
+	} else if opening == "all" {
+		baseQ = baseQ.Where("channel ILIKE '%Bank%'").Where("channel ILIKE '%Onlayn%'")
 	}
 
-	// Создание сортировки
-	sortDirection := "ASC"
-	if strings.ToLower(sortDir) == "desc" {
-		sortDirection = "DESC"
-	}
-
-	// Валидация поля сортировки для автокредитов
-	allowedSortFields := map[string]string{
-		"bank_name":   "bank_name",
-		"description": "description",
-		"rate":        "rate",
-		"term":        "term",
-		"amount":      "amount",
-		"channel":     "channel",
-		"created_at":  "created_at",
-	}
-
-	sortField, exists := allowedSortFields[sortBy]
-	if !exists {
-		sortField = "bank_name"
-	}
-
-	// Выполнение запроса с пагинацией и сортировкой
-	var credits []models.Autocredit
-	query := db.Table(tableName)
-
-	// Применение сортировки
-	if sortField == "bank_name" {
-		// Для текстовых полей добавляем COLLATE для правильной сортировки
-		if sortDirection == "ASC" {
-			query = query.Order("bank_name COLLATE \"C\" ASC")
-		} else {
-			query = query.Order("bank_name COLLATE \"C\" DESC")
-		}
-	} else {
-		query = query.Order(sortField + " " + sortDirection)
-	}
-
-	// Применение пагинации
-	query = query.Offset(offset).Limit(size)
-
-	if err := query.Find(&credits).Error; err != nil {
+	// Грузим кандидатов, применяем числовые фильтры в памяти
+	var all []models.Autocredit
+	if err := baseQ.Find(&all).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при получении данных"})
 		return
 	}
 
-	// Создание объекта сортировки
-	sortObj := Sort{
-		Direction:    strings.ToUpper(sortDir),
-		NullHandling: "NATIVE",
-		Ascending:    strings.ToLower(sortDir) == "asc",
-		Property:     sortBy,
-		IgnoreCase:   false,
+	filtered := make([]models.Autocredit, 0, len(all))
+	for _, a := range all {
+		if useRateFrom {
+			minRate := utils.ExtractFirstFloat(a.Rate)
+			if minRate < rateFrom {
+				continue
+			}
+		}
+		if useTermFrom {
+			minMonths := utils.ExtractMinMonths(a.Term)
+			if minMonths < termFrom {
+				continue
+			}
+		}
+		if useAmountFrom {
+			maxAmt := utils.ExtractMaxAmount(a.Amount)
+			if maxAmt < amountFrom {
+				continue
+			}
+		}
+		filtered = append(filtered, a)
 	}
 
-	// Формирование ответа
+	// Итоги и пагинация
+	totalElements := int64(len(filtered))
+	totalPages := int((totalElements + int64(size) - 1) / int64(size))
+	if totalPages > 0 {
+		lastPageOffset := (totalPages - 1) * size
+		if lastPageOffset >= len(filtered) {
+			totalPages = totalPages - 1
+		}
+	}
+	offset := page * size
+	end := offset + size
+	if offset > len(filtered) {
+		offset = len(filtered)
+	}
+	if end > len(filtered) {
+		end = len(filtered)
+	}
+	pageItems := filtered[offset:end]
+
+	// Сортировка по банку (как у микрокредитов)
+	if strings.EqualFold(sortBy, "bank_name") {
+		sort.SliceStable(pageItems, func(i, j int) bool {
+			if strings.ToLower(sortDir) == "desc" {
+				return pageItems[i].BankName > pageItems[j].BankName
+			}
+			return pageItems[i].BankName < pageItems[j].BankName
+		})
+	}
+
+	sortObj := Sort{Direction: strings.ToUpper(sortDir), NullHandling: "NATIVE", Ascending: strings.ToLower(sortDir) == "asc", Property: sortBy, IgnoreCase: false}
 	response := AutocreditResponseByPagination{
 		TotalPages:       totalPages,
 		TotalElements:    totalElements,
 		First:            page == 0,
 		Last:             page >= totalPages-1,
 		Size:             size,
-		Content:          credits,
+		Content:          pageItems,
 		Number:           page,
 		Sort:             []Sort{sortObj},
-		NumberOfElements: len(credits),
-		Pageable: Pageable{
-			Offset:     offset,
-			Sort:       []Sort{sortObj},
-			Paged:      true,
-			PageNumber: page,
-			PageSize:   size,
-			Unpaged:    false,
-		},
-		Empty: len(credits) == 0,
+		NumberOfElements: len(pageItems),
+		Pageable:         Pageable{Offset: offset, Sort: []Sort{sortObj}, Paged: true, PageNumber: page, PageSize: size, Unpaged: false},
+		Empty:            len(pageItems) == 0,
 	}
 
 	c.JSON(http.StatusOK, gin.H{"result": response, "success": true})

@@ -4,7 +4,6 @@ import (
 	"kliro/models"
 	"kliro/utils"
 	"net/http"
-	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -84,9 +83,9 @@ func (mc *MicrocreditController) getMicrocreditsWithPagination(c *gin.Context, t
 	rateFromStr := c.DefaultQuery("rate_from", "")        // проценты, 24.5
 	termFromStr := c.DefaultQuery("term_months_from", "") // месяцы, например 60
 	amountFromStr := c.DefaultQuery("amount_from", "")    // сумма в so'm, например 100000000
-	rateFrom := parseFloatSafe(rateFromStr)
-	termFrom := parseIntSafe(termFromStr)
-	amountFrom := parseInt64Safe(amountFromStr)
+	rateFrom := utils.ParseFloatSafe(rateFromStr)
+	termFrom := utils.ParseIntSafe(termFromStr)
+	amountFrom := utils.ParseInt64Safe(amountFromStr)
 
 	// Маппинг camelCase названий банков -> точное имя
 	bankCamelMap := map[string]string{
@@ -157,21 +156,21 @@ func (mc *MicrocreditController) getMicrocreditsWithPagination(c *gin.Context, t
 	for _, m := range all {
 		// rate_from: сравниваем с минимальным значением в строке ставки
 		if rateFromStr != "" {
-			minRate := extractFirstFloat(m.Rate)
+			minRate := utils.ExtractFirstFloat(m.Rate)
 			if minRate < rateFrom {
 				continue
 			}
 		}
 		// term_months_from: сравниваем с минимальным сроком в месяцах
 		if termFromStr != "" {
-			minMonths := extractMinMonths(m.Term)
+			minMonths := utils.ExtractMinMonths(m.Term)
 			if minMonths < termFrom {
 				continue
 			}
 		}
 		// amount_from: сравниваем с максимальной суммой, найденной в строке
 		if amountFromStr != "" {
-			maxAmt := extractMaxAmount(m.Amount)
+			maxAmt := utils.ExtractMaxAmount(m.Amount)
 			if maxAmt < amountFrom {
 				continue
 			}
@@ -227,74 +226,4 @@ func (mc *MicrocreditController) getMicrocreditsWithPagination(c *gin.Context, t
 	}
 
 	c.JSON(http.StatusOK, gin.H{"result": response, "success": true})
-}
-
-// --- Helpers ---
-var reNum = regexp.MustCompile(`([0-9]+(?:\.[0-9]+)?)`)
-
-func parseFloatSafe(s string) float64 {
-	s = strings.TrimSpace(s)
-	if s == "" {
-		return 0
-	}
-	v, _ := strconv.ParseFloat(s, 64)
-	return v
-}
-
-func parseIntSafe(s string) int {
-	s = strings.TrimSpace(s)
-	if s == "" {
-		return 0
-	}
-	v, _ := strconv.Atoi(s)
-	return v
-}
-
-func parseInt64Safe(s string) int64 {
-	s = strings.TrimSpace(s)
-	if s == "" {
-		return 0
-	}
-	v, _ := strconv.ParseInt(s, 10, 64)
-	return v
-}
-
-func extractFirstFloat(s string) float64 {
-	m := reNum.FindStringSubmatch(strings.ReplaceAll(s, ",", "."))
-	if len(m) > 1 {
-		v, _ := strconv.ParseFloat(m[1], 64)
-		return v
-	}
-	return 0
-}
-
-func extractMinMonths(s string) int {
-	lower := strings.ToLower(s)
-	nums := reNum.FindAllString(lower, -1)
-	if len(nums) == 0 {
-		return 0
-	}
-	// берём первое число как минимальный срок
-	v, _ := strconv.ParseFloat(nums[0], 64)
-	months := int(v)
-	if strings.Contains(lower, "yil") { // год
-		months = int(v*12.0 + 0.5)
-	}
-	return months
-}
-
-func extractMaxAmount(s string) int64 {
-	clean := strings.ReplaceAll(s, "\u00a0", " ")
-	clean = strings.ReplaceAll(clean, " ", "")
-	nums := reNum.FindAllString(clean, -1)
-	var max int64
-	for _, t := range nums {
-		// числа могут быть очень большими — парсим как int64 без точек
-		t = strings.SplitN(t, ".", 2)[0]
-		v, err := strconv.ParseInt(t, 10, 64)
-		if err == nil && v > max {
-			max = v
-		}
-	}
-	return max
 }
