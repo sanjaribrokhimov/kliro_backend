@@ -4,6 +4,8 @@ import (
 	"kliro/models"
 	"kliro/utils"
 	"net/http"
+	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -55,19 +57,15 @@ func (mc *MicrocreditController) GetNewMicrocredits(c *gin.Context) {
 	mc.getMicrocreditsWithPagination(c, "new_microcredit")
 }
 
-
-
 // getMicrocreditsWithPagination общая функция для получения микрофинансов с пагинацией
 func (mc *MicrocreditController) getMicrocreditsWithPagination(c *gin.Context, tableName string) {
 	db := utils.GetDB()
 
-	// Параметры пагинации
+	// Пагинация и сортировка
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "0"))
 	size, _ := strconv.Atoi(c.DefaultQuery("size", "10"))
 	sortBy := c.DefaultQuery("sort", "bank_name")
 	sortDir := c.DefaultQuery("direction", "asc")
-
-	// Валидация параметров
 	if page < 0 {
 		page = 0
 	}
@@ -75,124 +73,228 @@ func (mc *MicrocreditController) getMicrocreditsWithPagination(c *gin.Context, t
 		size = 10
 	}
 
-	// Подсчет общего количества записей
-	var totalElements int64
-	db.Table(tableName).Count(&totalElements)
+	// Фильтры (строковые)
+	bank := c.Query("bank")
+	rateFilter := c.Query("rate")
+	termFilter := c.Query("term")
+	amountFilter := c.Query("amount")
+	opening := strings.ToLower(strings.TrimSpace(c.DefaultQuery("opening", "")))
 
-	// Вычисление пагинации
-	totalPages := int((totalElements + int64(size) - 1) / int64(size))
-	// Проверяем, есть ли данные на последней странице
-	if totalPages > 0 {
-		lastPageOffset := (totalPages - 1) * size
-		var lastPageCount int64
-		db.Table(tableName).Offset(lastPageOffset).Limit(size).Count(&lastPageCount)
-		if lastPageCount == 0 {
-			totalPages = totalPages - 1
+	// Числовые фильтры "от"
+	rateFromStr := c.DefaultQuery("rate_from", "")        // проценты, 24.5
+	termFromStr := c.DefaultQuery("term_months_from", "") // месяцы, например 60
+	amountFromStr := c.DefaultQuery("amount_from", "")    // сумма в so'm, например 100000000
+	rateFrom := parseFloatSafe(rateFromStr)
+	termFrom := parseIntSafe(termFromStr)
+	amountFrom := parseInt64Safe(amountFromStr)
+
+	// Маппинг camelCase названий банков -> точное имя
+	bankCamelMap := map[string]string{
+		"agroBank":             "Agro Bank",
+		"aloqaBank":            "Aloqa Bank",
+		"anorBank":             "Anor Bank",
+		"asakaBank":            "Asaka Bank",
+		"asiaAllianceBank":     "Asia Alliance Bank",
+		"brb":                  "BRB",
+		"davrBank":             "Davr Bank",
+		"garantBank":           "Garant Bank",
+		"hamkorBank":           "Hamkor Bank",
+		"hayotBank":            "Hayot Bank",
+		"infinBank":            "Infin Bank",
+		"ipakYoliBank":         "Ipak Yo'li Banki",
+		"ipotekaBank":          "Ipoteka Bank",
+		"kapitalBank":          "Kapital Bank",
+		"mkBank":               "MK Bank",
+		"octoBank":             "Octo Bank",
+		"orientFinansBank":     "Orient Finans Bank",
+		"ozbekistonMilliyBank": "O‘zbekiston Milliy Banki",
+		"ozsanoatqurilishBank": "O‘zsanoatqurilish Bank",
+		"poytaxtBank":          "Poytaxt Bank",
+		"smartBank":            "Smart Bank",
+		"tengeBank":            "Tenge Bank",
+		"trastBank":            "Trast Bank",
+		"turonBank":            "Turon Bank",
+		"universalBank":        "Universal Bank",
+		"xalqBank":             "Xalq Banki",
+	}
+	bankFilter := strings.TrimSpace(bank)
+	if bankFilter != "" {
+		if v, ok := bankCamelMap[bankFilter]; ok {
+			bankFilter = v
 		}
 	}
-	offset := page * size
 
-	// Проверка на пустой результат
-	if totalElements == 0 {
-		response := ResponseByPagination{
-			TotalPages:       0,
-			TotalElements:    0,
-			First:            true,
-			Last:             true,
-			Size:             size,
-			Content:          []models.Microcredit{},
-			Number:           page,
-			Sort:             []Sort{},
-			NumberOfElements: 0,
-			Pageable: Pageable{
-				Offset:     offset,
-				Sort:       []Sort{},
-				Paged:      true,
-				PageNumber: page,
-				PageSize:   size,
-				Unpaged:    false,
-			},
-			Empty: true,
-		}
-		c.JSON(http.StatusOK, gin.H{"result": response, "success": true})
-		return
+	// Базовый запрос (строковые фильтры + opening)
+	baseQ := db.Table(tableName)
+	if bankFilter != "" {
+		baseQ = baseQ.Where("bank_name ILIKE ?", "%"+bankFilter+"%")
+	}
+	if rateFilter != "" {
+		baseQ = baseQ.Where("rate ILIKE ?", "%"+rateFilter+"%")
+	}
+	if termFilter != "" {
+		baseQ = baseQ.Where("term ILIKE ?", "%"+termFilter+"%")
+	}
+	if amountFilter != "" {
+		baseQ = baseQ.Where("amount ILIKE ?", "%"+amountFilter+"%")
+	}
+	if opening == "bank" {
+		baseQ = baseQ.Where("channel ILIKE '%Bank%'").Where("channel NOT ILIKE '%Onlayn%'")
+	} else if opening == "online" || opening == "onlayn" {
+		baseQ = baseQ.Where("channel ILIKE '%Onlayn%'").Where("channel NOT ILIKE '%Bank%'")
+	} else if opening == "all" {
+		baseQ = baseQ.Where("channel ILIKE '%Bank%'").Where("channel ILIKE '%Onlayn%'")
 	}
 
-	// Создание сортировки
-	sortDirection := "ASC"
-	if strings.ToLower(sortDir) == "desc" {
-		sortDirection = "DESC"
-	}
-
-	// Валидация поля сортировки
-	allowedSortFields := map[string]string{
-		"bank_name":   "bank_name",
-		"max_amount":  "max_amount",
-		"rate_max":    "rate_max",
-		"rate_min":    "rate_min",
-		"term_months": "term_months",
-		"created_at":  "created_at",
-	}
-
-	sortField, exists := allowedSortFields[sortBy]
-	if !exists {
-		sortField = "bank_name"
-	}
-
-	// Выполнение запроса с пагинацией и сортировкой
-	var credits []models.Microcredit
-	query := db.Table(tableName)
-
-	// Применение сортировки
-	if sortField == "bank_name" {
-		// Для текстовых полей добавляем COLLATE для правильной сортировки
-		if sortDirection == "ASC" {
-			query = query.Order("bank_name COLLATE \"C\" ASC")
-		} else {
-			query = query.Order("bank_name COLLATE \"C\" DESC")
-		}
-	} else {
-		query = query.Order(sortField + " " + sortDirection)
-	}
-
-	// Применение пагинации
-	query = query.Offset(offset).Limit(size)
-
-	if err := query.Find(&credits).Error; err != nil {
+	// Загружаем кандидатов (без пагинации), затем применяем числовые фильтры в памяти
+	var all []models.Microcredit
+	if err := baseQ.Find(&all).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при получении данных"})
 		return
 	}
 
-	// Создание объекта сортировки
-	sortObj := Sort{
-		Direction:    strings.ToUpper(sortDir),
-		NullHandling: "NATIVE",
-		Ascending:    strings.ToLower(sortDir) == "asc",
-		Property:     sortBy,
-		IgnoreCase:   false,
+	filtered := make([]models.Microcredit, 0, len(all))
+	for _, m := range all {
+		// rate_from: сравниваем с минимальным значением в строке ставки
+		if rateFromStr != "" {
+			minRate := extractFirstFloat(m.Rate)
+			if minRate < rateFrom {
+				continue
+			}
+		}
+		// term_months_from: сравниваем с минимальным сроком в месяцах
+		if termFromStr != "" {
+			minMonths := extractMinMonths(m.Term)
+			if minMonths < termFrom {
+				continue
+			}
+		}
+		// amount_from: сравниваем с максимальной суммой, найденной в строке
+		if amountFromStr != "" {
+			maxAmt := extractMaxAmount(m.Amount)
+			if maxAmt < amountFrom {
+				continue
+			}
+		}
+		filtered = append(filtered, m)
 	}
 
-	// Формирование ответа
+	// total после числовых фильтров
+	totalElements := int64(len(filtered))
+	totalPages := int((totalElements + int64(size) - 1) / int64(size))
+	if totalPages > 0 {
+		lastPageOffset := (totalPages - 1) * size
+		if lastPageOffset >= len(filtered) {
+			totalPages = totalPages - 1
+		}
+	}
+
+	// Сортировка (по полям, как раньше)
+	if strings.EqualFold(sortBy, "bank_name") {
+		sort.SliceStable(filtered, func(i, j int) bool {
+			if strings.ToLower(sortDir) == "desc" {
+				return filtered[i].BankName > filtered[j].BankName
+			}
+			return filtered[i].BankName < filtered[j].BankName
+		})
+	}
+	// Иные sort поля оставляем как есть (при необходимости можно расширить)
+
+	// Пагинация в памяти
+	offset := page * size
+	end := offset + size
+	if offset > len(filtered) {
+		offset = len(filtered)
+	}
+	if end > len(filtered) {
+		end = len(filtered)
+	}
+	pageItems := filtered[offset:end]
+
+	sortObj := Sort{Direction: strings.ToUpper(sortDir), NullHandling: "NATIVE", Ascending: strings.ToLower(sortDir) == "asc", Property: sortBy, IgnoreCase: false}
 	response := ResponseByPagination{
 		TotalPages:       totalPages,
 		TotalElements:    totalElements,
 		First:            page == 0,
 		Last:             page >= totalPages-1,
 		Size:             size,
-		Content:          credits,
+		Content:          pageItems,
 		Number:           page,
 		Sort:             []Sort{sortObj},
-		NumberOfElements: len(credits),
-		Pageable: Pageable{
-			Offset:     offset,
-			Sort:       []Sort{sortObj},
-			Paged:      true,
-			PageNumber: page,
-			PageSize:   size,
-			Unpaged:    false,
-		},
-		Empty: len(credits) == 0,
+		NumberOfElements: len(pageItems),
+		Pageable:         Pageable{Offset: offset, Sort: []Sort{sortObj}, Paged: true, PageNumber: page, PageSize: size, Unpaged: false},
+		Empty:            len(pageItems) == 0,
 	}
 
 	c.JSON(http.StatusOK, gin.H{"result": response, "success": true})
+}
+
+// --- Helpers ---
+var reNum = regexp.MustCompile(`([0-9]+(?:\.[0-9]+)?)`)
+
+func parseFloatSafe(s string) float64 {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return 0
+	}
+	v, _ := strconv.ParseFloat(s, 64)
+	return v
+}
+
+func parseIntSafe(s string) int {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return 0
+	}
+	v, _ := strconv.Atoi(s)
+	return v
+}
+
+func parseInt64Safe(s string) int64 {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return 0
+	}
+	v, _ := strconv.ParseInt(s, 10, 64)
+	return v
+}
+
+func extractFirstFloat(s string) float64 {
+	m := reNum.FindStringSubmatch(strings.ReplaceAll(s, ",", "."))
+	if len(m) > 1 {
+		v, _ := strconv.ParseFloat(m[1], 64)
+		return v
+	}
+	return 0
+}
+
+func extractMinMonths(s string) int {
+	lower := strings.ToLower(s)
+	nums := reNum.FindAllString(lower, -1)
+	if len(nums) == 0 {
+		return 0
+	}
+	// берём первое число как минимальный срок
+	v, _ := strconv.ParseFloat(nums[0], 64)
+	months := int(v)
+	if strings.Contains(lower, "yil") { // год
+		months = int(v*12.0 + 0.5)
+	}
+	return months
+}
+
+func extractMaxAmount(s string) int64 {
+	clean := strings.ReplaceAll(s, "\u00a0", " ")
+	clean = strings.ReplaceAll(clean, " ", "")
+	nums := reNum.FindAllString(clean, -1)
+	var max int64
+	for _, t := range nums {
+		// числа могут быть очень большими — парсим как int64 без точек
+		t = strings.SplitN(t, ".", 2)[0]
+		v, err := strconv.ParseInt(t, 10, 64)
+		if err == nil && v > max {
+			max = v
+		}
+	}
+	return max
 }
