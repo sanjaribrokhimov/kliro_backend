@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"kliro/models"
@@ -24,10 +25,26 @@ type BukharaService struct {
 
 // NewBukharaService создает новый экземпляр сервиса
 func NewBukharaService() *BukharaService {
+	// Получаем данные из переменных окружения
+	baseURL := os.Getenv("BUKHARA_BASE_URL")
+	if baseURL == "" {
+		baseURL = "https://avia-api-test.bookhara.uz" // значение по умолчанию
+	}
+
+	email := os.Getenv("BUKHARA_EMAIL")
+	if email == "" {
+		log.Fatal("BUKHARA_EMAIL не установлен в .env файле")
+	}
+
+	password := os.Getenv("BUKHARA_PASSWORD")
+	if password == "" {
+		log.Fatal("BUKHARA_PASSWORD не установлен в .env файле")
+	}
+
 	return &BukharaService{
-		baseURL:  "https://avia-api-test.bookhara.uz",
-		email:    "gtaksiss@mail.ru",
-		password: "r3XwWus_bSETxWM2pL3ZUqfR",
+		baseURL:  baseURL,
+		email:    email,
+		password: password,
 		httpClient: &http.Client{
 			Timeout: 30 * time.Second,
 		},
