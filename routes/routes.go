@@ -7,6 +7,7 @@ import (
 	"kliro/utils"
 
 	"kliro/config"
+	"kliro/controllers/avia"
 	insurancectl "kliro/controllers/insurance"
 
 	"github.com/gin-contrib/cors"
@@ -59,6 +60,9 @@ func SetupRouter() *gin.Engine {
 	kaskoController := insurancectl.NewKaskoController(cfg)
 	osagoController := insurancectl.NewOsagoController(cfg)
 	travelController := insurancectl.NewTravelController(cfg)
+
+	// Контроллер авиабилетов
+	aviaController := avia.NewAviaController()
 
 	r.POST("/auth/register", userController.Register)
 	r.POST("/auth/confirm-otp", userController.ConfirmOTP)
@@ -149,6 +153,29 @@ func SetupRouter() *gin.Engine {
 		userGroup.POST("/change-region", userProfileController.ChangeRegion)
 		userGroup.POST("/add-contact", userProfileController.AddContact)
 		userGroup.POST("/logout", userProfileController.Logout)
+	}
+
+	// Avia group (Bukhara API integration)
+	aviaGroup := r.Group("/avia")
+	{
+		// Поиск и справочники
+		aviaGroup.POST("/search", aviaController.SearchFlights)
+		aviaGroup.GET("/airport-hints", aviaController.GetAirportHints)
+		aviaGroup.GET("/service-classes", aviaController.GetServiceClasses)
+		aviaGroup.GET("/passenger-types", aviaController.GetPassengerTypes)
+
+		// Офферы
+		aviaGroup.GET("/offers/:offer_id", aviaController.UpdateOffer)
+		aviaGroup.GET("/offers/:offer_id/rules", aviaController.GetFareRules)
+		aviaGroup.POST("/offers/:offer_id/booking", aviaController.CreateBooking)
+
+		// Бронирования
+		aviaGroup.GET("/booking/:booking_id", aviaController.GetBookingInfo)
+		aviaGroup.POST("/booking/:booking_id/payment", aviaController.PayBooking)
+		aviaGroup.POST("/booking/:booking_id/cancel", aviaController.CancelBooking)
+
+		// Системные
+		aviaGroup.GET("/health", aviaController.HealthCheck)
 	}
 
 	return r
