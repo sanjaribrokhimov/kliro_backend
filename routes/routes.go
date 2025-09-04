@@ -155,29 +155,30 @@ func SetupRouter() *gin.Engine {
 		userGroup.POST("/logout", userProfileController.Logout)
 	}
 
-	// Avia group (Bukhara API integration)
-	aviaGroup := r.Group("/avia")
-	{
-		// Поиск и справочники
-		aviaGroup.POST("/search", aviaController.SearchFlights)
-		aviaGroup.GET("/airport-hints", aviaController.GetAirportHints)
-		aviaGroup.GET("/service-classes", aviaController.GetServiceClasses)
-		aviaGroup.GET("/passenger-types", aviaController.GetPassengerTypes)
+		// Avia group (Bukhara API integration)
+		aviaGroup := r.Group("/avia")
+		{
+			// Поиск и справочники
+			aviaGroup.POST("/search", aviaController.SearchFlights) // Bukhara: GET /api/v1/offers - поиск авиабилетов
+			aviaGroup.GET("/airport-hints", aviaController.GetAirportHints) // Bukhara: справочник аэропортов
+			aviaGroup.GET("/service-classes", aviaController.GetServiceClasses) // Bukhara: справочник классов обслуживания
+			aviaGroup.GET("/passenger-types", aviaController.GetPassengerTypes) // Bukhara: справочник типов пассажиров
+	
+			// Офферы
+			aviaGroup.GET("/offers/:offer_id", aviaController.UpdateOffer) // Bukhara: GET /api/v1/offers/{id} - обновление оффера
+			aviaGroup.GET("/offers/:offer_id/rules", aviaController.GetFareRules) // Bukhara: GET /api/v1/booking/{id}/rules - правила тарифа
+			aviaGroup.POST("/offers/:offer_id/booking", aviaController.CreateBooking) // Bukhara: POST /api/v1/offers/{id}/booking - создание бронирования
+	
+			// Бронирования
+			aviaGroup.GET("/booking/:booking_id", aviaController.GetBookingInfo) // Bukhara: GET /api/v1/booking/{id} - информация о бронировании
+			aviaGroup.POST("/booking/:booking_id/payment", aviaController.PayBooking) // Bukhara: GET /api/v1/booking/{id}/payment-permission - проверка оплаты
+			aviaGroup.POST("/booking/:booking_id/cancel", aviaController.CancelBooking) // Bukhara: DELETE /api/v1/booking/{id} - отмена бронирования
+	
+			// Системные
+			aviaGroup.GET("/health", aviaController.HealthCheck) // Bukhara: проверка состояния API
+		}
 
-		// Офферы
-		aviaGroup.GET("/offers/:offer_id", aviaController.UpdateOffer)
-		aviaGroup.GET("/offers/:offer_id/rules", aviaController.GetFareRules)
-		aviaGroup.POST("/offers/:offer_id/booking", aviaController.CreateBooking)
-
-		// Бронирования
-		aviaGroup.GET("/booking/:booking_id", aviaController.GetBookingInfo)
-		aviaGroup.POST("/booking/:booking_id/payment", aviaController.PayBooking)
-		aviaGroup.POST("/booking/:booking_id/cancel", aviaController.CancelBooking)
-
-		// Системные
-		aviaGroup.GET("/health", aviaController.HealthCheck)
-	}
-
+		
 	return r
 }
 

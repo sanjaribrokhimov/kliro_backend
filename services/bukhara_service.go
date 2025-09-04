@@ -33,7 +33,7 @@ func NewBukharaService() *BukharaService {
 
 	email := os.Getenv("BUKHARA_EMAIL")
 	if email == "" {
-		log.Fatal("BUKHARA_EMAIL не установлен в .env файле")
+		log.Fatal("BUKHARA_EMAIL не установлен в .env файле") 
 	}
 
 	password := os.Getenv("BUKHARA_PASSWORD")
@@ -399,10 +399,11 @@ func (bs *BukharaService) GetAirportHints(phrase string, limit int) ([]map[strin
 		return nil, fmt.Errorf("API error: %s (код: %d)", errorResp.Message, errorResp.ErrorCode)
 	}
 
-	// Парсим ответ Bukhara API - он возвращает объект с data.airports
+	// Парсим ответ Bukhara API - он возвращает объект с data.airports и data.areas
 	var bukharaResponse struct {
 		Data struct {
-			Airports []map[string]interface{} `json:"airports"`
+			Areas    []map[string]interface{} `json:"areas"`
+			Airports interface{}              `json:"airports"` // Может быть массивом или объектом
 		} `json:"data"`
 	}
 
@@ -410,7 +411,38 @@ func (bs *BukharaService) GetAirportHints(phrase string, limit int) ([]map[strin
 		return nil, fmt.Errorf("failed to unmarshal bukhara response: %w", err)
 	}
 
-	return bukharaResponse.Data.Airports, nil
+	// Объединяем airports и airports из areas
+	var allAirports []map[string]interface{}
+
+	// Обрабатываем airports из основного поля (может быть массивом или объектом)
+	if airportsArray, ok := bukharaResponse.Data.Airports.([]interface{}); ok {
+		// Если это массив
+		for _, airport := range airportsArray {
+			if airportMap, ok := airport.(map[string]interface{}); ok {
+				allAirports = append(allAirports, airportMap)
+			}
+		}
+	} else if airportsObject, ok := bukharaResponse.Data.Airports.(map[string]interface{}); ok {
+		// Если это объект с числовыми ключами
+		for _, airport := range airportsObject {
+			if airportMap, ok := airport.(map[string]interface{}); ok {
+				allAirports = append(allAirports, airportMap)
+			}
+		}
+	}
+
+	// Добавляем airports из areas
+	for _, area := range bukharaResponse.Data.Areas {
+		if airports, ok := area["airports"].([]interface{}); ok {
+			for _, airport := range airports {
+				if airportMap, ok := airport.(map[string]interface{}); ok {
+					allAirports = append(allAirports, airportMap)
+				}
+			}
+		}
+	}
+
+	return allAirports, nil
 }
 
 // makeRequestWithAuth выполняет HTTP запрос к Bukhara API с авторизацией
