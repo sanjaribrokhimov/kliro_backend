@@ -1,0 +1,737 @@
+{
+	"info": {
+		"_postman_id": "a095fbed-fe04-4342-a24e-4c51d690c68a",
+		"name": "Avia API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39271142"
+	},
+	"item": [
+		{
+			"name": "Авторизация",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {},
+				"protocolVersion": "auto",
+				"followRedirects": false,
+				"followOriginalHttpMethod": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\":\"{{userEmail}}\",\n    \"password\":\"{{userPassword}}\",\n    \"access_type\":\"avia\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/accounts/tokens",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"accounts",
+						"tokens"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получение деталей по балансу",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authBearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/accounts/check-balance",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"accounts",
+						"check-balance"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Поиск рейсов",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authBearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/offers?directions[0][departure_airport]=TAS&directions[0][arrival_airport]=DXB&directions[0][date]=2025-09-22&service_class=A&adults=1&children=0&infants=0&infants_with_seat=0",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"offers"
+					],
+					"query": [
+						{
+							"key": "directions[0][departure_airport]",
+							"value": "TAS"
+						},
+						{
+							"key": "directions[0][arrival_airport]",
+							"value": "DXB"
+						},
+						{
+							"key": "directions[0][date]",
+							"value": "2025-09-22"
+						},
+						{
+							"key": "directions[1][departure_airport]",
+							"value": "IST",
+							"disabled": true
+						},
+						{
+							"key": "directions[1][arrival_airport]",
+							"value": "TAS",
+							"disabled": true
+						},
+						{
+							"key": "directions[1][date]",
+							"value": "2025-09-21",
+							"disabled": true
+						},
+						{
+							"key": "service_class",
+							"value": "A"
+						},
+						{
+							"key": "adults",
+							"value": "1"
+						},
+						{
+							"key": "children",
+							"value": "0"
+						},
+						{
+							"key": "infants",
+							"value": "0"
+						},
+						{
+							"key": "infants_with_seat",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Запрос семейства тарифов",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authBearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/offers/{{offer}}/fare-family",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"offers",
+						"{{offer}}",
+						"fare-family"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Проверка наличия мест и цены перед бронированием",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authBearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/offers/{{offer}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"offers",
+						"{{offer}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Запрос условий тарифа",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authBearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/offers/{{offer}}/rules",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"offers",
+						"{{offer}}",
+						"rules"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Бронирование",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authBearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"payer_name\":\"SOKHIBJON RUKHILLAEV\",\n    \"payer_email\": \"support@bookhara.uz\",\n    \"payer_tel\" : \"+79125159342\",\n\n    \"passengers\": [\n        {\n            \"last_name\": \"BAKEEV\",\n            \"first_name\": \"MUKHAMMADJON\",\n            //\"middle_name\": \"\",\n            \"age\": \"adt\",\n            \"birthdate\": \"1985-05-21\",\n            \"gender\": \"M\",\n            \"citizenship\": \"UZ\",\n            \"tel\": \"+79945245389\",\n            \"doc_type\": \"A\",\n            \"doc_number\": \"AE2410984\",\n            \"doc_expire\": \"2032-05-12\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/offers/{{offer}}/booking",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"offers",
+						"{{offer}}",
+						"booking"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Запрос информации по бронированию",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authBearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/booking/{{order}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"booking",
+						"{{order}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Отмена неоплаченного бронирования",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authBearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/booking/{{order}}/cancel-unpaid",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"booking",
+						"{{order}}",
+						"cancel-unpaid"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Запрос условий тарифа после бронирования",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authBearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/booking/{{order}}/rules",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"booking",
+						"{{order}}",
+						"rules"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Проверка цены перед оплатой",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authBearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/booking/{{order}}/check-price",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"booking",
+						"{{order}}",
+						"check-price"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Проверка возможности оплатить заказ",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authBearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/booking/{{order}}/payment-permission",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"booking",
+						"{{order}}",
+						"payment-permission"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Оплата бронирования",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authBearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/booking/{{order}}/payment",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"booking",
+						"{{order}}",
+						"payment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Возврат (VOID) оплаченных билетов",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authBearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/booking/ed67f58d-6810-4883-ac7c-e53408f34365/void",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"booking",
+						"ed67f58d-6810-4883-ac7c-e53408f34365",
+						"void"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Сумма возмещения и штраф при возврате выписанного билета",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authBearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/booking/{{order}}/get-refund-amounts",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"booking",
+						"{{order}}",
+						"get-refund-amounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Возврат выписанных билетов со штрафом",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authBearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/booking/{{order}}/auto-cancel",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"booking",
+						"{{order}}",
+						"auto-cancel"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Запрос маршрутной квитанции",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authBearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/booking/{{order}}/pdf-receipt",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"booking",
+						"{{order}}",
+						"pdf-receipt"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Запрос на отмену оплаченного заказа",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authBearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/booking/{{order}}/manual-refund",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"booking",
+						"{{order}}",
+						"manual-refund"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Расписание рейсов",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authBearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/services/schedule?departure_from=2025-09-22&departure_to=2025-09-22&airport_from=TAS",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"services",
+						"schedule"
+					],
+					"query": [
+						{
+							"key": "departure_from",
+							"value": "2025-09-22"
+						},
+						{
+							"key": "departure_to",
+							"value": "2025-09-22"
+						},
+						{
+							"key": "airport_from",
+							"value": "TAS"
+						},
+						{
+							"key": "airport_to",
+							"value": "IST",
+							"disabled": true
+						},
+						{
+							"key": "airlines[0]",
+							"value": "TK",
+							"disabled": true
+						},
+						{
+							"key": "airlines[1]",
+							"value": "HY",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Типы въездных виз для граждан Узбекистана",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authBearerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/visa-types?countries[0]=UZ&countries[1]=TR",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"visa-types"
+					],
+					"query": [
+						{
+							"key": "countries[0]",
+							"value": "UZ"
+						},
+						{
+							"key": "countries[1]",
+							"value": "TR"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -15,7 +15,7 @@ import (
 	"kliro/controllers"
 	"kliro/database"
 	"kliro/routes"
-	"kliro/services"
+	bankServices "kliro/services/bank"
 	"kliro/utils"
 )
 
@@ -57,35 +57,35 @@ func main() {
 	log.Println("Regions seeded (if needed)")
 
 	// Запуск microcredit cron
-	services.StartMicrocreditCron(db)
+	bankServices.StartMicrocreditCron(db)
 	log.Println("Microcredit cron started")
 
 	// Запуск autocredit cron
-	services.StartAutocreditCron(db)
+	bankServices.StartAutocreditCron(db)
 	log.Println("Autocredit cron started")
 
 	// Запуск transfer cron
-	services.StartTransferCron(db)
+	bankServices.StartTransferCron(db)
 	log.Println("Transfer cron started")
 
 	// Запуск mortgage cron
-	services.StartMortgageCron(db)
+	bankServices.StartMortgageCron(db)
 	log.Println("Mortgage cron started")
 
 	// Запуск deposit cron
-	services.StartDepositCron(db)
+	bankServices.StartDepositCron(db)
 	log.Println("Deposit cron started")
 
 	// Запуск card cron
-	services.StartCardCron(db)
+	bankServices.StartCardCron(db)
 	log.Println("Card cron started")
 
 	// Запуск currency cron
-	services.StartCurrencyCron(db)
+	bankServices.StartCurrencyCron(db)
 	log.Println("Currency cron started")
 
 	// Запуск credit card cron (инициализация и ежедневный парсинг кредитных карт)
-	services.StartCreditCardCron(db)
+	bankServices.StartCreditCardCron(db)
 	log.Println("Credit Card cron started")
 
 	// Подключение к Redis

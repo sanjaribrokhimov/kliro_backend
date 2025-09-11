@@ -52,24 +52,39 @@ type FlightOffer struct {
 	IsVtrip               bool                `json:"is_vtrip"`
 	FlightType            string              `json:"flight_type"`
 	Price                 Price               `json:"price"`
-	RecommendedPrice      Price               `json:"recommended_price"`
+	RecommendedPrice      *Price              `json:"recommended_price"`
+	TaxesAndFees          *Price              `json:"taxes_and_fees"`
 	Transfers             bool                `json:"transfers"`
 	Baggage               bool                `json:"baggage"`
 	Refund                bool                `json:"refund"`
 	IsFareFamily          bool                `json:"is_fare_family"`
-	FareFamilyType        string              `json:"fare_family_type"`
-	FareFamilyServices    [][]string          `json:"fare_family_services"`
+	FareFamilyType        *string             `json:"fare_family_type"`
+	FareFamilyServices    *[][]string         `json:"fare_family_services"`
 	TicketingTimeLimit    string              `json:"ticketing_time_limit"`
 	Passengers            []PassengerPrice    `json:"passengers"`
+	AgeThresholds         *AgeThresholds      `json:"age_thresholds"`
 	Documents             map[string][]string `json:"documents"`
 	Directions            []FlightDirection   `json:"directions"`
-	InformationForClients []ClientInfo        `json:"information_for_clients"`
+	InformationForClients *[]ClientInfo       `json:"information_for_clients"`
 }
 
 // Price цена
 type Price struct {
 	Amount   float64 `json:"amount"`
 	Currency string  `json:"currency"`
+}
+
+// AgeThresholds возрастные пороги
+type AgeThresholds struct {
+	Adult  AgeRange `json:"adult"`
+	Child  AgeRange `json:"child"`
+	Infant AgeRange `json:"infant"`
+}
+
+// AgeRange возрастной диапазон
+type AgeRange struct {
+	Min int `json:"min"`
+	Max int `json:"max"`
 }
 
 // PassengerPrice цена для пассажира
@@ -280,7 +295,10 @@ type Fiscalization struct {
 
 // FlightSearchResponse ответ на поиск рейсов
 type FlightSearchResponse struct {
-	Offers []FlightOffer `json:"offers"`
+	RequestID string        `json:"request_id"`
+	CreatedAt string        `json:"created_at"`
+	Message   string        `json:"message"`
+	Data      []FlightOffer `json:"data"`
 }
 
 // BookingStatus статус бронирования

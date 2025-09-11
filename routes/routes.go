@@ -3,11 +3,8 @@ package routes
 import (
 	"kliro/controllers"
 	"kliro/middleware"
-	"kliro/services"
-	"kliro/utils"
 
 	"kliro/config"
-	"kliro/controllers/avia"
 	insurancectl "kliro/controllers/insurance"
 
 	"github.com/gin-contrib/cors"
@@ -28,9 +25,6 @@ func SetupRouter() *gin.Engine {
 		AllowCredentials: true,
 	}))
 
-	// Инициализируем БД
-	db := utils.GetDB()
-
 	// Здесь инициализируй зависимости (например, Redis)
 	// Для тестов можно использовать in-memory Redis или мок
 	// Пример с реальным Redis:
@@ -42,27 +36,11 @@ func SetupRouter() *gin.Engine {
 	userController := controllers.NewUserController(rdb)
 	userProfileController := controllers.NewUserProfileController(rdb)
 
-	// Инициализируем сервисы
-	currencyService := services.NewCurrencyService(db)
-
-	// Инициализируем контроллеры
-	parserController := controllers.NewParserController(currencyService)
-	microcreditController := controllers.NewMicrocreditController()
-	autocreditController := controllers.NewAutocreditController()
-	transferController := controllers.NewTransferController()
-	mortgageController := controllers.NewMortgageController(db)
-	depositController := controllers.NewDepositController()
-	cardController := controllers.NewCardController()
-	currencyController := controllers.NewCurrencyController(currencyService)
-
 	// Конфиг и контроллер страхования
 	cfg := config.LoadConfig()
 	kaskoController := insurancectl.NewKaskoController(cfg)
 	osagoController := insurancectl.NewOsagoController(cfg)
 	travelController := insurancectl.NewTravelController(cfg)
-
-	// Контроллер авиабилетов
-	aviaController := avia.NewAviaController()
 
 	r.POST("/auth/register", userController.Register)
 	r.POST("/auth/confirm-otp", userController.ConfirmOTP)
@@ -75,31 +53,7 @@ func SetupRouter() *gin.Engine {
 	r.GET("/auth/google/callback", userController.GoogleCallback)
 	r.POST("/auth/google/complete", userController.GoogleComplete)
 	// Bank group for all bank-related endpoints
-	bankGroup := r.Group("/bank")
-	{
-		// Parser endpoints
-		bankGroup.GET("/parse", parserController.ParsePage)
-		bankGroup.GET("/parse-currency", parserController.ParseCurrencyPage)
-		bankGroup.GET("/parse-autocredit", parserController.ParseAutocreditPage)
-		bankGroup.GET("/parse-transfer", parserController.ParseTransferPage)
-		bankGroup.GET("/parse-transfer-goquery", transferController.ParseTransfer)
-		bankGroup.GET("/parse-mortgage", parserController.ParseMortgagePage)
-		bankGroup.GET("/parse-mortgage-goquery", mortgageController.ParseMortgage)
-		bankGroup.GET("/parse-deposit", parserController.ParseDepositPage)
-		bankGroup.GET("/parse-card", parserController.ParseCardPage)
-		bankGroup.GET("/update-transfers", parserController.ParseTransferAndUpdateDatabase)
-
-		// Data endpoints
-		bankGroup.GET("/microcredits/new", microcreditController.GetNewMicrocredits)
-		bankGroup.GET("/autocredits/new", autocreditController.GetNewAutocredits)
-		bankGroup.GET("/transfers/new", transferController.GetNewTransfers)
-		bankGroup.GET("/mortgages/new", mortgageController.GetNewMortgages)
-		bankGroup.GET("/deposits/new", depositController.GetNewDeposits)
-		bankGroup.GET("/cards/new", cardController.GetNewCards)
-		bankGroup.GET("/credit-cards/new", cardController.GetNewCreditCards)
-		bankGroup.GET("/currencies/new", currencyController.GetLatestCurrencyRates)
-		bankGroup.GET("/currencies/by-date", currencyController.GetCurrencyRatesByDate)
-	}
+	SetupBankRoutes(r)
 
 	// Insurance group (proxy to NeoInsurance APIs)
 	insuranceGroup := r.Group("/insurance")
@@ -155,30 +109,12 @@ func SetupRouter() *gin.Engine {
 		userGroup.POST("/logout", userProfileController.Logout)
 	}
 
-		// Avia group (Bukhara API integration)
-		aviaGroup := r.Group("/avia")
-		{
-			// Поиск и справочники
-			aviaGroup.POST("/search", aviaController.SearchFlights) // Bukhara: GET /api/v1/offers - поиск авиабилетов
-			aviaGroup.GET("/airport-hints", aviaController.GetAirportHints) // Bukhara: справочник аэропортов
-			aviaGroup.GET("/service-classes", aviaController.GetServiceClasses) // Bukhara: справочник классов обслуживания
-			aviaGroup.GET("/passenger-types", aviaController.GetPassengerTypes) // Bukhara: справочник типов пассажиров
-	
-			// Офферы
-			aviaGroup.GET("/offers/:offer_id", aviaController.UpdateOffer) // Bukhara: GET /api/v1/offers/{id} - обновление оффера
-			aviaGroup.GET("/offers/:offer_id/rules", aviaController.GetFareRules) // Bukhara: GET /api/v1/booking/{id}/rules - правила тарифа
-			aviaGroup.POST("/offers/:offer_id/booking", aviaController.CreateBooking) // Bukhara: POST /api/v1/offers/{id}/booking - создание бронирования
-	
-			// Бронирования
-			aviaGroup.GET("/booking/:booking_id", aviaController.GetBookingInfo) // Bukhara: GET /api/v1/booking/{id} - информация о бронировании
-			aviaGroup.POST("/booking/:booking_id/payment", aviaController.PayBooking) // Bukhara: GET /api/v1/booking/{id}/payment-permission - проверка оплаты
-			aviaGroup.POST("/booking/:booking_id/cancel", aviaController.CancelBooking) // Bukhara: DELETE /api/v1/booking/{id} - отмена бронирования
-	
-			// Системные
-			aviaGroup.GET("/health", aviaController.HealthCheck) // Bukhara: проверка состояния API
-		}
+	// Avia group (Bukhara API integration)
+	SetupAviaRoutes(r)
 
-		
+	// Hotel group (Hotelios API integration)
+	SetupHotelRoutes(r)
+
 	return r
 }
 
