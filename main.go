@@ -56,37 +56,46 @@ func main() {
 	}
 	log.Println("Regions seeded (if needed)")
 
-	// Запуск microcredit cron
-	bankServices.StartMicrocreditCron(db)
-	log.Println("Microcredit cron started")
+	// Запуск всех cron'ов асинхронно
+	go func() {
+		log.Println("Starting bank services in background...")
 
-	// Запуск autocredit cron
-	bankServices.StartAutocreditCron(db)
-	log.Println("Autocredit cron started")
+		// Запуск microcredit cron
+		bankServices.StartMicrocreditCron(db)
+		log.Println("Microcredit cron started")
 
-	// Запуск transfer cron
-	bankServices.StartTransferCron(db)
-	log.Println("Transfer cron started")
+		// Запуск autocredit cron
+		bankServices.StartAutocreditCron(db)
+		log.Println("Autocredit cron started")
 
-	// Запуск mortgage cron
-	bankServices.StartMortgageCron(db)
-	log.Println("Mortgage cron started")
+		// Запуск transfer cron
+		bankServices.StartTransferCron(db)
+		log.Println("Transfer cron started")
 
-	// Запуск deposit cron
-	bankServices.StartDepositCron(db)
-	log.Println("Deposit cron started")
+		// Запуск mortgage cron
+		bankServices.StartMortgageCron(db)
+		log.Println("Mortgage cron started")
 
-	// Запуск card cron
-	bankServices.StartCardCron(db)
-	log.Println("Card cron started")
+		// Запуск deposit cron
+		bankServices.StartDepositCron(db)
+		log.Println("Deposit cron started")
 
-	// Запуск currency cron
-	bankServices.StartCurrencyCron(db)
-	log.Println("Currency cron started")
+		// Запуск card cron
+		bankServices.StartCardCron(db)
+		log.Println("Card cron started")
 
-	// Запуск credit card cron (инициализация и ежедневный парсинг кредитных карт)
-	bankServices.StartCreditCardCron(db)
-	log.Println("Credit Card cron started")
+		// Запуск currency cron
+		bankServices.StartCurrencyCron(db)
+		log.Println("Currency cron started")
+
+		// Запуск credit card cron (инициализация и ежедневный парсинг кредитных карт)
+		bankServices.StartCreditCardCron(db)
+		log.Println("Credit Card cron started")
+
+		log.Println("All bank services started successfully!")
+	}()
+
+	log.Println("Bank services starting in background...")
 
 	// Подключение к Redis
 	rdb := redis.NewClient(&redis.Options{
