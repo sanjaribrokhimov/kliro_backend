@@ -123,6 +123,9 @@ func SetupRouter() *gin.Engine {
 	// Admin group (Admin API)
 	SetupAdminRoutes(r)
 
+	// Order group (Order API)
+	SetupOrderRoutes(r)
+
 	return r
 }
 

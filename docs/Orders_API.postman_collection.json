@@ -1,0 +1,325 @@
+{
+	"info": {
+		"_postman_id": "orders-api-collection",
+		"name": "Orders API - Kliro Backend",
+		"description": "API для работы с заказами пользователей. Все эндпоинты требуют JWT авторизации.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone\": \"+998331108810\",\n  \"password\": \"sanjar321321\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					}
+				},
+				{
+					"name": "Confirm OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone\": \"+998331108810\",\n  \"otp\": \"408748\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/confirm-otp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"confirm-otp"
+							]
+						}
+					}
+				},
+				{
+					"name": "Complete Registration",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone\": \"+998331108810\",\n  \"region_id\": 1,\n  \"password\": \"sanjar321321\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/set-region-password-final",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"set-region-password-final"
+							]
+						}
+					}
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone\": \"+998331108810\",\n  \"password\": \"sanjar321321\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "Create Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"order_id\": \"ORDER-001\",\n  \"category\": \"insurance\",\n  \"company_name\": \"NeoInsurance\",\n  \"status\": \"pending\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/orders/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"orders",
+								""
+							]
+						}
+					}
+				},
+				{
+					"name": "Get My Orders",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/orders/my-orders",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"orders",
+								"my-orders"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get My Orders with Filters",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/orders/my-orders?category=insurance&status=pending&page=1&limit=5",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"orders",
+								"my-orders"
+							],
+							"query": [
+								{
+									"key": "category",
+									"value": "insurance"
+								},
+								{
+									"key": "status",
+									"value": "pending"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Order by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/orders/ORDER-001",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"orders",
+								"ORDER-001"
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Order Status",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"completed\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/orders/ORDER-001/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"orders",
+								"ORDER-001",
+								"status"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Order Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/orders/my-stats",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"orders",
+								"my-stats"
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Order",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/orders/ORDER-001",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"orders",
+								"ORDER-001"
+							]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTgwMjA0ODksInJvbGUiOiJ1c2VyIiwidXNlcl9pZCI6OX0.zs0yZWuOWIp95PUzlGLOiGYpFXFBxSll0g1Qw6ogYbA",
+			"type": "string"
+		}
+	]
+}

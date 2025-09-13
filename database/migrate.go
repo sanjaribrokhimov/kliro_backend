@@ -201,5 +201,10 @@ func Migrate(db *gorm.DB) error {
 		return err
 	}
 
+	// Создаем таблицу orders
+	if err := migrations.CreateOrdersTable(db); err != nil {
+		return err
+	}
+
 	return nil
 }
