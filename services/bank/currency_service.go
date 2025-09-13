@@ -88,8 +88,8 @@ func (cs *CurrencyService) SaveCurrencyRates(rates []map[string]interface{}) err
 				Currency:  currencyType,
 				BuyRate:   buyRate,
 				SellRate:  sellRate,
-				CreatedAt: currentTime,
-				UpdatedAt: currentTime,
+				CreatedAt: utils.UzbekTime(),
+				UpdatedAt: utils.UzbekTime(),
 			}
 
 			currencies = append(currencies, currency)

@@ -2,9 +2,9 @@ package services
 
 import (
 	"kliro/models"
+	"kliro/utils"
 	"log"
 	"os"
-	"time"
 
 	"github.com/robfig/cron/v3"
 	"gorm.io/gorm"
@@ -33,7 +33,7 @@ func parseMicrocreditURL(url string, logger *log.Logger) []*models.Microcredit {
 
 	// Устанавливаем время создания для всех кредитов
 	for _, credit := range credits {
-		credit.CreatedAt = time.Now()
+		credit.CreatedAt = utils.UzbekTime()
 	}
 	return credits
 }
@@ -53,6 +53,7 @@ func InitializeMicrocreditData(db *gorm.DB) {
 	for _, url := range microcreditURLs {
 		if credits := parseMicrocreditURL(url, logger); credits != nil {
 			for _, credit := range credits {
+				credit.CreatedAt = utils.UzbekTime()
 				db.Table("new_microcredit").Create(credit)
 			}
 		}
@@ -65,7 +66,7 @@ func StartMicrocreditCron(db *gorm.DB) {
 	InitializeMicrocreditData(db)
 
 	c := cron.New()
-	c.AddFunc("0 0 3 * * *", func() { // Каждый день в 03:00 UTC
+	c.AddFunc("0 0 22 * * *", func() { // Каждый день в 22:00 UTC (03:00 по Узбекистану)
 		logFile, _ := os.OpenFile("logs/parser_errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		logger := log.New(logFile, "", log.LstdFlags)
 		defer logFile.Close()
@@ -78,6 +79,7 @@ func StartMicrocreditCron(db *gorm.DB) {
 		for _, url := range microcreditURLs {
 			if credits := parseMicrocreditURL(url, logger); credits != nil {
 				for _, credit := range credits {
+					credit.CreatedAt = utils.UzbekTime()
 					db.Table("new_microcredit").Create(credit)
 				}
 			}

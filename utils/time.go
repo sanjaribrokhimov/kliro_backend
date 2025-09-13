@@ -12,3 +12,13 @@ func UzbekTime() time.Time {
 	}
 	return time.Now().In(uzbekLocation)
 }
+
+// GetUzbekLocation возвращает часовой пояс Узбекистана
+func GetUzbekLocation() *time.Location {
+	uzbekLocation, err := time.LoadLocation("Asia/Tashkent")
+	if err != nil {
+		// Если не удалось загрузить часовой пояс, создаем UTC+5
+		return time.FixedZone("UZT", 5*60*60)
+	}
+	return uzbekLocation
+}

@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"fmt"
 	"kliro/controllers"
 	"kliro/middleware"
 
@@ -14,6 +15,10 @@ import (
 
 // SetupRouter создаёт gin.Engine, регистрирует все маршруты и возвращает роутер
 func SetupRouter() *gin.Engine {
+	fmt.Println("==========================================")
+	fmt.Println("НАЧИНАЕМ НАСТРОЙКУ РОУТЕРА!")
+	fmt.Println("==========================================")
+
 	r := gin.Default()
 
 	// CORS middleware ДО роутов
@@ -114,6 +119,9 @@ func SetupRouter() *gin.Engine {
 
 	// Hotel group (Hotelios API integration)
 	SetupHotelRoutes(r)
+
+	// Admin group (Admin API)
+	SetupAdminRoutes(r)
 
 	return r
 }

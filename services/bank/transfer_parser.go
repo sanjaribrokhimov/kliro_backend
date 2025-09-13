@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
-	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -46,7 +45,7 @@ func (tp *TransferParser) ParseTransfersWithGoquery(doc *goquery.Document) []*mo
 	// Для сайта bank.uz/uz/perevodi - ищем карточки переводов
 	doc.Find(".banki-p2p__item").Each(func(i int, s *goquery.Selection) {
 		transfer := &models.Transfer{
-			CreatedAt: time.Now(),
+			CreatedAt: utils.UzbekTime(),
 		}
 
 		// Название приложения - нормализуем

@@ -2,9 +2,9 @@ package services
 
 import (
 	"kliro/models"
+	"kliro/utils"
 	"log"
 	"os"
-	"time"
 
 	"github.com/robfig/cron/v3"
 	"gorm.io/gorm"
@@ -38,7 +38,7 @@ func parseDepositURL(url string, logger *log.Logger) []*models.Deposit {
 
 	// Устанавливаем время создания для всех вкладов
 	for _, deposit := range deposits {
-		deposit.CreatedAt = time.Now()
+		deposit.CreatedAt = utils.UzbekTime()
 	}
 	return deposits
 }
@@ -58,6 +58,7 @@ func InitializeDepositData(db *gorm.DB) {
 	for _, url := range depositURLs {
 		if deposits := parseDepositURL(url, logger); deposits != nil {
 			for _, deposit := range deposits {
+				deposit.CreatedAt = utils.UzbekTime()
 				db.Table("new_deposit").Create(deposit)
 			}
 		}
@@ -70,7 +71,7 @@ func StartDepositCron(db *gorm.DB) {
 	InitializeDepositData(db)
 
 	c := cron.New()
-	c.AddFunc("0 0 2 * * *", func() { // Каждый день в 02:00 UTC (ночь)
+	c.AddFunc("0 0 21 * * *", func() { // Каждый день в 21:00 UTC (02:00 по Узбекистану)
 		logFile, _ := os.OpenFile("logs/parser_errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		logger := log.New(logFile, "", log.LstdFlags)
 		defer logFile.Close()
@@ -84,6 +85,7 @@ func StartDepositCron(db *gorm.DB) {
 		for _, url := range depositURLs {
 			if deposits := parseDepositURL(url, logger); deposits != nil {
 				for _, deposit := range deposits {
+					deposit.CreatedAt = utils.UzbekTime()
 					db.Table("new_deposit").Create(deposit)
 				}
 			}

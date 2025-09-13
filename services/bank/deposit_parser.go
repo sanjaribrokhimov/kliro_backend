@@ -6,7 +6,6 @@ import (
 	"kliro/utils"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -44,7 +43,7 @@ func (dp *DepositParser) ParseDepositsWithGoquery(doc *goquery.Document) []*mode
 
 	doc.Find(".table-card-offers-bottom").Each(func(i int, s *goquery.Selection) {
 		deposit := &models.Deposit{
-			CreatedAt: time.Now(),
+			CreatedAt: utils.UzbekTime(),
 		}
 
 		// Название банка - нормализуем

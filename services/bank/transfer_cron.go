@@ -2,9 +2,9 @@ package services
 
 import (
 	"kliro/models"
+	"kliro/utils"
 	"log"
 	"os"
-	"time"
 
 	"github.com/robfig/cron/v3"
 	"gorm.io/gorm"
@@ -26,7 +26,7 @@ func parseTransferURL(url string, logger *log.Logger) []*models.Transfer {
 
 	// Устанавливаем время создания для всех переводов
 	for _, transfer := range transfers {
-		transfer.CreatedAt = time.Now()
+		transfer.CreatedAt = utils.UzbekTime()
 	}
 	return transfers
 }
@@ -46,6 +46,7 @@ func InitializeTransferData(db *gorm.DB) {
 	for _, url := range transferURLs {
 		if transfers := parseTransferURL(url, logger); transfers != nil {
 			for _, transfer := range transfers {
+				transfer.CreatedAt = utils.UzbekTime()
 				db.Table("new_transfer").Create(transfer)
 			}
 		}
@@ -60,7 +61,7 @@ func StartTransferCron(db *gorm.DB) {
 	InitializeTransferData(db)
 
 	c := cron.New()
-	c.AddFunc("0 0 2 * * *", func() { // Каждый день в 02:00 UTC (ночь в Узбекистане)
+	c.AddFunc("0 0 21 * * *", func() { // Каждый день в 21:00 UTC (02:00 по Узбекистану)
 		logFile, _ := os.OpenFile("logs/parser_errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		logger := log.New(logFile, "", log.LstdFlags)
 		defer logFile.Close()
@@ -74,6 +75,7 @@ func StartTransferCron(db *gorm.DB) {
 		for _, url := range transferURLs {
 			if transfers := parseTransferURL(url, logger); transfers != nil {
 				for _, transfer := range transfers {
+					transfer.CreatedAt = utils.UzbekTime()
 					db.Table("new_transfer").Create(transfer)
 				}
 			}

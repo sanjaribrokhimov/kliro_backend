@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"context"
 
@@ -20,9 +21,15 @@ import (
 )
 
 func main() {
+	// Устанавливаем часовой пояс Узбекистана для всех логов
+	uzbekLocation, err := time.LoadLocation("Asia/Tashkent")
+	if err != nil {
+		uzbekLocation = time.FixedZone("UZT", 5*60*60)
+	}
+	time.Local = uzbekLocation
 
 	// Загрузка .env
-	err := godotenv.Load("../.env")
+	err = godotenv.Load("../.env")
 	if err != nil {
 		log.Println("No .env file found, using environment variables")
 	}
@@ -112,7 +119,13 @@ func main() {
 	controllers.InitGoogleOAuth()
 
 	// Создание Gin роутера и настройка всех маршрутов
+	fmt.Println("==========================================")
+	fmt.Println("DEBUG: ВЫЗЫВАЕМ routes.SetupRouter()!")
+	fmt.Println("==========================================")
 	r := routes.SetupRouter()
+	fmt.Println("==========================================")
+	fmt.Println("DEBUG: routes.SetupRouter() ВЫЗВАН!")
+	fmt.Println("==========================================")
 
 	port := os.Getenv("PORT")
 	if port == "" {

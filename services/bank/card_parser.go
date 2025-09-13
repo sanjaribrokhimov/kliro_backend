@@ -6,7 +6,6 @@ import (
 	"kliro/utils"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -44,7 +43,7 @@ func (cp *CardParser) ParseCardsWithGoquery(doc *goquery.Document) []*models.Car
 
 	doc.Find(".table-card-offers-bottom").Each(func(i int, s *goquery.Selection) {
 		card := &models.Card{
-			CreatedAt: time.Now(),
+			CreatedAt: utils.UzbekTime(),
 		}
 
 		// Название банка - нормализуем
@@ -85,7 +84,7 @@ func (cp *CardParser) ParseCreditCardsWithGoquery(doc *goquery.Document) []*mode
 	var cards []*models.CreditCard
 
 	doc.Find(".table-card-offers-bottom").Each(func(i int, s *goquery.Selection) {
-		cc := &models.CreditCard{CreatedAt: time.Now()}
+		cc := &models.CreditCard{CreatedAt: utils.UzbekTime()}
 
 		bank := s.Find(".table-card-offers-block1-text > span.medium-text").First().Text()
 		normalizer := utils.GetBankNormalizer()

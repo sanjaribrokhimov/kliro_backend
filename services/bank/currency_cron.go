@@ -74,8 +74,8 @@ func parseCurrencyData(logger *log.Logger) []*models.Currency {
 			Currency:  currency,
 			BuyRate:   buyRate,
 			SellRate:  &sellRate,
-			CreatedAt: currentTime,
-			UpdatedAt: currentTime,
+			CreatedAt: utils.UzbekTime(),
+			UpdatedAt: utils.UzbekTime(),
 		})
 	}
 
@@ -115,8 +115,8 @@ func updateCurrencyRates(db *gorm.DB, currencies []*models.Currency, logger *log
 			updatedCount++
 		} else if errors.Is(err, gorm.ErrRecordNotFound) {
 			// Записи нет - добавляем новую с временем Узбекистана
-			currency.CreatedAt = currentTime
-			currency.UpdatedAt = currentTime
+			currency.CreatedAt = utils.UzbekTime()
+			currency.UpdatedAt = utils.UzbekTime()
 
 			if err := db.Create(currency).Error; err != nil {
 				logger.Printf("Ошибка создания записи для %s %s: %v", currency.BankName, currency.Currency, err)
@@ -149,9 +149,8 @@ func InitializeCurrencyData(db *gorm.DB) {
 		db.Exec("TRUNCATE new_currency")
 		for _, currency := range currencies {
 			// Проставляем время Узбекистана на каждый insert
-			now := utils.UzbekTime()
-			currency.CreatedAt = now
-			currency.UpdatedAt = now
+			currency.CreatedAt = utils.UzbekTime()
+			currency.UpdatedAt = utils.UzbekTime()
 			db.Table("new_currency").Create(currency)
 		}
 		logger.Printf("Инициализация завершена - заполнена таблица new_currency (Asia/Tashkent)")
@@ -165,7 +164,7 @@ func StartCurrencyCron(db *gorm.DB) {
 	InitializeCurrencyData(db)
 
 	c := cron.New()
-	c.AddFunc("0 0 */3 * * *", func() { // Каждые 3 часа
+	c.AddFunc("0 0 */3 * * *", func() { // Каждые 3 часа (время UTC, но данные с узбекским временем)
 		logFile, _ := os.OpenFile("logs/parser_errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		logger := log.New(logFile, "", log.LstdFlags)
 		defer logFile.Close()
@@ -177,9 +176,8 @@ func StartCurrencyCron(db *gorm.DB) {
 			// Полностью перезаписываем new_currency с временем Asia/Tashkent
 			db.Exec("TRUNCATE new_currency")
 			for _, currency := range currencies {
-				now := utils.UzbekTime()
-				currency.CreatedAt = now
-				currency.UpdatedAt = now
+				currency.CreatedAt = utils.UzbekTime()
+				currency.UpdatedAt = utils.UzbekTime()
 				db.Table("new_currency").Create(currency)
 			}
 			logger.Printf("Парсинг currency завершен - обновлено %d записей в new_currency (Asia/Tashkent)", len(currencies))

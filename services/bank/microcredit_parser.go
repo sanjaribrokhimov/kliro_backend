@@ -6,7 +6,6 @@ import (
 	"kliro/utils"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -44,7 +43,7 @@ func (mp *MicrocreditParser) ParseMicrocreditsWithGoquery(doc *goquery.Document)
 
 	doc.Find(".table-card-offers-bottom").Each(func(i int, s *goquery.Selection) {
 		microcredit := &models.Microcredit{
-			CreatedAt: time.Now(),
+			CreatedAt: utils.UzbekTime(),
 		}
 
 		// Название банка - нормализуем

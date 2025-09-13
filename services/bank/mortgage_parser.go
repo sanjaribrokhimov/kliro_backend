@@ -6,7 +6,6 @@ import (
 	"kliro/utils"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -45,7 +44,7 @@ func (mp *MortgageParser) ParseMortgagesWithGoquery(doc *goquery.Document) []*mo
 	// Для сайта bank.uz/uz/ipoteka - ищем карточки ипотек
 	doc.Find(".table-card-offers-bottom").Each(func(i int, s *goquery.Selection) {
 		mortgage := &models.Mortgage{
-			CreatedAt: time.Now(),
+			CreatedAt: utils.UzbekTime(),
 		}
 
 		// Название банка - нормализуем

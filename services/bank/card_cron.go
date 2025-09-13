@@ -2,9 +2,9 @@ package services
 
 import (
 	"kliro/models"
+	"kliro/utils"
 	"log"
 	"os"
-	"time"
 
 	"github.com/robfig/cron/v3"
 	"gorm.io/gorm"
@@ -53,7 +53,7 @@ func parseCardURL(url string, logger *log.Logger) []*models.Card {
 
 	// Устанавливаем время создания для всех карт
 	for _, card := range cards {
-		card.CreatedAt = time.Now()
+		card.CreatedAt = utils.UzbekTime()
 	}
 	return cards
 }
@@ -67,7 +67,7 @@ func parseCreditCardURL(url string, logger *log.Logger) []*models.CreditCard {
 		return nil
 	}
 	for _, cc := range cards {
-		cc.CreatedAt = time.Now()
+		cc.CreatedAt = utils.UzbekTime()
 	}
 	return cards
 }
@@ -87,6 +87,7 @@ func InitializeCardData(db *gorm.DB) {
 	for _, url := range cardURLs {
 		if cards := parseCardURL(url, logger); cards != nil {
 			for _, card := range cards {
+				card.CreatedAt = utils.UzbekTime()
 				db.Table("new_card").Create(card)
 			}
 		}
@@ -106,6 +107,7 @@ func InitializeCreditCardData(db *gorm.DB) {
 	for _, url := range creditCardURLs {
 		if cards := parseCreditCardURL(url, logger); cards != nil {
 			for _, cc := range cards {
+				cc.CreatedAt = utils.UzbekTime()
 				db.Table("new_credit_card").Create(cc)
 			}
 		}
@@ -118,7 +120,7 @@ func StartCardCron(db *gorm.DB) {
 	InitializeCardData(db)
 
 	c := cron.New()
-	c.AddFunc("0 0 3 * * *", func() { // Каждый день в 03:00 UTC (ночь)
+	c.AddFunc("0 0 22 * * *", func() { // Каждый день в 22:00 UTC (03:00 по Узбекистану)
 		logFile, _ := os.OpenFile("logs/parser_errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		logger := log.New(logFile, "", log.LstdFlags)
 		defer logFile.Close()
@@ -132,6 +134,7 @@ func StartCardCron(db *gorm.DB) {
 		for _, url := range cardURLs {
 			if cards := parseCardURL(url, logger); cards != nil {
 				for _, card := range cards {
+					card.CreatedAt = utils.UzbekTime()
 					db.Table("new_card").Create(card)
 				}
 			}
@@ -148,7 +151,7 @@ func StartCreditCardCron(db *gorm.DB) {
 	InitializeCreditCardData(db)
 
 	c := cron.New()
-	c.AddFunc("0 10 3 * * *", func() { // Каждый день в 03:10 UTC
+	c.AddFunc("0 10 22 * * *", func() { // Каждый день в 22:10 UTC (03:10 по Узбекистану)
 		logFile, _ := os.OpenFile("logs/parser_errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		logger := log.New(logFile, "", log.LstdFlags)
 		defer logFile.Close()
@@ -158,6 +161,7 @@ func StartCreditCardCron(db *gorm.DB) {
 		for _, url := range creditCardURLs {
 			if cards := parseCreditCardURL(url, logger); cards != nil {
 				for _, cc := range cards {
+					cc.CreatedAt = utils.UzbekTime()
 					db.Table("new_credit_card").Create(cc)
 				}
 			}
