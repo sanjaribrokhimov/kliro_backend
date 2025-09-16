@@ -1,0 +1,690 @@
+{
+	"info": {
+		"_postman_id": "hotelios-complete-api",
+		"name": "Hotelios API - Complete (26 APIs)",
+		"description": "Полная коллекция всех 26 Hotelios API для фронтендера\n\n📋 СПРАВОЧНЫЕ API (v1.0) - 20 штук:\n- Списки стран, регионов, городов\n- Типы отелей, удобства, оборудование\n- Фотографии, цены, валюты\n\n🏨 BOOKING-FLOW API (v1.1.0) - 6 штук:\n- Поиск отелей\n- Получение актуальных цен\n- Создание, подтверждение, отмена бронирований\n- Просмотр деталей бронирования\n\n✅ АВТОМАТИЧЕСКАЯ АВТОРИЗАЦИЯ:\nВсе запросы автоматически включают credentials!\nФронтендеру НЕ нужно передавать login/password/access_key\n\n🔑 CREDENTIALS (добавляются сервером):\n- login: api-0002-001\n- password: d5f12e53a182c062b6bf30c1445153faff12269a\n- access_key: 377edeb5-f452-4b10-a24d-67b977892ea9",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "📋 Справочные API (v1.0)",
+			"item": [
+				{
+					"name": "GetCountryList - Список стран",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/countries",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "countries"]
+						},
+						"description": "Получает список всех доступных стран для бронирования отелей.\n\n**Ответ:**\n- id: ID страны\n- names: Названия на разных языках (ru, uz, en)\n\n**Примеры стран:**\n- Узбекистан (id: 1)\n- Казахстан (id: 75)\n- Германия (id: 49)\n- Армения (id: 12)"
+					}
+				},
+				{
+					"name": "GetRegionList - Список регионов",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/regions?country_id=1",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "regions"],
+							"query": [
+								{
+									"key": "country_id",
+									"value": "1",
+									"description": "ID страны (обязательно)"
+								}
+							]
+						},
+						"description": "Получает список регионов для указанной страны.\n\n**Параметры:**\n- country_id (query): ID страны (обязательно)\n\n**Ответ:**\n- id: ID региона\n- names: Названия на разных языках\n- country_id: ID родительской страны"
+					}
+				},
+				{
+					"name": "GetCityList - Список городов",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/cities?region_id=1",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "cities"],
+							"query": [
+								{
+									"key": "region_id",
+									"value": "1",
+									"description": "ID региона (обязательно)"
+								}
+							]
+						},
+						"description": "Получает список городов для указанного региона.\n\n**Параметры:**\n- region_id (query): ID региона (обязательно)\n\n**Ответ:**\n- id: ID города\n- names: Названия на разных языках\n- region_id: ID родительского региона"
+					}
+				},
+				{
+					"name": "GetHotelTypeList - Типы отелей",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/types",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "types"]
+						},
+						"description": "Получает список типов отелей.\n\n**Ответ:**\n- id: ID типа отеля\n- names: Названия на разных языках\n\n**Примеры типов:**\n- Бизнес-отель (id: 1)\n- Гостиница (id: 2)\n- Апарт-отель (id: 4)\n- Бутик-отель (id: 5)\n- Курортная гостиница (id: 6)"
+					}
+				},
+				{
+					"name": "GetHotelList - Список отелей",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/list?hotel_id=123",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "list"],
+							"query": [
+								{
+									"key": "hotel_id",
+									"value": "123",
+									"description": "ID конкретного отеля (опционально)"
+								},
+								{
+									"key": "hotel_type_id",
+									"value": "1",
+									"description": "ID типа отеля (опционально)"
+								},
+								{
+									"key": "mode",
+									"value": "search",
+									"description": "Режим поиска (опционально)"
+								}
+							]
+						},
+						"description": "Получает список отелей с возможностью фильтрации.\n\n**Параметры (query):**\n- hotel_id: ID конкретного отеля\n- hotel_type_id: ID типа отеля\n- mode: Режим поиска\n\n**Ответ:**\n- id: ID отеля\n- names: Названия на разных языках\n- stars: Количество звезд\n- address: Адрес\n- coordinates: Координаты"
+					}
+				},
+				{
+					"name": "GetHotelPhotoList - Фотографии отеля",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/photos?hotel_id=123",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "photos"],
+							"query": [
+								{
+									"key": "hotel_id",
+									"value": "123",
+									"description": "ID отеля (обязательно)"
+								}
+							]
+						},
+						"description": "Получает фотографии указанного отеля.\n\n**Параметры:**\n- hotel_id (query): ID отеля (обязательно)\n\n**Ответ:**\n- hotel_id: ID отеля\n- photos: Массив фотографий\n  - url: URL фотографии\n  - description: Описание\n  - type: Тип фотографии"
+					}
+				},
+				{
+					"name": "GetHotelRoomTypeList - Типы номеров",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/room-types?hotel_id=123",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "room-types"],
+							"query": [
+								{
+									"key": "hotel_id",
+									"value": "123",
+									"description": "ID отеля (обязательно)"
+								}
+							]
+						},
+						"description": "Получает типы номеров для указанного отеля.\n\n**Параметры:**\n- hotel_id (query): ID отеля (обязательно)\n\n**Ответ:**\n- hotel_id: ID отеля\n- room_types: Массив типов номеров\n  - id: ID типа номера\n  - names: Названия на разных языках\n  - max_occupancy: Максимальная вместимость"
+					}
+				},
+				{
+					"name": "GetHotelRoomTypesPhotoList - Фото номеров",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/room-photos?hotel_id=123&room_type_id=456",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "room-photos"],
+							"query": [
+								{
+									"key": "hotel_id",
+									"value": "123",
+									"description": "ID отеля (опционально)"
+								},
+								{
+									"key": "room_type_id",
+									"value": "456",
+									"description": "ID типа номера (опционально)"
+								}
+							]
+						},
+						"description": "Получает фотографии номеров отеля.\n\n**Параметры (query):**\n- hotel_id: ID отеля (опционально)\n- room_type_id: ID типа номера (опционально)\n\n**Ответ:**\n- photos: Массив фотографий номеров\n  - url: URL фотографии\n  - room_type_id: ID типа номера\n  - description: Описание"
+					}
+				},
+				{
+					"name": "GetFacilityList - Список удобств",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/facilities",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "facilities"]
+						},
+						"description": "Получает список всех доступных удобств отелей.\n\n**Ответ:**\n- id: ID удобства\n- names: Названия на разных языках\n- filter_flag: Можно ли использовать для фильтрации\n\n**Примеры удобств:**\n- Бесплатный Wi-Fi (id: 1)\n- Ресторан (id: 4)\n- Бассейн (id: 30, 31)\n- Парковка (id: 57, 87)\n- Фитнес-центр (id: 43, 48)"
+					}
+				},
+				{
+					"name": "GetHotelFacilityList - Удобства отеля",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/hotel-facilities?hotel_id=123",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "hotel-facilities"],
+							"query": [
+								{
+									"key": "hotel_id",
+									"value": "123",
+									"description": "ID отеля (обязательно)"
+								}
+							]
+						},
+						"description": "Получает список удобств конкретного отеля.\n\n**Параметры:**\n- hotel_id (query): ID отеля (обязательно)\n\n**Ответ:**\n- hotel_id: ID отеля\n- facilities: Массив удобств отеля\n  - id: ID удобства\n  - names: Названия на разных языках"
+					}
+				},
+				{
+					"name": "GetEquipmentList - Список оборудования",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/equipment",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "equipment"]
+						},
+						"description": "Получает список всего доступного оборудования в номерах.\n\n**Ответ:**\n- id: ID оборудования\n- names: Названия на разных языках\n\n**Примеры оборудования:**\n- Кондиционер\n- Телевизор\n- Мини-бар\n- Сейф\n- Холодильник"
+					}
+				},
+				{
+					"name": "GetRoomTypeEquipmentList - Оборудование номеров",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/room-equipment?hotel_id=123&room_type_id=456",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "room-equipment"],
+							"query": [
+								{
+									"key": "hotel_id",
+									"value": "123",
+									"description": "ID отеля (опционально)"
+								},
+								{
+									"key": "room_type_id",
+									"value": "456",
+									"description": "ID типа номера (опционально)"
+								}
+							]
+						},
+						"description": "Получает оборудование для конкретных типов номеров.\n\n**Параметры (query):**\n- hotel_id: ID отеля (опционально)\n- room_type_id: ID типа номера (опционально)\n\n**Ответ:**\n- equipment: Массив оборудования\n  - id: ID оборудования\n  - names: Названия на разных языках\n  - room_type_id: ID типа номера"
+					}
+				},
+				{
+					"name": "GetPriceRange - Диапазон цен",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/price-range",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "price-range"]
+						},
+						"description": "Получает диапазон цен для фильтрации поиска отелей.\n\n**Ответ:**\n- min_price: Минимальная цена\n- max_price: Максимальная цена\n- currency: Валюта\n- price_ranges: Массив диапазонов цен"
+					}
+				},
+				{
+					"name": "GetStarList - Список звезд",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/stars",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "stars"]
+						},
+						"description": "Получает список доступных категорий звездности отелей.\n\n**Ответ:**\n- stars: Массив звезд\n  - value: Количество звезд (1-5)\n  - names: Названия на разных языках\n\n**Примеры:**\n- 1 звезда\n- 2 звезды\n- 3 звезды\n- 4 звезды\n- 5 звезд"
+					}
+				},
+				{
+					"name": "GetNearbyPlacesTypeList - Типы ближайших мест",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/nearby-places-types",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "nearby-places-types"]
+						},
+						"description": "Получает список типов ближайших мест (достопримечательности, транспорт и т.д.).\n\n**Ответ:**\n- id: ID типа места\n- names: Названия на разных языках\n\n**Примеры типов:**\n- Аэропорт\n- Железнодорожный вокзал\n- Метро\n- Достопримечательности\n- Торговые центры"
+					}
+				},
+				{
+					"name": "GetHotelNearbyPlacesList - Ближайшие места отеля",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/hotel-nearby-places?hotel_id=123",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "hotel-nearby-places"],
+							"query": [
+								{
+									"key": "hotel_id",
+									"value": "123",
+									"description": "ID отеля (обязательно)"
+								}
+							]
+						},
+						"description": "Получает список ближайших мест для конкретного отеля.\n\n**Параметры:**\n- hotel_id (query): ID отеля (обязательно)\n\n**Ответ:**\n- hotel_id: ID отеля\n- nearby_places: Массив ближайших мест\n  - id: ID места\n  - names: Названия на разных языках\n  - distance: Расстояние в метрах\n  - type_id: ID типа места"
+					}
+				},
+				{
+					"name": "GetServicesInRoomList - Услуги в номере",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/services-in-room",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "services-in-room"]
+						},
+						"description": "Получает список всех доступных услуг в номерах.\n\n**Ответ:**\n- id: ID услуги\n- names: Названия на разных языках\n\n**Примеры услуг:**\n- Уборка номера\n- Смена постельного белья\n- Доставка еды в номер\n- Техническое обслуживание"
+					}
+				},
+				{
+					"name": "GetHotelServicesInRoomList - Услуги в номере отеля",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/hotel-services-in-room?hotel_id=123",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "hotel-services-in-room"],
+							"query": [
+								{
+									"key": "hotel_id",
+									"value": "123",
+									"description": "ID отеля (обязательно)"
+								}
+							]
+						},
+						"description": "Получает список услуг в номерах для конкретного отеля.\n\n**Параметры:**\n- hotel_id (query): ID отеля (обязательно)\n\n**Ответ:**\n- hotel_id: ID отеля\n- services: Массив услуг в номерах\n  - id: ID услуги\n  - names: Названия на разных языках"
+					}
+				},
+				{
+					"name": "GetBedTypeList - Типы кроватей",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/bed-types",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "bed-types"]
+						},
+						"description": "Получает список типов кроватей в номерах.\n\n**Ответ:**\n- id: ID типа кровати\n- names: Названия на разных языках\n\n**Примеры типов:**\n- Односпальная кровать\n- Двуспальная кровать\n- Две односпальные кровати\n- Диван-кровать\n- Раскладывающаяся кровать"
+					}
+				},
+				{
+					"name": "GetCurrencyList - Список валют",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/currencies",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "currencies"]
+						},
+						"description": "Получает список всех доступных валют для бронирования.\n\n**Ответ:**\n- code: Код валюты (ISO 4217)\n- name: Название валюты\n\n**Примеры валют:**\n- USD (US dollar)\n- EUR (Euro)\n- UZS (Uzbekistani Som)\n- KZT (Kazakhstani Tenge)\n- RUB (Russia Ruble)"
+					}
+				}
+			]
+		},
+		{
+			"name": "🏨 Booking-Flow API (v1.1.0)",
+			"item": [
+				{
+					"name": "BookingFlowSearch - Поиск отелей",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"data\": {\n    \"city_id\": 7192,\n    \"check_in\": \"2025/11/25 14:00\",\n    \"check_out\": \"2025/11/27 12:00\",\n    \"is_resident\": false,\n    \"occupancies\": [\n      {\n        \"adults\": 2,\n        \"children_ages\": []\n      }\n    ],\n    \"currency\": \"uzs\",\n    \"hotel_types\": [1, 2, 3, 4, 5],\n    \"cancellation_type\": \"all\",\n    \"meal_plans\": [0, 1, 2],\n    \"min_price\": 100000,\n    \"max_price\": 1000000,\n    \"min_stars\": 3,\n    \"max_stars\": 5\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/search",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "search"]
+						},
+
+						"description": "Выполняет поиск доступных отелей по заданным критериям.\n\n**✅ АВТОМАТИЧЕСКАЯ АВТОРИЗАЦИЯ:**\nCredentials добавляются автоматически сервером согласно OpenAPI спецификации!\n\n**ОБЯЗАТЕЛЬНЫЕ параметры в data:**\n- city_id ИЛИ hotel_ids: ID города (7192 = Ташкент) ИЛИ массив ID отелей\n- check_in: Дата заезда (формат: YYYY/MM/DD HH:MM)\n- check_out: Дата выезда (формат: YYYY/MM/DD HH:MM)\n- occupancies: Массив размещений\n  - adults: Количество взрослых\n  - children_ages: Массив возрастов детей\n- currency: Код валюты (uzs, usd, eur)\n\n**ОПЦИОНАЛЬНЫЕ фильтры:**\n- is_resident: true/false (цены для резидентов Узбекистана)\n- hotel_types: Массив типов отелей [1,2,3,4,5,10,11]\n- cancellation_type: 'rf' (возвратный), 'nrf' (невозвратный), 'all'\n- meal_plans: Массив планов питания [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100]\n- room_equipments: Массив оборудования номеров\n- min_price: Минимальная цена\n- max_price: Максимальная цена\n- min_stars: Минимальное количество звезд\n- max_stars: Максимальное количество звезд\n\n**Ответ (согласно OpenAPI):**\n- success: true/false\n- data.hotels: Массив отелей\n  - hotel_id: ID отеля\n  - options: Массив вариантов бронирования\n    - option_ref_id: Уникальный ID варианта\n    - room_type_id: ID типа номера\n    - rate_plan_id: ID тарифного плана\n    - price: Цена\n    - currency: Валюта\n    - price_breakdown: Детализация цен\n    - cancellation_policy: Политика отмены\n    - included_meal_options: Включенные планы питания"
+					}
+				},
+				{
+					"name": "BookingFlowQuote - Актуальные цены",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"data\": {\n    \"options\": [\n      {\n        \"option_ref_id\": \"130|1020|7585|2025-11-25|2025-11-27|2|0\"\n      }\n    ]\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/quote",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "quote"]
+						},
+						"description": "Получает актуальные цены для выбранного отеля и номера.\n\n**✅ АВТОМАТИЧЕСКАЯ АВТОРИЗАЦИЯ:**\nCredentials добавляются автоматически сервером!\n\n**Обязательные параметры в data:**\n- options: Массив option_ref_id из результата Search\n  - option_ref_id: Уникальный ID варианта (из Search)\n\n**Ответ (согласно OpenAPI):**\n- success: true/false\n- data.quote_id: Уникальный ID котировки\n- data.hotel: Информация об отеле\n  - hotel_id: ID отеля\n  - options: Массив вариантов с актуальными ценами\n    - price: Актуальная цена\n    - price_breakdown: Детализация цен\n    - rooms_count: Количество доступных номеров"
+					}
+				},
+				{
+					"name": "BookingFlowCreate - Создание бронирования",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"data\": {\n    \"quote_id\": \"931264bd-6d0c-4abb-9a4f-a6cfe5e8eb3e\",\n    \"external_id\": \"288399\",\n    \"booking_rooms\": [\n      {\n        \"option_ref_id\": \"130|1020|7585|2025-11-25|2025-11-27|2|0\",\n        \"guests\": [\n          {\n            \"person_title\": \"MR\",\n            \"first_name\": \"Иван\",\n            \"last_name\": \"Иванов\",\n            \"nationality\": \"uz\"\n          },\n          {\n            \"person_title\": \"MRS\",\n            \"first_name\": \"Анна\",\n            \"last_name\": \"Иванова\",\n            \"nationality\": \"uz\"\n          }\n        ],\n        \"price\": 300000\n      }\n    ],\n    \"comment\": \"Просьба о тихом номере на высоком этаже\",\n    \"deltaPrice\": {\n      \"amount\": 10000,\n      \"percent\": 5.0,\n      \"matches\": \"ALL\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/booking/create",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "booking", "create"]
+						},
+						"description": "Создает новое бронирование на основе котировки.\n\n**✅ АВТОМАТИЧЕСКАЯ АВТОРИЗАЦИЯ:**\nCredentials добавляются автоматически сервером!\n\n**ОБЯЗАТЕЛЬНЫЕ параметры в data:**\n- quote_id: ID котировки (из результата Quote)\n- external_id: Ваш внутренний ID бронирования (ДОЛЖЕН БЫТЬ УНИКАЛЬНЫМ!)\n- booking_rooms: Массив номеров для бронирования\n  - option_ref_id: ID варианта (из Quote)\n  - guests: Массив гостей (минимум 1 взрослый в номере)\n    - person_title: Титул (MR, MRS, MS)\n    - first_name: Имя\n    - last_name: Фамилия\n    - nationality: Национальность (uz, us, ru)\n    - age: Возраст (опционально, для детей)\n  - price: Общая цена за номер за период бронирования\n\n**ОПЦИОНАЛЬНЫЕ параметры:**\n- comment: Комментарий к бронированию\n- deltaPrice: Допустимое отклонение цены\n  - amount: Сумма в валюте\n  - percent: Процент отклонения\n  - matches: 'ALL' (оба условия) или 'ANY' (любое условие)\n\n**Ответ (согласно OpenAPI):**\n- success: true/false\n- data.booking_id: ID бронирования\n- data.status: Статус (pending_payment)\n- data.confirmation_number: Номер подтверждения\n- data.payment_deadline: Срок оплаты"
+					}
+				},
+				{
+					"name": "BookingFlowConfirm - Подтверждение бронирования",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"data\": {\n    \"booking_id\": \"booking_12345\",\n    \"payment_info\": {\n      \"payment_method\": \"card\",\n      \"card_number\": \"****1234\",\n      \"transaction_id\": \"txn_67890\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/booking/confirm",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "booking", "confirm"]
+						},
+						"description": "Подтверждает бронирование после успешной оплаты.\n\n**✅ АВТОМАТИЧЕСКАЯ АВТОРИЗАЦИЯ:**\nCredentials добавляются автоматически сервером!\n\n**Обязательные параметры в data:**\n- booking_id: ID бронирования (из результата Create)\n- payment_info: Информация об оплате\n  - payment_method: Способ оплаты (card, cash, etc.)\n  - card_number: Номер карты (маскированный)\n  - transaction_id: ID транзакции\n\n**Ответ (согласно OpenAPI):**\n- success: true/false\n- data.booking_id: ID бронирования\n- data.status: Статус (confirmed)\n- data.confirmation_number: Номер подтверждения\n- data.hotel_confirmation_number: Номер подтверждения отеля\n- data.voucher_url: URL ваучера\n- data.check_in_instructions: Инструкции по заезду"
+					}
+				},
+				{
+					"name": "BookingFlowCancel - Отмена бронирования",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"data\": {\n    \"booking_id\": \"booking_12345\",\n    \"cancellation_reason\": \"Изменение планов\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/booking/cancel",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "booking", "cancel"]
+						},
+						"description": "Отменяет существующее бронирование.\n\n**✅ АВТОМАТИЧЕСКАЯ АВТОРИЗАЦИЯ:**\nCredentials добавляются автоматически сервером!\n\n**Обязательные параметры в data:**\n- booking_id: ID бронирования (из результата Create/Confirm)\n- cancellation_reason: Причина отмены (опционально)\n\n**Ответ (согласно OpenAPI):**\n- success: true/false\n- data.booking_id: ID бронирования\n- data.status: Статус (cancelled)\n- data.cancellation_fee: Штраф за отмену\n- data.refund_amount: Сумма возврата\n- data.currency: Валюта\n- data.refund_deadline: Срок возврата средств\n- data.cancellation_policy: Политика отмены"
+					}
+				},
+				{
+					"name": "BookingFlowRead - Детали бронирования",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"data\": {\n    \"booking_id\": \"booking_12345\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/hotels/booking/read",
+							"host": ["{{base_url}}"],
+							"path": ["hotels", "booking", "read"]
+						},
+						"description": "Получает детальную информацию о бронировании.\n\n**✅ АВТОМАТИЧЕСКАЯ АВТОРИЗАЦИЯ:**\nCredentials добавляются автоматически сервером!\n\n**Обязательные параметры в data:**\n- booking_id: ID бронирования (из результата Create/Confirm)\n\n**Ответ (согласно OpenAPI):**\n- success: true/false\n- data.booking_id: ID бронирования\n- data.status: Статус бронирования\n- data.confirmation_number: Номер подтверждения\n- data.hotel_confirmation_number: Номер подтверждения отеля\n- data.hotel_info: Информация об отеле\n  - hotel_id: ID отеля\n  - name: Название отеля\n  - address: Адрес\n  - phone: Телефон\n  - stars: Количество звезд\n- data.room_info: Информация о номере\n- data.guest_info: Информация о госте\n- data.dates: Даты заезда/выезда\n- data.total_amount: Общая сумма\n- data.payment_status: Статус оплаты\n- data.cancellation_policy: Политика отмены"
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"description": "Базовый URL сервера"
+		}
+	]
+}

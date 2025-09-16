@@ -57,3 +57,4 @@ func SetupAdminRoutes(r *gin.Engine) {
 	fmt.Println("DEBUG: Админские routes настроены успешно")
 	fmt.Println("==========================================")
 }
+

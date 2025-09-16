@@ -1,7 +1,7 @@
 package routes
 
 import (
-	hotels "kliro/controllers/hotels"
+	"kliro/controllers/hotels"
 
 	"github.com/gin-gonic/gin"
 )
@@ -9,42 +9,43 @@ import (
 func SetupHotelRoutes(router *gin.Engine) {
 	hotelController := hotels.NewHotelController()
 
-	// Группа маршрутов для отелей
-	hotelGroup := router.Group("/api/hotels")
+	// Hotelios API routes (точные как в оригинале, но сгруппированы под /hotels)
+	hotelsGroup := router.Group("/hotels")
 	{
-		// Справочники
-		hotelGroup.GET("/countries", hotelController.GetCountryList)
-		hotelGroup.GET("/regions", hotelController.GetRegionList)
-		hotelGroup.GET("/cities", hotelController.GetCityList)
-		hotelGroup.GET("/types", hotelController.GetHotelTypeList)
-		hotelGroup.GET("/facilities", hotelController.GetFacilityList)
-		hotelGroup.GET("/equipment", hotelController.GetEquipmentList)
-		hotelGroup.GET("/nearby-places", hotelController.GetNearbyPlacesList)
-		hotelGroup.GET("/free-services", hotelController.GetFreeServicesList)
-		hotelGroup.GET("/bed-types", hotelController.GetBedTypeList)
-		hotelGroup.GET("/stars", hotelController.GetHotelStarList)
-		hotelGroup.GET("/currencies", hotelController.GetCurrencyList)
-		hotelGroup.GET("/price-range", hotelController.GetMinMaxPrice)
+		// ===== СПРАВОЧНЫЕ МЕТОДЫ (v1.0) - оригинальные пути =====
 
-		// Информация об отелях
-		hotelGroup.GET("/", hotelController.GetHotelList)
-		hotelGroup.GET("/photos", hotelController.GetHotelPhotosList)
-		hotelGroup.GET("/facilities-list", hotelController.GetHotelFacilitiesList)
-		hotelGroup.GET("/services", hotelController.GetHotelServicesInRoomList)
-		hotelGroup.GET("/nearby", hotelController.GetHotelNearbyPlacesList)
+		// Справочники - уникальные пути для каждого метода
+		hotelsGroup.POST("/countries", hotelController.GetCountryList)                          // GetCountryList
+		hotelsGroup.POST("/regions", hotelController.GetRegionList)                             // GetRegionList
+		hotelsGroup.POST("/cities", hotelController.GetCityList)                                // GetCityList
+		hotelsGroup.POST("/types", hotelController.GetHotelTypeList)                            // GetHotelTypeList
+		hotelsGroup.POST("/list", hotelController.GetHotelList)                                 // GetHotelList
+		hotelsGroup.POST("/photos", hotelController.GetHotelPhotoList)                          // GetHotelPhotoList
+		hotelsGroup.POST("/room-types", hotelController.GetHotelRoomTypeList)                   // GetHotelRoomTypeList
+		hotelsGroup.POST("/room-photos", hotelController.GetHotelRoomTypesPhotoList)            // GetHotelRoomTypesPhotoList
+		hotelsGroup.POST("/facilities", hotelController.GetFacilityList)                        // GetFacilityList
+		hotelsGroup.POST("/hotel-facilities", hotelController.GetHotelFacilityList)             // GetHotelFacilityList
+		hotelsGroup.POST("/equipment", hotelController.GetEquipmentList)                        // GetEquipmentList
+		hotelsGroup.POST("/room-equipment", hotelController.GetRoomTypeEquipmentList)           // GetRoomTypeEquipmentList
+		hotelsGroup.POST("/price-range", hotelController.GetPriceRange)                         // GetPriceRange
+		hotelsGroup.POST("/stars", hotelController.GetStarList)                                 // GetStarList
+		hotelsGroup.POST("/nearby-places-types", hotelController.GetNearbyPlacesTypeList)       // GetNearbyPlacesTypeList
+		hotelsGroup.POST("/hotel-nearby-places", hotelController.GetHotelNearbyPlacesList)      // GetHotelNearbyPlacesList
+		hotelsGroup.POST("/services-in-room", hotelController.GetServicesInRoomList)            // GetServicesInRoomList
+		hotelsGroup.POST("/hotel-services-in-room", hotelController.GetHotelServicesInRoomList) // GetHotelServicesInRoomList
+		hotelsGroup.POST("/bed-types", hotelController.GetBedTypeList)                          // GetBedTypeList
+		hotelsGroup.POST("/currencies", hotelController.GetCurrencyList)                        // GetCurrencyList
 
-		// Информация о номерах
-		hotelGroup.GET("/room-types", hotelController.GetHotelRoomTypeList)
-		hotelGroup.GET("/room-photos", hotelController.GetHotelRoomTypesPhotoList)
-		hotelGroup.GET("/room-equipment", hotelController.GetRoomTypeEquipmentList)
+	}
 
-		// Резервация
-		hotelGroup.POST("/search", hotelController.SearchHotels)
-		hotelGroup.POST("/available-rooms", hotelController.GetAvailableRoomsByHotel)
-		hotelGroup.POST("/reservation", hotelController.MakeReservation)
-		hotelGroup.POST("/reservation/status", hotelController.GetReservationStatus)
-		hotelGroup.POST("/reservation/details", hotelController.GetReservationDetails)
-		hotelGroup.POST("/reservation/confirm", hotelController.ConfirmReservation)
-		hotelGroup.POST("/reservation/cancel", hotelController.CancelReservation)
+	// ===== BOOKING-FLOW API (v1.1.0) - оригинальные пути =====
+	bookingFlowGroup := router.Group("/hotels")
+	{
+		bookingFlowGroup.POST("/search", hotelController.BookingFlowSearch)
+		bookingFlowGroup.POST("/quote", hotelController.BookingFlowQuote)
+		bookingFlowGroup.POST("/booking/create", hotelController.BookingFlowCreate)
+		bookingFlowGroup.POST("/booking/confirm", hotelController.BookingFlowConfirm)
+		bookingFlowGroup.POST("/booking/cancel", hotelController.BookingFlowCancel)
+		bookingFlowGroup.POST("/booking/read", hotelController.BookingFlowRead)
 	}
 }

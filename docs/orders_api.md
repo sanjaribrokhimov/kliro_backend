@@ -14,7 +14,7 @@ Authorization: Bearer YOUR_JWT_TOKEN
 ## Эндпоинты
 
 ### 1. Создание заказа
-**POST** `/orders/`
+**POST** `/user/orders/create`
 
 ```json
 {
@@ -26,7 +26,7 @@ Authorization: Bearer YOUR_JWT_TOKEN
 ```
 
 ### 2. Получение заказов
-**GET** `/orders/my-orders`
+**GET** `/user/orders/my-orders`
 
 Query параметры:
 - `page` - номер страницы
@@ -36,10 +36,10 @@ Query параметры:
 - `company` - фильтр по компании
 
 ### 3. Получение заказа по ID
-**GET** `/orders/{order_id}`
+**GET** `/user/orders/{order_id}`
 
 ### 4. Обновление статуса
-**PUT** `/orders/{order_id}/status`
+**PUT** `/user/orders/{order_id}/status`
 
 ```json
 {
@@ -48,16 +48,16 @@ Query параметры:
 ```
 
 ### 5. Статистика заказов
-**GET** `/orders/my-stats`
+**GET** `/user/orders/my-stats`
 
 ### 6. Удаление заказа
-**DELETE** `/orders/{order_id}`
+**DELETE** `/user/orders/{order_id}`
 
 ## Примеры cURL
 
 ### Создание заказа
 ```bash
-curl -X POST http://localhost:8080/orders/ \
+curl -X POST http://localhost:8080/user/orders/create \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -d '{
@@ -70,19 +70,19 @@ curl -X POST http://localhost:8080/orders/ \
 
 ### Получение заказов
 ```bash
-curl -X GET http://localhost:8080/orders/my-orders \
+curl -X GET http://localhost:8080/user/orders/my-orders \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Получение с фильтрами
 ```bash
-curl -X GET "http://localhost:8080/orders/my-orders?category=insurance&status=pending" \
+curl -X GET "http://localhost:8080/user/orders/my-orders?category=insurance&status=pending" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Обновление статуса
 ```bash
-curl -X PUT http://localhost:8080/orders/ORDER-001/status \
+curl -X PUT http://localhost:8080/user/orders/ORDER-001/status \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -d '{"status": "completed"}'
@@ -90,7 +90,7 @@ curl -X PUT http://localhost:8080/orders/ORDER-001/status \
 
 ### Статистика
 ```bash
-curl -X GET http://localhost:8080/orders/my-stats \
+curl -X GET http://localhost:8080/user/orders/my-stats \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 

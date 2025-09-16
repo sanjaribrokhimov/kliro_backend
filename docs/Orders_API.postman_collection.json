@@ -137,13 +137,14 @@
 							"raw": "{\n  \"order_id\": \"ORDER-001\",\n  \"category\": \"insurance\",\n  \"company_name\": \"NeoInsurance\",\n  \"status\": \"pending\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/orders/",
+							"raw": "{{base_url}}/user/orders/create",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"user",
 								"orders",
-								""
+								"create"
 							]
 						}
 					}
@@ -159,11 +160,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/orders/my-orders",
+							"raw": "{{base_url}}/user/orders/my-orders",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"user",
 								"orders",
 								"my-orders"
 							]
@@ -181,11 +183,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/orders/my-orders?category=insurance&status=pending&page=1&limit=5",
+							"raw": "{{base_url}}/user/orders/my-orders?category=insurance&status=pending&page=1&limit=5",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"user",
 								"orders",
 								"my-orders"
 							],
@@ -221,11 +224,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/orders/ORDER-001",
+							"raw": "{{base_url}}/user/orders/ORDER-001",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"user",
 								"orders",
 								"ORDER-001"
 							]
@@ -251,11 +255,12 @@
 							"raw": "{\n  \"status\": \"completed\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/orders/ORDER-001/status",
+							"raw": "{{base_url}}/user/orders/ORDER-001/status",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"user",
 								"orders",
 								"ORDER-001",
 								"status"
@@ -274,11 +279,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/orders/my-stats",
+							"raw": "{{base_url}}/user/orders/my-stats",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"user",
 								"orders",
 								"my-stats"
 							]
@@ -296,11 +302,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/orders/ORDER-001",
+							"raw": "{{base_url}}/user/orders/ORDER-001",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
+								"user",
 								"orders",
 								"ORDER-001"
 							]
