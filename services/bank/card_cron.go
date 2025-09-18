@@ -120,7 +120,7 @@ func StartCardCron(db *gorm.DB) {
 	InitializeCardData(db)
 
 	c := cron.New()
-	c.AddFunc("0 0 22 * * *", func() { // Каждый день в 22:00 UTC (03:00 по Узбекистану)
+	c.AddFunc("0 15 22 * * *", func() { // Каждый день в 22:15 UTC (03:15 по Узбекистану)
 		logFile, _ := os.OpenFile("logs/parser_errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		logger := log.New(logFile, "", log.LstdFlags)
 		defer logFile.Close()
@@ -143,7 +143,7 @@ func StartCardCron(db *gorm.DB) {
 		logger.Printf("Ежедневный парсинг card завершен")
 	})
 	c.Start()
-	log.Printf("[CARD CRON] Планировщик запущен. Парсинг карт будет выполняться каждый день в 03:00 UTC")
+	log.Printf("[CARD CRON] Планировщик запущен. Парсинг карт будет выполняться каждый день в 03:15 UTC")
 }
 
 // Крон кредитных карт
@@ -151,7 +151,7 @@ func StartCreditCardCron(db *gorm.DB) {
 	InitializeCreditCardData(db)
 
 	c := cron.New()
-	c.AddFunc("0 10 22 * * *", func() { // Каждый день в 22:10 UTC (03:10 по Узбекистану)
+	c.AddFunc("0 20 22 * * *", func() { // Каждый день в 22:20 UTC (03:20 по Узбекистану)
 		logFile, _ := os.OpenFile("logs/parser_errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		logger := log.New(logFile, "", log.LstdFlags)
 		defer logFile.Close()
@@ -169,5 +169,5 @@ func StartCreditCardCron(db *gorm.DB) {
 		logger.Printf("Ежедневный парсинг credit_card завершен")
 	})
 	c.Start()
-	log.Printf("[CREDIT CARD CRON] Планировщик запущен. Парсинг кредитных карт будет выполняться каждый день в 03:10 UTC")
+	log.Printf("[CREDIT CARD CRON] Планировщик запущен. Парсинг кредитных карт будет выполняться каждый день в 03:20 UTC")
 }

@@ -164,12 +164,12 @@ func StartCurrencyCron(db *gorm.DB) {
 	InitializeCurrencyData(db)
 
 	c := cron.New()
-	c.AddFunc("0 0 */3 * * *", func() { // Каждые 3 часа (время UTC, но данные с узбекским временем)
+	c.AddFunc("*/10 * * * *", func() { // Каждые 10 минут (время UTC, но данные с узбекским временем)
 		logFile, _ := os.OpenFile("logs/parser_errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		logger := log.New(logFile, "", log.LstdFlags)
 		defer logFile.Close()
 
-		logger.Printf("Начало парсинга currency (каждые 3 часа)...")
+		logger.Printf("Начало парсинга currency (каждые 10 минут)...")
 
 		// Парсим валюты заново
 		if currencies := parseCurrencyData(logger); currencies != nil {
@@ -186,5 +186,5 @@ func StartCurrencyCron(db *gorm.DB) {
 		}
 	})
 	c.Start()
-	log.Printf("[CURRENCY CRON] Планировщик запущен. Парсинг валют будет выполняться каждые 3 часа")
+	log.Printf("[CURRENCY CRON] Планировщик запущен. Парсинг валют будет выполняться каждые 10 минут")
 }

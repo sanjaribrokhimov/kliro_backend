@@ -64,6 +64,7 @@ func InitializeDepositData(db *gorm.DB) {
 		}
 	}
 
+	logger.Printf("Инициализация завершена - заполнена таблица new_deposit")
 }
 
 func StartDepositCron(db *gorm.DB) {

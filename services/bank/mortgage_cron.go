@@ -66,7 +66,7 @@ func StartMortgageCron(db *gorm.DB) {
 	InitializeMortgageData(db)
 
 	c := cron.New()
-	c.AddFunc("0 0 22 * * *", func() { // Каждый день в 22:00 UTC (03:00 по Узбекистану)
+	c.AddFunc("0 5 22 * * *", func() { // Каждый день в 22:05 UTC (03:05 по Узбекистану)
 		logFile, _ := os.OpenFile("logs/parser_errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		logger := log.New(logFile, "", log.LstdFlags)
 		defer logFile.Close()
@@ -89,5 +89,5 @@ func StartMortgageCron(db *gorm.DB) {
 		logger.Printf("Ежедневный парсинг mortgage завершен")
 	})
 	c.Start()
-	log.Printf("[MORTGAGE CRON] Планировщик запущен. Парсинг ипотеки будет выполняться каждый день в 03:00 UTC")
+	log.Printf("[MORTGAGE CRON] Планировщик запущен. Парсинг ипотеки будет выполняться каждый день в 03:05 UTC")
 }
