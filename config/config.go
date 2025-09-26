@@ -28,6 +28,10 @@ type Config struct {
 	NeoBaseURL  string
 	NeoLogin    string
 	NeoPassword string
+	// Trust Insurance external API settings
+	TrustBaseURL  string
+	TrustLogin    string
+	TrustPassword string
 }
 
 func LoadConfig() *Config {
@@ -55,6 +59,9 @@ func LoadConfig() *Config {
 		NeoBaseURL:     getenvOrDefault("NEO_BASE_URL", "https://api.neoinsurance.uz"),
 		NeoLogin:       os.Getenv("NEO_LOGIN"),
 		NeoPassword:    os.Getenv("NEO_PASSWORD"),
+		TrustBaseURL:   getenvOrDefault("TRUST_BASE_URL", "https://api.online-trust.uz"),
+		TrustLogin:     os.Getenv("TRUST_LOGIN"),
+		TrustPassword:  os.Getenv("TRUST_PASSWORD"),
 	}
 }
 

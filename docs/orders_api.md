@@ -19,7 +19,7 @@ Authorization: Bearer YOUR_JWT_TOKEN
 ```json
 {
   "order_id": "ORDER-001",
-  "category": "insurance",
+  "category": "neoInsurance",
   "company_name": "NeoInsurance",
   "status": "pending"
 }
@@ -76,7 +76,7 @@ curl -X GET http://localhost:8080/user/orders/my-orders \
 
 ### Получение с фильтрами
 ```bash
-curl -X GET "http://localhost:8080/user/orders/my-orders?category=insurance&status=pending" \
+curl -X GET "http://localhost:8080/user/orders/my-orders?category=neoInsurance&status=pending" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -119,7 +119,7 @@ curl -X GET http://localhost:8080/user/orders/my-stats \
 - `failed` - неудачный
 
 ## Категории
-- `insurance` - страхование
+- `neoInsurance` - страхование
 - `banking` - банковские услуги
 - `travel` - путешествия
 - `hotel` - отели

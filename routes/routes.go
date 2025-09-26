@@ -5,8 +5,7 @@ import (
 	"kliro/controllers"
 	"kliro/middleware"
 
-	"kliro/config"
-	insurancectl "kliro/controllers/insurance"
+	"kliro/routes/insurance"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -41,12 +40,6 @@ func SetupRouter() *gin.Engine {
 	userController := controllers.NewUserController(rdb)
 	userProfileController := controllers.NewUserProfileController(rdb)
 
-	// Конфиг и контроллер страхования
-	cfg := config.LoadConfig()
-	kaskoController := insurancectl.NewKaskoController(cfg)
-	osagoController := insurancectl.NewOsagoController(cfg)
-	travelController := insurancectl.NewTravelController(cfg)
-
 	r.POST("/auth/register", userController.Register)
 	r.POST("/auth/confirm-otp", userController.ConfirmOTP)
 	r.POST("/auth/confirm-otp-create", userController.ConfirmOTPCreate)
@@ -60,48 +53,11 @@ func SetupRouter() *gin.Engine {
 	// Bank group for all bank-related endpoints
 	SetupBankRoutes(r)
 
-	// Insurance group (proxy to NeoInsurance APIs)
-	insuranceGroup := r.Group("/insurance")
-	{
-		kasko := insuranceGroup.Group("/kasko")
-		{
-			kasko.GET("/cars", kaskoController.Cars)
-			kasko.GET("/rates", kaskoController.GetTarif)
-			kasko.POST("/car-price", kaskoController.CarPriceCalc)
-			kasko.POST("/calculate", kaskoController.Calculate)
-			kasko.POST("/save", kaskoController.Save)
-			kasko.POST("/payment-link", kaskoController.GetPaymentLink)
-			kasko.POST("/check-payment", kaskoController.CheckPayment)
-			kasko.POST("/image-upload", kaskoController.ImageUpload)
-		}
+	// NeoInsurance proxy routes
+	insurance.SetupNeoInsuranceRoutes(r)
 
-		osago := insuranceGroup.Group("/osago")
-		{
-			osago.POST("/calculate", osagoController.Calc)
-			osago.POST("/legal", osagoController.Juridik)
-			osago.POST("/check-person", osagoController.CheckPerson)
-			osago.POST("/save-policy", osagoController.SavePolicy)
-			osago.POST("/confirm", osagoController.ConfirmPolicy)
-			osago.POST("/status", osagoController.ConfirmCheck)
-		}
-
-		// Travel group (no JWT)
-		travel := insuranceGroup.Group("/travel")
-		{
-			// Simple Travel API (упрощенный продукт)
-			travel.GET("/simple/get-data", travelController.RiskGetData)
-			travel.GET("/simple/get-country", travelController.RiskGetCountry)
-			travel.POST("/simple/calculator", travelController.RiskCalculator)
-			travel.POST("/simple/save", travelController.RiskSave)
-
-			// Full Travel API (полноценный продукт)
-			travel.GET("/full/get-data", travelController.TravelGetData)
-			travel.POST("/full/calculator", travelController.TravelCalculatorTotal)
-			travel.POST("/full/save", travelController.TravelSavePolis)
-			travel.POST("/full/check", travelController.TravelCheckPolis)
-			travel.POST("/full/passport-person", travelController.TravelPassportPerson)
-		}
-	}
+	// Trust Insurance proxy routes
+	insurance.SetupTrustInsuranceRoutes(r)
 
 	userGroup := r.Group("/user", middleware.JWTAuthMiddleware())
 	{
@@ -126,11 +82,14 @@ func SetupRouter() *gin.Engine {
 	// Order group (Order API)
 	SetupOrderRoutes(r)
 
+	// Unified API routes
+	SetupUnifiedRoutes(r)
+
 	return r
 }
 
-// SetupInsuranceRouterOnly поднимает только страховые маршруты (без БД/кронов)
-func SetupInsuranceRouterOnly() *gin.Engine {
+// SetupNeoInsuranceRouterOnly поднимает только neoInsurance маршруты (без БД/кронов)
+func SetupNeoInsuranceRouterOnly() *gin.Engine {
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000", "https://kliro.uz", "https://www.kliro.uz", "https://kliro-frontend.vercel.app"},
@@ -140,34 +99,7 @@ func SetupInsuranceRouterOnly() *gin.Engine {
 		AllowCredentials: true,
 	}))
 
-	cfg := config.LoadConfig()
-	kaskoController := insurancectl.NewKaskoController(cfg)
-	osagoController := insurancectl.NewOsagoController(cfg)
-
-	insuranceGroup := r.Group("/insurance")
-	{
-		kasko := insuranceGroup.Group("/kasko")
-		{
-			kasko.GET("/cars", kaskoController.Cars)
-			kasko.GET("/rates", kaskoController.GetTarif)
-			kasko.POST("/car-price", kaskoController.CarPriceCalc)
-			kasko.POST("/calculate", kaskoController.Calculate)
-			kasko.POST("/save", kaskoController.Save)
-			kasko.POST("/payment-link", kaskoController.GetPaymentLink)
-			kasko.POST("/check-payment", kaskoController.CheckPayment)
-			kasko.POST("/image-upload", kaskoController.ImageUpload)
-		}
-
-		osago := insuranceGroup.Group("/osago")
-		{
-			osago.POST("/calculate", osagoController.Calc)
-			osago.POST("/legal", osagoController.Juridik)
-			osago.POST("/check-person", osagoController.CheckPerson)
-			osago.POST("/save-policy", osagoController.SavePolicy)
-			osago.POST("/confirm", osagoController.ConfirmPolicy)
-			osago.POST("/status", osagoController.ConfirmCheck)
-		}
-	}
+	insurance.SetupNeoInsuranceRoutes(r)
 
 	return r
 }

@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: KLIRO Insurance API
+  title: KLIRO NeoInsurance API
   version: 1.0.0
   description: |
     Прокси-эндпоинты к NeoInsurance (KASKO, OSAGO). Все запросы/ответы транзитно
@@ -10,15 +10,15 @@ servers:
   - url: https://api.kliro.uz
 
 tags:
-  - name: Insurance - KASKO
+  - name: NeoInsurance - KASKO
     description: Эндпоинты страхования KASKO (прокси к NeoInsurance)
-  - name: Insurance - OSAGO
+  - name: NeoInsurance - OSAGO
     description: Эндпоинты страхования OSAGO (прокси к NeoInsurance)
 
 paths:
-  /insurance/kasko/cars:
+  /neoInsurance/kasko/cars:
     get:
-      tags: [Insurance - KASKO]
+      tags: [NeoInsurance - KASKO]
       summary: Справочник автомобилей (KASKO)
       description: Проксирует GET /api/sayt/kasko/cars в NeoInsurance.
       responses:
@@ -34,9 +34,9 @@ paths:
         '500':
           $ref: '../swagger.yaml#/components/responses/Error'
 
-  /insurance/kasko/rates:
+  /neoInsurance/kasko/rates:
     get:
-      tags: [Insurance - KASKO]
+      tags: [NeoInsurance - KASKO]
       summary: Получить тарифы KASKO
       description: Проксирует GET /api/kasko-neo/get-tarif в NeoInsurance.
       responses:
@@ -52,9 +52,9 @@ paths:
         '500':
           $ref: '../swagger.yaml#/components/responses/Error'
 
-  /insurance/kasko/car-price:
+  /neoInsurance/kasko/car-price:
     post:
-      tags: [Insurance - KASKO]
+      tags: [NeoInsurance - KASKO]
       summary: Расчет стоимости автомобиля (KASKO)
       description: Проксирует POST /api/kasko-neo/car_price_cal в NeoInsurance.
       requestBody:
@@ -77,9 +77,9 @@ paths:
         '500':
           $ref: '../swagger.yaml#/components/responses/Error'
 
-  /insurance/kasko/calculate:
+  /neoInsurance/kasko/calculate:
     post:
-      tags: [Insurance - KASKO]
+      tags: [NeoInsurance - KASKO]
       summary: Расчет полиса KASKO
       description: Проксирует POST /api/kasko-neo/hisoblash в NeoInsurance.
       requestBody:
@@ -102,9 +102,9 @@ paths:
         '500':
           $ref: '../swagger.yaml#/components/responses/Error'
 
-  /insurance/kasko/save:
+  /neoInsurance/kasko/save:
     post:
-      tags: [Insurance - KASKO]
+      tags: [NeoInsurance - KASKO]
       summary: Сохранить заявку на полис KASKO
       description: Проксирует POST /api/kasko-neo/saqlash в NeoInsurance.
       requestBody:
@@ -127,9 +127,9 @@ paths:
         '500':
           $ref: '../swagger.yaml#/components/responses/Error'
 
-  /insurance/kasko/payment-link:
+  /neoInsurance/kasko/payment-link:
     post:
-      tags: [Insurance - KASKO]
+      tags: [NeoInsurance - KASKO]
       summary: Получить ссылку на оплату (KASKO)
       description: Проксирует POST /api/kasko-neo/get-payment-link в NeoInsurance.
       requestBody:
@@ -152,9 +152,9 @@ paths:
         '500':
           $ref: '../swagger.yaml#/components/responses/Error'
 
-  /insurance/kasko/check-payment:
+  /neoInsurance/kasko/check-payment:
     post:
-      tags: [Insurance - KASKO]
+      tags: [NeoInsurance - KASKO]
       summary: Проверить статус оплаты (KASKO)
       description: Проксирует POST /api/kasko-neo/check_tolov в NeoInsurance.
       requestBody:
@@ -177,9 +177,9 @@ paths:
         '500':
           $ref: '../swagger.yaml#/components/responses/Error'
 
-  /insurance/kasko/image-upload:
+  /neoInsurance/kasko/image-upload:
     post:
-      tags: [Insurance - KASKO]
+      tags: [NeoInsurance - KASKO]
       summary: Загрузка фотографий (KASKO)
       description: Проксирует POST /api/kasko-neo/image-upload в NeoInsurance. Принимает multipart/form-data.
       requestBody:
@@ -212,9 +212,9 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
-  /insurance/osago/calculate:
+  /neoInsurance/osago/calculate:
     post:
-      tags: [Insurance - OSAGO]
+      tags: [NeoInsurance - OSAGO]
       summary: Расчет ОСАГО
       description: Проксирует POST /api/osago-neo/get-calc-osago в NeoInsurance.
       requestBody:
@@ -237,9 +237,9 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
-  /insurance/osago/legal:
+  /neoInsurance/osago/legal:
     post:
-      tags: [Insurance - OSAGO]
+      tags: [NeoInsurance - OSAGO]
       summary: ОСАГО для юридических лиц
       description: Проксирует POST /api/osago-neo/osago-juridik в NeoInsurance.
       requestBody:
@@ -262,9 +262,9 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
-  /insurance/osago/check-person:
+  /neoInsurance/osago/check-person:
     post:
-      tags: [Insurance - OSAGO]
+      tags: [NeoInsurance - OSAGO]
       summary: Проверка данных физлица
       description: Проксирует POST /api/osago-neo/check-person в NeoInsurance.
       requestBody:
@@ -287,9 +287,9 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
-  /insurance/osago/save-policy:
+  /neoInsurance/osago/save-policy:
     post:
-      tags: [Insurance - OSAGO]
+      tags: [NeoInsurance - OSAGO]
       summary: Сохранить полис ОСАГО
       description: Проксирует POST /api/osago-neo/save-policy/v2 в NeoInsurance.
       requestBody:
@@ -312,9 +312,9 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
-  /insurance/osago/confirm:
+  /neoInsurance/osago/confirm:
     post:
-      tags: [Insurance - OSAGO]
+      tags: [NeoInsurance - OSAGO]
       summary: Подтвердить полис ОСАГО
       description: Проксирует POST /api/osago-neo/confirm-policy в NeoInsurance.
       requestBody:
@@ -337,9 +337,9 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
-  /insurance/osago/status:
+  /neoInsurance/osago/status:
     post:
-      tags: [Insurance - OSAGO]
+      tags: [NeoInsurance - OSAGO]
       summary: Проверить статус полиса ОСАГО
       description: Проксирует POST /api/osago-neo/confirm-check в NeoInsurance.
       requestBody:
