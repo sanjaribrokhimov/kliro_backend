@@ -218,6 +218,11 @@ func (c *OsagoController) Create(ctx *gin.Context) {
 		return
 	}
 
+	fmt.Printf("=== INTERNAL TRUST API DEBUG ===\n")
+	fmt.Printf("Received request body: %+v\n", requestBody)
+	fmt.Printf("Marshaled JSON: %s\n", string(jsonData))
+	fmt.Printf("JSON length: %d bytes\n", len(jsonData))
+
 	// Проверяем, есть ли сохраненный токен, если нет - получаем автоматически
 	c.mutex.RLock()
 	token := c.token
@@ -236,7 +241,11 @@ func (c *OsagoController) Create(ctx *gin.Context) {
 		fmt.Printf("Automatic auth successful, token obtained\n")
 	}
 
-	req, err := http.NewRequest("POST", c.config.TrustBaseURL+"/api/osgo/create", bytes.NewBuffer(jsonData))
+	externalURL := c.config.TrustBaseURL + "/api/osgo/create"
+	fmt.Printf("Sending to external Trust API: %s\n", externalURL)
+	fmt.Printf("Request headers: Content-Type=application/json, Authorization=Bearer %s...\n", token[:20])
+
+	req, err := http.NewRequest("POST", externalURL, bytes.NewBuffer(jsonData))
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create request"})
 		return
@@ -257,6 +266,9 @@ func (c *OsagoController) Create(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read response"})
 		return
 	}
+
+	fmt.Printf("External Trust API Response - Status: %d\n", resp.StatusCode)
+	fmt.Printf("External Trust API Response Body: %s\n", string(body))
 
 	ctx.Data(resp.StatusCode, "application/json", body)
 }

@@ -16,7 +16,9 @@ func SetupUnifiedRoutes(r *gin.Engine) {
 		osago := unifiedGroup.Group("/osago")
 		{
 			osago.POST("/nacalo", unifiedController.Nacalo)
+			osago.POST("/initcon", unifiedController.InitCon)
 			osago.POST("/calc", unifiedController.Calc)
+			osago.POST("/submit", unifiedController.Submit)
 			osago.GET("/session/:id", unifiedController.GetSession)
 		}
 	}
