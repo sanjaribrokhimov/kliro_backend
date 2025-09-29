@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"sync"
@@ -47,58 +48,67 @@ type ApplicantStored struct {
 }
 
 type VehicleData struct {
-	Error                 int             `json:"error"`
-	ErrorMessage          string          `json:"error_message"`
-	TechPassportIssueDate string          `json:"tech_passport_issue_date"`
-	IssueYear             string          `json:"issue_year"`
-	VehicleTypeID         string          `json:"vehicle_type_id"`
-	BodyNumber            string          `json:"body_number"`
-	EngineNumber          string          `json:"engine_number"`
-	ModelID               string          `json:"model_id"`
-	MarkaID               string          `json:"marka_id"`
-	ModelName             string          `json:"model_name"`
-	OrgName               string          `json:"orgname"`
-	LastName              string          `json:"last_name"`
-	FirstName             string          `json:"first_name"`
-	MiddleName            string          `json:"middle_name"`
-	UseTerritory          int             `json:"use_territory"`
-	Fy                    int             `json:"fy"`
-	Pinfl                 string          `json:"pinfl"`
-	Inn                   *string         `json:"inn"`
-	Seats                 string          `json:"seats"`
-	GovNumber             string          `json:"govNumber"`
-	TechPassportNumber    string          `json:"techPassportNumber"`
-	TechPassportSeria     string          `json:"techPassportSeria"`
-	OwnerPNumber          string          `json:"ownerPNumber"`
-	OwnerPSeries          string          `json:"ownerPSeries"`
-	OwnerPinfl            string          `json:"ownerPinfl"`
-	OwnerLastNameLatin    string          `json:"owner_last_name_latin"`
-	OwnerFirstNameLatin   string          `json:"owner_first_name_latin"`
-	OwnerMiddleNameLatin  string          `json:"owner_middle_name_latin"`
-	OwnerBirthDate        string          `json:"owner_birth_date"`
-	OwnerOblast           string          `json:"owner_oblast"`
-	OwnerRayon            string          `json:"owner_rayon"`
-	IsOwner               bool            `json:"isOwner"`
-	SummaStrahovki        int64           `json:"summaStrahovki"`
-	Provider              string          `json:"provider"`
-	Drivers               []DriverStored  `json:"drivers"`
-	Applicant             ApplicantStored `json:"applicant"`
-	StrahovkaMonth        int             `json:"strahovka_month"`
-	IsDrivers             int             `json:"is_drivers"`
-	CarType               int             `json:"car_type"`
-	ContractBegin         string          `json:"contract_begin"`
-	NeoOrderID            *int64          `json:"neo_order_id"`
-	NeoContractID         *int64          `json:"neo_contract_id"`
-	NeoPayURL             *string         `json:"neo_pay_url"`
-	ProviderUUID          *string         `json:"provider_uuid"`
+	Error                 int                        `json:"error"`
+	ErrorMessage          string                     `json:"error_message"`
+	TechPassportIssueDate string                     `json:"tech_passport_issue_date"`
+	IssueYear             string                     `json:"issue_year"`
+	VehicleTypeID         string                     `json:"vehicle_type_id"`
+	BodyNumber            string                     `json:"body_number"`
+	EngineNumber          string                     `json:"engine_number"`
+	ModelID               string                     `json:"model_id"`
+	MarkaID               string                     `json:"marka_id"`
+	ModelName             string                     `json:"model_name"`
+	OrgName               string                     `json:"orgname"`
+	LastName              string                     `json:"last_name"`
+	FirstName             string                     `json:"first_name"`
+	MiddleName            string                     `json:"middle_name"`
+	UseTerritory          int                        `json:"use_territory"`
+	Fy                    int                        `json:"fy"`
+	Pinfl                 string                     `json:"pinfl"`
+	Inn                   *string                    `json:"inn"`
+	Seats                 string                     `json:"seats"`
+	GovNumber             string                     `json:"govNumber"`
+	TechPassportNumber    string                     `json:"techPassportNumber"`
+	TechPassportSeria     string                     `json:"techPassportSeria"`
+	OwnerPNumber          string                     `json:"ownerPNumber"`
+	OwnerPSeries          string                     `json:"ownerPSeries"`
+	OwnerPinfl            string                     `json:"ownerPinfl"`
+	OwnerLastNameLatin    string                     `json:"owner_last_name_latin"`
+	OwnerFirstNameLatin   string                     `json:"owner_first_name_latin"`
+	OwnerMiddleNameLatin  string                     `json:"owner_middle_name_latin"`
+	OwnerBirthDate        string                     `json:"owner_birth_date"`
+	OwnerOblast           string                     `json:"owner_oblast"`
+	OwnerRayon            string                     `json:"owner_rayon"`
+	IsOwner               bool                       `json:"isOwner"`
+	SummaStrahovki        int64                      `json:"summaStrahovki"`
+	Provider              string                     `json:"provider"`
+	Drivers               []DriverStored             `json:"drivers"`
+	Applicant             ApplicantStored            `json:"applicant"`
+	StrahovkaMonth        int                        `json:"strahovka_month"`
+	IsDrivers             int                        `json:"is_drivers"`
+	CarType               int                        `json:"car_type"`
+	ContractBegin         string                     `json:"contract_begin"`
+	NeoOrderID            *int64                     `json:"neo_order_id"`
+	NeoContractID         *int64                     `json:"neo_contract_id"`
+	NeoPayURL             *string                    `json:"neo_pay_url"`
+	ProviderUUID          *string                    `json:"provider_uuid"`
+	ProviderContractID    *int                       `json:"provider_contract_id"`
+	ProviderResponseRaw   *string                    `json:"provider_response_raw"`
+	PaymentCheckResponse  *TrustPaymentCheckResponse `json:"payment_check_response"`
+	PayURLs               *struct {
+		Click string `json:"click"`
+		Payme string `json:"payme"`
+	} `json:"pay_urls"`
 }
 
 type UnifiedController struct {
-	config      *config.Config
-	client      *http.Client
-	token       string
-	tokenExpiry time.Time
-	mutex       sync.RWMutex
+	config            *config.Config
+	client            *http.Client
+	token             string
+	tokenExpiry       time.Time
+	mutex             sync.RWMutex
+	merchantInfoCache *MerchantInfoCache
+	merchantMutex     sync.RWMutex
 }
 
 var (
@@ -667,6 +677,32 @@ type TrustCreateResponse struct {
 	AnketaID         int    `json:"anketa_id"`
 }
 
+type TrustPaymentCheckRequest struct {
+	AnketaID int    `json:"anketa_id"`
+	Lan      string `json:"lan"`
+}
+
+type TrustPaymentCheckResponse struct {
+	Error   int    `json:"error"`
+	Message string `json:"message"`
+	Result  bool   `json:"result"`
+}
+
+type MerchantInfo struct {
+	Click struct {
+		ServiceID  string `json:"service_id"`
+		MerchantID string `json:"merchant_id"`
+	} `json:"click"`
+	Payme struct {
+		MerchantID string `json:"merchant_id"`
+	} `json:"payme"`
+}
+
+type MerchantInfoCache struct {
+	Data      *MerchantInfo
+	ExpiresAt time.Time
+}
+
 type CheckPersonRequest struct {
 	GosNumber       string `json:"gos_number"`
 	TechSery        string `json:"tech_sery"`
@@ -1203,7 +1239,12 @@ func (c *UnifiedController) Calc(ctx *gin.Context) {
 			return
 		}
 
+		fmt.Printf("=== TRUST CALC RESPONSE ===\n")
+		fmt.Printf("Trust calc response: %+v\n", trustResponse)
+		fmt.Printf("Trust prem value: %f\n", trustResponse.Prem)
+
 		summaStrahovki = int64(trustResponse.Prem)
+		fmt.Printf("Converted to int64: %d\n", summaStrahovki)
 
 	} else {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid provider. Must be 'neo' or 'trust'"})
@@ -1603,16 +1644,97 @@ func (c *UnifiedController) Submit(ctx *gin.Context) {
 			return
 		}
 
+		fmt.Printf("Trust create response: %+v\n", trustCreateResp)
+
+		// Parse insurance premium amount from Trust response
+		insurancePremiumFromTrust, err := strconv.ParseInt(trustCreateResp.InsurancePremium, 10, 64)
+		if err != nil {
+			fmt.Printf("ERROR: Failed to parse insurance premium '%s': %v\n", trustCreateResp.InsurancePremium, err)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse insurance premium", "details": err.Error()})
+			return
+		}
+
+		// Use the amount from calc (stored in vehicleData.SummaStrahovki) instead of overwriting it
+		// This ensures consistency between calc and submit
+		amount := vehicleData.SummaStrahovki
+		fmt.Printf("=== AMOUNT COMPARISON ===\n")
+		fmt.Printf("Amount from calc (stored): %d\n", amount)
+		fmt.Printf("Amount from Trust create: %d\n", insurancePremiumFromTrust)
+		if amount != insurancePremiumFromTrust {
+			fmt.Printf("WARNING: Amount mismatch! Using calc amount (%d) instead of Trust amount (%d)\n", amount, insurancePremiumFromTrust)
+		} else {
+			fmt.Printf("Amounts match - using calc amount: %d\n", amount)
+		}
+
+		// Get merchant info
+		merchantInfo, err := c.getMerchantInfo()
+		if err != nil {
+			fmt.Printf("ERROR: Failed to get merchant info: %v\n", err)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get merchant info", "details": err.Error()})
+			return
+		}
+
+		// Generate payment URLs
+		clickURL, err := c.generateClickPaymentURL(amount, trustCreateResp.UUID, merchantInfo)
+		if err != nil {
+			fmt.Printf("ERROR: Failed to generate Click URL: %v\n", err)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate Click URL", "details": err.Error()})
+			return
+		}
+
+		paymeURL, err := c.generatePaymePaymentURL(amount, trustCreateResp.AnketaID, trustCreateResp.UUID, merchantInfo)
+		if err != nil {
+			fmt.Printf("ERROR: Failed to generate Payme URL: %v\n", err)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate Payme URL", "details": err.Error()})
+			return
+		}
+
+		fmt.Printf("Generated Click URL: %s\n", clickURL)
+		fmt.Printf("Generated Payme URL: %s\n", paymeURL)
+
+		// Call payment check API
+		paymentCheckReq := TrustPaymentCheckRequest{
+			AnketaID: trustCreateResp.AnketaID,
+			Lan:      "uz",
+		}
+
+		paymentCheckResp, err := c.callTrustPaymentCheckAPI(paymentCheckReq)
+		if err != nil {
+			fmt.Printf("WARNING: Failed to check payment status: %v\n", err)
+			paymentCheckResp = &TrustPaymentCheckResponse{Error: 1, Message: "Payment check failed", Result: false}
+		} else {
+			fmt.Printf("Payment check response: %+v\n", paymentCheckResp)
+		}
+
+		// Save provider response raw JSON
+		providerResponseRaw, _ := json.Marshal(trustCreateResp)
+		providerResponseRawStr := string(providerResponseRaw)
+
+		// Update store with all provider data (keep the amount from calc, don't overwrite)
 		store.Lock()
+		// vehicleData.SummaStrahovki already contains the correct amount from calc
 		vehicleData.ProviderUUID = &trustCreateResp.UUID
+		vehicleData.ProviderContractID = &trustCreateResp.AnketaID
+		vehicleData.ProviderResponseRaw = &providerResponseRawStr
+		vehicleData.PaymentCheckResponse = paymentCheckResp
+		vehicleData.PayURLs = &struct {
+			Click string `json:"click"`
+			Payme string `json:"payme"`
+		}{
+			Click: clickURL,
+			Payme: paymeURL,
+		}
 		store.M[request.UUID] = vehicleData
 		store.Unlock()
 
+		// Return unified response format (same as Neo)
 		ctx.JSON(http.StatusOK, gin.H{
-			"sessionId":        request.UUID,
-			"providerUuid":     trustCreateResp.UUID,
-			"insurancePremium": fmt.Sprintf("%d", vehicleData.SummaStrahovki),
-			"anketaId":         trustCreateResp.AnketaID,
+			"amount":     amount,
+			"contractId": trustCreateResp.AnketaID,
+			"orderId":    trustCreateResp.AnketaID,
+			"sessionId":  request.UUID,
+			"payUrl":     clickURL,
+			"paymeUrl":   paymeURL,
 		})
 	} else {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid provider"})
@@ -1640,4 +1762,167 @@ func formatDateToDDMMYYYY(dateStr string) string {
 
 	// Конвертируем в DD.MM.YYYY
 	return fmt.Sprintf("%s.%s.%s", parts[2], parts[1], parts[0])
+}
+
+func (c *UnifiedController) generateClickPaymentURL(amount int64, providerUuid string, merchantInfo *MerchantInfo) (string, error) {
+	amountFormatted := fmt.Sprintf("%.2f", float64(amount))
+	returnURL := fmt.Sprintf("https://ersp.e-osgo.uz/uz/site/export-to-pdf?id=%s", providerUuid)
+
+	clickURL := fmt.Sprintf("https://my.click.uz/services/pay?service_id=%s&merchant_id=%s&amount=%s&transaction_param=%s&return_url=%s",
+		merchantInfo.Click.ServiceID,
+		merchantInfo.Click.MerchantID,
+		url.QueryEscape(amountFormatted),
+		url.QueryEscape(providerUuid),
+		url.QueryEscape(returnURL))
+
+	return clickURL, nil
+}
+
+func (c *UnifiedController) generatePaymePaymentURL(amount int64, anketaID int, providerUuid string, merchantInfo *MerchantInfo) (string, error) {
+	merchantID := merchantInfo.Payme.MerchantID
+	orderID := fmt.Sprintf("%d", anketaID)
+	amountInTiyin := amount
+	returnURL := fmt.Sprintf("https://ersp.e-osgo.uz/uz/site/export-to-pdf?id=%s", providerUuid)
+
+	params := fmt.Sprintf("m=%s;ac.order_id=%s;a=%d;c=%s;l=uz",
+		merchantID, orderID, amountInTiyin, returnURL)
+
+	encodedParams := base64.StdEncoding.EncodeToString([]byte(params))
+	paymeURL := fmt.Sprintf("https://checkout.paycom.uz/%s", url.QueryEscape(encodedParams))
+
+	return paymeURL, nil
+}
+
+func (c *UnifiedController) callTrustPaymentCheckAPI(request TrustPaymentCheckRequest) (*TrustPaymentCheckResponse, error) {
+	jsonData, err := json.Marshal(request)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal trust payment check request: %v", err)
+	}
+
+	token, err := c.getValidToken(c.config.TrustLogin, c.config.TrustPassword)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get trust token: %v", err)
+	}
+
+	req, err := http.NewRequest("POST", c.config.TrustBaseURL+"/api/payments/check", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create trust payment check request: %v", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+token)
+
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to make trust payment check request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read trust payment check response: %v", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("trust payment check API returned status %d: %s", resp.StatusCode, string(body))
+	}
+
+	var response TrustPaymentCheckResponse
+	if err := json.Unmarshal(body, &response); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal trust payment check response: %v", err)
+	}
+
+	return &response, nil
+}
+
+func (c *UnifiedController) getMerchantInfo() (*MerchantInfo, error) {
+	c.merchantMutex.RLock()
+	if c.merchantInfoCache != nil && time.Now().Before(c.merchantInfoCache.ExpiresAt) {
+		data := c.merchantInfoCache.Data
+		c.merchantMutex.RUnlock()
+		return data, nil
+	}
+	c.merchantMutex.RUnlock()
+
+	c.merchantMutex.Lock()
+	defer c.merchantMutex.Unlock()
+
+	if c.merchantInfoCache != nil && time.Now().Before(c.merchantInfoCache.ExpiresAt) {
+		return c.merchantInfoCache.Data, nil
+	}
+
+	req, err := http.NewRequest("GET", c.config.TrustBaseURL+"/api/payments/merchant-info", nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create merchant info request: %v", err)
+	}
+
+	token, err := c.getValidToken(c.config.TrustLogin, c.config.TrustPassword)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get trust token: %v", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+token)
+
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to make merchant info request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read merchant info response: %v", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("merchant info API returned status %d: %s", resp.StatusCode, string(body))
+	}
+
+	var merchantInfo MerchantInfo
+	if err := json.Unmarshal(body, &merchantInfo); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal merchant info response: %v", err)
+	}
+
+	if merchantInfo.Click.ServiceID == "" || merchantInfo.Click.MerchantID == "" || merchantInfo.Payme.MerchantID == "" {
+		return nil, fmt.Errorf("merchant info missing required fields: %+v", merchantInfo)
+	}
+
+	c.merchantInfoCache = &MerchantInfoCache{
+		Data:      &merchantInfo,
+		ExpiresAt: time.Now().Add(1 * time.Hour),
+	}
+
+	return &merchantInfo, nil
+}
+
+func (c *UnifiedController) CheckPayment(ctx *gin.Context) {
+	var request struct {
+		AnketaID int `json:"anketa_id" binding:"required"`
+	}
+
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON", "details": err.Error()})
+		return
+	}
+
+	paymentCheckReq := TrustPaymentCheckRequest{
+		AnketaID: request.AnketaID,
+		Lan:      "uz",
+	}
+
+	paymentCheckResp, err := c.callTrustPaymentCheckAPI(paymentCheckReq)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Failed to check payment status",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"anketa_id": request.AnketaID,
+		"result":    paymentCheckResp.Result,
+		"message":   paymentCheckResp.Message,
+		"error":     paymentCheckResp.Error,
+	})
 }

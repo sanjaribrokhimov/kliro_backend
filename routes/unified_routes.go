@@ -20,6 +20,7 @@ func SetupUnifiedRoutes(r *gin.Engine) {
 			osago.POST("/calc", unifiedController.Calc)
 			osago.POST("/submit", unifiedController.Submit)
 			osago.GET("/session/:id", unifiedController.GetSession)
+			osago.POST("/check-payment", unifiedController.CheckPayment)
 		}
 	}
 }
