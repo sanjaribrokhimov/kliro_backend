@@ -32,6 +32,7 @@ type DriverStored struct {
 	LicenseNumber   string `json:"license_number"`
 	LicenseSeries   string `json:"license_series"`
 	LicenseDate     string `json:"license_date"`
+	Relative        int    `json:"relative"`
 }
 
 type ApplicantStored struct {
@@ -80,6 +81,8 @@ type VehicleData struct {
 	OwnerOblast           string                     `json:"owner_oblast"`
 	OwnerRayon            string                     `json:"owner_rayon"`
 	IsOwner               bool                       `json:"isOwner"`
+	IsInn                 bool                       `json:"isInn"`
+	OwnerInn              string                     `json:"ownerInn"`
 	SummaStrahovki        int64                      `json:"summaStrahovki"`
 	Provider              string                     `json:"provider"`
 	Drivers               []DriverStored             `json:"drivers"`
@@ -136,6 +139,20 @@ var (
 		{OurID: 4, NeoID: 4, TrustID: 15},
 	}
 )
+
+// Маппинг типов родства между unified API, Neo и Trust
+// OurID: 0=владелец, 1=отец, 2=мать, 3=сын, 4=дочь, 5=муж, 6=жена, 7=брат, 8=сестра
+var relativeMapping = []Mapping{
+	{OurID: 0, NeoID: 0, TrustID: 0}, // Владелец авто
+	{OurID: 1, NeoID: 3, TrustID: 1}, // Отец
+	{OurID: 2, NeoID: 4, TrustID: 2}, // Мать
+	{OurID: 3, NeoID: 1, TrustID: 5}, // Сын
+	{OurID: 4, NeoID: 2, TrustID: 6}, // Дочь
+	{OurID: 5, NeoID: 7, TrustID: 3}, // Муж
+	{OurID: 6, NeoID: 8, TrustID: 4}, // Жена
+	{OurID: 7, NeoID: 5, TrustID: 7}, // Брат
+	{OurID: 8, NeoID: 6, TrustID: 9}, // Сестра
+}
 
 func NewUnifiedController(cfg *config.Config) *UnifiedController {
 	return &UnifiedController{
@@ -218,6 +235,38 @@ func (c *UnifiedController) callPassportPinflAPI(request PassportPinflRequest) (
 	fmt.Printf("Response status: %d\n", resp.StatusCode)
 
 	var response PassportPinflResponse
+	if err := c.parseResponse(resp, &response); err != nil {
+		fmt.Printf("Parse response failed: %v\n", err)
+		return nil, err
+	}
+
+	if response.Error != 0 {
+		fmt.Printf("API returned error: %d - %s\n", response.Error, response.ErrorMessage)
+		return nil, fmt.Errorf("API error: %s", response.ErrorMessage)
+	}
+
+	return &response, nil
+}
+
+func (c *UnifiedController) callTrustInnAPI(request TrustInnRequest) (*TrustInnResponse, error) {
+	token, err := c.getValidToken(c.config.TrustLogin, c.config.TrustPassword)
+	if err != nil {
+		fmt.Printf("Failed to get token for inn: %v\n", err)
+		return nil, err
+	}
+
+	fmt.Printf("Making inn request with token: %s\n", token[:10]+"...")
+	fmt.Printf("Request data: %+v\n", request)
+
+	resp, err := c.makeHTTPRequest("POST", c.config.TrustBaseURL+"/api/provider/inn", request)
+	if err != nil {
+		fmt.Printf("HTTP request failed: %v\n", err)
+		return nil, err
+	}
+
+	fmt.Printf("Response status: %d\n", resp.StatusCode)
+
+	var response TrustInnResponse
 	if err := c.parseResponse(resp, &response); err != nil {
 		fmt.Printf("Parse response failed: %v\n", err)
 		return nil, err
@@ -413,8 +462,10 @@ type NacaloRequest struct {
 	GovNumber          string `json:"govNumber"`
 	TechPassportNumber string `json:"techPassportNumber"`
 	TechPassportSeria  string `json:"techPassportSeria"`
-	OwnerPNumber       string `json:"ownerPNumber"`
-	OwnerPSeries       string `json:"ownerPSeries"`
+	OwnerPNumber       string `json:"ownerPNumber,omitempty"`
+	OwnerPSeries       string `json:"ownerPSeries,omitempty"`
+	IsInn              *bool  `json:"isInn"` // Указатель для проверки наличия поля
+	OwnerInn           string `json:"ownerInn,omitempty"`
 }
 
 type NacaloResponse struct {
@@ -459,6 +510,23 @@ type TrustVehicleResponse struct {
 	Seats                 string `json:"seats"`
 }
 
+type TrustInnRequest struct {
+	Inn string `json:"inn"`
+}
+
+type TrustInnResponse struct {
+	Error        int    `json:"error"`
+	ErrorMessage string `json:"error_message"`
+	Inn          string `json:"inn"`
+	OrgName      string `json:"orgname"`
+	LastName     string `json:"last_name"`
+	FirstName    string `json:"first_name"`
+	MiddleName   string `json:"middle_name"`
+	Pinfl        string `json:"pinfl"`
+	UseTerritory int    `json:"use_territory"`
+	Fy           int    `json:"fy"`
+}
+
 type NeoInsuranceRequest struct {
 	GosNumber       string `json:"gos_number"`
 	TechSery        string `json:"tech_sery"`
@@ -480,19 +548,21 @@ type Mapping struct {
 }
 
 type InitConRequest struct {
-	UUID          string          `json:"uuid" binding:"required"`
-	Drivers       []DriverRequest `json:"drivers"`
-	ApplPinfl     string          `json:"applPinfl" binding:"required"`
-	ApplPSeries   string          `json:"applPSeries" binding:"required"`
-	ApplPNumber   string          `json:"applPNumber" binding:"required"`
-	ApplPhone     string          `json:"applPhone" binding:"required"`
-	ContractBegin string          `json:"contractBegin"`
+	UUID             string          `json:"uuid" binding:"required"`
+	Drivers          []DriverRequest `json:"drivers"`
+	IsApplicantOwner bool            `json:"isApplicantOwner"`
+	ApplPinfl        string          `json:"applPinfl"`
+	ApplPSeries      string          `json:"applPSeries"`
+	ApplPNumber      string          `json:"applPNumber"`
+	ApplPhone        string          `json:"applPhone" binding:"required"`
+	ContractBegin    string          `json:"contractBegin"`
 }
 
 type DriverRequest struct {
 	DriverPinfl   string `json:"driverPinfl" binding:"required"`
 	DriverPSeries string `json:"driverPSeries" binding:"required"`
 	DriverPNumber string `json:"driverPNumber" binding:"required"`
+	Relative      int    `json:"relative"`
 }
 
 type CalcRequest struct {
@@ -716,6 +786,48 @@ type CheckPersonResponse struct {
 	Result   bool        `json:"result"`
 	Message  string      `json:"message"`
 	Response interface{} `json:"response"`
+}
+
+type UnifiedCheckPaymentRequest struct {
+	AnketaID int    `json:"order_id" binding:"required"`
+	Provider string `json:"provider" binding:"required"`
+	Lang     string `json:"lang"`
+}
+
+type UnifiedCheckPaymentResponse struct {
+	AnketaID     int    `json:"order_id"`
+	IsPaid       bool   `json:"isPaid"`
+	Status       string `json:"status"`
+	Message      string `json:"message"`
+	DownloadURL  string `json:"downloadUrl,omitempty"`
+	Provider     string `json:"provider"`
+	OrderID      *int64 `json:"orderId,omitempty"`
+	ContractID   *int64 `json:"contractId,omitempty"`
+	PolicyNumber string `json:"policyNumber,omitempty"`
+	PolicySeries string `json:"policySeries,omitempty"`
+}
+
+type NeoCheckPaymentRequest struct {
+	OrderID int64 `json:"order_id"`
+}
+
+type NeoCheckPaymentResponse struct {
+	Error   int    `json:"error"`
+	Message string `json:"message"`
+	Result  *bool  `json:"result"`
+}
+
+type TrustCheckPaymentResponse struct {
+	Result        int    `json:"result"`
+	ResultMessage string `json:"result_message"`
+	PolicyID      *int   `json:"policy_id"`
+	PolicySery    string `json:"policy_sery"`
+	PolicyNumber  string `json:"policy_number"`
+	StatusPolicy  string `json:"status_policy"`
+	URL           string `json:"url"`
+	URLNapp       string `json:"url_napp"`
+	StatusPayment string `json:"status_payment"`
+	PaymentType   string `json:"payment_type"`
 }
 
 func (c *UnifiedController) getValidToken(login, password string) (string, error) {
@@ -949,8 +1061,30 @@ func (c *UnifiedController) callTrustCalcAPI(request TrustCalcRequest) (*TrustCa
 func (c *UnifiedController) Nacalo(ctx *gin.Context) {
 	var request NacaloRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
+		fmt.Printf("JSON binding error: %v\n", err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON", "details": err.Error()})
 		return
+	}
+
+	fmt.Printf("Received request: %+v\n", request)
+
+	// Валидация обязательного поля isInn
+	if request.IsInn == nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "isInn field is required"})
+		return
+	}
+
+	// Валидация входных данных
+	if *request.IsInn {
+		if request.OwnerInn == "" {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "ownerInn is required when isInn is true"})
+			return
+		}
+	} else {
+		if request.OwnerPNumber == "" || request.OwnerPSeries == "" {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "ownerPNumber and ownerPSeries are required when isInn is false"})
+			return
+		}
 	}
 
 	token, err := c.getValidToken(c.config.TrustLogin, c.config.TrustPassword)
@@ -959,142 +1093,263 @@ func (c *UnifiedController) Nacalo(ctx *gin.Context) {
 		return
 	}
 
-	trustRequest := TrustVehicleRequest{
-		GovNumber:          request.GovNumber,
-		TechPassportNumber: request.TechPassportNumber,
-		TechPassportSeria:  request.TechPassportSeria,
-	}
-
-	jsonData, err := json.Marshal(trustRequest)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to marshal request"})
-		return
-	}
-
-	req, err := http.NewRequest("POST", c.config.TrustBaseURL+"/api/provider/vehicle", bytes.NewBuffer(jsonData))
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create request"})
-		return
-	}
-
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+token)
-
-	resp, err := c.client.Do(req)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to make request"})
-		return
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read response"})
-		return
-	}
-
-	fmt.Printf("Trust API Response: %s\n", string(body))
-
-	var trustResponse TrustVehicleResponse
-	if err := json.Unmarshal(body, &trustResponse); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse response"})
-		return
-	}
-
-	if trustResponse.Error != 0 {
-		fmt.Printf("Trust API Error: %d - %s\n", trustResponse.Error, trustResponse.ErrorMessage)
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": trustResponse.ErrorMessage, "errorCode": trustResponse.Error})
-		return
-	}
-
-	neoRequest := NeoInsuranceRequest{
-		GosNumber:       request.GovNumber,
-		TechSery:        request.TechPassportSeria,
-		TechNumber:      request.TechPassportNumber,
-		OwnerPassSeria:  request.OwnerPSeries,
-		OwnerPassNumber: request.OwnerPNumber,
-	}
-
-	neoResponse, err := c.callNeoInsuranceAPI(neoRequest)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to call neo insurance API", "details": err.Error()})
-		return
-	}
-
 	sessionID := uuid.New().String()
+	var vehicleData *VehicleData
 
-	carType := 1
-	if trustResponse.VehicleTypeID != "" {
-		if vehicleTypeID, err := strconv.Atoi(trustResponse.VehicleTypeID); err == nil {
-			carType = vehicleTypeID
+	if *request.IsInn {
+		// Сценарий для юридических лиц
+		fmt.Printf("=== PROCESSING LEGAL ENTITY (INN) ===\n")
+
+		// Получаем данные организации через INN API
+		innRequest := TrustInnRequest{
+			Inn: request.OwnerInn,
 		}
-	}
 
-	vehicleData := &VehicleData{
-		Error:                 trustResponse.Error,
-		ErrorMessage:          trustResponse.ErrorMessage,
-		TechPassportIssueDate: trustResponse.TechPassportIssueDate,
-		IssueYear:             trustResponse.IssueYear,
-		VehicleTypeID:         trustResponse.VehicleTypeID,
-		BodyNumber:            trustResponse.BodyNumber,
-		EngineNumber:          trustResponse.EngineNumber,
-		ModelID:               trustResponse.ModelID,
-		MarkaID:               trustResponse.MarkaID,
-		ModelName:             trustResponse.ModelName,
-		OrgName:               trustResponse.OrgName,
-		LastName:              trustResponse.LastName,
-		FirstName:             trustResponse.FirstName,
-		MiddleName:            trustResponse.MiddleName,
-		UseTerritory:          trustResponse.UseTerritory,
-		Fy:                    trustResponse.Fy,
-		Pinfl:                 trustResponse.Pinfl,
-		Inn:                   &trustResponse.Inn,
-		Seats:                 trustResponse.Seats,
-		GovNumber:             request.GovNumber,
-		TechPassportNumber:    request.TechPassportNumber,
-		TechPassportSeria:     request.TechPassportSeria,
-		OwnerPNumber:          request.OwnerPNumber,
-		OwnerPSeries:          request.OwnerPSeries,
-		OwnerPinfl:            trustResponse.Pinfl,
-		OwnerLastNameLatin:    "",
-		OwnerFirstNameLatin:   "",
-		OwnerMiddleNameLatin:  "",
-		OwnerBirthDate:        "",
-		OwnerOblast:           "",
-		OwnerRayon:            "",
-		IsOwner:               neoResponse.Result,
-		Drivers:               []DriverStored{},
-		Applicant:             ApplicantStored{},
-		SummaStrahovki:        0,
-		CarType:               carType,
-	}
+		innResponse, err := c.callTrustInnAPI(innRequest)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to call inn API", "details": err.Error()})
+			return
+		}
 
-	// Проверяем isOwner через API check-person
-	fmt.Printf("=== CHECKING IS_OWNER ===\n")
-	checkPersonReq := CheckPersonRequest{
-		GosNumber:       request.GovNumber,
-		TechSery:        request.TechPassportSeria,
-		TechNumber:      request.TechPassportNumber,
-		OwnerPassSeria:  request.OwnerPSeries,
-		OwnerPassNumber: request.OwnerPNumber,
-	}
+		// Получаем данные автомобиля
+		trustRequest := TrustVehicleRequest{
+			GovNumber:          request.GovNumber,
+			TechPassportNumber: request.TechPassportNumber,
+			TechPassportSeria:  request.TechPassportSeria,
+		}
 
-	checkPersonResp, err := c.callCheckPersonAPI(checkPersonReq)
-	if err != nil {
-		fmt.Printf("WARNING: Failed to check person ownership: %v\n", err)
-		fmt.Printf("Using default IsOwner value: %t\n", vehicleData.IsOwner)
+		jsonData, err := json.Marshal(trustRequest)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to marshal request"})
+			return
+		}
+
+		req, err := http.NewRequest("POST", c.config.TrustBaseURL+"/api/provider/vehicle", bytes.NewBuffer(jsonData))
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create request"})
+			return
+		}
+
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer "+token)
+
+		resp, err := c.client.Do(req)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to make request"})
+			return
+		}
+		defer resp.Body.Close()
+
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read response"})
+			return
+		}
+
+		fmt.Printf("Trust Vehicle API Response: %s\n", string(body))
+
+		var trustResponse TrustVehicleResponse
+		if err := json.Unmarshal(body, &trustResponse); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse response"})
+			return
+		}
+
+		if trustResponse.Error != 0 {
+			fmt.Printf("Trust API Error: %d - %s\n", trustResponse.Error, trustResponse.ErrorMessage)
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": trustResponse.ErrorMessage, "errorCode": trustResponse.Error})
+			return
+		}
+
+		carType := 1
+		if trustResponse.VehicleTypeID != "" {
+			if vehicleTypeID, err := strconv.Atoi(trustResponse.VehicleTypeID); err == nil {
+				carType = vehicleTypeID
+			}
+		}
+
+		// Создаем VehicleData для юридического лица
+		vehicleData = &VehicleData{
+			Error:                 trustResponse.Error,
+			ErrorMessage:          trustResponse.ErrorMessage,
+			TechPassportIssueDate: trustResponse.TechPassportIssueDate,
+			IssueYear:             trustResponse.IssueYear,
+			VehicleTypeID:         trustResponse.VehicleTypeID,
+			BodyNumber:            trustResponse.BodyNumber,
+			EngineNumber:          trustResponse.EngineNumber,
+			ModelID:               trustResponse.ModelID,
+			MarkaID:               trustResponse.MarkaID,
+			ModelName:             trustResponse.ModelName,
+			OrgName:               innResponse.OrgName,
+			LastName:              innResponse.LastName,
+			FirstName:             innResponse.FirstName,
+			MiddleName:            innResponse.MiddleName,
+			UseTerritory:          innResponse.UseTerritory,
+			Fy:                    innResponse.Fy,
+			Pinfl:                 innResponse.Pinfl,
+			Inn:                   &innResponse.Inn,
+			Seats:                 trustResponse.Seats,
+			GovNumber:             request.GovNumber,
+			TechPassportNumber:    request.TechPassportNumber,
+			TechPassportSeria:     request.TechPassportSeria,
+			OwnerPNumber:          "",
+			OwnerPSeries:          "",
+			OwnerPinfl:            innResponse.Pinfl,
+			OwnerLastNameLatin:    "",
+			OwnerFirstNameLatin:   "",
+			OwnerMiddleNameLatin:  "",
+			OwnerBirthDate:        "",
+			OwnerOblast:           "",
+			OwnerRayon:            "",
+			IsOwner:               true, // Для юридических лиц всегда true
+			IsInn:                 *request.IsInn,
+			OwnerInn:              request.OwnerInn,
+			Drivers:               []DriverStored{},
+			Applicant:             ApplicantStored{},
+			SummaStrahovki:        0,
+			CarType:               carType,
+		}
+
 	} else {
-		fmt.Printf("Check person API response: error=%d, result=%t\n",
-			checkPersonResp.Error, checkPersonResp.Result)
+		// Сценарий для физических лиц (существующая логика)
+		fmt.Printf("=== PROCESSING INDIVIDUAL (PASSPORT) ===\n")
 
-		if checkPersonResp.Error == 1 {
-			// API вернул ошибку, но это может означать, что человек не владелец
-			vehicleData.IsOwner = false
-			fmt.Printf("Setting IsOwner to false due to API error\n")
+		trustRequest := TrustVehicleRequest{
+			GovNumber:          request.GovNumber,
+			TechPassportNumber: request.TechPassportNumber,
+			TechPassportSeria:  request.TechPassportSeria,
+		}
+
+		jsonData, err := json.Marshal(trustRequest)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to marshal request"})
+			return
+		}
+
+		req, err := http.NewRequest("POST", c.config.TrustBaseURL+"/api/provider/vehicle", bytes.NewBuffer(jsonData))
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create request"})
+			return
+		}
+
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer "+token)
+
+		resp, err := c.client.Do(req)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to make request"})
+			return
+		}
+		defer resp.Body.Close()
+
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read response"})
+			return
+		}
+
+		fmt.Printf("Trust API Response: %s\n", string(body))
+
+		var trustResponse TrustVehicleResponse
+		if err := json.Unmarshal(body, &trustResponse); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse response"})
+			return
+		}
+
+		if trustResponse.Error != 0 {
+			fmt.Printf("Trust API Error: %d - %s\n", trustResponse.Error, trustResponse.ErrorMessage)
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": trustResponse.ErrorMessage, "errorCode": trustResponse.Error})
+			return
+		}
+
+		neoRequest := NeoInsuranceRequest{
+			GosNumber:       request.GovNumber,
+			TechSery:        request.TechPassportSeria,
+			TechNumber:      request.TechPassportNumber,
+			OwnerPassSeria:  request.OwnerPSeries,
+			OwnerPassNumber: request.OwnerPNumber,
+		}
+
+		neoResponse, err := c.callNeoInsuranceAPI(neoRequest)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to call neo insurance API", "details": err.Error()})
+			return
+		}
+
+		carType := 1
+		if trustResponse.VehicleTypeID != "" {
+			if vehicleTypeID, err := strconv.Atoi(trustResponse.VehicleTypeID); err == nil {
+				carType = vehicleTypeID
+			}
+		}
+
+		vehicleData = &VehicleData{
+			Error:                 trustResponse.Error,
+			ErrorMessage:          trustResponse.ErrorMessage,
+			TechPassportIssueDate: trustResponse.TechPassportIssueDate,
+			IssueYear:             trustResponse.IssueYear,
+			VehicleTypeID:         trustResponse.VehicleTypeID,
+			BodyNumber:            trustResponse.BodyNumber,
+			EngineNumber:          trustResponse.EngineNumber,
+			ModelID:               trustResponse.ModelID,
+			MarkaID:               trustResponse.MarkaID,
+			ModelName:             trustResponse.ModelName,
+			OrgName:               trustResponse.OrgName,
+			LastName:              trustResponse.LastName,
+			FirstName:             trustResponse.FirstName,
+			MiddleName:            trustResponse.MiddleName,
+			UseTerritory:          trustResponse.UseTerritory,
+			Fy:                    trustResponse.Fy,
+			Pinfl:                 trustResponse.Pinfl,
+			Inn:                   &trustResponse.Inn,
+			Seats:                 trustResponse.Seats,
+			GovNumber:             request.GovNumber,
+			TechPassportNumber:    request.TechPassportNumber,
+			TechPassportSeria:     request.TechPassportSeria,
+			OwnerPNumber:          request.OwnerPNumber,
+			OwnerPSeries:          request.OwnerPSeries,
+			OwnerPinfl:            trustResponse.Pinfl,
+			OwnerLastNameLatin:    "",
+			OwnerFirstNameLatin:   "",
+			OwnerMiddleNameLatin:  "",
+			OwnerBirthDate:        "",
+			OwnerOblast:           "",
+			OwnerRayon:            "",
+			IsOwner:               neoResponse.Result,
+			IsInn:                 *request.IsInn,
+			OwnerInn:              "",
+			Drivers:               []DriverStored{},
+			Applicant:             ApplicantStored{},
+			SummaStrahovki:        0,
+			CarType:               carType,
+		}
+
+		// Проверяем isOwner через API check-person только для физических лиц
+		fmt.Printf("=== CHECKING IS_OWNER ===\n")
+		checkPersonReq := CheckPersonRequest{
+			GosNumber:       request.GovNumber,
+			TechSery:        request.TechPassportSeria,
+			TechNumber:      request.TechPassportNumber,
+			OwnerPassSeria:  request.OwnerPSeries,
+			OwnerPassNumber: request.OwnerPNumber,
+		}
+
+		checkPersonResp, err := c.callCheckPersonAPI(checkPersonReq)
+		if err != nil {
+			fmt.Printf("WARNING: Failed to check person ownership: %v\n", err)
+			fmt.Printf("Using default IsOwner value: %t\n", vehicleData.IsOwner)
 		} else {
-			// Используем result из ответа
-			vehicleData.IsOwner = checkPersonResp.Result
-			fmt.Printf("Setting IsOwner to %t from API result\n", vehicleData.IsOwner)
+			fmt.Printf("Check person API response: error=%d, result=%t\n",
+				checkPersonResp.Error, checkPersonResp.Result)
+
+			if checkPersonResp.Error == 1 {
+				// API вернул ошибку, но это может означать, что человек не владелец
+				vehicleData.IsOwner = false
+				fmt.Printf("Setting IsOwner to false due to API error\n")
+			} else {
+				// Используем result из ответа
+				vehicleData.IsOwner = checkPersonResp.Result
+				fmt.Printf("Setting IsOwner to %t from API result\n", vehicleData.IsOwner)
+			}
 		}
 	}
 
@@ -1106,12 +1361,12 @@ func (c *UnifiedController) Nacalo(ctx *gin.Context) {
 	fmt.Printf("Final IsOwner value: %t\n", vehicleData.IsOwner)
 
 	response := NacaloResponse{
-		OwnerPinfl:         trustResponse.Pinfl,
-		OwnerName:          trustResponse.LastName,
-		OwnerFamiliya:      trustResponse.FirstName,
-		OwnerOtchestvo:     trustResponse.MiddleName,
-		CarModel:           trustResponse.ModelName,
-		CarYear:            trustResponse.IssueYear,
+		OwnerPinfl:         vehicleData.Pinfl,
+		OwnerName:          vehicleData.LastName,
+		OwnerFamiliya:      vehicleData.FirstName,
+		OwnerOtchestvo:     vehicleData.MiddleName,
+		CarModel:           vehicleData.ModelName,
+		CarYear:            vehicleData.IssueYear,
 		GovNumber:          request.GovNumber,
 		TechPassportNumber: request.TechPassportNumber,
 		TechPassportSeria:  request.TechPassportSeria,
@@ -1168,6 +1423,8 @@ func (c *UnifiedController) Calc(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid strahovka month"})
 		return
 	}
+
+	fmt.Printf("Period mapping: our=%d neo=%d trust=%d\n", request.StrahovkaMonth, periodNeoID, periodTrustID)
 
 	driversNeoID, driversTrustID, ok := getMappingID(driversMapping, request.IsDrivers)
 	if !ok {
@@ -1233,6 +1490,9 @@ func (c *UnifiedController) Calc(ctx *gin.Context) {
 			Vehicle:      vehicleTypeID,
 		}
 
+		reqJSON, _ := json.Marshal(trustRequest)
+		fmt.Printf("Trust calc request: %s\n", string(reqJSON))
+
 		trustResponse, err := c.callTrustCalcAPI(trustRequest)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to call trust insurance calc API", "details": err.Error()})
@@ -1262,6 +1522,8 @@ func (c *UnifiedController) Calc(ctx *gin.Context) {
 	store.M[request.UUID] = vehicleData
 	store.Unlock()
 
+	fmt.Printf("Calc stored: session=%s provider=%s summa=%d\n", request.UUID, request.Provider, summaStrahovki)
+
 	response := CalcResponse{
 		SessionID:      request.UUID,
 		SummaStrahovki: int(summaStrahovki),
@@ -1282,12 +1544,29 @@ func (c *UnifiedController) InitCon(ctx *gin.Context) {
 		return
 	}
 
+	for i, driver := range request.Drivers {
+		if driver.Relative < 0 || driver.Relative > 8 {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("invalid relative value for driver %d. Must be between 0-8", i+1)})
+			return
+		}
+	}
+
 	store.RLock()
 	vehicleData, exists := store.M[request.UUID]
 	store.RUnlock()
 
 	if !exists {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "session not found"})
+		return
+	}
+
+	if vehicleData.IsDrivers == 5 && len(request.Drivers) == 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "at least one driver is required for limited drivers mode"})
+		return
+	}
+
+	if len(request.Drivers) > 5 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "maximum 5 drivers allowed"})
 		return
 	}
 
@@ -1338,15 +1617,31 @@ func (c *UnifiedController) InitCon(ctx *gin.Context) {
 			LicenseNumber:   licenseResp.LicenseNumber,
 			LicenseSeries:   licenseResp.LicenseSeries,
 			LicenseDate:     licenseResp.LicenseDate,
+			Relative:        driverReq.Relative,
 		}
 
 		drivers = append(drivers, driver)
 	}
 
+	applPinfl := request.ApplPinfl
+	applSeries := request.ApplPSeries
+	applNumber := request.ApplPNumber
+
+	if request.IsApplicantOwner {
+		applPinfl = vehicleData.OwnerPinfl
+		applSeries = vehicleData.OwnerPSeries
+		applNumber = vehicleData.OwnerPNumber
+	} else {
+		if applPinfl == "" || applSeries == "" || applNumber == "" {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "applicant passport data required when isApplicantOwner=false"})
+			return
+		}
+	}
+
 	applicantPassportReq := PassportPinflRequest{
-		Pinfl:          request.ApplPinfl,
-		PassportSeries: request.ApplPSeries,
-		PassportNumber: request.ApplPNumber,
+		Pinfl:          applPinfl,
+		PassportSeries: applSeries,
+		PassportNumber: applNumber,
 	}
 
 	applicantPassportResp, err := c.callPassportPinflAPI(applicantPassportReq)
@@ -1358,9 +1653,9 @@ func (c *UnifiedController) InitCon(ctx *gin.Context) {
 	fmt.Printf("Applicant passport response: %+v\n", applicantPassportResp)
 
 	applicant := ApplicantStored{
-		ApplPinfl:       request.ApplPinfl,
-		ApplPSeries:     request.ApplPSeries,
-		ApplPNumber:     request.ApplPNumber,
+		ApplPinfl:       applPinfl,
+		ApplPSeries:     applSeries,
+		ApplPNumber:     applNumber,
 		ApplPhone:       request.ApplPhone,
 		LastNameLatin:   applicantPassportResp.LastNameLatin,
 		FirstNameLatin:  applicantPassportResp.FirstNameLatin,
@@ -1453,11 +1748,12 @@ func (c *UnifiedController) Submit(ctx *gin.Context) {
 				i+1, driver.DriverPinfl, driver.DriverPSeries, driver.DriverPNumber,
 				driver.BirthDate, driver.LastNameLatin, driver.FirstNameLatin, driver.MiddleNameLatin)
 
+			neoRelative, _, _ := getMappingID(relativeMapping, driver.Relative)
 			neoDrivers = append(neoDrivers, NeoSaveDriver{
 				PassportSeria:  driver.DriverPSeries,
 				PassportNumber: driver.DriverPNumber,
 				DriverBirthday: driver.BirthDate,
-				Relative:       0,
+				Relative:       neoRelative,
 				Name:           fmt.Sprintf("%s %s %s", driver.LastNameLatin, driver.FirstNameLatin, driver.MiddleNameLatin),
 			})
 		}
@@ -1506,6 +1802,13 @@ func (c *UnifiedController) Submit(ctx *gin.Context) {
 		vehicleData.NeoOrderID = &neoSaveResp.Response.OrderID
 		vehicleData.NeoContractID = &neoSaveResp.Response.ContractID
 		vehicleData.NeoPayURL = &neoSaveResp.Response.URL
+		vehicleData.PayURLs = &struct {
+			Click string `json:"click"`
+			Payme string `json:"payme"`
+		}{
+			Click: neoSaveResp.Response.URL,
+			Payme: neoSaveResp.Response.PaymeURL,
+		}
 		store.M[request.UUID] = vehicleData
 		store.Unlock()
 
@@ -1523,7 +1826,7 @@ func (c *UnifiedController) Submit(ctx *gin.Context) {
 		fmt.Printf("Provider: %s\n", vehicleData.Provider)
 		fmt.Printf("VehicleData: %+v\n", vehicleData)
 
-		periodTrustID, _, _ := getMappingID(periodMapping, vehicleData.StrahovkaMonth)
+		_, periodTrustID, _ := getMappingID(periodMapping, vehicleData.StrahovkaMonth)
 		_, driversTrustID, _ := getMappingID(driversMapping, vehicleData.IsDrivers)
 		_, carTypeTrustID, _ := getMappingID(carTypeMapping, vehicleData.CarType)
 
@@ -1554,6 +1857,7 @@ func (c *UnifiedController) Submit(ctx *gin.Context) {
 				driver.BirthDate, driver.LastNameLatin, driver.FirstNameLatin, driver.MiddleNameLatin,
 				driver.LicenseSeries, driver.LicenseNumber, driver.LicenseDate)
 
+			_, trustRelative, _ := getMappingID(relativeMapping, driver.Relative)
 			trustDrivers = append(trustDrivers, TrustCreateDriver{
 				DateBirth:  driver.BirthDate,
 				Paspsery:   driver.DriverPSeries,
@@ -1565,7 +1869,7 @@ func (c *UnifiedController) Submit(ctx *gin.Context) {
 				Licnumber:  driver.LicenseNumber,
 				Licsery:    driver.LicenseSeries,
 				Licdate:    driver.LicenseDate,
-				Relative:   0,
+				Relative:   trustRelative,
 				Resident:   1,
 			})
 		}
@@ -1654,17 +1958,15 @@ func (c *UnifiedController) Submit(ctx *gin.Context) {
 			return
 		}
 
-		// Use the amount from calc (stored in vehicleData.SummaStrahovki) instead of overwriting it
-		// This ensures consistency between calc and submit
-		amount := vehicleData.SummaStrahovki
+		amount := insurancePremiumFromTrust
 		fmt.Printf("=== AMOUNT COMPARISON ===\n")
-		fmt.Printf("Amount from calc (stored): %d\n", amount)
+		fmt.Printf("Amount from calc (stored): %d\n", vehicleData.SummaStrahovki)
 		fmt.Printf("Amount from Trust create: %d\n", insurancePremiumFromTrust)
-		if amount != insurancePremiumFromTrust {
-			fmt.Printf("WARNING: Amount mismatch! Using calc amount (%d) instead of Trust amount (%d)\n", amount, insurancePremiumFromTrust)
-		} else {
-			fmt.Printf("Amounts match - using calc amount: %d\n", amount)
+		if vehicleData.SummaStrahovki != insurancePremiumFromTrust {
+			fmt.Printf("WARNING: Amount mismatch! Using Trust amount (%d) instead of calc amount (%d)\n", insurancePremiumFromTrust, vehicleData.SummaStrahovki)
 		}
+
+		fmt.Printf("Trust submit: session=%s amount=%d providerPrem=%d anketaId=%d uuid=%s\n", request.UUID, amount, insurancePremiumFromTrust, trustCreateResp.AnketaID, trustCreateResp.UUID)
 
 		// Get merchant info
 		merchantInfo, err := c.getMerchantInfo()
@@ -1675,7 +1977,8 @@ func (c *UnifiedController) Submit(ctx *gin.Context) {
 		}
 
 		// Generate payment URLs
-		clickURL, err := c.generateClickPaymentURL(amount, trustCreateResp.UUID, merchantInfo)
+		fmt.Printf("Payment input: amount=%d anketaId=%d providerUuid=%s\n", amount, trustCreateResp.AnketaID, trustCreateResp.UUID)
+		clickURL, err := c.generateClickPaymentURL(amount, trustCreateResp.AnketaID, trustCreateResp.UUID, merchantInfo)
 		if err != nil {
 			fmt.Printf("ERROR: Failed to generate Click URL: %v\n", err)
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate Click URL", "details": err.Error()})
@@ -1727,15 +2030,21 @@ func (c *UnifiedController) Submit(ctx *gin.Context) {
 		store.M[request.UUID] = vehicleData
 		store.Unlock()
 
-		// Return unified response format (same as Neo)
-		ctx.JSON(http.StatusOK, gin.H{
+		fmt.Printf("Store update: session=%s providerUuid=%s anketaId=%d amount=%d\n", request.UUID, trustCreateResp.UUID, trustCreateResp.AnketaID, amount)
+
+		resp := gin.H{
 			"amount":     amount,
 			"contractId": trustCreateResp.AnketaID,
 			"orderId":    trustCreateResp.AnketaID,
 			"sessionId":  request.UUID,
 			"payUrl":     clickURL,
 			"paymeUrl":   paymeURL,
-		})
+		}
+		respJSON, _ := json.Marshal(resp)
+		fmt.Printf("Submit response: %s\n", string(respJSON))
+
+		// Return unified response format (same as Neo)
+		ctx.JSON(http.StatusOK, resp)
 	} else {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid provider"})
 		return
@@ -1764,15 +2073,16 @@ func formatDateToDDMMYYYY(dateStr string) string {
 	return fmt.Sprintf("%s.%s.%s", parts[2], parts[1], parts[0])
 }
 
-func (c *UnifiedController) generateClickPaymentURL(amount int64, providerUuid string, merchantInfo *MerchantInfo) (string, error) {
+func (c *UnifiedController) generateClickPaymentURL(amount int64, anketaID int, providerUuid string, merchantInfo *MerchantInfo) (string, error) {
 	amountFormatted := fmt.Sprintf("%.2f", float64(amount))
 	returnURL := fmt.Sprintf("https://ersp.e-osgo.uz/uz/site/export-to-pdf?id=%s", providerUuid)
+	transactionParam := fmt.Sprintf("%d", anketaID)
 
 	clickURL := fmt.Sprintf("https://my.click.uz/services/pay?service_id=%s&merchant_id=%s&amount=%s&transaction_param=%s&return_url=%s",
 		merchantInfo.Click.ServiceID,
 		merchantInfo.Click.MerchantID,
 		url.QueryEscape(amountFormatted),
-		url.QueryEscape(providerUuid),
+		url.QueryEscape(transactionParam),
 		url.QueryEscape(returnURL))
 
 	return clickURL, nil
@@ -1781,7 +2091,7 @@ func (c *UnifiedController) generateClickPaymentURL(amount int64, providerUuid s
 func (c *UnifiedController) generatePaymePaymentURL(amount int64, anketaID int, providerUuid string, merchantInfo *MerchantInfo) (string, error) {
 	merchantID := merchantInfo.Payme.MerchantID
 	orderID := fmt.Sprintf("%d", anketaID)
-	amountInTiyin := amount
+	amountInTiyin := amount * 100
 	returnURL := fmt.Sprintf("https://ersp.e-osgo.uz/uz/site/export-to-pdf?id=%s", providerUuid)
 
 	params := fmt.Sprintf("m=%s;ac.order_id=%s;a=%d;c=%s;l=uz",
@@ -1895,34 +2205,163 @@ func (c *UnifiedController) getMerchantInfo() (*MerchantInfo, error) {
 	return &merchantInfo, nil
 }
 
-func (c *UnifiedController) CheckPayment(ctx *gin.Context) {
-	var request struct {
-		AnketaID int `json:"anketa_id" binding:"required"`
+func (c *UnifiedController) callNeoCheckPaymentAPI(request NeoCheckPaymentRequest) (*NeoCheckPaymentResponse, error) {
+	jsonData, err := json.Marshal(request)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal neo check payment request: %v", err)
 	}
 
+	req, err := http.NewRequest("POST", c.config.NeoBaseURL+"/api/osago-neo/confirm-check", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create neo check payment request: %v", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	creds := c.config.NeoLogin + ":" + c.config.NeoPassword
+	auth := "Basic " + base64.StdEncoding.EncodeToString([]byte(creds))
+	req.Header.Set("Authorization", auth)
+
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to make neo check payment request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read neo check payment response: %v", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("neo check payment API returned status %d: %s", resp.StatusCode, string(body))
+	}
+
+	var response NeoCheckPaymentResponse
+	if err := json.Unmarshal(body, &response); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal neo check payment response: %v", err)
+	}
+
+	return &response, nil
+}
+
+func (c *UnifiedController) callTrustCheckPaymentAPINew(anketaID int, lang string) (*TrustCheckPaymentResponse, error) {
+	request := TrustPaymentCheckRequest{
+		AnketaID: anketaID,
+		Lan:      lang,
+	}
+
+	jsonData, err := json.Marshal(request)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal trust check payment request: %v", err)
+	}
+
+	token, err := c.getValidToken(c.config.TrustLogin, c.config.TrustPassword)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get trust token: %v", err)
+	}
+
+	req, err := http.NewRequest("POST", c.config.TrustBaseURL+"/api/payments/check", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create trust check payment request: %v", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+token)
+
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to make trust check payment request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read trust check payment response: %v", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("trust check payment API returned status %d: %s", resp.StatusCode, string(body))
+	}
+
+	var response TrustCheckPaymentResponse
+	if err := json.Unmarshal(body, &response); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal trust check payment response: %v", err)
+	}
+
+	return &response, nil
+}
+
+func (c *UnifiedController) CheckPayment(ctx *gin.Context) {
+	var request UnifiedCheckPaymentRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON", "details": err.Error()})
 		return
 	}
 
-	paymentCheckReq := TrustPaymentCheckRequest{
-		AnketaID: request.AnketaID,
-		Lan:      "uz",
+	if request.Lang == "" {
+		request.Lang = "uz"
 	}
 
-	paymentCheckResp, err := c.callTrustPaymentCheckAPI(paymentCheckReq)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error":   "Failed to check payment status",
-			"details": err.Error(),
-		})
+	if request.Provider != "neo" && request.Provider != "trust" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid provider. Must be 'neo' or 'trust'"})
 		return
 	}
 
+	var response UnifiedCheckPaymentResponse
+	response.AnketaID = request.AnketaID
+	response.Provider = request.Provider
+
+	if request.Provider == "neo" {
+		neoCheckReq := NeoCheckPaymentRequest{
+			OrderID: int64(request.AnketaID),
+		}
+
+		neoCheckResp, err := c.callNeoCheckPaymentAPI(neoCheckReq)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"error":   "Failed to check Neo payment status",
+				"details": err.Error(),
+			})
+			return
+		}
+
+		response.OrderID = &neoCheckReq.OrderID
+		response.IsPaid = neoCheckResp.Error == 0 && neoCheckResp.Result != nil && *neoCheckResp.Result
+		response.Status = neoCheckResp.Message
+		response.Message = neoCheckResp.Message
+
+		if response.IsPaid {
+			response.DownloadURL = fmt.Sprintf("https://ersp.e-osgo.uz/uz/site/export-to-pdf?id=%d", request.AnketaID)
+		}
+
+	} else if request.Provider == "trust" {
+		trustCheckResp, err := c.callTrustCheckPaymentAPINew(request.AnketaID, request.Lang)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"error":   "Failed to check Trust payment status",
+				"details": err.Error(),
+			})
+			return
+		}
+
+		anketaID64 := int64(request.AnketaID)
+		response.ContractID = &anketaID64
+		response.IsPaid = trustCheckResp.Result == 0 && trustCheckResp.StatusPayment == "1"
+		response.Status = trustCheckResp.ResultMessage
+		response.Message = trustCheckResp.ResultMessage
+		response.PolicyNumber = trustCheckResp.PolicyNumber
+		response.PolicySeries = trustCheckResp.PolicySery
+
+		if response.IsPaid && trustCheckResp.URL != "" {
+			response.DownloadURL = trustCheckResp.URL
+		} else if response.IsPaid {
+			response.DownloadURL = fmt.Sprintf("https://ersp.e-osgo.uz/uz/site/export-to-pdf?id=%d", request.AnketaID)
+		}
+	}
+
 	ctx.JSON(http.StatusOK, gin.H{
-		"anketa_id": request.AnketaID,
-		"result":    paymentCheckResp.Result,
-		"message":   paymentCheckResp.Message,
-		"error":     paymentCheckResp.Error,
+		"isPaid":      response.IsPaid,
+		"downloadUrl": response.DownloadURL,
 	})
 }

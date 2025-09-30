@@ -1,0 +1,644 @@
+{
+	"info": {
+		"_postman_id": "unified-osago-api",
+		"name": "Unified OSAGO API",
+		"description": "API для работы с OSAGO страховкой через unified интерфейс",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Nacalo - Физическое лицо",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"govNumber\": \"01A123AB\",\n  \"techPassportNumber\": \"1234567890\",\n  \"techPassportSeria\": \"AA\",\n  \"ownerPNumber\": \"1234567\",\n  \"ownerPSeries\": \"AA\",\n  \"isInn\": false\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/unified/osago/nacalo",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"unified",
+						"osago",
+						"nacalo"
+					]
+				},
+				"description": "Проверяет автомобиль для физического лица по госномеру, техпаспорту и паспортным данным владельца. Поле isInn обязательно!"
+			},
+		},
+		{
+			"name": "1. Nacalo - Юридическое лицо",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"govNumber\": \"01A123AB\",\n  \"techPassportNumber\": \"1234567890\",\n  \"techPassportSeria\": \"AA\",\n  \"isInn\": true,\n  \"ownerInn\": \"301380120\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/unified/osago/nacalo",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"unified",
+						"osago",
+						"nacalo"
+					]
+				},
+				"description": "Проверяет автомобиль для юридического лица по госномеру, техпаспорту и ИНН организации. Поле isInn обязательно!"
+			},
+			"response": [
+				{
+					"name": "Success Response - Physical Person",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"govNumber\": \"01A123AB\",\n  \"techPassportNumber\": \"1234567890\",\n  \"techPassportSeria\": \"AA\",\n  \"ownerPNumber\": \"1234567\",\n  \"ownerPSeries\": \"AA\",\n  \"isInn\": false\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/unified/osago/nacalo",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"unified",
+								"osago",
+								"nacalo"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"ownerPinfl\": \"12345678901234\",\n  \"ownerName\": \"ИВАНОВ\",\n  \"ownerFamiliya\": \"ИВАН\",\n  \"ownerOtchestvo\": \"ИВАНОВИЧ\",\n  \"carModel\": \"TOYOTA CAMRY\",\n  \"carYear\": \"2020\",\n  \"govNumber\": \"01A123AB\",\n  \"techPassportNumber\": \"1234567890\",\n  \"techPassportSeria\": \"AA\",\n  \"sessionId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"isOwner\": true\n}"
+				}
+			]
+		},
+		{
+			"name": "1. Nacalo - Юридическое лицо",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"govNumber\": \"01A123AB\",\n  \"techPassportNumber\": \"1234567890\",\n  \"techPassportSeria\": \"AA\",\n  \"isInn\": true,\n  \"ownerInn\": \"301380120\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/unified/osago/nacalo",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"unified",
+						"osago",
+						"nacalo"
+					]
+				},
+				"description": "Проверяет автомобиль для юридического лица по госномеру, техпаспорту и ИНН организации. Поле isInn обязательно!"
+			},
+			"response": [
+				{
+					"name": "Success Response - Legal Entity",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"govNumber\": \"01A123AB\",\n  \"techPassportNumber\": \"1234567890\",\n  \"techPassportSeria\": \"AA\",\n  \"isInn\": true,\n  \"ownerInn\": \"301380120\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/unified/osago/nacalo",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"unified",
+								"osago",
+								"nacalo"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"ownerPinfl\": \"12345678901234\",\n  \"ownerName\": \"ООО ТОЙОТА ЦЕНТР\",\n  \"ownerFamiliya\": \"\",\n  \"ownerOtchestvo\": \"\",\n  \"carModel\": \"TOYOTA CAMRY\",\n  \"carYear\": \"2020\",\n  \"govNumber\": \"01A123AB\",\n  \"techPassportNumber\": \"1234567890\",\n  \"techPassportSeria\": \"AA\",\n  \"sessionId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"isOwner\": true\n}"
+				},
+				{
+					"name": "Validation Error - Missing isInn",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"govNumber\": \"01A123AB\",\n  \"techPassportNumber\": \"1234567890\",\n  \"techPassportSeria\": \"AA\",\n  \"ownerPNumber\": \"1234567\",\n  \"ownerPSeries\": \"AA\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/unified/osago/nacalo",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"unified",
+								"osago",
+								"nacalo"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"error\": \"isInn field is required\"\n}"
+				}
+			]
+		},
+		{
+			"name": "2. Calc - Расчет стоимости",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"strahovkaMonth\": 12,\n  \"isDrivers\": 5,\n  \"uuid\": \"{{session_id}}\",\n  \"provider\": \"neo\",\n  \"contractBegin\": \"2024-01-15\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/unified/osago/calc",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"unified",
+						"osago",
+						"calc"
+					]
+				},
+				"description": "Рассчитывает стоимость страховки. strahovkaMonth: 6 или 12 месяцев. isDrivers: 0 (неограниченно) или 5 (ограниченно). provider: 'neo' или 'trust'"
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"strahovkaMonth\": 12,\n  \"isDrivers\": 5,\n  \"uuid\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"provider\": \"neo\",\n  \"contractBegin\": \"2024-01-15\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/unified/osago/calc",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"unified",
+								"osago",
+								"calc"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"sessionId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"summaStrahovki\": 150000\n}"
+				}
+			]
+		},
+		{
+			"name": "3. InitCon - Инициализация контракта",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"uuid\": \"{{session_id}}\",\n  \"drivers\": [\n    {\n      \"driverPinfl\": \"12345678901234\",\n      \"driverPSeries\": \"AA\",\n      \"driverPNumber\": \"1234567\",\n      \"relative\": 0\n    },\n    {\n      \"driverPinfl\": \"98765432109876\",\n      \"driverPSeries\": \"AB\",\n      \"driverPNumber\": \"7654321\",\n      \"relative\": 5\n    }\n  ],\n  \"isApplicantOwner\": true,\n  \"applPinfl\": \"12345678901234\",\n  \"applPSeries\": \"AA\",\n  \"applPNumber\": \"1234567\",\n  \"applPhone\": \"+998901234567\",\n  \"contractBegin\": \"2024-01-15\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/unified/osago/initcon",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"unified",
+						"osago",
+						"initcon"
+					]
+				},
+				"description": "Инициализирует контракт с данными водителей. relative: 0=владелец, 1=отец, 2=мать, 3=сын, 4=дочь, 5=муж, 6=жена, 7=брат, 8=сестра"
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"uuid\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"drivers\": [\n    {\n      \"driverPinfl\": \"12345678901234\",\n      \"driverPSeries\": \"AA\",\n      \"driverPNumber\": \"1234567\",\n      \"relative\": 0\n    },\n    {\n      \"driverPinfl\": \"98765432109876\",\n      \"driverPSeries\": \"AB\",\n      \"driverPNumber\": \"7654321\",\n      \"relative\": 5\n    }\n  ],\n  \"isApplicantOwner\": true,\n  \"applPinfl\": \"12345678901234\",\n  \"applPSeries\": \"AA\",\n  \"applPNumber\": \"1234567\",\n  \"applPhone\": \"+998901234567\",\n  \"contractBegin\": \"2024-01-15\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/unified/osago/initcon",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"unified",
+								"osago",
+								"initcon"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"sessionId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"message\": \"Data saved successfully\",\n  \"drivers\": 2\n}"
+				}
+			]
+		},
+		{
+			"name": "4. Submit - Создание заказа",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"uuid\": \"{{session_id}}\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/unified/osago/submit",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"unified",
+						"osago",
+						"submit"
+					]
+				},
+				"description": "Создает заказ страховки и возвращает данные для оплаты"
+			},
+			"response": [
+				{
+					"name": "Neo Provider Response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"uuid\": \"550e8400-e29b-41d4-a716-446655440000\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/unified/osago/submit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"unified",
+								"osago",
+								"submit"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"sessionId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"orderId\": 12345,\n  \"contractId\": 67890,\n  \"payUrl\": \"https://neoinsurance.uz/payment/12345\",\n  \"paymeUrl\": \"https://payme.uz/payment/12345\",\n  \"amount\": 150000\n}"
+				},
+				{
+					"name": "Trust Provider Response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"uuid\": \"550e8400-e29b-41d4-a716-446655440000\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/unified/osago/submit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"unified",
+								"osago",
+								"submit"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"amount\": 150000,\n  \"contractId\": 12345,\n  \"orderId\": 12345,\n  \"sessionId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"payUrl\": \"https://my.click.uz/services/pay?service_id=12345&merchant_id=67890&amount=150000.00&transaction_param=12345&return_url=https://ersp.e-osgo.uz/uz/site/export-to-pdf?id=uuid\",\n  \"paymeUrl\": \"https://checkout.paycom.uz/encoded_params\"\n}"
+				}
+			]
+		},
+		{
+			"name": "5. Get Session - Получение данных сессии",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/unified/osago/session/{{session_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"unified",
+						"osago",
+						"session",
+						"{{session_id}}"
+					]
+				},
+				"description": "Получает все данные сессии по ID"
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/unified/osago/session/550e8400-e29b-41d4-a716-446655440000",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"unified",
+								"osago",
+								"session",
+								"550e8400-e29b-41d4-a716-446655440000"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"error\": 0,\n  \"error_message\": \"\",\n  \"tech_passport_issue_date\": \"2020-01-15\",\n  \"issue_year\": \"2020\",\n  \"vehicle_type_id\": \"1\",\n  \"body_number\": \"ABC123456789\",\n  \"engine_number\": \"ENG123456789\",\n  \"model_id\": \"123\",\n  \"marka_id\": \"456\",\n  \"model_name\": \"TOYOTA CAMRY\",\n  \"orgname\": \"ООО Тойота Центр\",\n  \"last_name\": \"ИВАНОВ\",\n  \"first_name\": \"ИВАН\",\n  \"middle_name\": \"ИВАНОВИЧ\",\n  \"use_territory\": 1,\n  \"fy\": 1,\n  \"pinfl\": \"12345678901234\",\n  \"inn\": \"123456789\",\n  \"seats\": \"5\",\n  \"govNumber\": \"01A123AB\",\n  \"techPassportNumber\": \"1234567890\",\n  \"techPassportSeria\": \"AA\",\n  \"ownerPNumber\": \"1234567\",\n  \"ownerPSeries\": \"AA\",\n  \"ownerPinfl\": \"12345678901234\",\n  \"owner_last_name_latin\": \"IVANOV\",\n  \"owner_first_name_latin\": \"IVAN\",\n  \"owner_middle_name_latin\": \"IVANOVICH\",\n  \"owner_birth_date\": \"1990-01-01\",\n  \"owner_oblast\": \"1\",\n  \"owner_rayon\": \"1\",\n  \"isOwner\": true,\n  \"summaStrahovki\": 150000,\n  \"provider\": \"neo\",\n  \"drivers\": [\n    {\n      \"driver_pinfl\": \"12345678901234\",\n      \"driver_p_series\": \"AA\",\n      \"driver_p_number\": \"1234567\",\n      \"last_name_latin\": \"IVANOV\",\n      \"first_name_latin\": \"IVAN\",\n      \"middle_name_latin\": \"IVANOVICH\",\n      \"birth_date\": \"1990-01-01\",\n      \"oblast\": \"1\",\n      \"rayon\": \"1\",\n      \"license_number\": \"1234567890\",\n      \"license_series\": \"AA\",\n      \"license_date\": \"2015-01-01\",\n      \"relative\": 0\n    }\n  ],\n  \"applicant\": {\n    \"appl_pinfl\": \"12345678901234\",\n    \"appl_p_series\": \"AA\",\n    \"appl_p_number\": \"1234567\",\n    \"appl_phone\": \"+998901234567\",\n    \"last_name_latin\": \"IVANOV\",\n    \"first_name_latin\": \"IVAN\",\n    \"middle_name_latin\": \"IVANOVICH\",\n    \"birth_date\": \"1990-01-01\",\n    \"oblast\": \"1\",\n    \"rayon\": \"1\"\n  },\n  \"strahovka_month\": 12,\n  \"is_drivers\": 5,\n  \"car_type\": 1,\n  \"contract_begin\": \"2024-01-15\",\n  \"neo_order_id\": 12345,\n  \"neo_contract_id\": 67890,\n  \"neo_pay_url\": \"https://neoinsurance.uz/payment/12345\",\n  \"provider_uuid\": \"uuid-string\",\n  \"provider_contract_id\": 12345,\n  \"pay_urls\": {\n    \"click\": \"https://my.click.uz/services/pay?service_id=12345&merchant_id=67890&amount=150000.00&transaction_param=12345&return_url=https://ersp.e-osgo.uz/uz/site/export-to-pdf?id=uuid\",\n    \"payme\": \"https://checkout.paycom.uz/encoded_params\"\n  }\n}"
+				}
+			]
+		},
+		{
+			"name": "6. Check Payment - Проверка платежа",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"order_id\": 12345,\n  \"provider\": \"neo\",\n  \"lang\": \"uz\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/unified/osago/check-payment",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"unified",
+						"osago",
+						"check-payment"
+					]
+				},
+				"description": "Проверяет статус платежа по order_id"
+			},
+			"response": [
+				{
+					"name": "Neo Provider Response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"order_id\": 12345,\n  \"provider\": \"neo\",\n  \"lang\": \"uz\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/unified/osago/check-payment",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"unified",
+								"osago",
+								"check-payment"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"isPaid\": true,\n  \"downloadUrl\": \"https://ersp.e-osgo.uz/uz/site/export-to-pdf?id=12345\"\n}"
+				},
+				{
+					"name": "Trust Provider Response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"order_id\": 12345,\n  \"provider\": \"trust\",\n  \"lang\": \"uz\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/unified/osago/check-payment",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"unified",
+								"osago",
+								"check-payment"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"isPaid\": true,\n  \"downloadUrl\": \"https://ersp.e-osgo.uz/uz/site/export-to-pdf?id=12345\"\n}"
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "session_id",
+			"value": "550e8400-e29b-41d4-a716-446655440000",
+			"type": "string"
+		}
+	]
+}

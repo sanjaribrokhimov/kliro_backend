@@ -11,16 +11,16 @@ func SetupUnifiedRoutes(r *gin.Engine) {
 	cfg := config.LoadConfig()
 	unifiedController := controllers.NewUnifiedController(cfg)
 
-	unifiedGroup := r.Group("/unified")
+	unifiedGroup := r.Group("/osago")
 	{
-		osago := unifiedGroup.Group("/osago")
+		osago := unifiedGroup.Group("/unified")
 		{
-			osago.POST("/nacalo", unifiedController.Nacalo)
-			osago.POST("/initcon", unifiedController.InitCon)
+			osago.POST("/check", unifiedController.Nacalo)
 			osago.POST("/calc", unifiedController.Calc)
-			osago.POST("/submit", unifiedController.Submit)
-			osago.GET("/session/:id", unifiedController.GetSession)
+			osago.POST("/create", unifiedController.InitCon)
+			osago.POST("/save", unifiedController.Submit)
 			osago.POST("/check-payment", unifiedController.CheckPayment)
+			osago.GET("/session/:id", unifiedController.GetSession)
 		}
 	}
 }
