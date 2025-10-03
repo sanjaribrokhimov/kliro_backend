@@ -37,6 +37,9 @@ type Config struct {
 	ClickMerchantID  string
 	PaymeMerchantID  string
 	PaymentReturnURL string
+	GrossBaseURL     string
+	GrossLogin       string
+	GrossPassword    string
 }
 
 func LoadConfig() *Config {
@@ -71,6 +74,9 @@ func LoadConfig() *Config {
 		ClickMerchantID:  os.Getenv("CLICK_MERCHANT_ID"),
 		PaymeMerchantID:  os.Getenv("PAYME_MERCHANT_ID"),
 		PaymentReturnURL: getenvOrDefault("PAYMENT_RETURN_URL", "https://your-domain.com/payment/return"),
+		GrossBaseURL:     getenvOrDefault("GROSS_BASE_URL", "https://gross.uz"),
+		GrossLogin:       os.Getenv("GROSS_LOGIN"),
+		GrossPassword:    os.Getenv("GROSS_PASSWORD"),
 	}
 }
 
