@@ -106,13 +106,14 @@ func main() {
 
 	// Подключение к Redis
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:6379", os.Getenv("DB_HOST")),
-		Password: "",
+		Addr:     getenvOr("REDIS_ADDR", fmt.Sprintf("%s:6379", os.Getenv("DB_HOST"))),
+		Password: os.Getenv("REDIS_PASSWORD"),
 		DB:       0,
 	})
 	if err := rdb.Ping(context.Background()).Err(); err != nil {
 		log.Fatalf("failed to connect to redis: %v", err)
 	}
+	utils.SetRedis(rdb)
 	log.Println("Connected to Redis")
 
 	// Инициализация Google OAuth
@@ -137,4 +138,11 @@ func main() {
 		log.Fatalf("Failed to run server: %v", err)
 	}
 
+}
+
+func getenvOr(key, def string) string {
+	if v := os.Getenv(key); v != "" {
+		return v
+	}
+	return def
 }

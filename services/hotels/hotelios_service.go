@@ -9,6 +9,10 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"context"
+
+	"kliro/utils"
 )
 
 // HoteliosService сервис для работы с Hotelios API
@@ -96,6 +100,40 @@ func (s *HoteliosService) MakeRequest(method, endpoint string, body interface{})
 	return response, nil
 }
 
+// MakeRequestRaw выполняет запрос к Hotelios API и возвращает сырые байты без изменений
+func (s *HoteliosService) MakeRequestRaw(method, endpoint string, body interface{}) ([]byte, error) {
+	url := s.baseURL + endpoint
+
+	var reqBody io.Reader
+	if body != nil {
+		jsonData, err := json.Marshal(body)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal request: %v", err)
+		}
+		reqBody = bytes.NewBuffer(jsonData)
+	}
+
+	req, err := http.NewRequest(method, url, reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %v", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := s.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to make request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response: %v", err)
+	}
+
+	return responseBody, nil
+}
+
 // MakeHoteliosRequest выполняет запрос к Hotelios API - простое перенаправление
 func (s *HoteliosService) MakeHoteliosRequest(method, endpoint string, body interface{}) (map[string]interface{}, error) {
 	return s.MakeRequest(method, endpoint, body)
@@ -121,7 +159,81 @@ func (s *HoteliosService) MakeHoteliosActionRequest(action string, data interfac
 		endpoint = "/reservation"
 	}
 
-	return s.MakeRequest("POST", endpoint, requestData)
+	// Redis cache key per action and data
+	cacheKey := "hotels:action:" + action
+	if data != nil {
+		if b, err := json.Marshal(data); err == nil {
+			cacheKey = cacheKey + ":" + string(b)
+		}
+	}
+
+	// Try cache first
+	rdb := utils.GetRedis()
+	if rdb != nil {
+		if cached, err := rdb.Get(context.Background(), cacheKey).Bytes(); err == nil && len(cached) > 0 {
+			var response map[string]interface{}
+			if err := json.Unmarshal(cached, &response); err == nil {
+				log.Printf("[HOTELIOS CACHE] HIT action=%s", action)
+				return response, nil
+			}
+		}
+	}
+
+	resp, err := s.MakeRequest("POST", endpoint, requestData)
+	if err != nil {
+		return nil, err
+	}
+
+	// Store raw in Redis for 24h
+	if rdb != nil {
+		if raw, err := json.Marshal(resp); err == nil {
+			_ = rdb.Set(context.Background(), cacheKey, raw, 24*time.Hour).Err()
+			log.Printf("[HOTELIOS CACHE] MISS action=%s stored", action)
+		}
+	}
+
+	return resp, nil
+}
+
+// MakeHoteliosActionRequestRaw делает запрос action и возвращает сырые байты, используя Redis-кэш на 24 часа
+func (s *HoteliosService) MakeHoteliosActionRequestRaw(action string, data interface{}) ([]byte, bool, error) {
+	requestData := map[string]interface{}{
+		"login":      s.login,
+		"password":   s.password,
+		"access_key": s.accessKey,
+		"action":     action,
+		"version":    1,
+		"data":       data,
+	}
+
+	endpoint := "/hotel"
+
+	cacheKey := "hotels:action:raw:" + action
+	if data != nil {
+		if b, err := json.Marshal(data); err == nil {
+			cacheKey = cacheKey + ":" + string(b)
+		}
+	}
+
+	rdb := utils.GetRedis()
+	if rdb != nil {
+		if cached, err := rdb.Get(context.Background(), cacheKey).Bytes(); err == nil && len(cached) > 0 {
+			log.Printf("[HOTELIOS CACHE RAW] HIT action=%s", action)
+			return cached, true, nil
+		}
+	}
+
+	body, err := s.MakeRequestRaw("POST", endpoint, requestData)
+	if err != nil {
+		return nil, false, err
+	}
+
+	if rdb != nil {
+		_ = rdb.Set(context.Background(), cacheKey, body, 24*time.Hour).Err()
+		log.Printf("[HOTELIOS CACHE RAW] MISS action=%s stored", action)
+	}
+
+	return body, false, nil
 }
 
 // GetLogin возвращает логин

@@ -2,12 +2,16 @@ package routes
 
 import (
 	"kliro/controllers/hotels"
+	services "kliro/services/hotels"
 
 	"github.com/gin-gonic/gin"
 )
 
 func SetupHotelRoutes(router *gin.Engine) {
 	hotelController := hotels.NewHotelController()
+
+	// Start nightly Redis cache refresh for references
+	go services.StartHotelsReferenceCron()
 
 	// Hotelios API routes (точные как в оригинале, но сгруппированы под /hotels)
 	hotelsGroup := router.Group("/hotels")

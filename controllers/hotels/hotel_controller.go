@@ -25,12 +25,19 @@ func NewHotelController() *HotelController {
 
 // GetCountryList получает список стран
 func (hc *HotelController) GetCountryList(c *gin.Context) {
-	response, err := hc.hoteliosService.MakeHoteliosActionRequest("GetCountryList", nil)
+	body, hit, err := hc.hoteliosService.MakeHoteliosActionRequestRaw("GetCountryList", nil)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, response)
+	if hit {
+		c.Header("X-Cache", "HIT")
+		c.Header("X-Source", "redis")
+	} else {
+		c.Header("X-Cache", "MISS")
+		c.Header("X-Source", "hotelios")
+	}
+	c.Data(http.StatusOK, "application/json", body)
 }
 
 // GetRegionList получает список регионов
@@ -69,12 +76,19 @@ func (hc *HotelController) GetCityList(c *gin.Context) {
 
 // GetHotelTypeList получает список типов отелей
 func (hc *HotelController) GetHotelTypeList(c *gin.Context) {
-	response, err := hc.hoteliosService.MakeHoteliosActionRequest("GetHotelTypeList", nil)
+	body, hit, err := hc.hoteliosService.MakeHoteliosActionRequestRaw("GetHotelTypeList", nil)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, response)
+	if hit {
+		c.Header("X-Cache", "HIT")
+		c.Header("X-Source", "redis")
+	} else {
+		c.Header("X-Cache", "MISS")
+		c.Header("X-Source", "hotelios")
+	}
+	c.Data(http.StatusOK, "application/json", body)
 }
 
 // GetHotelList получает список отелей
@@ -166,12 +180,19 @@ func (hc *HotelController) GetHotelRoomTypesPhotoList(c *gin.Context) {
 
 // GetFacilityList получает список удобств
 func (hc *HotelController) GetFacilityList(c *gin.Context) {
-	response, err := hc.hoteliosService.MakeHoteliosActionRequest("GetFacilityList", nil)
+	body, hit, err := hc.hoteliosService.MakeHoteliosActionRequestRaw("GetFacilityList", nil)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, response)
+	if hit {
+		c.Header("X-Cache", "HIT")
+		c.Header("X-Source", "redis")
+	} else {
+		c.Header("X-Cache", "MISS")
+		c.Header("X-Source", "hotelios")
+	}
+	c.Data(http.StatusOK, "application/json", body)
 }
 
 // GetHotelFacilityList получает удобства отеля
@@ -193,12 +214,19 @@ func (hc *HotelController) GetHotelFacilityList(c *gin.Context) {
 
 // GetEquipmentList получает список оборудования
 func (hc *HotelController) GetEquipmentList(c *gin.Context) {
-	response, err := hc.hoteliosService.MakeHoteliosActionRequest("GetEquipmentList", nil)
+	body, hit, err := hc.hoteliosService.MakeHoteliosActionRequestRaw("GetEquipmentList", nil)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, response)
+	if hit {
+		c.Header("X-Cache", "HIT")
+		c.Header("X-Source", "redis")
+	} else {
+		c.Header("X-Cache", "MISS")
+		c.Header("X-Source", "hotelios")
+	}
+	c.Data(http.StatusOK, "application/json", body)
 }
 
 // GetRoomTypeEquipmentList получает оборудование номеров
@@ -233,22 +261,36 @@ func (hc *HotelController) GetRoomTypeEquipmentList(c *gin.Context) {
 
 // GetPriceRange получает диапазон цен
 func (hc *HotelController) GetPriceRange(c *gin.Context) {
-	response, err := hc.hoteliosService.MakeHoteliosActionRequest("GetPriceRange", nil)
+	body, hit, err := hc.hoteliosService.MakeHoteliosActionRequestRaw("GetPriceRange", nil)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, response)
+	if hit {
+		c.Header("X-Cache", "HIT")
+		c.Header("X-Source", "redis")
+	} else {
+		c.Header("X-Cache", "MISS")
+		c.Header("X-Source", "hotelios")
+	}
+	c.Data(http.StatusOK, "application/json", body)
 }
 
 // GetStarList получает список звезд отелей
 func (hc *HotelController) GetStarList(c *gin.Context) {
-	response, err := hc.hoteliosService.MakeHoteliosActionRequest("GetStarList", nil)
+	body, hit, err := hc.hoteliosService.MakeHoteliosActionRequestRaw("GetStarList", nil)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, response)
+	if hit {
+		c.Header("X-Cache", "HIT")
+		c.Header("X-Source", "redis")
+	} else {
+		c.Header("X-Cache", "MISS")
+		c.Header("X-Source", "hotelios")
+	}
+	c.Data(http.StatusOK, "application/json", body)
 }
 
 // GetNearbyPlacesTypeList получает список типов ближайших мест
@@ -280,12 +322,19 @@ func (hc *HotelController) GetHotelNearbyPlacesList(c *gin.Context) {
 
 // GetServicesInRoomList получает список услуг в номере
 func (hc *HotelController) GetServicesInRoomList(c *gin.Context) {
-	response, err := hc.hoteliosService.MakeHoteliosActionRequest("GetServicesInRoomList", nil)
+	body, hit, err := hc.hoteliosService.MakeHoteliosActionRequestRaw("GetServicesInRoomList", nil)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, response)
+	if hit {
+		c.Header("X-Cache", "HIT")
+		c.Header("X-Source", "redis")
+	} else {
+		c.Header("X-Cache", "MISS")
+		c.Header("X-Source", "hotelios")
+	}
+	c.Data(http.StatusOK, "application/json", body)
 }
 
 // GetHotelServicesInRoomList получает услуги в номере отеля
@@ -307,22 +356,36 @@ func (hc *HotelController) GetHotelServicesInRoomList(c *gin.Context) {
 
 // GetBedTypeList получает список типов кроватей
 func (hc *HotelController) GetBedTypeList(c *gin.Context) {
-	response, err := hc.hoteliosService.MakeHoteliosActionRequest("GetBedTypeList", nil)
+	body, hit, err := hc.hoteliosService.MakeHoteliosActionRequestRaw("GetBedTypeList", nil)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, response)
+	if hit {
+		c.Header("X-Cache", "HIT")
+		c.Header("X-Source", "redis")
+	} else {
+		c.Header("X-Cache", "MISS")
+		c.Header("X-Source", "hotelios")
+	}
+	c.Data(http.StatusOK, "application/json", body)
 }
 
 // GetCurrencyList получает список валют
 func (hc *HotelController) GetCurrencyList(c *gin.Context) {
-	response, err := hc.hoteliosService.MakeHoteliosActionRequest("GetCurrencyList", nil)
+	body, hit, err := hc.hoteliosService.MakeHoteliosActionRequestRaw("GetCurrencyList", nil)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, response)
+	if hit {
+		c.Header("X-Cache", "HIT")
+		c.Header("X-Source", "redis")
+	} else {
+		c.Header("X-Cache", "MISS")
+		c.Header("X-Source", "hotelios")
+	}
+	c.Data(http.StatusOK, "application/json", body)
 }
 
 // ===== МЕТОДЫ BOOKING-FLOW (v1.1.0) =====
