@@ -1,0 +1,786 @@
+package controllers
+
+import (
+	"bytes"
+	"context"
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"strings"
+	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
+	"github.com/google/uuid"
+)
+
+type ApexCountry struct {
+	ID        int     `json:"id"`
+	Name      string  `json:"name"`
+	NameRuEng string  `json:"name_ru_eng"`
+	Kod       *string `json:"kod"`
+}
+
+var apexCountries []ApexCountry
+
+var countryCodeMap = map[string]string{
+	"AF": "AFG", "AL": "ALB", "DZ": "DZA", "AS": "ASM", "AD": "AND",
+	"AO": "AGO", "AG": "ATG", "AR": "ARG", "AM": "ARM", "AW": "ABW",
+	"AU": "AUS", "AT": "AUT", "AZ": "AZE", "BS": "BHS", "BH": "BHR",
+	"BD": "BGD", "BB": "BRB", "BY": "BLR", "BE": "BEL", "BZ": "BLZ",
+	"BJ": "BEN", "BM": "BMU", "BT": "BTN", "BO": "BOL", "BA": "BIH",
+	"BW": "BWA", "BR": "BRA", "BN": "BRN", "BG": "BGR", "BF": "BFA",
+	"BI": "BDI", "KH": "KHM", "CM": "CMR", "CA": "CAN", "CV": "CPV",
+	"KY": "CYM", "CF": "CAF", "TD": "TCD", "CL": "CHL", "CN": "CHN",
+	"CO": "COL", "KM": "COM", "CG": "COG", "CD": "COD", "CR": "CRI",
+	"CI": "CIV", "HR": "HRV", "CU": "CUB", "CY": "CYP", "CZ": "CZE",
+	"DK": "DNK", "DJ": "DJI", "DM": "DMA", "DO": "DOM", "EC": "ECU",
+	"EG": "EGY", "SV": "SLV", "GQ": "GNQ", "ER": "ERI", "EE": "EST",
+	"ET": "ETH", "FJ": "FJI", "FI": "FIN", "FR": "FRA", "GA": "GAB",
+	"GM": "GMB", "GE": "GEO", "DE": "DEU", "GH": "GHA", "GR": "GRC",
+	"GD": "GRD", "GT": "GTM", "GN": "GIN", "GW": "GNB", "GY": "GUY",
+	"HT": "HTI", "HN": "HND", "HK": "HKG", "HU": "HUN", "IS": "ISL",
+	"IN": "IND", "ID": "IDN", "IR": "IRN", "IQ": "IRQ", "IE": "IRL",
+	"IL": "ISR", "IT": "ITA", "JM": "JAM", "JP": "JPN", "JO": "JOR",
+	"KZ": "KAZ", "KE": "KEN", "KI": "KIR", "KP": "PRK", "KR": "KOR",
+	"KW": "KWT", "KG": "KGZ", "LA": "LAO", "LV": "LVA", "LB": "LBN",
+	"LS": "LSO", "LR": "LBR", "LY": "LBY", "LI": "LIE", "LT": "LTU",
+	"LU": "LUX", "MO": "MAC", "MK": "MKD", "MG": "MDG", "MW": "MWI",
+	"MY": "MYS", "MV": "MDV", "ML": "MLI", "MT": "MLT", "MH": "MHL",
+	"MR": "MRT", "MU": "MUS", "MX": "MEX", "FM": "FSM", "MD": "MDA",
+	"MC": "MCO", "MN": "MNG", "ME": "MNE", "MA": "MAR", "MZ": "MOZ",
+	"MM": "MMR", "NA": "NAM", "NR": "NRU", "NP": "NPL", "NL": "NLD",
+	"NZ": "NZL", "NI": "NIC", "NE": "NER", "NG": "NGA", "NO": "NOR",
+	"OM": "OMN", "PK": "PAK", "PW": "PLW", "PS": "PSE", "PA": "PAN",
+	"PG": "PNG", "PY": "PRY", "PE": "PER", "PH": "PHL", "PL": "POL",
+	"PT": "PRT", "QA": "QAT", "RO": "ROU", "RU": "RUS", "RW": "RWA",
+	"KN": "KNA", "LC": "LCA", "VC": "VCT", "WS": "WSM", "SM": "SMR",
+	"ST": "STP", "SA": "SAU", "SN": "SEN", "RS": "SRB", "SC": "SYC",
+	"SL": "SLE", "SG": "SGP", "SK": "SVK", "SI": "SVN", "SB": "SLB",
+	"SO": "SOM", "ZA": "ZAF", "SS": "SSD", "ES": "ESP", "LK": "LKA",
+	"SD": "SDN", "SR": "SUR", "SZ": "SWZ", "SE": "SWE", "CH": "CHE",
+	"SY": "SYR", "TW": "TWN", "TJ": "TJK", "TZ": "TZA", "TH": "THA",
+	"TL": "TLS", "TG": "TGO", "TO": "TON", "TT": "TTO", "TN": "TUN",
+	"TR": "TUR", "TM": "TKM", "TV": "TUV", "UG": "UGA", "UA": "UKR",
+	"AE": "ARE", "GB": "GBR", "US": "USA", "UY": "URY", "UZ": "UZB",
+	"VU": "VUT", "VE": "VEN", "VN": "VNM", "YE": "YEM", "ZM": "ZMB",
+	"ZW": "ZWE",
+}
+
+var purposeMapping = map[string]map[int]int{
+	"neo": {
+		0: 1, // Путешествие (Travel)
+		1: 5, // Работа (Work)
+		2: 3, // Спорт (Sport)
+		3: 4, // Учеба (Education)
+	},
+	"gross": {
+		0: 1, // Путешествие (Travel)
+		1: 3, // Работа (Work)
+		2: 4, // Спорт (Sport)
+		3: 2, // Учеба (Education)
+	},
+	"trust": {
+		0: 0, // Путешествие (Туризм)
+		1: 1, // Работа (Работа физическая)
+		2: 4, // Спорт (Спорт 1)
+		6: 6, // Спорт экстремальный (Спорт 3)
+	},
+	"apex": {
+		0: 0, // Путешествие
+		1: 1, // Работа
+		2: 2, // Спорт
+		3: 3, // Учеба
+		4: 4, // Командировка
+		5: 5, // Водитель
+	},
+}
+
+func getProviderPurposeID(provider string, ourPurposeID int) (int, bool) {
+	if providerMapping, exists := purposeMapping[provider]; exists {
+		if mappedID, exists := providerMapping[ourPurposeID]; exists {
+			return mappedID, true
+		}
+	}
+	return 0, false
+}
+
+func hasProviderPurpose(provider string, ourPurposeID int) bool {
+	_, exists := getProviderPurposeID(provider, ourPurposeID)
+	return exists
+}
+
+type TravelController struct {
+	RDB *redis.Client
+}
+
+func NewTravelController(rdb *redis.Client) *TravelController {
+	loadApexCountries()
+	return &TravelController{RDB: rdb}
+}
+
+func loadApexCountries() {
+	if len(apexCountries) > 0 {
+		return
+	}
+
+	data, err := os.ReadFile("staticDate/trustCountry.json")
+	if err != nil {
+		fmt.Println("Warning: Could not load staticDate/trustCountry.json:", err)
+		return
+	}
+
+	if err := json.Unmarshal(data, &apexCountries); err != nil {
+		fmt.Println("Warning: Could not parse staticDate/trustCountry.json:", err)
+		return
+	}
+
+	fmt.Printf("Loaded %d countries from trustCountry.json\n", len(apexCountries))
+}
+
+func getCountryIDByCode(code string) int {
+	fmt.Printf("Searching for country code: %s\n", code)
+	for _, country := range apexCountries {
+		if country.Kod != nil && *country.Kod == code {
+			fmt.Printf("Found country: %s -> ID: %d\n", code, country.ID)
+			return country.ID
+		}
+	}
+	fmt.Printf("Country code %s not found\n", code)
+	return 0
+}
+
+type TravelPurposeRequest struct {
+	PurposeID    int      `json:"purpose_id" binding:"required,max=6"`
+	Destinations []string `json:"destinations" binding:"required,min=1,max=5"`
+}
+
+func (tc *TravelController) SetTravelPurpose(c *gin.Context) {
+	var req TravelPurposeRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "invalid request"})
+		return
+	}
+
+	if len(req.Destinations) > 5 {
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "maximum 5 countries allowed"})
+		return
+	}
+
+	sessionID := uuid.New().String()
+	ctx := context.Background()
+	redisKey := "travel:session:" + sessionID
+
+	sessionData := map[string]interface{}{
+		"purpose_id":   req.PurposeID,
+		"destinations": req.Destinations,
+	}
+
+	sessionDataJSON, err := json.Marshal(sessionData)
+	if err != nil {
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to create session"})
+		return
+	}
+
+	err = tc.RDB.Set(ctx, redisKey, sessionDataJSON, 30*time.Minute).Err()
+	if err != nil {
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to store session"})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"result": gin.H{
+			"session_id":   sessionID,
+			"purpose_id":   req.PurposeID,
+			"destinations": req.Destinations,
+		},
+		"success": true,
+	})
+}
+
+type TravelDetailsRequest struct {
+	SessionID           string   `json:"session_id" binding:"required"`
+	StartDate           string   `json:"start_date" binding:"required"`
+	EndDate             string   `json:"end_date" binding:"required"`
+	TravelersBirthdates []string `json:"travelers_birthdates" binding:"required"`
+	AnnualPolicy        bool     `json:"annual_policy"`
+	CovidProtection     bool     `json:"covid_protection"`
+	FamilyTravel        bool     `json:"family_travel"`
+}
+
+func (tc *TravelController) SetTravelDetails(c *gin.Context) {
+	var req TravelDetailsRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "invalid request"})
+		return
+	}
+
+	ctx := context.Background()
+	redisKey := "travel:session:" + req.SessionID
+
+	existingData, err := tc.RDB.Get(ctx, redisKey).Result()
+	if err != nil {
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "session not found or expired"})
+		return
+	}
+
+	var sessionData map[string]interface{}
+	if err := json.Unmarshal([]byte(existingData), &sessionData); err != nil {
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to parse session data"})
+		return
+	}
+
+	sessionData["start_date"] = req.StartDate
+	sessionData["end_date"] = req.EndDate
+	sessionData["travelers_birthdates"] = req.TravelersBirthdates
+	sessionData["annual_policy"] = req.AnnualPolicy
+	sessionData["covid_protection"] = req.CovidProtection
+	sessionData["family_travel"] = req.FamilyTravel
+
+	updatedDataJSON, err := json.Marshal(sessionData)
+	if err != nil {
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to update session"})
+		return
+	}
+
+	err = tc.RDB.Set(ctx, redisKey, updatedDataJSON, 30*time.Minute).Err()
+	if err != nil {
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to save session"})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"result": gin.H{
+			"session_id":           req.SessionID,
+			"purpose_id":           sessionData["purpose_id"],
+			"destinations":         sessionData["destinations"],
+			"start_date":           req.StartDate,
+			"end_date":             req.EndDate,
+			"travelers_birthdates": req.TravelersBirthdates,
+			"annual_policy":        req.AnnualPolicy,
+			"covid_protection":     req.CovidProtection,
+			"family_travel":        req.FamilyTravel,
+		},
+		"success": true,
+	})
+}
+
+type TravelCalculateRequest struct {
+	SessionID    string `json:"session_id" binding:"required"`
+	Accident     bool   `json:"accident"`
+	Luggage      bool   `json:"luggage"`
+	CancelTravel bool   `json:"cancel_travel"`
+	PersonRespon bool   `json:"person_respon"`
+	DelayTravel  bool   `json:"delay_travel"`
+}
+
+type NeoInsuranceCalculatorRequest struct {
+	BeginDate  string   `json:"begin_date"`
+	EndDate    string   `json:"end_date,omitempty"`
+	Days       int      `json:"days,omitempty"`
+	Countries  []string `json:"countries"`
+	PurposeID  int      `json:"purpose_id"`
+	KopMartali bool     `json:"kop_martali"`
+	IsFamily   bool     `json:"is_family"`
+	HasCovid   bool     `json:"has_covid"`
+	Travelers  []string `json:"travelers"`
+	Risklar    struct {
+		Accident     int `json:"accident"`
+		Luggage      int `json:"luggage"`
+		CancelTravel int `json:"cancel_travel"`
+		PersonRespon int `json:"person_respon"`
+		DelayTravel  int `json:"delay_travel"`
+	} `json:"risklar"`
+}
+
+type GrossCalculatorRequest struct {
+	Countries []string `json:"countries"`
+	BeginDate string   `json:"begin_date"`
+	EndDate   string   `json:"end_date"`
+	HasCovid  bool     `json:"has_covid"`
+	Birthdays []string `json:"birthdays"`
+}
+
+type TrustCalculatorRequest struct {
+	Day        int      `json:"day"`
+	ActivityID int      `json:"activity_id"`
+	Countries  []int    `json:"countries"`
+	GroupID    int      `json:"group_id"`
+	TypeID     int      `json:"type_id"`
+	MultiID    int      `json:"multi_id"`
+	DateReg    string   `json:"date_reg"`
+	DateBirths []string `json:"date_births"`
+}
+
+type ApexCountryInfo struct {
+	ISO string `json:"iso"`
+}
+
+type ApexTravelInfo struct {
+	StartDate string            `json:"start_date"`
+	EndDate   string            `json:"end_date"`
+	Country   []ApexCountryInfo `json:"country"`
+	ProgramID int               `json:"program_id"`
+	PurposeID int               `json:"purpose_id"`
+	GroupID   int               `json:"group_id"`
+}
+
+type ApexPersonInfo struct {
+	Birthday string `json:"birthday"`
+}
+
+type ApexCalculatorRequest struct {
+	TravelInfo ApexTravelInfo   `json:"travel_info"`
+	PersonInfo []ApexPersonInfo `json:"person_info"`
+}
+
+func (tc *TravelController) CalculateTravel(c *gin.Context) {
+	var req TravelCalculateRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "invalid request"})
+		return
+	}
+
+	ctx := context.Background()
+	redisKey := "travel:session:" + req.SessionID
+
+	sessionDataStr, err := tc.RDB.Get(ctx, redisKey).Result()
+	if err != nil {
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "session not found or expired"})
+		return
+	}
+
+	var sessionData map[string]interface{}
+	if err := json.Unmarshal([]byte(sessionDataStr), &sessionData); err != nil {
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to parse session data"})
+		return
+	}
+
+	destinationsInterface := sessionData["destinations"].([]interface{})
+	countries := make([]string, len(destinationsInterface))
+	for i, v := range destinationsInterface {
+		countries[i] = v.(string)
+	}
+
+	travelersInterface := sessionData["travelers_birthdates"].([]interface{})
+	travelers := make([]string, len(travelersInterface))
+	for i, v := range travelersInterface {
+		travelers[i] = v.(string)
+	}
+
+	purposeID := int(sessionData["purpose_id"].(float64))
+	annualPolicy := sessionData["annual_policy"].(bool)
+	hasCovid := sessionData["covid_protection"].(bool)
+	startDate := sessionData["start_date"].(string)
+	endDate := sessionData["end_date"].(string)
+
+	type ProviderResult struct {
+		Provider string
+		Data     map[string]interface{}
+		Error    error
+	}
+
+	resultChan := make(chan ProviderResult, 4)
+	activeProviders := 0
+
+	if hasProviderPurpose("neo", purposeID) {
+		activeProviders++
+		go func() {
+			neoPurposeID, _ := getProviderPurposeID("neo", purposeID)
+			neoReq := NeoInsuranceCalculatorRequest{
+				PurposeID:  neoPurposeID,
+				Countries:  countries,
+				KopMartali: annualPolicy,
+				IsFamily:   false,
+				HasCovid:   hasCovid,
+				Travelers:  travelers,
+			}
+
+			if purposeID == 1 || purposeID == 2 {
+				neoReq.BeginDate = startDate
+				neoReq.EndDate = endDate
+			} else if purposeID == 3 || purposeID == 4 || annualPolicy {
+				neoReq.BeginDate = startDate
+				neoReq.Days = 30
+			}
+
+			neoReq.Risklar.Accident = boolToInt(req.Accident)
+			neoReq.Risklar.Luggage = boolToInt(req.Luggage)
+			neoReq.Risklar.CancelTravel = boolToInt(req.CancelTravel)
+			neoReq.Risklar.PersonRespon = boolToInt(req.PersonRespon)
+			neoReq.Risklar.DelayTravel = boolToInt(req.DelayTravel)
+
+			baseURL := os.Getenv("NEO_BASE_URL")
+			if baseURL == "" {
+				baseURL = "https://api.neoinsurance.uz"
+			}
+
+			jsonData, err := json.Marshal(neoReq)
+			if err != nil {
+				resultChan <- ProviderResult{Provider: "neo", Error: err}
+				return
+			}
+
+			neoLogin := os.Getenv("NEO_LOGIN")
+			neoPassword := os.Getenv("NEO_PASSWORD")
+			creds := neoLogin + ":" + neoPassword
+			authHeader := "Basic " + base64.StdEncoding.EncodeToString([]byte(creds))
+
+			httpReq, err := http.NewRequest("POST", fmt.Sprintf("%s/api/travel-neo/calculator-total", baseURL), bytes.NewBuffer(jsonData))
+			if err != nil {
+				resultChan <- ProviderResult{Provider: "neo", Error: err}
+				return
+			}
+
+			httpReq.Header.Set("Content-Type", "application/json")
+			httpReq.Header.Set("Authorization", authHeader)
+
+			client := &http.Client{Timeout: 30 * time.Second}
+			resp, err := client.Do(httpReq)
+			if err != nil {
+				resultChan <- ProviderResult{Provider: "neo", Error: err}
+				return
+			}
+			defer resp.Body.Close()
+
+			body, err := io.ReadAll(resp.Body)
+			if err != nil {
+				resultChan <- ProviderResult{Provider: "neo", Error: err}
+				return
+			}
+
+			var neoResponse map[string]interface{}
+			if err := json.Unmarshal(body, &neoResponse); err != nil {
+				resultChan <- ProviderResult{Provider: "neo", Error: err}
+				return
+			}
+
+			resultChan <- ProviderResult{Provider: "neo", Data: neoResponse}
+		}()
+	}
+
+	if hasProviderPurpose("gross", purposeID) {
+		activeProviders++
+		go func() {
+			grossReq := GrossCalculatorRequest{
+				Countries: countries,
+				BeginDate: convertDateFormat(startDate),
+				EndDate:   convertDateFormat(endDate),
+				HasCovid:  hasCovid,
+			}
+
+			grossBirthdays := make([]string, len(travelers))
+			for i, bd := range travelers {
+				grossBirthdays[i] = convertDateFormat(bd)
+			}
+			grossReq.Birthdays = grossBirthdays
+
+			baseURL := os.Getenv("GROSS_BASE_URL")
+			if baseURL == "" {
+				baseURL = "https://gross.uz/ru"
+			}
+
+			jsonData, err := json.Marshal(grossReq)
+			if err != nil {
+				resultChan <- ProviderResult{Provider: "gross", Error: err}
+				return
+			}
+
+			grossLogin := os.Getenv("GROSS_LOGIN")
+			grossPassword := os.Getenv("GROSS_PASSWORD")
+			creds := grossLogin + ":" + grossPassword
+			authHeader := "Basic " + base64.StdEncoding.EncodeToString([]byte(creds))
+
+			httpReq, err := http.NewRequest("POST", fmt.Sprintf("%s/travelapi/calc-amount", baseURL), bytes.NewBuffer(jsonData))
+			if err != nil {
+				resultChan <- ProviderResult{Provider: "gross", Error: err}
+				return
+			}
+
+			httpReq.Header.Set("Content-Type", "application/json")
+			httpReq.Header.Set("Authorization", authHeader)
+
+			client := &http.Client{Timeout: 30 * time.Second}
+			resp, err := client.Do(httpReq)
+			if err != nil {
+				resultChan <- ProviderResult{Provider: "gross", Error: err}
+				return
+			}
+			defer resp.Body.Close()
+
+			body, err := io.ReadAll(resp.Body)
+			if err != nil {
+				resultChan <- ProviderResult{Provider: "gross", Error: err}
+				return
+			}
+
+			var grossResponse map[string]interface{}
+			if err := json.Unmarshal(body, &grossResponse); err != nil {
+				resultChan <- ProviderResult{Provider: "gross", Error: err}
+				return
+			}
+
+			resultChan <- ProviderResult{Provider: "gross", Data: grossResponse}
+		}()
+	}
+
+	if hasProviderPurpose("trust", purposeID) {
+		activeProviders++
+		go func() {
+			trustCountryIDs := make([]int, 0)
+			for _, countryCode := range countries {
+				alpha3Code := countryCode
+				if mapped, ok := countryCodeMap[countryCode]; ok {
+					alpha3Code = mapped
+				}
+				if id := getCountryIDByCode(alpha3Code); id > 0 {
+					trustCountryIDs = append(trustCountryIDs, id)
+				}
+			}
+
+			days := calculateDays(startDate, endDate)
+
+			location, _ := time.LoadLocation("Asia/Tashkent")
+			currentDate := time.Now().In(location).Format("02.01.2006")
+
+			trustPurposeID, _ := getProviderPurposeID("trust", purposeID)
+			trustReq := TrustCalculatorRequest{
+				Day:        days,
+				ActivityID: trustPurposeID,
+				Countries:  trustCountryIDs,
+				GroupID:    0,
+				TypeID:     boolToInt(annualPolicy),
+				MultiID:    0,
+				DateReg:    currentDate,
+			}
+
+			trustBirthdays := make([]string, len(travelers))
+			for i, bd := range travelers {
+				trustBirthdays[i] = convertDateFormat(bd)
+			}
+			trustReq.DateBirths = trustBirthdays
+
+			baseURL := os.Getenv("TRUST_BASE_URL")
+			if baseURL == "" {
+				baseURL = "https://api.online-trust.uz"
+			}
+
+			jsonData, err := json.Marshal(trustReq)
+			if err != nil {
+				resultChan <- ProviderResult{Provider: "trust", Error: err}
+				return
+			}
+
+			trustLogin := os.Getenv("TRUST_LOGIN")
+			trustPassword := os.Getenv("TRUST_PASSWORD")
+
+			fmt.Println("=== TRUST REQUEST ===")
+			fmt.Println("URL:", fmt.Sprintf("%s/api/travel/price/total-with-country", baseURL))
+			fmt.Println("Login:", trustLogin)
+			fmt.Println("Password:", trustPassword)
+			fmt.Println("Body:", string(jsonData))
+
+			creds := trustLogin + ":" + trustPassword
+			authHeader := "Basic " + base64.StdEncoding.EncodeToString([]byte(creds))
+			fmt.Println("Auth Header:", authHeader)
+
+			httpReq, err := http.NewRequest("POST", fmt.Sprintf("%s/api/travel/price/total-with-country", baseURL), bytes.NewBuffer(jsonData))
+			if err != nil {
+				resultChan <- ProviderResult{Provider: "trust", Error: err}
+				return
+			}
+
+			httpReq.Header.Set("Content-Type", "application/json")
+			httpReq.Header.Set("Authorization", authHeader)
+
+			client := &http.Client{Timeout: 30 * time.Second}
+			resp, err := client.Do(httpReq)
+			if err != nil {
+				resultChan <- ProviderResult{Provider: "trust", Error: err}
+				return
+			}
+			defer resp.Body.Close()
+
+			body, err := io.ReadAll(resp.Body)
+			if err != nil {
+				resultChan <- ProviderResult{Provider: "trust", Error: err}
+				return
+			}
+
+			fmt.Println("=== TRUST RESPONSE ===")
+			fmt.Println("Status:", resp.StatusCode)
+			fmt.Println("Body:", string(body))
+			fmt.Println("======================")
+
+			if len(body) == 0 {
+				resultChan <- ProviderResult{Provider: "trust", Error: fmt.Errorf("empty response from Trust API")}
+				return
+			}
+
+			var trustResponseArray []interface{}
+			if err := json.Unmarshal(body, &trustResponseArray); err != nil {
+				resultChan <- ProviderResult{Provider: "trust", Error: fmt.Errorf("parse error: %v, body: %s", err, string(body))}
+				return
+			}
+
+			trustResponse := map[string]interface{}{
+				"programs": trustResponseArray,
+			}
+
+			resultChan <- ProviderResult{Provider: "trust", Data: trustResponse}
+		}()
+	}
+
+	if hasProviderPurpose("apex", purposeID) {
+		activeProviders++
+		go func() {
+			apexCountryInfo := make([]ApexCountryInfo, len(countries))
+			for i, country := range countries {
+				apexCountryInfo[i] = ApexCountryInfo{ISO: country}
+			}
+
+			apexPersonInfo := make([]ApexPersonInfo, len(travelers))
+			for i, bd := range travelers {
+				apexPersonInfo[i] = ApexPersonInfo{Birthday: convertDateFormat(bd)}
+			}
+
+			baseURL := os.Getenv("APEX_TRAVEL_BASE_URL")
+			if baseURL == "" {
+				baseURL = "https://rest.aic.uz/api/ins/apex_travel"
+			}
+
+			apexLogin := os.Getenv("APEX_LOGIN")
+			apexPassword := os.Getenv("APEX_PASSWORD")
+
+			fmt.Println("=== APEX REQUEST ===")
+			fmt.Println("URL:", fmt.Sprintf("%s/calculator_travel", baseURL))
+			fmt.Println("Login:", apexLogin)
+			fmt.Println("Password:", apexPassword)
+
+			creds := apexLogin + ":" + apexPassword
+			authHeader := "Basic " + base64.StdEncoding.EncodeToString([]byte(creds))
+
+			apexResults := make([]map[string]interface{}, 0)
+
+			apexPurposeID, _ := getProviderPurposeID("apex", purposeID)
+
+			for programID := 1; programID <= 5; programID++ {
+				apexReq := ApexCalculatorRequest{
+					TravelInfo: ApexTravelInfo{
+						StartDate: convertDateFormat(startDate),
+						EndDate:   convertDateFormat(endDate),
+						Country:   apexCountryInfo,
+						ProgramID: programID,
+						PurposeID: apexPurposeID,
+						GroupID:   0,
+					},
+					PersonInfo: apexPersonInfo,
+				}
+
+				jsonData, err := json.Marshal(apexReq)
+				if err != nil {
+					fmt.Printf("Program %d: Failed to marshal request: %v\n", programID, err)
+					continue
+				}
+
+				fmt.Printf("Program %d Body: %s\n", programID, string(jsonData))
+
+				httpReq, err := http.NewRequest("POST", fmt.Sprintf("%s/calculator_travel", baseURL), bytes.NewBuffer(jsonData))
+				if err != nil {
+					fmt.Printf("Program %d: Failed to create request: %v\n", programID, err)
+					continue
+				}
+
+				httpReq.Header.Set("Content-Type", "application/json")
+				httpReq.Header.Set("Authorization", authHeader)
+
+				client := &http.Client{Timeout: 30 * time.Second}
+				resp, err := client.Do(httpReq)
+				if err != nil {
+					fmt.Printf("Program %d: Failed to send request: %v\n", programID, err)
+					continue
+				}
+				defer resp.Body.Close()
+
+				body, err := io.ReadAll(resp.Body)
+				if err != nil {
+					fmt.Printf("Program %d: Failed to read response: %v\n", programID, err)
+					continue
+				}
+
+				fmt.Printf("=== APEX PROGRAM %d RESPONSE ===\n", programID)
+				fmt.Printf("Status: %d\n", resp.StatusCode)
+				fmt.Printf("Body: %s\n", string(body))
+
+				var apexResponse map[string]interface{}
+				if err := json.Unmarshal(body, &apexResponse); err != nil {
+					fmt.Printf("Program %d: Failed to parse response: %v\n", programID, err)
+					continue
+				}
+
+				if result, ok := apexResponse["result"].(float64); ok {
+					if result == 0 {
+						apexResults = append(apexResults, apexResponse)
+						fmt.Printf("Program %d: Success (result=0)\n", programID)
+					} else {
+						fmt.Printf("Program %d: No tariff (result=%.0f)\n", programID, result)
+					}
+				}
+			}
+
+			fmt.Println("=== APEX FINAL RESULTS ===")
+			fmt.Printf("Found %d valid programs\n", len(apexResults))
+
+			apexFinalResponse := map[string]interface{}{
+				"programs": apexResults,
+			}
+
+			resultChan <- ProviderResult{Provider: "apex", Data: apexFinalResponse}
+		}()
+	}
+
+	fmt.Printf("Active providers for purpose %d: %d\n", purposeID, activeProviders)
+
+	results := make(map[string]interface{})
+	for i := 0; i < activeProviders; i++ {
+		result := <-resultChan
+		if result.Error != nil {
+			results[result.Provider] = gin.H{"error": result.Error.Error()}
+		} else {
+			results[result.Provider] = result.Data
+		}
+	}
+
+	c.JSON(200, gin.H{
+		"result":  results,
+		"success": true,
+	})
+}
+
+func boolToInt(b bool) int {
+	if b {
+		return 1
+	}
+	return 0
+}
+
+func convertDateFormat(date string) string {
+	return strings.ReplaceAll(date, "-", ".")
+}
+
+func calculateDays(startDate, endDate string) int {
+	layout := "02-01-2006"
+	start, err := time.Parse(layout, startDate)
+	if err != nil {
+		return 0
+	}
+	end, err := time.Parse(layout, endDate)
+	if err != nil {
+		return 0
+	}
+	duration := end.Sub(start)
+	return int(duration.Hours()/24) + 1
+}

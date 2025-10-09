@@ -82,6 +82,9 @@ func SetupRouter() *gin.Engine {
 	// Unified API routes
 	SetupUnifiedRoutes(r)
 
+	// Travel API routes
+	SetupTravelRoutes(r, rdb)
+
 	return r
 }
 
