@@ -1,0 +1,2276 @@
+{
+    "result": true,
+    "message": null,
+    "response": {
+        "country": [
+            {
+                "id": 184,
+                "uz": "AFG'ONISTON ",
+                "ru": "АФГАНИСТАН",
+                "en": "AFGHANISTAN",
+                "code": "AF",
+                "shengen": 0
+            },
+            {
+                "id": 122,
+                "uz": "ALBANIYA ",
+                "ru": "АЛБАНИЯ",
+                "en": "ALBANIA",
+                "code": "AL",
+                "shengen": 0
+            },
+            {
+                "id": 229,
+                "uz": "JAZOIR ",
+                "ru": "АЛЖИР",
+                "en": "ALGERIA",
+                "code": "DZ",
+                "shengen": 0
+            },
+            {
+                "id": 4,
+                "uz": "AQSHDAN TASHQARI BARCHA MAMLAKATLAR",
+                "ru": "ВСЕ СТРАНЫ, КРОМЕ США",
+                "en": "ALL COUNTRIES EXCLUDING USA",
+                "code": "AEU",
+                "shengen": 0
+            },
+            {
+                "id": 180,
+                "uz": "ANDORRA",
+                "ru": "АНДОРРА",
+                "en": "ANDORRA",
+                "code": "AD",
+                "shengen": 0
+            },
+            {
+                "id": 228,
+                "uz": "ANTARKTIKA",
+                "ru": "АНТАРКТИКА",
+                "en": "ANTARCTIC",
+                "code": "AQ",
+                "shengen": 0
+            },
+            {
+                "id": 227,
+                "uz": "ANTIGUA VA BARNBUDA",
+                "ru": "АНТИГУА И БАРБУДА",
+                "en": "ANTIGUA AND BARBUDA",
+                "code": "AG",
+                "shengen": 0
+            },
+            {
+                "id": 225,
+                "uz": "ARGENTINA ",
+                "ru": "АРГЕНТИНА",
+                "en": "ARGENTINA",
+                "code": "AR",
+                "shengen": 0
+            },
+            {
+                "id": 121,
+                "uz": "ARMANISTON ",
+                "ru": "АРМЕНИЯ",
+                "en": "ARMENIA",
+                "code": "AM",
+                "shengen": 0
+            },
+            {
+                "id": 131,
+                "uz": "ARUBA ",
+                "ru": "АРУБА",
+                "en": "ARUBA",
+                "code": "AW",
+                "shengen": 0
+            },
+            {
+                "id": 11,
+                "uz": "AVSTRALIYA",
+                "ru": "АВСТРАЛИЯ",
+                "en": "AUSTRALIA",
+                "code": "AU",
+                "shengen": 0
+            },
+            {
+                "id": 231,
+                "uz": "AVSTRIYA, SHENGEN",
+                "ru": "АВСТРИЯ, ШЕНГЕН",
+                "en": "AUSTRIA, SCHENGEN",
+                "code": "AT",
+                "shengen": 1
+            },
+            {
+                "id": 230,
+                "uz": "OZARBAYJON ",
+                "ru": "АЗЕРБАЙДЖАН",
+                "en": "AZERBAIJAN",
+                "code": "AZ",
+                "shengen": 0
+            },
+            {
+                "id": 205,
+                "uz": "BAXREYN ",
+                "ru": "БАХРЕЙН",
+                "en": "BAHRAIN",
+                "code": "BH",
+                "shengen": 0
+            },
+            {
+                "id": 143,
+                "uz": "BANGLADESH ",
+                "ru": "БАНГЛАДЕШ",
+                "en": "BANGLADESH",
+                "code": "BD",
+                "shengen": 0
+            },
+            {
+                "id": 224,
+                "uz": "BARBADOS",
+                "ru": "БАРБАДОС",
+                "en": "BARBADOS",
+                "code": "BB",
+                "shengen": 0
+            },
+            {
+                "id": 120,
+                "uz": "BELORUS ",
+                "ru": "БЕЛАРУСЬ",
+                "en": "BELARUS",
+                "code": "BY",
+                "shengen": 0
+            },
+            {
+                "id": 174,
+                "uz": "BELGIYA, SHENGEN",
+                "ru": "БЕЛЬГИЯ, ШЕНГЕН",
+                "en": "BELGIUM, SCHENGEN",
+                "code": "BE",
+                "shengen": 1
+            },
+            {
+                "id": 223,
+                "uz": "BELIZ",
+                "ru": "БЕЛИЗ",
+                "en": "BELIZ",
+                "code": "BZ",
+                "shengen": 0
+            },
+            {
+                "id": 142,
+                "uz": "BENIN ",
+                "ru": "БЕНИН",
+                "en": "BENIN",
+                "code": "BJ",
+                "shengen": 0
+            },
+            {
+                "id": 222,
+                "uz": "BERMUD OROLLARI",
+                "ru": "БЕРМУДСКИЕ ОСТРОВА",
+                "en": "BERMUDA",
+                "code": "BM",
+                "shengen": 0
+            },
+            {
+                "id": 118,
+                "uz": "BOLIVIYA ",
+                "ru": "БОЛИВИЯ",
+                "en": "BOLIVIA",
+                "code": "BO",
+                "shengen": 0
+            },
+            {
+                "id": 221,
+                "uz": "BOSNIYA VA GERTSEGOVINA",
+                "ru": "БОСНИЯ И ГЕРЦЕГОВИНА",
+                "en": "BOSNIA AND HERZEGOVINA",
+                "code": "BA",
+                "shengen": 0
+            },
+            {
+                "id": 117,
+                "uz": "BOTSVANA ",
+                "ru": "БОТСВАНА",
+                "en": "BOTSWANA",
+                "code": "BW",
+                "shengen": 0
+            },
+            {
+                "id": 25,
+                "uz": "BRAZILIYA ",
+                "ru": "БРАЗИЛИЯ",
+                "en": "BRAZIL",
+                "code": "BR",
+                "shengen": 0
+            },
+            {
+                "id": 220,
+                "uz": "HIND OKEANIDAGI BRITANIYA TERRITORIYASI",
+                "ru": "БРИТАНСКАЯ ТЕРРИТОРИЯ В ИНДИЙСКОМ ОКЕАНЕ",
+                "en": "BRITISH TERRITORY IN THE INDIAN OCEAN",
+                "code": "IO",
+                "shengen": 0
+            },
+            {
+                "id": 218,
+                "uz": "BRUNEY-DORUSSALOM",
+                "ru": "БРУНЕЙ-ДАРУССАЛАМ",
+                "en": "BRUNEI-DARUSSALAM",
+                "code": "BN",
+                "shengen": 0
+            },
+            {
+                "id": 119,
+                "uz": "BOLGARIYA SHENGEN",
+                "ru": "БОЛГАРИЯ SHENGEN",
+                "en": "BULGARIA SCHENGEN",
+                "code": "BG",
+                "shengen": 1
+            },
+            {
+                "id": 217,
+                "uz": "BURKINA-FASO",
+                "ru": "БУРКИНА-ФАСО",
+                "en": "BURKINA-FASO",
+                "code": "BF",
+                "shengen": 0
+            },
+            {
+                "id": 116,
+                "uz": "BURUNDI ",
+                "ru": "БУРУНДИ",
+                "en": "BURUNDI",
+                "code": "BI",
+                "shengen": 0
+            },
+            {
+                "id": 173,
+                "uz": "BUTAN ",
+                "ru": "БУТАН",
+                "en": "BUTANE",
+                "code": "BT",
+                "shengen": 0
+            },
+            {
+                "id": 203,
+                "uz": "KAMBODJA ",
+                "ru": "КАМБОДЖА",
+                "en": "CAMBODIA",
+                "code": "KH",
+                "shengen": 0
+            },
+            {
+                "id": 96,
+                "uz": "KAMERUN ",
+                "ru": "КАМЕРУН",
+                "en": "CAMEROON",
+                "code": "CM",
+                "shengen": 0
+            },
+            {
+                "id": 182,
+                "uz": "KANADA",
+                "ru": "КАНАДА",
+                "en": "CANADA",
+                "code": "CA",
+                "shengen": 0
+            },
+            {
+                "id": 98,
+                "uz": "KABO-VERDE ",
+                "ru": "КАБО-ВЕРДЕ",
+                "en": "CAPE VERDE",
+                "code": "CV",
+                "shengen": 0
+            },
+            {
+                "id": 128,
+                "uz": "KAYMAN OROLLARI",
+                "ru": "КАЙМАНОВЫ ОСТРОВА",
+                "en": "CAYMAN ISLANDS",
+                "code": "KY",
+                "shengen": 0
+            },
+            {
+                "id": 18,
+                "uz": "MARKAZIY AFRIKA RESPUBLIKASI",
+                "ru": "ЦЕНТРАЛЬНО-АФРИКАНСКАЯ РЕСПУБЛИКА",
+                "en": "CENTRAL AFRICAN REPUBLIC",
+                "code": "CF",
+                "shengen": 0
+            },
+            {
+                "id": 59,
+                "uz": "CHILI ",
+                "ru": "ЧИЛИ",
+                "en": "CHILE",
+                "code": "CL",
+                "shengen": 0
+            },
+            {
+                "id": 181,
+                "uz": "XITOY",
+                "ru": "КИТАЙ",
+                "en": "CHINA",
+                "code": "CN",
+                "shengen": 0
+            },
+            {
+                "id": 177,
+                "uz": "KOKOS OROLLARI",
+                "ru": "КОКОСОВЫЕ ОСТРОВА",
+                "en": "COCONUT ISLANDS",
+                "code": "CC",
+                "shengen": 0
+            },
+            {
+                "id": 92,
+                "uz": "KOLUMBIYA ",
+                "ru": "КОЛУМБИЯ",
+                "en": "COLOMBIA",
+                "code": "CO",
+                "shengen": 0
+            },
+            {
+                "id": 26,
+                "uz": "KOMOR OROLLARI",
+                "ru": "КОМОРСКИЕ ОСТРОВА",
+                "en": "COMOR ISLANDS",
+                "code": "KM",
+                "shengen": 0
+            },
+            {
+                "id": 140,
+                "uz": "KONGO ",
+                "ru": "КОНГО",
+                "en": "CONGO",
+                "code": "CG",
+                "shengen": 0
+            },
+            {
+                "id": 127,
+                "uz": "KUKA OROLLARI",
+                "ru": "ОСТРОВА КУКА",
+                "en": "COOK ISLANDS",
+                "code": "CK",
+                "shengen": 0
+            },
+            {
+                "id": 90,
+                "uz": "KOSTA-RIKA ",
+                "ru": "КОСТА-РИКА",
+                "en": "COSTA RICA",
+                "code": "CR",
+                "shengen": 0
+            },
+            {
+                "id": 89,
+                "uz": "KOT-D'IVUAR ",
+                "ru": "КОТ-Д`ИВУАР",
+                "en": "COTE D'IVOIRE",
+                "code": "CI",
+                "shengen": 0
+            },
+            {
+                "id": 6,
+                "uz": "ХОРВАТИЯ, SHENHEN",
+                "ru": "ХОРВАТИЯ, ШЕНГЕН",
+                "en": "CROATIA, SCHENGEN",
+                "code": "HR",
+                "shengen": 1
+            },
+            {
+                "id": 88,
+                "uz": "KUBA ",
+                "ru": "КУБА",
+                "en": "CUBA",
+                "code": "CU",
+                "shengen": 0
+            },
+            {
+                "id": 94,
+                "uz": "KIPR ",
+                "ru": "КИПР",
+                "en": "CYPRUS",
+                "code": "CY",
+                "shengen": 0
+            },
+            {
+                "id": 9,
+                "uz": "CHEXIYA RESPUBLIKASI, SHENGEN",
+                "ru": "ЧЕШСКАЯ РЕСПУБЛИКА, ШЕНГЕН",
+                "en": "CZECH REPUBLIC, SCHENGEN",
+                "code": "CZ",
+                "shengen": 1
+            },
+            {
+                "id": 172,
+                "uz": "DANIYA,SHENGEN",
+                "ru": "ДАНИЯ, ШЕНГЕН",
+                "en": "DENMARK, SCHENGEN",
+                "code": "DK",
+                "shengen": 1
+            },
+            {
+                "id": 46,
+                "uz": "DOMINIKA ",
+                "ru": "ДОМИНИКА",
+                "en": "DOMINICA",
+                "code": "DM",
+                "shengen": 0
+            },
+            {
+                "id": 192,
+                "uz": "DOMINIKAN RESPUBLIKASI",
+                "ru": "ДОМИНИКАНСКАЯ РЕСПУБЛИКА",
+                "en": "DOMINICAN REPUBLIC",
+                "code": "DO",
+                "shengen": 0
+            },
+            {
+                "id": 212,
+                "uz": "SHARQIY TIMOR",
+                "ru": "ВОСТОЧНЫЙ ТИМОР",
+                "en": "EAST TIMOR",
+                "code": "TL",
+                "shengen": 0
+            },
+            {
+                "id": 58,
+                "uz": "EKVADOR ",
+                "ru": "ЭКВАДОР",
+                "en": "ECUADOR",
+                "code": "EC",
+                "shengen": 0
+            },
+            {
+                "id": 226,
+                "uz": "MISR ",
+                "ru": "ЕГИПЕТ",
+                "en": "EGYPT",
+                "code": "EG",
+                "shengen": 0
+            },
+            {
+                "id": 16,
+                "uz": "ESTONIYA, SHENGEN",
+                "ru": "ЭСТОНИЯ, ШЕНГЕН",
+                "en": "ESTONIA, SCHENGEN",
+                "code": "EE",
+                "shengen": 1
+            },
+            {
+                "id": 15,
+                "uz": "EFIOPIYA",
+                "ru": "ЭФИОПИЯ",
+                "en": "ETHIOPIA",
+                "code": "ET",
+                "shengen": 0
+            },
+            {
+                "id": 20,
+                "uz": "FOLKLEND OROLLARI",
+                "ru": "ФОЛКЛЕНДСКИЕ ОСТРОВА",
+                "en": "Falkland Islands",
+                "code": "FK",
+                "shengen": 0
+            },
+            {
+                "id": 27,
+                "uz": "FARER OROLLARI",
+                "ru": "ФАРЕРСКИЕ ОСТРОВА",
+                "en": "FAROE ISLANDS",
+                "code": "FO",
+                "shengen": 0
+            },
+            {
+                "id": 61,
+                "uz": "FIDJI ",
+                "ru": "ФИДЖИ",
+                "en": "FIJI",
+                "code": "FJ",
+                "shengen": 0
+            },
+            {
+                "id": 21,
+                "uz": "FINLYANDIYA, SHENGEN ",
+                "ru": "ФИНЛЯНДИЯ, ШЕНГЕНН",
+                "en": "FINLAND, SCHENGEN",
+                "code": "FI",
+                "shengen": 1
+            },
+            {
+                "id": 19,
+                "uz": "FRANTSIYA, SHENGEN",
+                "ru": "ФРАНЦИЯ, ШЕНГЕН",
+                "en": "FRANCE, SCHENGEN",
+                "code": "FR",
+                "shengen": 1
+            },
+            {
+                "id": 211,
+                "uz": "GABON ",
+                "ru": "ГАБОН",
+                "en": "GABON",
+                "code": "GA",
+                "shengen": 0
+            },
+            {
+                "id": 112,
+                "uz": "GAMBIYA",
+                "ru": "ГАМБИЯ",
+                "en": "GAMBIA",
+                "code": "GM",
+                "shengen": 0
+            },
+            {
+                "id": 107,
+                "uz": "GRUZIYA ",
+                "ru": "ГРУЗИЯ",
+                "en": "GEORGIA",
+                "code": "GE",
+                "shengen": 0
+            },
+            {
+                "id": 208,
+                "uz": "GERMANIYA, SHENGEN",
+                "ru": "ГЕРМАНИЯ, ШЕНГЕН",
+                "en": "GERMANY, SCHENGEN",
+                "code": "DE",
+                "shengen": 1
+            },
+            {
+                "id": 111,
+                "uz": "GANA ",
+                "ru": "ГАНА",
+                "en": "GHANA",
+                "code": "GH",
+                "shengen": 0
+            },
+            {
+                "id": 207,
+                "uz": "GIBRALTAR",
+                "ru": "ГИБРАЛТАР",
+                "en": "GIBRALTAR",
+                "code": "GI",
+                "shengen": 0
+            },
+            {
+                "id": 197,
+                "uz": "GRESIYA, SHENGEN",
+                "ru": "ГРЕЦИЯ, ШЕНГЕН",
+                "en": "GREECE, SCHENGEN",
+                "code": "GR",
+                "shengen": 1
+            },
+            {
+                "id": 198,
+                "uz": "GRENLANDIYA",
+                "ru": "ГРЕНЛАНДИЯ",
+                "en": "GREENLAND",
+                "code": "GL",
+                "shengen": 0
+            },
+            {
+                "id": 199,
+                "uz": "GRENADA",
+                "ru": "ГРЕНАДА",
+                "en": "GRENADA",
+                "code": "GD",
+                "shengen": 0
+            },
+            {
+                "id": 210,
+                "uz": "GVADELUPA",
+                "ru": "ГВАДЕЛУПА",
+                "en": "GUADELUPA",
+                "code": "GP",
+                "shengen": 0
+            },
+            {
+                "id": 196,
+                "uz": "GUAM",
+                "ru": "ГУАМ",
+                "en": "GUAM",
+                "code": "GU",
+                "shengen": 0
+            },
+            {
+                "id": 110,
+                "uz": "GVATEMALA ",
+                "ru": "ГВАТЕМАЛА",
+                "en": "GUATEMALA",
+                "code": "GT",
+                "shengen": 0
+            },
+            {
+                "id": 209,
+                "uz": "GVINEYA ",
+                "ru": "ГВИНЕЯ ",
+                "en": "GUINEA",
+                "code": "GN",
+                "shengen": 0
+            },
+            {
+                "id": 109,
+                "uz": "GVINEYA-BISAU ",
+                "ru": "ГВИНЕЯ-БИСАУ",
+                "en": "GUINEA-BISSAU",
+                "code": "GW",
+                "shengen": 0
+            },
+            {
+                "id": 176,
+                "uz": "GAYANA ",
+                "ru": "ГАЙАНА",
+                "en": "GUYANA",
+                "code": "GY",
+                "shengen": 0
+            },
+            {
+                "id": 113,
+                "uz": "GAITI ",
+                "ru": "ГАИТИ",
+                "en": "HAITI",
+                "code": "HT",
+                "shengen": 0
+            },
+            {
+                "id": 108,
+                "uz": "GONDURAS ",
+                "ru": "ГОНДУРАС",
+                "en": "HONDURAS",
+                "code": "HN",
+                "shengen": 0
+            },
+            {
+                "id": 206,
+                "uz": "GONKONG",
+                "ru": "ГОНКОНГ",
+                "en": "HONG KONG",
+                "code": "HK",
+                "shengen": 0
+            },
+            {
+                "id": 215,
+                "uz": "VENGRIYA, SHENHEN",
+                "ru": "ВЕНГРИЯ, ШЕНГЕН",
+                "en": "HUNGARY, SCHENGEN",
+                "code": "HU",
+                "shengen": 1
+            },
+            {
+                "id": 100,
+                "uz": "ISLANDIYA, SHENGEN",
+                "ru": "ИСЛАНДИЯ, ШЕНГЕН",
+                "en": "ICELAND, SCHENGEN",
+                "code": "IS",
+                "shengen": 1
+            },
+            {
+                "id": 102,
+                "uz": "HINDISTON ",
+                "ru": "ИНДИЯ",
+                "en": "INDIA",
+                "code": "IN",
+                "shengen": 0
+            },
+            {
+                "id": 101,
+                "uz": "INDONEZIYA ",
+                "ru": "ИНДОНЕЗИЯ",
+                "en": "INDONESIA",
+                "code": "ID",
+                "shengen": 0
+            },
+            {
+                "id": 189,
+                "uz": "IROQ ",
+                "ru": "ИРАК",
+                "en": "IRAQ",
+                "code": "IQ",
+                "shengen": 0
+            },
+            {
+                "id": 188,
+                "uz": "IRLANDIYA",
+                "ru": "ИРЛАНДИЯ",
+                "en": "IRELAND",
+                "code": "IE",
+                "shengen": 0
+            },
+            {
+                "id": 187,
+                "uz": "ERON ISLOM RESPUBLIKASI",
+                "ru": "ИСЛАМСКАЯ РЕСПУБЛИКА ИРАН",
+                "en": "ISLAMIC REPUBLIC OF IRAN",
+                "code": "IR",
+                "shengen": 0
+            },
+            {
+                "id": 126,
+                "uz": "UOLLIS VA FUTUNA OROLLARI",
+                "ru": "ОСТРОВА УОЛЛИС И ФУТУНА",
+                "en": "ISLAND OF WALLIS AND FUTUNA",
+                "code": "WF",
+                "shengen": 0
+            },
+            {
+                "id": 204,
+                "uz": "ISROIL ",
+                "ru": "ИЗРАИЛЬ",
+                "en": "ISRAEL",
+                "code": "IL",
+                "shengen": 0
+            },
+            {
+                "id": 183,
+                "uz": "ITALIYA, SHENGEN",
+                "ru": "ИТАЛИЯ, ШЕНГЕН",
+                "en": "ITALY, SCHENGEN",
+                "code": "IT",
+                "shengen": 1
+            },
+            {
+                "id": 14,
+                "uz": "YAMAYKA ",
+                "ru": "ЯМАЙКА",
+                "en": "JAMAICA",
+                "code": "JM",
+                "shengen": 0
+            },
+            {
+                "id": 13,
+                "uz": "YAPONIYA",
+                "ru": "ЯПОНИЯ",
+                "en": "JAPAN",
+                "code": "JP",
+                "shengen": 0
+            },
+            {
+                "id": 106,
+                "uz": "DJIBUTI ",
+                "ru": "ДЖИБУТИ",
+                "en": "JIBOUTI",
+                "code": "DJ",
+                "shengen": 0
+            },
+            {
+                "id": 190,
+                "uz": "IORDANIYA ",
+                "ru": "ИОРДАНИЯ",
+                "en": "JORDAN",
+                "code": "JO",
+                "shengen": 0
+            },
+            {
+                "id": 97,
+                "uz": "QOZOG'ISTON ",
+                "ru": "КАЗАХСТАН",
+                "en": "KAZAKHSTAN",
+                "code": "KZ",
+                "shengen": 0
+            },
+            {
+                "id": 95,
+                "uz": "KENIYA ",
+                "ru": "КЕНИЯ",
+                "en": "KENYA",
+                "code": "KE",
+                "shengen": 0
+            },
+            {
+                "id": 93,
+                "uz": "KIRIBATI ",
+                "ru": "КИРИБАТИ",
+                "en": "KIRIBATI",
+                "code": "KI",
+                "shengen": 0
+            },
+            {
+                "id": 175,
+                "uz": "KOREYS XALQ DEMOKRATIK RESPUBLIKASI",
+                "ru": "КОРЕЙСКАЯ НАРОДНО-ДЕМОКРАТИЧЕСКАЯ РЕСПУБЛИКА",
+                "en": "KOREAN PEOPLE'S DEMOCRATIC REPUBLIC",
+                "code": "KP",
+                "shengen": 0
+            },
+            {
+                "id": 201,
+                "uz": "QUVAYT ",
+                "ru": "КУВЕЙТ",
+                "en": "KUWAIT",
+                "code": "KW",
+                "shengen": 0
+            },
+            {
+                "id": 12,
+                "uz": "QIRG'IZISTON",
+                "ru": "КЫРГЫЗСТАН",
+                "en": "KYRGYZSTAN",
+                "code": "KG",
+                "shengen": 0
+            },
+            {
+                "id": 160,
+                "uz": "LAOS XALQ DEMOKRATIK RESPUBLIKASI",
+                "ru": "ЛАОССКАЯ НАРОДНО-ДЕМОКРАТИЧЕСКАЯ РЕСПУБЛИКА",
+                "en": "LAOS PEOPLE'S DEMOCRATIC REPUBLIC",
+                "code": "LA",
+                "shengen": 0
+            },
+            {
+                "id": 159,
+                "uz": "LATVIYA, SHENGEN",
+                "ru": "ЛАТВИЯ , ШЕНГЕН",
+                "en": "LATVIA, SCHENGEN",
+                "code": "LV",
+                "shengen": 1
+            },
+            {
+                "id": 158,
+                "uz": "LIVAN ",
+                "ru": "ЛИВАН",
+                "en": "LEBANON",
+                "code": "LB",
+                "shengen": 0
+            },
+            {
+                "id": 170,
+                "uz": "LESOTO ",
+                "ru": "ЛЕСОТО",
+                "en": "LESOTHO",
+                "code": "LS",
+                "shengen": 0
+            },
+            {
+                "id": 87,
+                "uz": "LOBERIYA ",
+                "ru": "ЛИБЕРИЯ",
+                "en": "LIBERIA",
+                "code": "LR",
+                "shengen": 0
+            },
+            {
+                "id": 40,
+                "uz": "LIVIYA ARAB JAMAXIRIYASI",
+                "ru": "ЛИВИЙСКАЯ АРАБСКАЯ ДЖАМАХИРИЯ",
+                "en": "LIBYAN ARAB JAMAHIRIYA",
+                "code": "LY",
+                "shengen": 0
+            },
+            {
+                "id": 179,
+                "uz": "LIXTENSHTEYN, SHENGEN",
+                "ru": "ЛИХТЕНШТЕЙН, ШЕНГЕН",
+                "en": "LIECHTENSTEIN, SCHENGEN",
+                "code": "LI",
+                "shengen": 1
+            },
+            {
+                "id": 157,
+                "uz": "LITVA, SHENGEN ",
+                "ru": "ЛИТВА, ШЕНГЕН",
+                "en": "LITHUANIA, SCHENGEN",
+                "code": "LT",
+                "shengen": 1
+            },
+            {
+                "id": 216,
+                "uz": "LYUKSEMBURG, SHENGEN",
+                "ru": "ЛЮКСЕМБУРГ, ШЕНГЕН",
+                "en": "LUXEMBOURG, SCHENGEN",
+                "code": "LU",
+                "shengen": 1
+            },
+            {
+                "id": 155,
+                "uz": "MAKAO",
+                "ru": "МАКАО",
+                "en": "MACAO",
+                "code": "MO",
+                "shengen": 0
+            },
+            {
+                "id": 195,
+                "uz": "MADAGASKAR ",
+                "ru": "МАДАГАСКАР",
+                "en": "MADAGASCAR",
+                "code": "MG",
+                "shengen": 0
+            },
+            {
+                "id": 86,
+                "uz": "MALAVI ",
+                "ru": "МАЛАВИ",
+                "en": "MALAWI",
+                "code": "MW",
+                "shengen": 0
+            },
+            {
+                "id": 153,
+                "uz": "MALAYZIYA",
+                "ru": "МАЛАЙЗИЯ",
+                "en": "MALAYSIA",
+                "code": "MY",
+                "shengen": 0
+            },
+            {
+                "id": 151,
+                "uz": "MALDIVI",
+                "ru": "МАЛЬДИВЫ",
+                "en": "MALDIVES",
+                "code": "MV",
+                "shengen": 0
+            },
+            {
+                "id": 85,
+                "uz": "MALI ",
+                "ru": "МАЛИ",
+                "en": "MALI",
+                "code": "ML",
+                "shengen": 0
+            },
+            {
+                "id": 84,
+                "uz": "MALTA, SHENGEN",
+                "ru": "МАЛЬТА, ШЕНГЕН",
+                "en": "MALTA, SCHENGEN",
+                "code": "MT",
+                "shengen": 1
+            },
+            {
+                "id": 149,
+                "uz": "MARSHAL OROLLARI",
+                "ru": "МАРШАЛЛОВЫ ОСТРОВА",
+                "en": "MARSHALL ISLANDS",
+                "code": "MH",
+                "shengen": 0
+            },
+            {
+                "id": 150,
+                "uz": "MARTINIKA",
+                "ru": "МАРТИНИКА",
+                "en": "MARTINIQUE",
+                "code": "MQ",
+                "shengen": 0
+            },
+            {
+                "id": 186,
+                "uz": "MAVRITANIYA ",
+                "ru": "МАВРИТАНИЯ",
+                "en": "MAURITANIA",
+                "code": "NULL",
+                "shengen": 0
+            },
+            {
+                "id": 156,
+                "uz": "MAVRIKIY",
+                "ru": "МАВРИКИЙ",
+                "en": "MAURITIUS",
+                "code": "MU",
+                "shengen": 0
+            },
+            {
+                "id": 8,
+                "uz": "MAYOTTA",
+                "ru": "МАЙОТТА",
+                "en": "MAYOTTA",
+                "code": "YT",
+                "shengen": 0
+            },
+            {
+                "id": 148,
+                "uz": "MEKSIKA ",
+                "ru": "МЕКСИКА",
+                "en": "MEXICO",
+                "code": "MX",
+                "shengen": 0
+            },
+            {
+                "id": 23,
+                "uz": "MIKRONEZIYA FEDERATIV SHTATLARI",
+                "ru": "МИКРОНЕЗИЯ, ФЕДЕРАТИВНЫЕ ШТАТЫ ",
+                "en": "MICRONESIA, FEDERAL STATES",
+                "code": "FM",
+                "shengen": 0
+            },
+            {
+                "id": 178,
+                "uz": "MONAKO ",
+                "ru": "МОНАКО",
+                "en": "MONACO",
+                "code": "MC",
+                "shengen": 0
+            },
+            {
+                "id": 147,
+                "uz": "MO'G'LISTON",
+                "ru": "МОНГОЛИЯ",
+                "en": "MONGOLIA",
+                "code": "MN",
+                "shengen": 0
+            },
+            {
+                "id": 2,
+                "uz": "CHERNOGORIYA ",
+                "ru": "ЧЕРНОГОРИЯ",
+                "en": "MONTENEGRO ",
+                "code": "ME",
+                "shengen": 0
+            },
+            {
+                "id": 146,
+                "uz": "MONSERRAT",
+                "ru": "МОНТСЕРРАТ",
+                "en": "MONTSERRAT",
+                "code": "MS",
+                "shengen": 0
+            },
+            {
+                "id": 169,
+                "uz": "MAROKKO ",
+                "ru": "МАРОККО",
+                "en": "MOROCCO",
+                "code": "MA",
+                "shengen": 0
+            },
+            {
+                "id": 139,
+                "uz": "MOZAMBIK ",
+                "ru": "МОЗАМБИК",
+                "en": "MOZAMBIQUE",
+                "code": "MZ",
+                "shengen": 0
+            },
+            {
+                "id": 39,
+                "uz": "M'YANMA",
+                "ru": "МЬЯНМА",
+                "en": "MYANMAN",
+                "code": "MM",
+                "shengen": 0
+            },
+            {
+                "id": 145,
+                "uz": "HAMIBIYA",
+                "ru": "НАМИБИЯ",
+                "en": "NAMIBIA",
+                "code": "NA",
+                "shengen": 0
+            },
+            {
+                "id": 82,
+                "uz": "NAURU ",
+                "ru": "НАУРУ",
+                "en": "NAURU",
+                "code": "NR",
+                "shengen": 0
+            },
+            {
+                "id": 168,
+                "uz": "NEPAL ",
+                "ru": "НЕПАЛ",
+                "en": "NEPAL",
+                "code": "NP",
+                "shengen": 0
+            },
+            {
+                "id": 138,
+                "uz": "NIDERLAND ANTIL OROLLARI",
+                "ru": "НИДЕРЛАНДСКИЕ АНТИЛЬСКИЕ ОСТРОВА",
+                "en": "NETHERLANDS ANTILL ISLANDS",
+                "code": "AN",
+                "shengen": 0
+            },
+            {
+                "id": 167,
+                "uz": "NIDERLAND, SHENGEN",
+                "ru": "НИДЕРЛАНДЫ, ШЕНГЕН",
+                "en": "NETHERLANDS, SCHENGEN",
+                "code": "NL",
+                "shengen": 1
+            },
+            {
+                "id": 135,
+                "uz": "YANGI KALEDONIYA",
+                "ru": "НОВАЯ КАЛЕДОНИЯ",
+                "en": "NEW CALEDONIA",
+                "code": "NC",
+                "shengen": 0
+            },
+            {
+                "id": 136,
+                "uz": "YANGI ZELANDIYA",
+                "ru": "НОВАЯ ЗЕЛАНДИЯ",
+                "en": "NEW ZEALAND",
+                "code": "NZ",
+                "shengen": 0
+            },
+            {
+                "id": 80,
+                "uz": "NIKARAGUA ",
+                "ru": "НИКАРАГУА",
+                "en": "NICARAGUA",
+                "code": "NI",
+                "shengen": 0
+            },
+            {
+                "id": 81,
+                "uz": "NIGER ",
+                "ru": "НИГЕР",
+                "en": "NIGER",
+                "code": "NE",
+                "shengen": 0
+            },
+            {
+                "id": 24,
+                "uz": "NIGERIYA ",
+                "ru": "НИГЕРИЯ",
+                "en": "NIGERIA",
+                "code": "NG",
+                "shengen": 0
+            },
+            {
+                "id": 137,
+                "uz": "NIUE",
+                "ru": "НИУЭ",
+                "en": "NIUE",
+                "code": "NU",
+                "shengen": 0
+            },
+            {
+                "id": 134,
+                "uz": "NORFOLK OROLI",
+                "ru": "ОСТРОВ НОРФОЛК",
+                "en": "NORFOLK ISLAND",
+                "code": "NF",
+                "shengen": 0
+            },
+            {
+                "id": 45,
+                "uz": "SHIMOLIY MARIAN OROLLARI",
+                "ru": "СЕВЕРНЫЕ МАРИАНСКИЕ ОСТРОВА",
+                "en": "NORTHERN MARIANA ISLANDS",
+                "code": "MP",
+                "shengen": 0
+            },
+            {
+                "id": 166,
+                "uz": "NORVEGIYA, SHENGEN",
+                "ru": "НОРВЕГИЯ, ШЕНГЕН",
+                "en": "NORWAY, SCHENGEN",
+                "code": "NO",
+                "shengen": 1
+            },
+            {
+                "id": 37,
+                "uz": "OMON ",
+                "ru": "ОМАН",
+                "en": "OMAN",
+                "code": "OM",
+                "shengen": 0
+            },
+            {
+                "id": 185,
+                "uz": "POKISTON ",
+                "ru": "ПАКИСТАН",
+                "en": "PAKISTAN",
+                "code": "PK",
+                "shengen": 0
+            },
+            {
+                "id": 79,
+                "uz": "PALAU ",
+                "ru": "ПАЛАУ",
+                "en": "PALAU",
+                "code": "PW",
+                "shengen": 0
+            },
+            {
+                "id": 78,
+                "uz": "PANAMA ",
+                "ru": "ПАНАМА",
+                "en": "PANAMA",
+                "code": "PA",
+                "shengen": 0
+            },
+            {
+                "id": 10,
+                "uz": "YANGI GVINEA PAPUASLARI",
+                "ru": "ПАПУА НОВАЯ ГВИНЕЯ",
+                "en": "PAPUA NEW GUINEA",
+                "code": "PG",
+                "shengen": 0
+            },
+            {
+                "id": 77,
+                "uz": "PARAGVAY ",
+                "ru": "ПАРАГВАЙ",
+                "en": "PARAGUAY",
+                "code": "PY",
+                "shengen": 0
+            },
+            {
+                "id": 76,
+                "uz": "PERU ",
+                "ru": "ПЕРУ",
+                "en": "PERU",
+                "code": "PE",
+                "shengen": 0
+            },
+            {
+                "id": 60,
+                "uz": "FILIPPIN ",
+                "ru": "ФИЛИППИНЫ",
+                "en": "PHILIPPINES",
+                "code": "PH",
+                "shengen": 0
+            },
+            {
+                "id": 125,
+                "uz": "PITKERN",
+                "ru": "ПИТКЭРН",
+                "en": "PITKERN",
+                "code": "PN",
+                "shengen": 0
+            },
+            {
+                "id": 124,
+                "uz": "PORTUGALIYA, SHENGEN",
+                "ru": "ПОРТУГАЛИЯ, ШЕНГЕН",
+                "en": "PORTUGAL, SCHENGEN",
+                "code": "PT",
+                "shengen": 1
+            },
+            {
+                "id": 123,
+                "uz": "PUERTO-RIKO",
+                "ru": "ПУЭРТО-РИКО",
+                "en": "PUERTO-RICO",
+                "code": "PR",
+                "shengen": 0
+            },
+            {
+                "id": 202,
+                "uz": "KATAR",
+                "ru": "КАТАР",
+                "en": "QATAR",
+                "code": "QA",
+                "shengen": 0
+            },
+            {
+                "id": 57,
+                "uz": "GVINEYA EKVATORIAL RESPUBLIKASI",
+                "ru": "РЕСПУБЛИКА ЭКВАТОРИАЛЬНАЯ ГВИНЕЯ",
+                "en": "REPUBLIC OF EQUATORIAL GUINEA",
+                "code": "GQ",
+                "shengen": 0
+            },
+            {
+                "id": 154,
+                "uz": "SHIMOLIY MAKEDONIYA",
+                "ru": "СЕВЕРНАЯ МАКЕДОНИЯ",
+                "en": "REPUBLIC OF NORTH MACEDONIA",
+                "code": "MK",
+                "shengen": 0
+            },
+            {
+                "id": 1,
+                "uz": "JANUBIY AFRIKA RESPUBLIKASI",
+                "ru": "ЮЖНО-АФРИКАНСКАЯ РЕСПУБЛИКА",
+                "en": "REPUBLIC OF SOUTH AFRICA",
+                "code": "ZA",
+                "shengen": 0
+            },
+            {
+                "id": 105,
+                "uz": "ZOIR RESPUBLIKASI",
+                "ru": "РЕСПУБЛИКА ЗАИР",
+                "en": "REPUBLIC OF ZAIRE",
+                "code": "ZR",
+                "shengen": 0
+            },
+            {
+                "id": 56,
+                "uz": "REYUNYON",
+                "ru": "РЕЮНЬОН",
+                "en": "REUNION",
+                "code": "RE",
+                "shengen": 0
+            },
+            {
+                "id": 74,
+                "uz": "RUMINIYA ",
+                "ru": "РУМЫНИЯ",
+                "en": "ROMANIA",
+                "code": "RO",
+                "shengen": 0
+            },
+            {
+                "id": 55,
+                "uz": "ROSSIYA FEDERATSIYASI",
+                "ru": "РОССИЙСКАЯ ФЕДЕРАЦИЯ",
+                "en": "RUSSIAN FEDERATION",
+                "code": "RU",
+                "shengen": 0
+            },
+            {
+                "id": 54,
+                "uz": "RUANDA ",
+                "ru": "РУАНДА",
+                "en": "RWANDA",
+                "code": "RW",
+                "shengen": 0
+            },
+            {
+                "id": 22,
+                "uz": "SENT-KITS VA NEVIS ",
+                "ru": "СЕНТ-КИТС И НЕВИС",
+                "en": "SAINT KITTS AND NEVIS",
+                "code": "KN",
+                "shengen": 0
+            },
+            {
+                "id": 51,
+                "uz": "SENT-PYER VA MIKELON",
+                "ru": "СЕНТ-ПЬЕР И МИКЕЛОН",
+                "en": "SAINT PIERRE AND MICHELON",
+                "code": "PM",
+                "shengen": 0
+            },
+            {
+                "id": 52,
+                "uz": "SENT-VINCENT VA GRENADINI",
+                "ru": "СЕНТ-ВИНСЕНТ И ГРЕНАДИНЫ",
+                "en": "SAINT VINCENT AND GRENADINES",
+                "code": "VC",
+                "shengen": 0
+            },
+            {
+                "id": 50,
+                "uz": "SENT-LYUSIYA",
+                "ru": "СЕНТ-ЛЮСИЯ",
+                "en": "SAINT-LUCIA",
+                "code": "LC",
+                "shengen": 0
+            },
+            {
+                "id": 53,
+                "uz": "SAMOA",
+                "ru": "САМОА",
+                "en": "SAMOA",
+                "code": "WS",
+                "shengen": 0
+            },
+            {
+                "id": 73,
+                "uz": "SAN-MARINO ",
+                "ru": "САН-МАРИНО",
+                "en": "SAN MARINO",
+                "code": "SM",
+                "shengen": 0
+            },
+            {
+                "id": 194,
+                "uz": "SAN-TOME VA PRISIPI ",
+                "ru": "САН-ТОМЕ И ПРИНСИПИ",
+                "en": "SAN-TOMA AND PRINCIPE",
+                "code": "ST",
+                "shengen": 0
+            },
+            {
+                "id": 165,
+                "uz": "SAUDIYA ARABISTONI ",
+                "ru": "САУДОВСКАЯ АРАВИЯ",
+                "en": "SAUDI ARABIA",
+                "code": "SA",
+                "shengen": 0
+            },
+            {
+                "id": 7,
+                "uz": "SHENGEN",
+                "ru": "ШЕНГЕН",
+                "en": "SCHENGEN",
+                "code": "SCH",
+                "shengen": 1
+            },
+            {
+                "id": 71,
+                "uz": "SENEGAL ",
+                "ru": "СЕНЕГАЛ",
+                "en": "SENEGAL",
+                "code": "SN",
+                "shengen": 0
+            },
+            {
+                "id": 3,
+                "uz": "SERBIA",
+                "ru": "СЕРБИЯ",
+                "en": "SERBIA",
+                "code": "RS",
+                "shengen": 0
+            },
+            {
+                "id": 72,
+                "uz": "SEYSHEL OROLLARI",
+                "ru": "СЕЙШЕЛЬСКИЕ ОСТРОВА",
+                "en": "SEYCHELLES ISLANDS",
+                "code": "SC",
+                "shengen": 0
+            },
+            {
+                "id": 66,
+                "uz": "S'ERRA-LEONE ",
+                "ru": "СЬЕРРА-ЛЕОНЕ",
+                "en": "SIERRA LEONE",
+                "code": "SL",
+                "shengen": 0
+            },
+            {
+                "id": 70,
+                "uz": "SIGAPUR ",
+                "ru": "СИНГАПУР",
+                "en": "SINGAPORE",
+                "code": "SG",
+                "shengen": 0
+            },
+            {
+                "id": 48,
+                "uz": "SLOVAKIYA, SHENGEN",
+                "ru": "СЛОВАКИЯ, ШЕНГЕН",
+                "en": "SLOVAKIA, SCHENGEN",
+                "code": "SK",
+                "shengen": 1
+            },
+            {
+                "id": 69,
+                "uz": "SLOVENIYA, SHENGEN",
+                "ru": "СЛОВЕНИЯ, ШЕНГЕН",
+                "en": "SLOVENIA, SCHENGEN",
+                "code": "SI",
+                "shengen": 1
+            },
+            {
+                "id": 152,
+                "uz": "AQSH XUDUDIDAGI KICHIK OROLLAR",
+                "ru": "МАЛЫЕ ОСТРОВНЫЕ ТЕРРИТОРИИ США",
+                "en": "SMALL ISLAND TERRITORIES OF THE USA",
+                "code": "UM",
+                "shengen": 0
+            },
+            {
+                "id": 42,
+                "uz": "SOLOMONOV OROLLARI",
+                "ru": "СОЛОМОНОВЫ ОСТРОВА",
+                "en": "SOLOMON ISLANDS",
+                "code": "SB",
+                "shengen": 0
+            },
+            {
+                "id": 41,
+                "uz": "SOMALI ",
+                "ru": "СОМАЛИ",
+                "en": "SOMALIA",
+                "code": "SO",
+                "shengen": 0
+            },
+            {
+                "id": 171,
+                "uz": "ISPANIYA, SHENGEN",
+                "ru": "ИСПАНИЯ, ШЕНГЕН",
+                "en": "SPAIN, SCHENGEN",
+                "code": "ES",
+                "shengen": 1
+            },
+            {
+                "id": 193,
+                "uz": "SHRI-LANKA ",
+                "ru": "ШРИ-ЛАНКА",
+                "en": "SRI LANKA",
+                "code": "LK",
+                "shengen": 0
+            },
+            {
+                "id": 68,
+                "uz": "SUDAN ",
+                "ru": "СУДАН",
+                "en": "SUDAN",
+                "code": "SD",
+                "shengen": 0
+            },
+            {
+                "id": 67,
+                "uz": "SURINAM ",
+                "ru": "СУРИНАМ",
+                "en": "SURINAME",
+                "code": "SR",
+                "shengen": 0
+            },
+            {
+                "id": 164,
+                "uz": "SVAZILEND ",
+                "ru": "СВАЗИЛЕНД",
+                "en": "SWAISILAND",
+                "code": "SZ",
+                "shengen": 0
+            },
+            {
+                "id": 161,
+                "uz": "SHVETSIYA, SHENGEN",
+                "ru": "ШВЕЦИЯ, ШЕНГЕН",
+                "en": "SWEDEN, SCHENGEN",
+                "code": "SE",
+                "shengen": 1
+            },
+            {
+                "id": 17,
+                "uz": "SHVEYTSARIYA, SHENGEN",
+                "ru": "ШВЕЙЦАРИЯ, ШЕНГЕН",
+                "en": "SWITZERLAND, SCHENGEN",
+                "code": "CH",
+                "shengen": 1
+            },
+            {
+                "id": 49,
+                "uz": "SIRIYA ARAB RESPUBLIKASI",
+                "ru": "СИРИЙСКАЯ АРАБСКАЯ РЕСПУБЛИКА",
+                "en": "SYRIAN ARAB REPUBLIC",
+                "code": "SY",
+                "shengen": 0
+            },
+            {
+                "id": 36,
+                "uz": "TAYVAN",
+                "ru": "ТАЙВАНЬ",
+                "en": "TAIWAN",
+                "code": "TW",
+                "shengen": 0
+            },
+            {
+                "id": 65,
+                "uz": "TOJIKISTON ",
+                "ru": "ТАДЖИКИСТАН",
+                "en": "TAJIKISTAN",
+                "code": "TJ",
+                "shengen": 0
+            },
+            {
+                "id": 163,
+                "uz": "TAILAND ",
+                "ru": "ТАИЛАНД",
+                "en": "THAILAND",
+                "code": "TH",
+                "shengen": 0
+            },
+            {
+                "id": 47,
+                "uz": "BAGAM OROLLARI ",
+                "ru": "БАГАМСКИЕ ОСТРОВА",
+                "en": "THE BAHAMAS ISLANDS",
+                "code": "BS",
+                "shengen": 0
+            },
+            {
+                "id": 130,
+                "uz": "BUVE OROLI",
+                "ru": "ОСТРОВ БУВЕ",
+                "en": "THE ISLAND OF BUE",
+                "code": "BV",
+                "shengen": 0
+            },
+            {
+                "id": 129,
+                "uz": "MUQADDAS ELENA OROLI",
+                "ru": "ОСТРОВ СВЯТОЙ ЕЛЕНЫ",
+                "en": "THE ISLAND OF SAINT HELENA",
+                "code": "SH",
+                "shengen": 0
+            },
+            {
+                "id": 35,
+                "uz": "TERKS VA KAYKOS OROLLARI",
+                "ru": "ОСТРОВА ТЕРКС И КАЙКОС",
+                "en": "THE ISLAND OF TERKS AND CAIKOS",
+                "code": "TC",
+                "shengen": 0
+            },
+            {
+                "id": 144,
+                "uz": "AHGOLA XALQ RESPUBLIKASI",
+                "ru": "НАРОДНАЯ РЕСПУБЛИКА АНГОЛА",
+                "en": "THE PEOPLE'S REPUBLIC OF ANGOLA",
+                "code": "AO",
+                "shengen": 0
+            },
+            {
+                "id": 91,
+                "uz": "KOREYA RESPUBLIKASI",
+                "ru": "РЕСПУБЛИКА КОРЕЯ",
+                "en": "THE REPUBLIC OF KOREA",
+                "code": "KR",
+                "shengen": 0
+            },
+            {
+                "id": 83,
+                "uz": "MOLDOVA RESPUBLIKASI",
+                "ru": "РЕСПУБЛИКА МОЛДОВА",
+                "en": "THE REPUBLIC OF MOLDOVA",
+                "code": "MD",
+                "shengen": 0
+            },
+            {
+                "id": 34,
+                "uz": "TONGO",
+                "ru": "ТОГО",
+                "en": "TOGO",
+                "code": "TG",
+                "shengen": 0
+            },
+            {
+                "id": 33,
+                "uz": "TOKELAU",
+                "ru": "ТОКЕЛАУ",
+                "en": "TOKELAU",
+                "code": "TK",
+                "shengen": 0
+            },
+            {
+                "id": 162,
+                "uz": "TONGA ",
+                "ru": "ТОНГА",
+                "en": "TONGA",
+                "code": "TO",
+                "shengen": 0
+            },
+            {
+                "id": 64,
+                "uz": "TRINIDAD VA TOBAGO ",
+                "ru": "ТРИНИДАД И ТОБАГО",
+                "en": "TRINIDAD AND TOBAGO",
+                "code": "TT",
+                "shengen": 0
+            },
+            {
+                "id": 31,
+                "uz": "TUNIS ",
+                "ru": "ТУНИС",
+                "en": "TUNISIA",
+                "code": "TN",
+                "shengen": 0
+            },
+            {
+                "id": 30,
+                "uz": "TURKIYA ",
+                "ru": "ТУРЦИЯ",
+                "en": "TURKEY",
+                "code": "TR",
+                "shengen": 0
+            },
+            {
+                "id": 29,
+                "uz": "TURKMANISTON ",
+                "ru": "ТУРКМЕНИСТАН",
+                "en": "TURKMENISTAN",
+                "code": "TM",
+                "shengen": 0
+            },
+            {
+                "id": 32,
+                "uz": "TUVALU",
+                "ru": "ТУВАЛУ",
+                "en": "TUVALU",
+                "code": "TV",
+                "shengen": 0
+            },
+            {
+                "id": 63,
+                "uz": "UGANDA ",
+                "ru": "УГАНДА",
+                "en": "UGANDA",
+                "code": "UG",
+                "shengen": 0
+            },
+            {
+                "id": 28,
+                "uz": "UKRAINA ",
+                "ru": "УКРАИНА",
+                "en": "UKRAINE",
+                "code": "UA",
+                "shengen": 0
+            },
+            {
+                "id": 132,
+                "uz": "BIRLASHGAN ARAB AMIRLIKLARI",
+                "ru": "ОБЪЕДИНЕННЫЕ АРАБСКИЕ ЭМИРАТЫ",
+                "en": "UNITED ARAB EMIRATES",
+                "code": "AE",
+                "shengen": 0
+            },
+            {
+                "id": 44,
+                "uz": "BUYUK BRITANIYA BIRLASHGAN QIROLLIGI VA SHIMOLIY IRLANDIYA",
+                "ru": "СОЕДИНЕННОЕ КОРОЛЕВСТВО ВЕЛИКОБРИТАНИЯ И СЕВЕРНАЯ ИРЛАНДИЯ",
+                "en": "UNITED KINGDOM OF GREAT BRITAIN AND NORTHERN IRELAND",
+                "code": "GB",
+                "shengen": 0
+            },
+            {
+                "id": 133,
+                "uz": "TANZANIYA BIRLASHGAN RESPUBLIKASI",
+                "ru": "ОБЪЕДИНЕННАЯ РЕСПУБЛИКА ТАНЗАНИЯ",
+                "en": "UNITED REPUBLIC OF TANZANIA",
+                "code": "TZ",
+                "shengen": 0
+            },
+            {
+                "id": 43,
+                "uz": "AMERIKA QO'SHMA SHTATLARI",
+                "ru": "СОЕДИНЁННЫЕ ШТАТЫ АМЕРИКИ",
+                "en": "UNITED STATES OF AMERICA",
+                "code": "US",
+                "shengen": 0
+            },
+            {
+                "id": 213,
+                "uz": "URUGVAY ",
+                "ru": "УРУГВАЙ",
+                "en": "URUGUAY",
+                "code": "UY",
+                "shengen": 0
+            },
+            {
+                "id": 115,
+                "uz": "VANUATU ",
+                "ru": "ВАНУАТУ",
+                "en": "VANUATU",
+                "code": "VU",
+                "shengen": 0
+            },
+            {
+                "id": 200,
+                "uz": "VATIKAN SHAHAR DAVLATI",
+                "ru": "ВАТИКАН, ГОСУДАРСТВО-ГОРОД ",
+                "en": "VATICAN, CITY STATE",
+                "code": "VA",
+                "shengen": 0
+            },
+            {
+                "id": 114,
+                "uz": "VENESUELLA ",
+                "ru": "ВЕНЕСУЭЛА",
+                "en": "VENEZUELA",
+                "code": "VE",
+                "shengen": 0
+            },
+            {
+                "id": 141,
+                "uz": "V'ETNAM ",
+                "ru": "ВЬЕТНАМ",
+                "en": "VIETNAM",
+                "code": "VN",
+                "shengen": 0
+            },
+            {
+                "id": 219,
+                "uz": "BRITANIYA VIRGINIYA OROLLARI",
+                "ru": "ВИРГИНСКИЕ ОСТРОВА(БРИТАНСКИЕ)",
+                "en": "VIRGIN ISLANDS (BRITISH)",
+                "code": "VG",
+                "shengen": 0
+            },
+            {
+                "id": 214,
+                "uz": "VIRGINIYA OROLLARI",
+                "ru": "ВИРГИНСКИЕ ОСТРОВА(США)",
+                "en": "VIRGIN ISLANDS (USA)",
+                "code": "VI",
+                "shengen": 0
+            },
+            {
+                "id": 191,
+                "uz": "G'ARBIY SAXARA",
+                "ru": "ЗАПАДНАЯ САХАРА",
+                "en": "WEST SAHARA",
+                "code": "EH",
+                "shengen": 0
+            },
+            {
+                "id": 5,
+                "uz": "BUTUN JAXON",
+                "ru": "ВЕСЬ МИР",
+                "en": "WORLDWIDE",
+                "code": "WWD",
+                "shengen": 0
+            },
+            {
+                "id": 99,
+                "uz": "YEMEN ",
+                "ru": "ЙЕМЕН",
+                "en": "YEMEN",
+                "code": "YE",
+                "shengen": 0
+            },
+            {
+                "id": 38,
+                "uz": "YUGOSLAVIYA",
+                "ru": "ЮГОСЛАВИЯ",
+                "en": "YUGOSLAVIA",
+                "code": "YUG",
+                "shengen": 0
+            },
+            {
+                "id": 104,
+                "uz": "ZAMBIYA ",
+                "ru": "ЗАМБИЯ",
+                "en": "ZAMBIA",
+                "code": "ZM",
+                "shengen": 0
+            },
+            {
+                "id": 103,
+                "uz": "ZIMBABVE ",
+                "ru": "ЗИМБАБВЕ",
+                "en": "ZIMBABWE",
+                "code": "ZW",
+                "shengen": 0
+            }
+        ],
+        "tarifs": {
+            "Tarifs": [
+                {
+                    "id": 1,
+                    "name": "Basic",
+                    "desc_valyuta": "€",
+                    "desc_qiymat": [
+                        22000,
+                        300,
+                        1000,
+                        27000,
+                        3000,
+                        4000,
+                        3000,
+                        6000,
+                        6000,
+                        5000,
+                        50000
+                    ],
+                    "insure_sum": 50000,
+                    "procent": [
+                        0.7,
+                        0.6,
+                        0.55,
+                        0.5,
+                        0.58,
+                        0.53
+                    ],
+                    "day_plate": {
+                        "15": 10,
+                        "30": 13,
+                        "45": 18,
+                        "90": 45,
+                        "180": 95
+                    },
+                    "day": {
+                        "30": 10,
+                        "60": 13,
+                        "90": 18,
+                        "180": 45,
+                        "365": 95
+                    }
+                },
+                {
+                    "id": 2,
+                    "name": "Comfort",
+                    "desc_valyuta": "€",
+                    "desc_qiymat": [
+                        35000,
+                        500,
+                        2000,
+                        23000,
+                        4000,
+                        5000,
+                        4000,
+                        2000,
+                        2000,
+                        6000,
+                        60000
+                    ],
+                    "insure_sum": 60000,
+                    "procent": [
+                        0.8,
+                        0.72,
+                        0.7,
+                        0.6,
+                        0.68,
+                        0.63
+                    ],
+                    "day_plate": {
+                        "15": 12,
+                        "30": 18,
+                        "45": 28,
+                        "90": 55,
+                        "180": 130
+                    },
+                    "day": {
+                        "30": 13,
+                        "60": 18,
+                        "90": 23,
+                        "180": 55,
+                        "365": 110
+                    }
+                },
+                {
+                    "id": 3,
+                    "name": "Premium",
+                    "desc_valyuta": "€",
+                    "desc_qiymat": [
+                        50000,
+                        1000,
+                        5000,
+                        45000,
+                        9000,
+                        9000,
+                        8000,
+                        4000,
+                        5000,
+                        10000,
+                        100000
+                    ],
+                    "insure_sum": 100000,
+                    "procent": [
+                        2.2,
+                        2.1,
+                        2,
+                        1.9,
+                        2.1,
+                        2
+                    ],
+                    "day_plate": {
+                        "15": 25,
+                        "30": 50,
+                        "45": 70,
+                        "90": 150,
+                        "180": 300
+                    },
+                    "day": {
+                        "30": 35,
+                        "60": 40,
+                        "90": 50,
+                        "180": 90,
+                        "365": 150
+                    }
+                },
+                {
+                    "id": 4,
+                    "name": "Econom",
+                    "desc_valyuta": "€",
+                    "desc_qiymat": [
+                        10000,
+                        100,
+                        500,
+                        24500,
+                        1000,
+                        1000,
+                        2000,
+                        10000,
+                        7500,
+                        3000
+                    ],
+                    "insure_sum": 35000,
+                    "procent": [
+                        0.4,
+                        0.36,
+                        0.34,
+                        0.32,
+                        0.37,
+                        0.34
+                    ],
+                    "day_plate": {
+                        "15": 8.5,
+                        "30": 10,
+                        "45": 15,
+                        "90": 40,
+                        "180": 80
+                    },
+                    "day": {
+                        "30": 8.5,
+                        "60": 10,
+                        "90": 15,
+                        "180": 40,
+                        "365": 80
+                    }
+                },
+                {
+                    "id": 6,
+                    "name": "Schengen+",
+                    "desc_valyuta": "€",
+                    "desc_qiymat": [
+                        30000,
+                        30000,
+                        30000,
+                        40000,
+                        8000,
+                        8000,
+                        7000,
+                        3000,
+                        4000,
+                        10000
+                    ],
+                    "insure_sum": 100000,
+                    "procent": [
+                        2.4,
+                        2.3,
+                        2.2,
+                        2.1,
+                        2.3,
+                        2.2
+                    ],
+                    "day_plate": {
+                        "15": 36,
+                        "30": 54,
+                        "45": 84,
+                        "90": 135,
+                        "180": 285
+                    },
+                    "day": {
+                        "30": 33,
+                        "60": 48,
+                        "90": 69,
+                        "180": 135,
+                        "365": 330
+                    },
+                    "franshiza": 30
+                }
+            ],
+            "desc": {
+                "ru": [
+                    "Медицинские услуги",
+                    "Стоматологическая помощь",
+                    "Выплата при смерти",
+                    "Медико-транспортные и иные услуги, в том числе",
+                    "Медицинская эвакуация",
+                    "Транспортировка сопровождающего лица",
+                    "Возвращение застрахованного лица и/или его близких родственников",
+                    "Поисково-спасательные мероприятия",
+                    "Захоронение в стране временного пребывания",
+                    "Репатриация тела (останков)",
+                    "Общая страховая сумма"
+                ],
+                "uz": [
+                    "Tibbiy xizmatlar",
+                    "Stomatologik yordam",
+                    "Baxtsiz xodisa (o'lim) tufayli to'lov",
+                    "Tibbiy transport va boshqa xizmatlar, shu jumladan",
+                    "Tibbiy evakuatsiya",
+                    "Hamrohlik qiluvchi shaxsni tashish",
+                    "Sug'urtalangan shaxsning va (yoki) uning yaqin qarindoshlarini qaytarish",
+                    "Qidiruv va qutqaruv xizmatlari",
+                    "Sayohat mamlakatida dafn qilish",
+                    "Jasadni repatriatsiya qilish",
+                    "Umumiy sug'urta summasi"
+                ],
+                "en": [
+                    "Medical services",
+                    "Dental care",
+                    "Accident insurance",
+                    "Medical transport and other services, including",
+                    "Medical evacuation",
+                    "Transportation of accompanying person",
+                    "Return of the insured person and/or his/her close relatives",
+                    "Search and rescue activities",
+                    "Burial in the country of temporary residence",
+                    "Repatriation of body (remains) ",
+                    "Total sum insured"
+                ]
+            },
+            "age": {
+                "18": 0.8,
+                "65_75": 2,
+                "75": 5
+            },
+            "sport": 1.5,
+            "active_travel": 1.5,
+            "group": [
+                0.85,
+                0.75,
+                0.7
+            ],
+            "family": 2.5,
+            "covid_19": 1.25,
+            "covid-19": 1.25,
+            "no_cancel": 0.6,
+            "luggage": {
+                "id": 41,
+                "liablity": [
+                    250,
+                    500
+                ],
+                "premium_val": [
+                    1,
+                    2
+                ]
+            },
+            "accident": {
+                "id": 40,
+                "liablity": [
+                    10000
+                ],
+                "premium_val": [
+                    1
+                ]
+            },
+            "cancel_travel": {
+                "id": 43,
+                "liablity": [
+                    500,
+                    1000,
+                    3000
+                ],
+                "premium_val": [
+                    1.5,
+                    3,
+                    8
+                ]
+            },
+            "person_respon": {
+                "id": 42,
+                "liablity": [
+                    10000
+                ],
+                "premium_val": [
+                    2
+                ]
+            },
+            "delay_travel": {
+                "id": 44,
+                "liablity": [
+                    200
+                ],
+                "premium_val": [
+                    2
+                ]
+            },
+            "days_for_education": [
+                30,
+                60,
+                90,
+                180,
+                365
+            ],
+            "days_for_kop_martali": [
+                15,
+                30,
+                45,
+                90,
+                180
+            ]
+        },
+        "purpose": [
+            {
+                "id": 1,
+                "uz": "Sayohat",
+                "ru": "Путешествие",
+                "en": "Travel",
+                "icon": "flight",
+                "per": 1
+            },
+            {
+                "id": 3,
+                "uz": "Sport",
+                "ru": "Спорт",
+                "en": "Sport",
+                "icon": "sports_kabaddi",
+                "per": 2
+            },
+            {
+                "id": 4,
+                "uz": "Ta'lim",
+                "ru": "Обучение",
+                "en": "Education",
+                "icon": "school",
+                "per": 1
+            },
+            {
+                "id": 5,
+                "uz": "Mehnat",
+                "ru": "Работа",
+                "en": "Work",
+                "icon": "engineering",
+                "per": 1
+            }
+        ],
+        "valyuta": {
+            "USD": 12072.03,
+            "EUR": 14016.83
+        },
+        "risk": {
+            "accident": [
+                {
+                    "id": 1,
+                    "liability": 10000,
+                    "liability_valyuta": "EUR",
+                    "premium": 13000,
+                    "premium_valyuta": "UZS"
+                }
+            ],
+            "cancel_travel": [
+                {
+                    "id": 1,
+                    "liability": 500,
+                    "liability_valyuta": "EUR",
+                    "premium": 19000,
+                    "premium_valyuta": "UZS"
+                },
+                {
+                    "id": 2,
+                    "liability": 1000,
+                    "liability_valyuta": "EUR",
+                    "premium": 37000,
+                    "premium_valyuta": "UZS"
+                },
+                {
+                    "id": 3,
+                    "liability": 3000,
+                    "liability_valyuta": "EUR",
+                    "premium": 97000,
+                    "premium_valyuta": "UZS"
+                }
+            ],
+            "person_respon": [
+                {
+                    "id": 1,
+                    "liability": 10000,
+                    "liability_valyuta": "EUR",
+                    "premium": 25000,
+                    "premium_valyuta": "UZS"
+                }
+            ],
+            "delay_travel": [
+                {
+                    "id": 1,
+                    "liability": 200,
+                    "liability_valyuta": "EUR",
+                    "premium": 25000,
+                    "premium_valyuta": "UZS"
+                }
+            ],
+            "luggage": [
+                {
+                    "id": 1,
+                    "liability": 250,
+                    "liability_valyuta": "EUR",
+                    "premium": 13000,
+                    "premium_valyuta": "UZS"
+                },
+                {
+                    "id": 2,
+                    "liability": 500,
+                    "liability_valyuta": "EUR",
+                    "premium": 25000,
+                    "premium_valyuta": "UZS"
+                }
+            ]
+        }
+    }
+}

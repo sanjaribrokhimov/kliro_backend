@@ -159,11 +159,23 @@ type TravelPurposeRequest struct {
 }
 
 func (tc *TravelController) SetTravelPurpose(c *gin.Context) {
+	fmt.Println("\n========================================")
+	fmt.Println("API 1: SET TRAVEL PURPOSE")
+	fmt.Println("========================================")
+
+	bodyBytes, _ := io.ReadAll(c.Request.Body)
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	fmt.Println("REQUEST BODY:")
+	fmt.Println(string(bodyBytes))
+
 	var req TravelPurposeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
+		fmt.Printf("VALIDATION ERROR: %v\n", err)
 		c.JSON(400, gin.H{"result": nil, "success": false, "error": "invalid request"})
 		return
 	}
+
+	fmt.Printf("PARSED: PurposeID=%d, Destinations=%v\n", req.PurposeID, req.Destinations)
 
 	if len(req.Destinations) > 5 {
 		c.JSON(400, gin.H{"result": nil, "success": false, "error": "maximum 5 countries allowed"})
@@ -181,24 +193,36 @@ func (tc *TravelController) SetTravelPurpose(c *gin.Context) {
 
 	sessionDataJSON, err := json.Marshal(sessionData)
 	if err != nil {
+		fmt.Printf("ERROR: Failed to marshal session: %v\n", err)
 		c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to create session"})
 		return
 	}
 
+	fmt.Printf("\nSAVING TO REDIS: key=%s\n", redisKey)
+	fmt.Printf("SESSION DATA: %s\n", string(sessionDataJSON))
+
 	err = tc.RDB.Set(ctx, redisKey, sessionDataJSON, 30*time.Minute).Err()
 	if err != nil {
+		fmt.Printf("ERROR: Failed to save to Redis: %v\n", err)
 		c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to store session"})
 		return
 	}
 
-	c.JSON(200, gin.H{
+	response := gin.H{
 		"result": gin.H{
 			"session_id":   sessionID,
 			"purpose_id":   req.PurposeID,
 			"destinations": req.Destinations,
 		},
 		"success": true,
-	})
+	}
+
+	fmt.Println("\nRESPONSE:")
+	responseJSON, _ := json.MarshalIndent(response, "", "  ")
+	fmt.Println(string(responseJSON))
+	fmt.Println("========================================\n")
+
+	c.JSON(200, response)
 }
 
 type TravelDetailsRequest struct {
@@ -212,25 +236,51 @@ type TravelDetailsRequest struct {
 }
 
 func (tc *TravelController) SetTravelDetails(c *gin.Context) {
+	fmt.Println("\n========================================")
+	fmt.Println("API 2: SET TRAVEL DETAILS")
+	fmt.Println("========================================")
+
+	bodyBytes, _ := io.ReadAll(c.Request.Body)
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	fmt.Println("REQUEST BODY:")
+	fmt.Println(string(bodyBytes))
+
 	var req TravelDetailsRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
+		fmt.Printf("VALIDATION ERROR: %v\n", err)
 		c.JSON(400, gin.H{"result": nil, "success": false, "error": "invalid request"})
 		return
 	}
 
+	fmt.Printf("PARSED: SessionID=%s, StartDate=%s, EndDate=%s\n", req.SessionID, req.StartDate, req.EndDate)
+	fmt.Printf("        TravelersBirthdates=%v\n", req.TravelersBirthdates)
+	fmt.Printf("        AnnualPolicy=%v, CovidProtection=%v, FamilyTravel=%v\n",
+		req.AnnualPolicy, req.CovidProtection, req.FamilyTravel)
+
 	ctx := context.Background()
 	redisKey := "travel:session:" + req.SessionID
 
+	fmt.Printf("LOADING FROM REDIS: key=%s\n", redisKey)
+
 	existingData, err := tc.RDB.Get(ctx, redisKey).Result()
 	if err != nil {
+		fmt.Printf("ERROR: Session not found: %v\n", err)
 		c.JSON(400, gin.H{"result": nil, "success": false, "error": "session not found or expired"})
 		return
 	}
 
+	fmt.Printf("SESSION DATA FROM REDIS: %s\n", existingData)
+
 	var sessionData map[string]interface{}
 	if err := json.Unmarshal([]byte(existingData), &sessionData); err != nil {
+		fmt.Printf("ERROR: Failed to parse session: %v\n", err)
 		c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to parse session data"})
 		return
+	}
+
+	fmt.Println("PARSED SESSION DATA:")
+	for key, value := range sessionData {
+		fmt.Printf("  %s: %v (type: %T)\n", key, value, value)
 	}
 
 	sessionData["start_date"] = req.StartDate
@@ -242,17 +292,21 @@ func (tc *TravelController) SetTravelDetails(c *gin.Context) {
 
 	updatedDataJSON, err := json.Marshal(sessionData)
 	if err != nil {
+		fmt.Printf("ERROR: Failed to marshal updated session: %v\n", err)
 		c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to update session"})
 		return
 	}
 
+	fmt.Printf("\nUPDATED SESSION DATA: %s\n", string(updatedDataJSON))
+
 	err = tc.RDB.Set(ctx, redisKey, updatedDataJSON, 30*time.Minute).Err()
 	if err != nil {
+		fmt.Printf("ERROR: Failed to save session: %v\n", err)
 		c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to save session"})
 		return
 	}
 
-	c.JSON(200, gin.H{
+	response := gin.H{
 		"result": gin.H{
 			"session_id":           req.SessionID,
 			"purpose_id":           sessionData["purpose_id"],
@@ -265,7 +319,14 @@ func (tc *TravelController) SetTravelDetails(c *gin.Context) {
 			"family_travel":        req.FamilyTravel,
 		},
 		"success": true,
-	})
+	}
+
+	fmt.Println("\nRESPONSE:")
+	responseJSON, _ := json.MarshalIndent(response, "", "  ")
+	fmt.Println(string(responseJSON))
+	fmt.Println("========================================\n")
+
+	c.JSON(200, response)
 }
 
 type TravelCalculateRequest struct {
@@ -338,25 +399,50 @@ type ApexCalculatorRequest struct {
 }
 
 func (tc *TravelController) CalculateTravel(c *gin.Context) {
+	fmt.Println("\n========================================")
+	fmt.Println("API 3: CALCULATE TRAVEL")
+	fmt.Println("========================================")
+
+	bodyBytes, _ := io.ReadAll(c.Request.Body)
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	fmt.Println("REQUEST BODY:")
+	fmt.Println(string(bodyBytes))
+
 	var req TravelCalculateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
+		fmt.Printf("VALIDATION ERROR: %v\n", err)
 		c.JSON(400, gin.H{"result": nil, "success": false, "error": "invalid request"})
 		return
 	}
 
+	fmt.Printf("PARSED: SessionID=%s\n", req.SessionID)
+	fmt.Printf("        Risks: accident=%v, luggage=%v, cancel=%v, person_respon=%v, delay=%v\n",
+		req.Accident, req.Luggage, req.CancelTravel, req.PersonRespon, req.DelayTravel)
+
 	ctx := context.Background()
 	redisKey := "travel:session:" + req.SessionID
 
+	fmt.Printf("\nLOADING FROM REDIS: key=%s\n", redisKey)
+
 	sessionDataStr, err := tc.RDB.Get(ctx, redisKey).Result()
 	if err != nil {
+		fmt.Printf("ERROR: Session not found: %v\n", err)
 		c.JSON(400, gin.H{"result": nil, "success": false, "error": "session not found or expired"})
 		return
 	}
 
+	fmt.Printf("SESSION DATA FROM REDIS: %s\n", sessionDataStr)
+
 	var sessionData map[string]interface{}
 	if err := json.Unmarshal([]byte(sessionDataStr), &sessionData); err != nil {
+		fmt.Printf("ERROR: Failed to parse session: %v\n", err)
 		c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to parse session data"})
 		return
+	}
+
+	fmt.Println("\nPARSED SESSION DATA:")
+	for key, value := range sessionData {
+		fmt.Printf("  %s: %v (type: %T)\n", key, value, value)
 	}
 
 	destinationsInterface := sessionData["destinations"].([]interface{})
@@ -376,6 +462,18 @@ func (tc *TravelController) CalculateTravel(c *gin.Context) {
 	hasCovid := sessionData["covid_protection"].(bool)
 	startDate := sessionData["start_date"].(string)
 	endDate := sessionData["end_date"].(string)
+
+	sessionData["accident"] = req.Accident
+	sessionData["luggage"] = req.Luggage
+	sessionData["cancel_travel"] = req.CancelTravel
+	sessionData["person_respon"] = req.PersonRespon
+	sessionData["delay_travel"] = req.DelayTravel
+
+	updatedSessionJSON, _ := json.Marshal(sessionData)
+	tc.RDB.Set(ctx, redisKey, updatedSessionJSON, 30*time.Minute)
+
+	fmt.Printf("Updated session with risks: accident=%v, luggage=%v, cancel=%v, person_respon=%v, delay=%v\n",
+		req.Accident, req.Luggage, req.CancelTravel, req.PersonRespon, req.DelayTravel)
 
 	type ProviderResult struct {
 		Provider string
@@ -754,10 +852,17 @@ func (tc *TravelController) CalculateTravel(c *gin.Context) {
 		}
 	}
 
-	c.JSON(200, gin.H{
+	response := gin.H{
 		"result":  results,
 		"success": true,
-	})
+	}
+
+	fmt.Println("FINAL RESPONSE:")
+	responseJSON, _ := json.MarshalIndent(response, "", "  ")
+	fmt.Println(string(responseJSON))
+	fmt.Println("========================================\n")
+
+	c.JSON(200, response)
 }
 
 func boolToInt(b bool) int {
@@ -783,4 +888,422 @@ func calculateDays(startDate, endDate string) int {
 	}
 	duration := end.Sub(start)
 	return int(duration.Hours()/24) + 1
+}
+
+type TravelSaveRequest struct {
+	SessionID     string            `json:"session_id" binding:"required"`
+	Provider      string            `json:"provider" binding:"required"`
+	SummaAll      int               `json:"summa_all" binding:"required"`
+	ProgramID     string            `json:"program_id" binding:"required"`
+	Sugurtalovchi SugurtalovchiInfo `json:"sugurtalovchi" binding:"required"`
+	Travelers     []TravelerInfo    `json:"travelers" binding:"required"`
+}
+
+type SugurtalovchiInfo struct {
+	Type           int    `json:"type"`
+	PassportSeries string `json:"passportSeries" binding:"required"`
+	PassportNumber string `json:"passportNumber" binding:"required"`
+	Birthday       string `json:"birthday" binding:"required"`
+	Phone          string `json:"phone" binding:"required"`
+	PINFL          string `json:"pinfl" binding:"required"`
+	LastName       string `json:"last_name" binding:"required"`
+	FirstName      string `json:"first_name" binding:"required"`
+	MiddleName     string `json:"middle_name" binding:"required"`
+}
+
+type TravelerInfo struct {
+	PassportSeries string `json:"passportSeries" binding:"required"`
+	PassportNumber string `json:"passportNumber" binding:"required"`
+	Birthday       string `json:"birthday" binding:"required"`
+	PINFL          string `json:"pinfl" binding:"required"`
+	LastName       string `json:"last_name" binding:"required"`
+	FirstName      string `json:"first_name" binding:"required"`
+}
+
+type NeoSaveRequest struct {
+	BeginDate     string            `json:"begin_date"`
+	EndDate       string            `json:"end_date"`
+	Days          int               `json:"days"`
+	SummaAll      int               `json:"summa_all"`
+	Sugurtalovchi SugurtalovchiInfo `json:"sugurtalovchi"`
+	Countries     []string          `json:"countries"`
+	ProgramID     string            `json:"program_id"`
+	PurposeID     int               `json:"purpose_id"`
+	KopMartali    bool              `json:"kop_martali"`
+	IsFamily      bool              `json:"is_family"`
+	HasCovid      bool              `json:"has_covid"`
+	Travelers     []TravelerInfo    `json:"travelers"`
+	Risklar       map[string]int    `json:"risklar"`
+}
+
+func (tc *TravelController) SaveTravel(c *gin.Context) {
+	fmt.Println("\n========================================")
+	fmt.Println("API 4: SAVE TRAVEL")
+	fmt.Println("========================================")
+
+	bodyBytes, _ := io.ReadAll(c.Request.Body)
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	fmt.Println("REQUEST BODY:")
+	fmt.Println(string(bodyBytes))
+
+	var req TravelSaveRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		fmt.Printf("VALIDATION ERROR: %v\n", err)
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": fmt.Sprintf("invalid request: %v", err)})
+		return
+	}
+
+	fmt.Printf("PARSED REQUEST:\n")
+	fmt.Printf("  SessionID: %s\n", req.SessionID)
+	fmt.Printf("  Provider: %s\n", req.Provider)
+	fmt.Printf("  SummaAll: %d\n", req.SummaAll)
+	fmt.Printf("  ProgramID: %s\n", req.ProgramID)
+	fmt.Printf("  Sugurtalovchi: Type=%d, Passport=%s%s, Birthday=%s\n",
+		req.Sugurtalovchi.Type, req.Sugurtalovchi.PassportSeries, req.Sugurtalovchi.PassportNumber, req.Sugurtalovchi.Birthday)
+	fmt.Printf("  Travelers count: %d\n", len(req.Travelers))
+
+	ctx := context.Background()
+	redisKey := "travel:session:" + req.SessionID
+
+	fmt.Printf("\nLOADING FROM REDIS: key=%s\n", redisKey)
+
+	existingData, err := tc.RDB.Get(ctx, redisKey).Result()
+	if err != nil {
+		fmt.Printf("ERROR: Redis error: %v\n", err)
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": fmt.Sprintf("session not found or expired: %v", err)})
+		return
+	}
+
+	fmt.Printf("SESSION DATA FROM REDIS: %s\n", existingData)
+
+	var sessionData map[string]interface{}
+	if err := json.Unmarshal([]byte(existingData), &sessionData); err != nil {
+		fmt.Printf("ERROR: JSON unmarshal error: %v\n", err)
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": fmt.Sprintf("failed to parse session data: %v", err)})
+		return
+	}
+
+	fmt.Println("\nPARSED SESSION DATA:")
+	for key, value := range sessionData {
+		fmt.Printf("  %s: %v (type: %T)\n", key, value, value)
+	}
+
+	startDate := sessionData["start_date"].(string)
+	endDate := sessionData["end_date"].(string)
+	destinations := sessionData["destinations"].([]interface{})
+	purposeID := int(sessionData["purpose_id"].(float64))
+	annualPolicy := sessionData["annual_policy"].(bool)
+	covidProtection := sessionData["covid_protection"].(bool)
+
+	accident := false
+	luggage := false
+	cancelTravel := false
+	personRespon := false
+	delayTravel := false
+
+	if val, ok := sessionData["accident"].(bool); ok {
+		accident = val
+	}
+	if val, ok := sessionData["luggage"].(bool); ok {
+		luggage = val
+	}
+	if val, ok := sessionData["cancel_travel"].(bool); ok {
+		cancelTravel = val
+	}
+	if val, ok := sessionData["person_respon"].(bool); ok {
+		personRespon = val
+	}
+	if val, ok := sessionData["delay_travel"].(bool); ok {
+		delayTravel = val
+	}
+
+	fmt.Printf("\nEXTRACTED VALUES:\n")
+	fmt.Printf("  startDate: %s\n", startDate)
+	fmt.Printf("  endDate: %s\n", endDate)
+	fmt.Printf("  purposeID: %d\n", purposeID)
+	fmt.Printf("  destinations: %v\n", destinations)
+	fmt.Printf("  annualPolicy: %v\n", annualPolicy)
+	fmt.Printf("  covidProtection: %v\n", covidProtection)
+	fmt.Printf("  Risks from session: accident=%v, luggage=%v, cancel=%v, person_respon=%v, delay=%v\n",
+		accident, luggage, cancelTravel, personRespon, delayTravel)
+
+	countries := make([]string, len(destinations))
+	for i, dest := range destinations {
+		countries[i] = dest.(string)
+	}
+
+	days := calculateDays(startDate, endDate)
+	fmt.Printf("  days: %d\n", days)
+
+	fmt.Printf("\nPURPOSE MAPPING: ourPurposeID=%d\n", purposeID)
+
+	if req.Provider == "neo" {
+		neoPurposeID, exists := getProviderPurposeID("neo", purposeID)
+		fmt.Printf("Neo purpose mapping: %d -> %d (exists: %v)\n", purposeID, neoPurposeID, exists)
+
+		if !exists {
+			fmt.Printf("ERROR: Provider 'neo' does not support purpose %d\n", purposeID)
+			c.JSON(400, gin.H{"result": nil, "success": false, "error": "provider does not support this purpose"})
+			return
+		}
+
+		neoReq := NeoSaveRequest{
+			BeginDate:     startDate,
+			EndDate:       endDate,
+			Days:          days,
+			SummaAll:      req.SummaAll,
+			Sugurtalovchi: req.Sugurtalovchi,
+			Countries:     countries,
+			ProgramID:     req.ProgramID,
+			PurposeID:     neoPurposeID,
+			KopMartali:    annualPolicy,
+			IsFamily:      false,
+			HasCovid:      covidProtection,
+			Travelers:     req.Travelers,
+			Risklar: map[string]int{
+				"accident":      boolToInt(accident),
+				"luggage":       boolToInt(luggage),
+				"cancel_travel": boolToInt(cancelTravel),
+				"person_respon": boolToInt(personRespon),
+				"delay_travel":  boolToInt(delayTravel),
+			},
+		}
+
+		fmt.Println("\n>>> SENDING TO NEO API <<<")
+		neoReqJSON, _ := json.MarshalIndent(neoReq, "", "  ")
+		fmt.Println("REQUEST TO NEO:")
+		fmt.Println(string(neoReqJSON))
+
+		baseURL := os.Getenv("NEO_BASE_URL")
+		if baseURL == "" {
+			baseURL = "https://api.neoinsurance.uz"
+		}
+
+		neoLogin := os.Getenv("NEO_LOGIN")
+		neoPassword := os.Getenv("NEO_PASSWORD")
+
+		creds := neoLogin + ":" + neoPassword
+		authHeader := "Basic " + base64.StdEncoding.EncodeToString([]byte(creds))
+
+		reqBody, _ := json.Marshal(neoReq)
+		neoURL := fmt.Sprintf("%s/api/travel-neo/save-polis", baseURL)
+
+		fmt.Printf("NEO URL: %s\n", neoURL)
+
+		httpReq, err := http.NewRequest("POST", neoURL, bytes.NewBuffer(reqBody))
+		if err != nil {
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to create request"})
+			return
+		}
+
+		httpReq.Header.Set("Content-Type", "application/json")
+		httpReq.Header.Set("Authorization", authHeader)
+
+		client := &http.Client{Timeout: 30 * time.Second}
+		resp, err := client.Do(httpReq)
+		if err != nil {
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to send request to Neo"})
+			return
+		}
+		defer resp.Body.Close()
+
+		body, _ := io.ReadAll(resp.Body)
+
+		var neoResponse map[string]interface{}
+		if err := json.Unmarshal(body, &neoResponse); err != nil {
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to parse Neo response"})
+			return
+		}
+
+		fmt.Println("\n<<< RESPONSE FROM NEO API >>>")
+		fmt.Printf("Status Code: %d\n", resp.StatusCode)
+		fmt.Println("RESPONSE BODY:")
+		neoResponseJSON, _ := json.MarshalIndent(neoResponse, "", "  ")
+		fmt.Println(string(neoResponseJSON))
+
+		if neoResponseData, ok := neoResponse["response"].(map[string]interface{}); ok {
+			if orderID, ok := neoResponseData["order_id"]; ok {
+				sessionData["order_id"] = orderID
+				sessionData["provider"] = req.Provider
+
+				updatedSessionJSON, _ := json.Marshal(sessionData)
+				tc.RDB.Set(ctx, redisKey, updatedSessionJSON, 30*time.Minute)
+
+				fmt.Printf("\nSaved to session: provider=%s, order_id=%v\n", req.Provider, orderID)
+			}
+		}
+
+		finalResponse := gin.H{
+			"result": gin.H{
+				"session_id":  req.SessionID,
+				"response":    neoResponse,
+				"request_neo": neoReq,
+			},
+			"success": true,
+		}
+
+		fmt.Println("\nFINAL RESPONSE TO CLIENT:")
+		finalResponseJSON, _ := json.MarshalIndent(finalResponse, "", "  ")
+		fmt.Println(string(finalResponseJSON))
+		fmt.Println("========================================\n")
+
+		c.JSON(200, finalResponse)
+		return
+	}
+
+	fmt.Printf("ERROR: Unsupported provider: %s\n", req.Provider)
+	fmt.Println("========================================\n")
+	c.JSON(400, gin.H{"result": nil, "success": false, "error": "unsupported provider"})
+}
+
+type TravelCheckRequest struct {
+	SessionID string `json:"session_id" binding:"required"`
+}
+
+func (tc *TravelController) CheckTravel(c *gin.Context) {
+	fmt.Println("\n========================================")
+	fmt.Println("API 5: CHECK TRAVEL")
+	fmt.Println("========================================")
+
+	bodyBytes, _ := io.ReadAll(c.Request.Body)
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	fmt.Println("REQUEST BODY:")
+	fmt.Println(string(bodyBytes))
+
+	var req TravelCheckRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		fmt.Printf("VALIDATION ERROR: %v\n", err)
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "invalid request"})
+		return
+	}
+
+	fmt.Printf("PARSED: SessionID=%s\n", req.SessionID)
+
+	ctx := context.Background()
+	redisKey := "travel:session:" + req.SessionID
+
+	fmt.Printf("\nLOADING FROM REDIS: key=%s\n", redisKey)
+
+	existingData, err := tc.RDB.Get(ctx, redisKey).Result()
+	if err != nil {
+		fmt.Printf("ERROR: Session not found: %v\n", err)
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "session not found or expired"})
+		return
+	}
+
+	fmt.Printf("SESSION DATA FROM REDIS: %s\n", existingData)
+
+	var sessionData map[string]interface{}
+	if err := json.Unmarshal([]byte(existingData), &sessionData); err != nil {
+		fmt.Printf("ERROR: Failed to parse session: %v\n", err)
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to parse session data"})
+		return
+	}
+
+	fmt.Println("\nPARSED SESSION DATA:")
+	for key, value := range sessionData {
+		fmt.Printf("  %s: %v (type: %T)\n", key, value, value)
+	}
+
+	provider, providerOk := sessionData["provider"].(string)
+	if !providerOk {
+		fmt.Println("ERROR: Provider not found in session")
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "provider not found in session"})
+		return
+	}
+
+	orderIDFloat, orderOk := sessionData["order_id"].(float64)
+	if !orderOk {
+		fmt.Println("ERROR: Order ID not found in session")
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "order_id not found in session"})
+		return
+	}
+	orderID := int(orderIDFloat)
+
+	fmt.Printf("\nEXTRACTED FROM SESSION:\n")
+	fmt.Printf("  provider: %s\n", provider)
+	fmt.Printf("  order_id: %d\n", orderID)
+
+	if provider == "neo" {
+		checkReq := map[string]interface{}{
+			"order_id": orderID,
+		}
+
+		fmt.Println("\n>>> SENDING CHECK REQUEST TO NEO API <<<")
+		checkReqJSON, _ := json.MarshalIndent(checkReq, "", "  ")
+		fmt.Println("REQUEST TO NEO:")
+		fmt.Println(string(checkReqJSON))
+
+		baseURL := os.Getenv("NEO_BASE_URL")
+		if baseURL == "" {
+			baseURL = "https://api.neoinsurance.uz"
+		}
+
+		neoLogin := os.Getenv("NEO_LOGIN")
+		neoPassword := os.Getenv("NEO_PASSWORD")
+
+		creds := neoLogin + ":" + neoPassword
+		authHeader := "Basic " + base64.StdEncoding.EncodeToString([]byte(creds))
+
+		reqBody, _ := json.Marshal(checkReq)
+		neoURL := fmt.Sprintf("%s/api/travel-neo/checkPolis", baseURL)
+
+		fmt.Printf("NEO URL: %s\n", neoURL)
+
+		httpReq, err := http.NewRequest("POST", neoURL, bytes.NewBuffer(reqBody))
+		if err != nil {
+			fmt.Printf("ERROR: Failed to create request: %v\n", err)
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to create request"})
+			return
+		}
+
+		httpReq.Header.Set("Content-Type", "application/json")
+		httpReq.Header.Set("Authorization", authHeader)
+
+		client := &http.Client{Timeout: 30 * time.Second}
+		resp, err := client.Do(httpReq)
+		if err != nil {
+			fmt.Printf("ERROR: Failed to send request to Neo: %v\n", err)
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to send request to Neo"})
+			return
+		}
+		defer resp.Body.Close()
+
+		body, _ := io.ReadAll(resp.Body)
+
+		var neoResponse map[string]interface{}
+		if err := json.Unmarshal(body, &neoResponse); err != nil {
+			fmt.Printf("ERROR: Failed to parse Neo response: %v\n", err)
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to parse Neo response"})
+			return
+		}
+
+		fmt.Println("\n<<< RESPONSE FROM NEO API >>>")
+		fmt.Printf("Status Code: %d\n", resp.StatusCode)
+		fmt.Println("RESPONSE BODY:")
+		neoResponseJSON, _ := json.MarshalIndent(neoResponse, "", "  ")
+		fmt.Println(string(neoResponseJSON))
+
+		finalResponse := gin.H{
+			"result": gin.H{
+				"session_id": req.SessionID,
+				"provider":   provider,
+				"order_id":   orderID,
+				"response":   neoResponse,
+			},
+			"success": true,
+		}
+
+		fmt.Println("\nFINAL RESPONSE TO CLIENT:")
+		finalResponseJSON, _ := json.MarshalIndent(finalResponse, "", "  ")
+		fmt.Println(string(finalResponseJSON))
+		fmt.Println("========================================\n")
+
+		c.JSON(200, finalResponse)
+		return
+	}
+
+	fmt.Printf("ERROR: Unsupported provider for check: %s\n", provider)
+	fmt.Println("========================================\n")
+	c.JSON(400, gin.H{"result": nil, "success": false, "error": "unsupported provider"})
 }

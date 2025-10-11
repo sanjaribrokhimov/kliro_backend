@@ -1,0 +1,1412 @@
+[
+    {
+      "id": 254,
+      "name": "AUSTRALIA",
+      "name_ru_eng": "АВСТРАЛИЯ (AUSTRALIA)",
+      "kod": "AUS"
+    },
+    {
+      "id": 282,
+      "name": "SCHENGEN - AUSTRIA",
+      "name_ru_eng": "АВСТРИЯ  (SCHENGEN - AUSTRIA)",
+      "kod": "AUT"
+    },
+    {
+      "id": 1,
+      "name": "AZERBAIJAN",
+      "name_ru_eng": "АЗЕРБАЙДЖАН (AZERBAIJAN)",
+      "kod": "AZE"
+    },
+    {
+      "id": 283,
+      "name": "ASIA",
+      "name_ru_eng": "АЗИЯ (ASIA)",
+      "kod": null
+    },
+    {
+      "id": 121,
+      "name": "ALBANIA",
+      "name_ru_eng": "АЛБАНИЯ (ALBANIA)",
+      "kod": "ALB"
+    },
+    {
+      "id": 2,
+      "name": "ALGERIA",
+      "name_ru_eng": "АЛЖИР (ALGERIA)",
+      "kod": "DZA"
+    },
+    {
+      "id": 3,
+      "name": "US SAMOA",
+      "name_ru_eng": "АМЕРИКАНСКОЕ САМОА (US SAMOA)",
+      "kod": "ASM"
+    },
+    {
+      "id": 57,
+      "name": "ANDORRA",
+      "name_ru_eng": "АНДОРРА (ANDORRA)",
+      "kod": "AND"
+    },
+    {
+      "id": 5,
+      "name": "ANTARCTIC",
+      "name_ru_eng": "АНТАРКТИКА (ANTARCTIC)",
+      "kod": "ATA"
+    },
+    {
+      "id": 6,
+      "name": "ANTIGUA AND BARBUDA",
+      "name_ru_eng": "АНТИГУА И БАРБУДА (ANTIGUA AND BARBUDA)",
+      "kod": "ATG"
+    },
+    {
+      "id": 9,
+      "name": "ARGENTINA",
+      "name_ru_eng": "АРГЕНТИНА (ARGENTINA)",
+      "kod": "ARG"
+    },
+    {
+      "id": 122,
+      "name": "ARMENIA",
+      "name_ru_eng": "АРМЕНИЯ (ARMENIA)",
+      "kod": "ARM"
+    },
+    {
+      "id": 106,
+      "name": "ARUBA",
+      "name_ru_eng": "АРУБА (ARUBA)",
+      "kod": "ABW"
+    },
+    {
+      "id": 53,
+      "name": "AFGHANISTAN",
+      "name_ru_eng": "АФГАНИСТАН (AFGHANISTAN)",
+      "kod": "AFG"
+    },
+    {
+      "id": 200,
+      "name": "BAHAM ISLANDS",
+      "name_ru_eng": "БАГАМСКИЕ ОСТРОВА (BAHAM ISLANDS)",
+      "kod": "BHS"
+    },
+    {
+      "id": 94,
+      "name": "BANGLADESH",
+      "name_ru_eng": "БАНГЛАДЕШ (BANGLADESH)",
+      "kod": "BGD"
+    },
+    {
+      "id": 10,
+      "name": "BARBADOS",
+      "name_ru_eng": "БАРБАДОС (BARBADOS)",
+      "kod": "BRB"
+    },
+    {
+      "id": 30,
+      "name": "BAHRAIN",
+      "name_ru_eng": "БАХРЕЙН (BAHRAIN)",
+      "kod": "BHR"
+    },
+    {
+      "id": 123,
+      "name": "BELARUS",
+      "name_ru_eng": "БЕЛАРУСЬ (BELARUS)",
+      "kod": "BLR"
+    },
+    {
+      "id": 11,
+      "name": "BELIZE",
+      "name_ru_eng": "БЕЛИЗ (BELIZE)",
+      "kod": "BLZ"
+    },
+    {
+      "id": 63,
+      "name": "SCHENGEN - BELGIUM",
+      "name_ru_eng": "БЕЛЬГИЯ (SCHENGEN - BELGIUM)",
+      "kod": "BEL"
+    },
+    {
+      "id": 95,
+      "name": "BENIN",
+      "name_ru_eng": "БЕНИН (BENIN)",
+      "kod": "BEN"
+    },
+    {
+      "id": 12,
+      "name": "BERMUDA",
+      "name_ru_eng": "БЕРМУДСКИЕ ОСТРОВА (BERMUDA)",
+      "kod": "BMU"
+    },
+    {
+      "id": 124,
+      "name": "SCHENGEN - BULGARIA",
+      "name_ru_eng": "БОЛГАРИЯ (SCHENGEN - BULGARIA)",
+      "kod": "BGR"
+    },
+    {
+      "id": 125,
+      "name": "BOLIVIA",
+      "name_ru_eng": "БОЛИВИЯ (BOLIVIA)",
+      "kod": "BOL"
+    },
+    {
+      "id": 126,
+      "name": "BOTSWANA",
+      "name_ru_eng": "БОТСВАНА (BOTSWANA)",
+      "kod": "BWA"
+    },
+    {
+      "id": 222,
+      "name": "BRAZIL",
+      "name_ru_eng": "БРАЗИЛИЯ (BRAZIL)",
+      "kod": "BRA"
+    },
+    {
+      "id": 14,
+      "name": "BRITISH TERRITORY IN THE INDIAN OCEAN",
+      "name_ru_eng": "БРИТАНСКАЯ ТЕРРИТОРИЯ В ИНДИЙСКОМ ОКЕАНЕ (BRITISH TERRITORY IN THE INDIAN OCEAN)",
+      "kod": "IOT"
+    },
+    {
+      "id": 16,
+      "name": "BRUNEY-DARUSSALAM",
+      "name_ru_eng": "БРУНЕЙ-ДАРУССАЛАМ (BRUNEY-DARUSSALAM)",
+      "kod": "BRN"
+    },
+    {
+      "id": 17,
+      "name": "BURKINA-FASO",
+      "name_ru_eng": "БУРКИНА-ФАСО (BURKINA-FASO)",
+      "kod": "BFA"
+    },
+    {
+      "id": 127,
+      "name": "BURUNDI",
+      "name_ru_eng": "БУРУНДИ (BURUNDI)",
+      "kod": "BDI"
+    },
+    {
+      "id": 64,
+      "name": "BUTANE",
+      "name_ru_eng": "БУТАН (BUTANE)",
+      "kod": "BTN"
+    },
+    {
+      "id": 128,
+      "name": "VANUATU",
+      "name_ru_eng": "ВАНУАТУ (VANUATU)",
+      "kod": "VUT"
+    },
+    {
+      "id": 35,
+      "name": "VATICAN, STATE CITY",
+      "name_ru_eng": "ВАТИКАН, ГОСУДАРСТВО-ГОРОД  (VATICAN, STATE CITY)",
+      "kod": "VAT"
+    },
+    {
+      "id": 19,
+      "name": "SCHENGEN - HUNGARY",
+      "name_ru_eng": "ВЕНГРИЯ (SCHENGEN - HUNGARY)",
+      "kod": "HUN"
+    },
+    {
+      "id": 129,
+      "name": "VENEZUELA",
+      "name_ru_eng": "ВЕНЕСУЭЛА (VENEZUELA)",
+      "kod": "VEN"
+    },
+    {
+      "id": 281,
+      "name": "WORLDWIDE",
+      "name_ru_eng": "ВЕСЬ МИР (WORLDWIDE)",
+      "kod": null
+    },
+    {
+      "id": 15,
+      "name": "VIRGIN ISLANDS (BRITISH)",
+      "name_ru_eng": "ВИРГИНСКИЕ ОСТРОВА(БРИТАНСКИЕ) (VIRGIN ISLANDS (BRITISH))",
+      "kod": "VGB"
+    },
+    {
+      "id": 20,
+      "name": "VIRGIN ISLANDS (USA)",
+      "name_ru_eng": "ВИРГИНСКИЕ ОСТРОВА(США) (VIRGIN ISLANDS (USA))",
+      "kod": "VIR"
+    },
+    {
+      "id": 22,
+      "name": "EAST TIMOR",
+      "name_ru_eng": "ВОСТОЧНЫЙ ТИМОР (EAST TIMOR)",
+      "kod": "TLS"
+    },
+    {
+      "id": 96,
+      "name": "VIETNAM",
+      "name_ru_eng": "ВЬЕТНАМ (VIETNAM)",
+      "kod": "VNM"
+    },
+    {
+      "id": 23,
+      "name": "GABON",
+      "name_ru_eng": "ГАБОН (GABON)",
+      "kod": "GAB"
+    },
+    {
+      "id": 130,
+      "name": "HAITI",
+      "name_ru_eng": "ГАИТИ (HAITI)",
+      "kod": "HTI"
+    },
+    {
+      "id": 61,
+      "name": "GUYANA",
+      "name_ru_eng": "ГАЙАНА (GUYANA)",
+      "kod": "GUY"
+    },
+    {
+      "id": 131,
+      "name": "GAMBIA",
+      "name_ru_eng": "ГАМБИЯ (GAMBIA)",
+      "kod": "GMB"
+    },
+    {
+      "id": 132,
+      "name": "GHANA",
+      "name_ru_eng": "ГАНА (GHANA)",
+      "kod": "GHA"
+    },
+    {
+      "id": 24,
+      "name": "GUADELUPE",
+      "name_ru_eng": "ГВАДЕЛУПА (GUADELUPE)",
+      "kod": "GLP"
+    },
+    {
+      "id": 133,
+      "name": "GUATEMALA",
+      "name_ru_eng": "ГВАТЕМАЛА (GUATEMALA)",
+      "kod": "GTM"
+    },
+    {
+      "id": 26,
+      "name": "GUINEA",
+      "name_ru_eng": "ГВИНЕЯ  (GUINEA)",
+      "kod": "GIN"
+    },
+    {
+      "id": 134,
+      "name": "GUINEA-BISAU",
+      "name_ru_eng": "ГВИНЕЯ-БИСАУ (GUINEA-BISAU)",
+      "kod": "GNB"
+    },
+    {
+      "id": 27,
+      "name": "SCHENGEN - GERMANY",
+      "name_ru_eng": "ГЕРМАНИЯ (SCHENGEN - GERMANY)",
+      "kod": "DEU"
+    },
+    {
+      "id": 28,
+      "name": "GIBRALTAR",
+      "name_ru_eng": "ГИБРАЛТАР (GIBRALTAR)",
+      "kod": "GIB"
+    },
+    {
+      "id": 135,
+      "name": "HONDURAS",
+      "name_ru_eng": "ГОНДУРАС (HONDURAS)",
+      "kod": "HND"
+    },
+    {
+      "id": 29,
+      "name": "HONG KONG",
+      "name_ru_eng": "ГОНКОНГ (HONG KONG)",
+      "kod": "HKG"
+    },
+    {
+      "id": 36,
+      "name": "GRENADA",
+      "name_ru_eng": "ГРЕНАДА (GRENADA)",
+      "kod": "GRD"
+    },
+    {
+      "id": 37,
+      "name": "GREENLAND",
+      "name_ru_eng": "ГРЕНЛАНДИЯ (GREENLAND)",
+      "kod": "GRL"
+    },
+    {
+      "id": 38,
+      "name": "SCHENGEN - GREECE",
+      "name_ru_eng": "ГРЕЦИЯ (SCHENGEN - GREECE)",
+      "kod": "GRC"
+    },
+    {
+      "id": 136,
+      "name": "GEORGIA",
+      "name_ru_eng": "ГРУЗИЯ (GEORGIA)",
+      "kod": "GEO"
+    },
+    {
+      "id": 39,
+      "name": "GUAM",
+      "name_ru_eng": "ГУАМ (GUAM)",
+      "kod": "GUM"
+    },
+    {
+      "id": 65,
+      "name": "SCHENGEN - DENMARK",
+      "name_ru_eng": "ДАНИЯ (SCHENGEN - DENMARK)",
+      "kod": "DNK"
+    },
+    {
+      "id": 137,
+      "name": "JIBUTI",
+      "name_ru_eng": "ДЖИБУТИ (JIBUTI)",
+      "kod": "DJI"
+    },
+    {
+      "id": 201,
+      "name": "DOMINICA",
+      "name_ru_eng": "ДОМИНИКА (DOMINICA)",
+      "kod": "DMA"
+    },
+    {
+      "id": 44,
+      "name": "DOMINICAN REPUBLIC",
+      "name_ru_eng": "ДОМИНИКАНСКАЯ РЕСПУБЛИКА (DOMINICAN REPUBLIC)",
+      "kod": "DOM"
+    },
+    {
+      "id": 284,
+      "name": "EUROPE",
+      "name_ru_eng": "ЕВРОПА (EUROPE)",
+      "kod": null
+    },
+    {
+      "id": 8,
+      "name": "EGYPT",
+      "name_ru_eng": "ЕГИПЕТ (EGYPT)",
+      "kod": "EGY"
+    },
+    {
+      "id": 139,
+      "name": "ZAMBIA",
+      "name_ru_eng": "ЗАМБИЯ (ZAMBIA)",
+      "kod": "ZMB"
+    },
+    {
+      "id": 45,
+      "name": "WEST SAHARA",
+      "name_ru_eng": "ЗАПАДНАЯ САХАРА (WEST SAHARA)",
+      "kod": "ESH"
+    },
+    {
+      "id": 140,
+      "name": "ZIMBABWE",
+      "name_ru_eng": "ЗИМБАБВЕ (ZIMBABWE)",
+      "kod": "ZWE"
+    },
+    {
+      "id": 31,
+      "name": "ISRAEL",
+      "name_ru_eng": "ИЗРАИЛЬ (ISRAEL)",
+      "kod": "ISR"
+    },
+    {
+      "id": 141,
+      "name": "INDIA",
+      "name_ru_eng": "ИНДИЯ (INDIA)",
+      "kod": "IND"
+    },
+    {
+      "id": 142,
+      "name": "INDONESIA",
+      "name_ru_eng": "ИНДОНЕЗИЯ (INDONESIA)",
+      "kod": "IDN"
+    },
+    {
+      "id": 47,
+      "name": "JORDAN",
+      "name_ru_eng": "ИОРДАНИЯ (JORDAN)",
+      "kod": "JOR"
+    },
+    {
+      "id": 48,
+      "name": "IRAQ",
+      "name_ru_eng": "ИРАК (IRAQ)",
+      "kod": "IRQ"
+    },
+    {
+      "id": 49,
+      "name": "IRELAND",
+      "name_ru_eng": "ИРЛАНДИЯ (IRELAND)",
+      "kod": "IRL"
+    },
+    {
+      "id": 50,
+      "name": "IRAN, ISLAMIC REPUBLIC",
+      "name_ru_eng": "ИСЛАМСКАЯ РЕСПУБЛИКА ИРАН (IRAN, ISLAMIC REPUBLIC)",
+      "kod": "IRN"
+    },
+    {
+      "id": 143,
+      "name": "SCHENGEN - ICELAND",
+      "name_ru_eng": "ИСЛАНДИЯ (SCHENGEN - ICELAND)",
+      "kod": "ISL"
+    },
+    {
+      "id": 66,
+      "name": "SCHENGEN - SPAIN",
+      "name_ru_eng": "ИСПАНИЯ (SCHENGEN - SPAIN)",
+      "kod": "ESP"
+    },
+    {
+      "id": 54,
+      "name": "SCHENGEN - ITALY",
+      "name_ru_eng": "ИТАЛИЯ (SCHENGEN - ITALY)",
+      "kod": "ITA"
+    },
+    {
+      "id": 144,
+      "name": "YEMEN",
+      "name_ru_eng": "ЙЕМЕН (YEMEN)",
+      "kod": "YEM"
+    },
+    {
+      "id": 145,
+      "name": "CAPE VERDE",
+      "name_ru_eng": "КАБО-ВЕРДЕ (CAPE VERDE)",
+      "kod": "CPV"
+    },
+    {
+      "id": 146,
+      "name": "KAZAKHSTAN",
+      "name_ru_eng": "КАЗАХСТАН (KAZAKHSTAN)",
+      "kod": "KAZ"
+    },
+    {
+      "id": 113,
+      "name": "CAYMAN ISLANDS",
+      "name_ru_eng": "КАЙМАНОВЫ ОСТРОВА (CAYMAN ISLANDS)",
+      "kod": "CYM"
+    },
+    {
+      "id": 32,
+      "name": "CAMBODIA",
+      "name_ru_eng": "КАМБОДЖА (CAMBODIA)",
+      "kod": "KHM"
+    },
+    {
+      "id": 147,
+      "name": "CAMEROON",
+      "name_ru_eng": "КАМЕРУН (CAMEROON)",
+      "kod": "CMR"
+    },
+    {
+      "id": 55,
+      "name": "CANADA",
+      "name_ru_eng": "КАНАДА (CANADA)",
+      "kod": "CAN"
+    },
+    {
+      "id": 33,
+      "name": "QATAR",
+      "name_ru_eng": "КАТАР (QATAR)",
+      "kod": "QAT"
+    },
+    {
+      "id": 148,
+      "name": "KENYA",
+      "name_ru_eng": "КЕНИЯ (KENYA)",
+      "kod": "KEN"
+    },
+    {
+      "id": 149,
+      "name": "CYPRUS",
+      "name_ru_eng": "КИПР (CYPRUS)",
+      "kod": "CYP"
+    },
+    {
+      "id": 150,
+      "name": "KIRIBATI",
+      "name_ru_eng": "КИРИБАТИ (KIRIBATI)",
+      "kod": "KIR"
+    },
+    {
+      "id": 56,
+      "name": "CHINA",
+      "name_ru_eng": "КИТАЙ (CHINA)",
+      "kod": null
+    },
+    {
+      "id": 60,
+      "name": "COCONUT (KEELING) ISLANDS",
+      "name_ru_eng": "КОКОСОВЫЕ ОСТРОВА (COCONUT (KEELING) ISLANDS)",
+      "kod": "CCK"
+    },
+    {
+      "id": 151,
+      "name": "COLOMBIA",
+      "name_ru_eng": "КОЛУМБИЯ (COLOMBIA)",
+      "kod": "COL"
+    },
+    {
+      "id": 221,
+      "name": "KOMORSKAYA ISLANDS",
+      "name_ru_eng": "КОМОРСКИЕ ОСТРОВА (KOMORSKAYA ISLANDS)",
+      "kod": "COM"
+    },
+    {
+      "id": 97,
+      "name": "CONGO",
+      "name_ru_eng": "КОНГО (CONGO)",
+      "kod": "COG"
+    },
+    {
+      "id": 62,
+      "name": "KOREAN PEOPLE'S DEMOCRATIC REPUBLIC",
+      "name_ru_eng": "КОРЕЙСКАЯ НАРОДНО-ДЕМОКРАТИЧЕСКАЯ РЕСПУБЛИКА (KOREAN PEOPLE'S DEMOCRATIC REPUBLIC)",
+      "kod": "PRK"
+    },
+    {
+      "id": 153,
+      "name": "COSTA RICA",
+      "name_ru_eng": "КОСТА-РИКА (COSTA RICA)",
+      "kod": "CRI"
+    },
+    {
+      "id": 154,
+      "name": "COTE D'IVOIRE",
+      "name_ru_eng": "КОТ-Д`ИВУАР (COTE D'IVOIRE)",
+      "kod": "CIV"
+    },
+    {
+      "id": 155,
+      "name": "CUBA",
+      "name_ru_eng": "КУБА (CUBA)",
+      "kod": "CUB"
+    },
+    {
+      "id": 34,
+      "name": "KUWAIT",
+      "name_ru_eng": "КУВЕЙТ (KUWAIT)",
+      "kod": "KWT"
+    },
+    {
+      "id": 242,
+      "name": "KYRGYZSTAN",
+      "name_ru_eng": "КЫРГЫЗСТАН (KYRGYZSTAN)",
+      "kod": "KGZ"
+    },
+    {
+      "id": 77,
+      "name": "LAO PEOPLE'S DEMOCRATIC REPUBLIC",
+      "name_ru_eng": "ЛАОССКАЯ НАРОДНО-ДЕМОКРАТИЧЕСКАЯ РЕСПУБЛИКА (LAO PEOPLE'S DEMOCRATIC REPUBLIC)",
+      "kod": "LAO"
+    },
+    {
+      "id": 78,
+      "name": "SCHENGEN - LATVIA",
+      "name_ru_eng": "ЛАТВИЯ  (SCHENGEN - LATVIA)",
+      "kod": "LVA"
+    },
+    {
+      "id": 67,
+      "name": "LESOTHO",
+      "name_ru_eng": "ЛЕСОТО (LESOTHO)",
+      "kod": "LSO"
+    },
+    {
+      "id": 157,
+      "name": "LIBERIA",
+      "name_ru_eng": "ЛИБЕРИЯ (LIBERIA)",
+      "kod": "LBR"
+    },
+    {
+      "id": 79,
+      "name": "LEBANON",
+      "name_ru_eng": "ЛИВАН (LEBANON)",
+      "kod": "LBN"
+    },
+    {
+      "id": 207,
+      "name": "LIBYAN ARAB JAMAHYRIA",
+      "name_ru_eng": "ЛИВИЙСКАЯ АРАБСКАЯ ДЖАМАХИРИЯ (LIBYAN ARAB JAMAHYRIA)",
+      "kod": "LBY"
+    },
+    {
+      "id": 80,
+      "name": "SCHENGEN - LITHUANIA",
+      "name_ru_eng": "ЛИТВА (SCHENGEN - LITHUANIA)",
+      "kod": "LTU"
+    },
+    {
+      "id": 58,
+      "name": "SCHENGEN - LIECHTENSTEIN",
+      "name_ru_eng": "ЛИХТЕНШТЕЙН (SCHENGEN - LIECHTENSTEIN)",
+      "kod": "LIE"
+    },
+    {
+      "id": 18,
+      "name": "SCHENGEN - LUXEMBOURG",
+      "name_ru_eng": "ЛЮКСЕМБУРГ (SCHENGEN - LUXEMBOURG)",
+      "kod": "LUX"
+    },
+    {
+      "id": 81,
+      "name": "MAURITIUS",
+      "name_ru_eng": "МАВРИКИЙ (MAURITIUS)",
+      "kod": "MUS"
+    },
+    {
+      "id": 51,
+      "name": "MAURITANIA",
+      "name_ru_eng": "МАВРИТАНИЯ (MAURITANIA)",
+      "kod": "MRT"
+    },
+    {
+      "id": 40,
+      "name": "MADAGASCAR",
+      "name_ru_eng": "МАДАГАСКАР (MADAGASCAR)",
+      "kod": "MDG"
+    },
+    {
+      "id": 276,
+      "name": null,
+      "name_ru_eng": "МАЙОТТА ()",
+      "kod": null
+    },
+    {
+      "id": 82,
+      "name": "MACAU",
+      "name_ru_eng": "МАКАО (MACAU)",
+      "kod": "MAC"
+    },
+    {
+      "id": 158,
+      "name": "MALAWI",
+      "name_ru_eng": "МАЛАВИ (MALAWI)",
+      "kod": "MWI"
+    },
+    {
+      "id": 84,
+      "name": "MALAYSIA",
+      "name_ru_eng": "МАЛАЙЗИЯ (MALAYSIA)",
+      "kod": "MYS"
+    },
+    {
+      "id": 159,
+      "name": "MALI",
+      "name_ru_eng": "МАЛИ (MALI)",
+      "kod": "MLI"
+    },
+    {
+      "id": 85,
+      "name": "SMALL ISLAND ISLANDS USA",
+      "name_ru_eng": "МАЛЫЕ ОСТРОВНЫЕ ТЕРРИТОРИИ США (SMALL ISLAND ISLANDS USA)",
+      "kod": "UMI"
+    },
+    {
+      "id": 86,
+      "name": "MALDIVES",
+      "name_ru_eng": "МАЛЬДИВЫ (MALDIVES)",
+      "kod": "MDV"
+    },
+    {
+      "id": 160,
+      "name": "SCHENGEN - MALTA",
+      "name_ru_eng": "МАЛЬТА (SCHENGEN - MALTA)",
+      "kod": "MLT"
+    },
+    {
+      "id": 68,
+      "name": "MOROCCO",
+      "name_ru_eng": "МАРОККО (MOROCCO)",
+      "kod": "MAR"
+    },
+    {
+      "id": 87,
+      "name": "MARTINIQUE",
+      "name_ru_eng": "МАРТИНИКА (MARTINIQUE)",
+      "kod": "MTQ"
+    },
+    {
+      "id": 88,
+      "name": "MARSHALL ISLANDS",
+      "name_ru_eng": "МАРШАЛЛОВЫ ОСТРОВА (MARSHALL ISLANDS)",
+      "kod": "MHL"
+    },
+    {
+      "id": 89,
+      "name": "MEXICO",
+      "name_ru_eng": "МЕКСИКА (MEXICO)",
+      "kod": "MEX"
+    },
+    {
+      "id": 224,
+      "name": "MICRONESIA, FEDERAL STATES",
+      "name_ru_eng": "МИКРОНЕЗИЯ, ФЕДЕРАТИВНЫЕ ШТАТЫ  (MICRONESIA, FEDERAL STATES)",
+      "kod": "FSM"
+    },
+    {
+      "id": 98,
+      "name": "MOZAMBIQUE",
+      "name_ru_eng": "МОЗАМБИК (MOZAMBIQUE)",
+      "kod": "MOZ"
+    },
+    {
+      "id": 59,
+      "name": "MONACO",
+      "name_ru_eng": "МОНАКО (MONACO)",
+      "kod": "MCO"
+    },
+    {
+      "id": 90,
+      "name": "MONGOLIA",
+      "name_ru_eng": "МОНГОЛИЯ (MONGOLIA)",
+      "kod": "MNG"
+    },
+    {
+      "id": 91,
+      "name": "MONTSERRAT",
+      "name_ru_eng": "МОНТСЕРРАТ (MONTSERRAT)",
+      "kod": "MSR"
+    },
+    {
+      "id": 208,
+      "name": "MYANMA",
+      "name_ru_eng": "МЬЯНМА (MYANMA)",
+      "kod": "MMR"
+    },
+    {
+      "id": 92,
+      "name": "NAMIBIA",
+      "name_ru_eng": "НАМИБИЯ (NAMIBIA)",
+      "kod": "NAM"
+    },
+    {
+      "id": 93,
+      "name": "ANGOLA",
+      "name_ru_eng": "НАРОДНАЯ РЕСПУБЛИКА АНГОЛА (ANGOLA)",
+      "kod": "AGO"
+    },
+    {
+      "id": 162,
+      "name": "NAURU",
+      "name_ru_eng": "НАУРУ (NAURU)",
+      "kod": "NRU"
+    },
+    {
+      "id": 69,
+      "name": "NEPAL",
+      "name_ru_eng": "НЕПАЛ (NEPAL)",
+      "kod": "NPL"
+    },
+    {
+      "id": 163,
+      "name": "NIGER",
+      "name_ru_eng": "НИГЕР (NIGER)",
+      "kod": "NER"
+    },
+    {
+      "id": 223,
+      "name": "NIGERIA",
+      "name_ru_eng": "НИГЕРИЯ (NIGERIA)",
+      "kod": "NGA"
+    },
+    {
+      "id": 99,
+      "name": "NETHERLANDS ANTILIAN ISLANDS",
+      "name_ru_eng": "НИДЕРЛАНДСКИЕ АНТИЛЬСКИЕ ОСТРОВА (NETHERLANDS ANTILIAN ISLANDS)",
+      "kod": "ANT"
+    },
+    {
+      "id": 70,
+      "name": "SCHENGEN - NETHERLANDS, KINGDOM",
+      "name_ru_eng": "НИДЕРЛАНДЫ (SCHENGEN - NETHERLANDS, KINGDOM)",
+      "kod": "NLD"
+    },
+    {
+      "id": 164,
+      "name": "NICARAGUA",
+      "name_ru_eng": "НИКАРАГУА (NICARAGUA)",
+      "kod": "NIC"
+    },
+    {
+      "id": 100,
+      "name": "NIUE",
+      "name_ru_eng": "НИУЭ (NIUE)",
+      "kod": "NIU"
+    },
+    {
+      "id": 101,
+      "name": "NEW ZEALAND",
+      "name_ru_eng": "НОВАЯ ЗЕЛАНДИЯ (NEW ZEALAND)",
+      "kod": "NZL"
+    },
+    {
+      "id": 102,
+      "name": "NEW CALEDONIA",
+      "name_ru_eng": "НОВАЯ КАЛЕДОНИЯ (NEW CALEDONIA)",
+      "kod": "NCL"
+    },
+    {
+      "id": 71,
+      "name": "SCHENGEN - NORWAY",
+      "name_ru_eng": "НОРВЕГИЯ (SCHENGEN - NORWAY)",
+      "kod": "NOR"
+    },
+    {
+      "id": 104,
+      "name": "UNITED REPUBLIC OF TANZANIA",
+      "name_ru_eng": "ОБЪЕДИНЕННАЯ РЕСПУБЛИКА ТАНЗАНИЯ (UNITED REPUBLIC OF TANZANIA)",
+      "kod": "TZA"
+    },
+    {
+      "id": 105,
+      "name": "UNITED ARAB EMIRATES",
+      "name_ru_eng": "ОБЪЕДИНЕННЫЕ АРАБСКИЕ ЭМИРАТЫ (UNITED ARAB EMIRATES)",
+      "kod": "ARE"
+    },
+    {
+      "id": 210,
+      "name": "OMAN",
+      "name_ru_eng": "ОМАН (OMAN)",
+      "kod": "OMN"
+    },
+    {
+      "id": 107,
+      "name": "ISLAND BOUVE",
+      "name_ru_eng": "ОСТРОВ БУВЕ (ISLAND BOUVE)",
+      "kod": "BVT"
+    },
+    {
+      "id": 103,
+      "name": "ISLAND OF NORFOLK",
+      "name_ru_eng": "ОСТРОВ НОРФОЛК (ISLAND OF NORFOLK)",
+      "kod": "NFK"
+    },
+    {
+      "id": 111,
+      "name": "ISLAND OF HOLY ELENA",
+      "name_ru_eng": "ОСТРОВ СВЯТОЙ ЕЛЕНЫ (ISLAND OF HOLY ELENA)",
+      "kod": "SHN"
+    },
+    {
+      "id": 114,
+      "name": "ISLANDS COOK",
+      "name_ru_eng": "ОСТРОВА КУКА (ISLANDS COOK)",
+      "kod": "COK"
+    },
+    {
+      "id": 212,
+      "name": "ISLANDS TERX AND KAYKOS",
+      "name_ru_eng": "ОСТРОВА ТЕРКС И КАЙКОС (ISLANDS TERX AND KAYKOS)",
+      "kod": "TCA"
+    },
+    {
+      "id": 115,
+      "name": "ISLANDS WALLACE AND FUTON",
+      "name_ru_eng": "ОСТРОВА УОЛЛИС И ФУТУНА (ISLANDS WALLACE AND FUTON)",
+      "kod": "WLF"
+    },
+    {
+      "id": 52,
+      "name": "PAKISTAN",
+      "name_ru_eng": "ПАКИСТАН (PAKISTAN)",
+      "kod": "PAK"
+    },
+    {
+      "id": 165,
+      "name": "PALAU",
+      "name_ru_eng": "ПАЛАУ (PALAU)",
+      "kod": "PLW"
+    },
+    {
+      "id": 166,
+      "name": "PANAMA",
+      "name_ru_eng": "ПАНАМА (PANAMA)",
+      "kod": "PAN"
+    },
+    {
+      "id": 265,
+      "name": null,
+      "name_ru_eng": "ПАПУА НОВАЯ ГВИНЕЯ ()",
+      "kod": null
+    },
+    {
+      "id": 117,
+      "name": "PAPUA NEW GUINEA",
+      "name_ru_eng": "ПАПУА-НОВАЯ ГВИНЕЯ (PAPUA NEW GUINEA)",
+      "kod": "PNG"
+    },
+    {
+      "id": 167,
+      "name": "PARAGUAY",
+      "name_ru_eng": "ПАРАГВАЙ (PARAGUAY)",
+      "kod": "PRY"
+    },
+    {
+      "id": 168,
+      "name": "PERU",
+      "name_ru_eng": "ПЕРУ (PERU)",
+      "kod": "PER"
+    },
+    {
+      "id": 118,
+      "name": "PITKERN",
+      "name_ru_eng": "ПИТКЭРН (PITKERN)",
+      "kod": "PCN"
+    },
+    {
+      "id": 119,
+      "name": "SCHENGEN - PORTUGAL",
+      "name_ru_eng": "ПОРТУГАЛИЯ  (SCHENGEN - PORTUGAL)",
+      "kod": "PRT"
+    },
+    {
+      "id": 120,
+      "name": "PUERTO RICO",
+      "name_ru_eng": "ПУЭРТО-РИКО (PUERTO RICO)",
+      "kod": "PRI"
+    },
+    {
+      "id": 138,
+      "name": "ZAIRE",
+      "name_ru_eng": "РЕСПУБЛИКА ЗАИР (ZAIRE)",
+      "kod": "ZAR"
+    },
+    {
+      "id": 152,
+      "name": "THE REPUBLIC OF KOREA",
+      "name_ru_eng": "РЕСПУБЛИКА КОРЕЯ (THE REPUBLIC OF KOREA)",
+      "kod": "KOR"
+    },
+    {
+      "id": 161,
+      "name": "THE REPUBLIC OF MOLDOVA",
+      "name_ru_eng": "РЕСПУБЛИКА МОЛДОВА (THE REPUBLIC OF MOLDOVA)",
+      "kod": "MDA"
+    },
+    {
+      "id": 189,
+      "name": "EQUATORIAL GUINEA",
+      "name_ru_eng": "РЕСПУБЛИКА ЭКВАТОРИАЛЬНАЯ ГВИНЕЯ (EQUATORIAL GUINEA)",
+      "kod": "GNQ"
+    },
+    {
+      "id": 191,
+      "name": "REUNION",
+      "name_ru_eng": "РЕЮНЬОН (REUNION)",
+      "kod": "REU"
+    },
+    {
+      "id": 192,
+      "name": "RUSSIAN FEDERATION",
+      "name_ru_eng": "РОССИЙСКАЯ ФЕДЕРАЦИЯ (RUSSIAN FEDERATION)",
+      "kod": "RUS"
+    },
+    {
+      "id": 193,
+      "name": "RWANDA",
+      "name_ru_eng": "РУАНДА (RWANDA)",
+      "kod": "RWA"
+    },
+    {
+      "id": 170,
+      "name": "SCHENGEN - ROMANIA",
+      "name_ru_eng": "РУМЫНИЯ (SCHENGEN - ROMANIA)",
+      "kod": "ROU"
+    },
+    {
+      "id": 194,
+      "name": "SAMOA",
+      "name_ru_eng": "САМОА (SAMOA)",
+      "kod": "WSM"
+    },
+    {
+      "id": 171,
+      "name": "SAN MARINO",
+      "name_ru_eng": "САН-МАРИНО (SAN MARINO)",
+      "kod": "SMR"
+    },
+    {
+      "id": 41,
+      "name": "SAN TOME AND PRINCIPE",
+      "name_ru_eng": "САН-ТОМЕ И ПРИНСИПИ (SAN TOME AND PRINCIPE)",
+      "kod": "STP"
+    },
+    {
+      "id": 72,
+      "name": "SAUDI ARABIA",
+      "name_ru_eng": "САУДОВСКАЯ АРАВИЯ (SAUDI ARABIA)",
+      "kod": "SAU"
+    },
+    {
+      "id": 73,
+      "name": "SWAZILAND",
+      "name_ru_eng": "СВАЗИЛЕНД (SWAZILAND)",
+      "kod": "SWZ"
+    },
+    {
+      "id": 202,
+      "name": "NORTHERN MARIAN ISLANDS",
+      "name_ru_eng": "СЕВЕРНЫЕ МАРИАНСКИЕ ОСТРОВА (NORTHERN MARIAN ISLANDS)",
+      "kod": "MNP"
+    },
+    {
+      "id": 172,
+      "name": "SEYZHELI ISLANDS",
+      "name_ru_eng": "СЕЙШЕЛЬСКИЕ ОСТРОВА (SEYZHELI ISLANDS)",
+      "kod": "SYC"
+    },
+    {
+      "id": 173,
+      "name": "SENEGAL",
+      "name_ru_eng": "СЕНЕГАЛ (SENEGAL)",
+      "kod": "SEN"
+    },
+    {
+      "id": 195,
+      "name": "SAINT VINCENT AND THE GRENADINES",
+      "name_ru_eng": "СЕНТ-ВИНСЕНТ И ГРЕНАДИНЫ (SAINT VINCENT AND THE GRENADINES)",
+      "kod": "VCT"
+    },
+    {
+      "id": 225,
+      "name": "SAINT KITTS AND NEVIS",
+      "name_ru_eng": "СЕНТ-КИТС И НЕВИС (SAINT KITTS AND NEVIS)",
+      "kod": "KNA"
+    },
+    {
+      "id": 197,
+      "name": "SAINT LUCIA",
+      "name_ru_eng": "СЕНТ-ЛЮСИЯ (SAINT LUCIA)",
+      "kod": "LCA"
+    },
+    {
+      "id": 196,
+      "name": "SAINT PIERRE AND MICHELON",
+      "name_ru_eng": "СЕНТ-ПЬЕР И МИКЕЛОН (SAINT PIERRE AND MICHELON)",
+      "kod": "SPM"
+    },
+    {
+      "id": 278,
+      "name": "SERBIA",
+      "name_ru_eng": "СЕРБИЯ (SERBIA)",
+      "kod": "SRB"
+    },
+    {
+      "id": 174,
+      "name": "SINGAPORE",
+      "name_ru_eng": "СИНГАПУР (SINGAPORE)",
+      "kod": "SGP"
+    },
+    {
+      "id": 198,
+      "name": "SYRIAN ARAB REPUBLIC",
+      "name_ru_eng": "СИРИЙСКАЯ АРАБСКАЯ РЕСПУБЛИКА (SYRIAN ARAB REPUBLIC)",
+      "kod": "SYR"
+    },
+    {
+      "id": 280,
+      "name": "SCHENGEN - SLOVAKIA",
+      "name_ru_eng": "СЛОВАКИЯ (SCHENGEN - SLOVAKIA)",
+      "kod": "SVK"
+    },
+    {
+      "id": 175,
+      "name": "SCHENGEN - SLOVENIA",
+      "name_ru_eng": "СЛОВЕНИЯ (SCHENGEN - SLOVENIA)",
+      "kod": "SVN"
+    },
+    {
+      "id": 204,
+      "name": "USA",
+      "name_ru_eng": "СОЕДИНЁННЫЕ ШТАТЫ АМЕРИКИ (USA)",
+      "kod": "USA"
+    },
+    {
+      "id": 203,
+      "name": "GREAT BRITAIN",
+      "name_ru_eng": "СОЕДИНЕННОЕ КОРОЛЕВСТВО ВЕЛИКОБРИТАНИЯ И СЕВЕРНАЯ ИРЛАНДИЯ (GREAT BRITAIN)",
+      "kod": "GBR"
+    },
+    {
+      "id": 205,
+      "name": "SOLOMON ISLANDS",
+      "name_ru_eng": "СОЛОМОНОВЫ ОСТРОВА (SOLOMON ISLANDS)",
+      "kod": "SLB"
+    },
+    {
+      "id": 206,
+      "name": "SOMALIA",
+      "name_ru_eng": "СОМАЛИ (SOMALIA)",
+      "kod": "SOM"
+    },
+    {
+      "id": 176,
+      "name": "SUDAN",
+      "name_ru_eng": "СУДАН (SUDAN)",
+      "kod": "SDN"
+    },
+    {
+      "id": 177,
+      "name": "SURINAM",
+      "name_ru_eng": "СУРИНАМ (SURINAM)",
+      "kod": "SUR"
+    },
+    {
+      "id": 178,
+      "name": "SIERRA LEONE",
+      "name_ru_eng": "СЬЕРРА-ЛЕОНЕ (SIERRA LEONE)",
+      "kod": "SLE"
+    },
+    {
+      "id": 286,
+      "name": "Commonwealth of Independent States (CIS)",
+      "name_ru_eng": "Содружество Независимых Государств (СНГ) (Commonwealth of Independent States (CIS))",
+      "kod": null
+    },
+    {
+      "id": 179,
+      "name": "TAJIKISTAN",
+      "name_ru_eng": "ТАДЖИКИСТАН (TAJIKISTAN)",
+      "kod": "TJK"
+    },
+    {
+      "id": 74,
+      "name": "THAILAND",
+      "name_ru_eng": "ТАИЛАНД (THAILAND)",
+      "kod": "THA"
+    },
+    {
+      "id": 211,
+      "name": "TAIWAN, CHINA PROVINCE",
+      "name_ru_eng": "ТАЙВАНЬ (TAIWAN, CHINA PROVINCE)",
+      "kod": "TWN"
+    },
+    {
+      "id": 213,
+      "name": "TOGO",
+      "name_ru_eng": "ТОГО (TOGO)",
+      "kod": "TGO"
+    },
+    {
+      "id": 214,
+      "name": "TOKELAU",
+      "name_ru_eng": "ТОКЕЛАУ (TOKELAU)",
+      "kod": "TKL"
+    },
+    {
+      "id": 75,
+      "name": "TONGA",
+      "name_ru_eng": "ТОНГА (TONGA)",
+      "kod": "TON"
+    },
+    {
+      "id": 180,
+      "name": "TRINIDAD AND TOBAGO",
+      "name_ru_eng": "ТРИНИДАД И ТОБАГО (TRINIDAD AND TOBAGO)",
+      "kod": "TTO"
+    },
+    {
+      "id": 215,
+      "name": "TUVALU",
+      "name_ru_eng": "ТУВАЛУ (TUVALU)",
+      "kod": "TUV"
+    },
+    {
+      "id": 216,
+      "name": "TUNISIA",
+      "name_ru_eng": "ТУНИС (TUNISIA)",
+      "kod": "TUN"
+    },
+    {
+      "id": 218,
+      "name": "TURKMENISTAN",
+      "name_ru_eng": "ТУРКМЕНИСТАН (TURKMENISTAN)",
+      "kod": "TKM"
+    },
+    {
+      "id": 217,
+      "name": "TURKEY",
+      "name_ru_eng": "ТУРЦИЯ (TURKEY)",
+      "kod": "TUR"
+    },
+    {
+      "id": 181,
+      "name": "UGANDA",
+      "name_ru_eng": "УГАНДА (UGANDA)",
+      "kod": "UGA"
+    },
+    {
+      "id": 182,
+      "name": "UZBEKISTAN",
+      "name_ru_eng": "УЗБЕКИСТАН (UZBEKISTAN)",
+      "kod": "UZB"
+    },
+    {
+      "id": 219,
+      "name": "UKRAINE",
+      "name_ru_eng": "УКРАИНА (UKRAINE)",
+      "kod": "UKR"
+    },
+    {
+      "id": 21,
+      "name": "URUGUAY",
+      "name_ru_eng": "УРУГВАЙ (URUGUAY)",
+      "kod": "URY"
+    },
+    {
+      "id": 220,
+      "name": "FAROE ISLANDS",
+      "name_ru_eng": "ФАРЕРСКИЕ ОСТРОВА (FAROE ISLANDS)",
+      "kod": "FRO"
+    },
+    {
+      "id": 183,
+      "name": "FIJI",
+      "name_ru_eng": "ФИДЖИ (FIJI)",
+      "kod": "FJI"
+    },
+    {
+      "id": 184,
+      "name": "PHILIPPINES",
+      "name_ru_eng": "ФИЛИППИНЫ (PHILIPPINES)",
+      "kod": "PHL"
+    },
+    {
+      "id": 226,
+      "name": "SCHENGEN - FINLAND",
+      "name_ru_eng": "ФИНЛЯНДИЯ  (SCHENGEN - FINLAND)",
+      "kod": "FIN"
+    },
+    {
+      "id": 227,
+      "name": "FOLKLAND (MALVIAN) ISLANDS",
+      "name_ru_eng": "ФОЛКЛЕНДСКИЕ ОСТРОВА (FOLKLAND (MALVIAN) ISLANDS)",
+      "kod": "FLK"
+    },
+    {
+      "id": 229,
+      "name": "SCHENGEN - FRANCE",
+      "name_ru_eng": "ФРАНЦИЯ (SCHENGEN - FRANCE)",
+      "kod": "FRA"
+    },
+    {
+      "id": 263,
+      "name": "FRENCH GUIANA",
+      "name_ru_eng": "ФРАНЦУЗСКАЯ ГВИАНА (FRENCH GUIANA)",
+      "kod": "GUF"
+    },
+    {
+      "id": 228,
+      "name": "\"FRENCH POLYNESIA\"",
+      "name_ru_eng": "ФРАНЦУЗСКАЯ ПОЛИНЕЗИЯ (\"FRENCH POLYNESIA\")",
+      "kod": "PYF"
+    },
+    {
+      "id": 230,
+      "name": "FRENCH SOUTH TERRITORIES",
+      "name_ru_eng": "ФРАНЦУЗСКИЕ ЮЖНЫЕ ТЕРРИТОРИИ (FRENCH SOUTH TERRITORIES)",
+      "kod": "ATF"
+    },
+    {
+      "id": 279,
+      "name": "SCHENGEN - CROATIA",
+      "name_ru_eng": "ХОРВАТИЯ (SCHENGEN - CROATIA)",
+      "kod": null
+    },
+    {
+      "id": 231,
+      "name": "CENTRAL AFRICAN REPUBLIC",
+      "name_ru_eng": "ЦЕНТРАЛЬНОАФРИКАНСКАЯ РЕСПУБЛИКА (CENTRAL AFRICAN REPUBLIC)",
+      "kod": "CAF"
+    },
+    {
+      "id": 285,
+      "name": "MONTENEGRO",
+      "name_ru_eng": "ЧЕРНОГОРИЯ (MONTENEGRO)",
+      "kod": null
+    },
+    {
+      "id": 273,
+      "name": "SCHENGEN - CZECH REPUBLIC",
+      "name_ru_eng": "ЧЕХИЯ (SCHENGEN - CZECH REPUBLIC)",
+      "kod": null
+    },
+    {
+      "id": 187,
+      "name": "CHILE",
+      "name_ru_eng": "ЧИЛИ (CHILE)",
+      "kod": "CHL"
+    },
+    {
+      "id": 234,
+      "name": "SCHENGEN - SWITZERLAND",
+      "name_ru_eng": "ШВЕЙЦАРИЯ  (SCHENGEN - SWITZERLAND)",
+      "kod": "CHE"
+    },
+    {
+      "id": 76,
+      "name": "SCHENGEN - SWEDEN",
+      "name_ru_eng": "ШВЕЦИЯ (SCHENGEN - SWEDEN)",
+      "kod": "SWE"
+    },
+    {
+      "id": 277,
+      "name": "SCHENGEN",
+      "name_ru_eng": "ШЕНГЕН (SCHENGEN)",
+      "kod": "SCH"
+    },
+    {
+      "id": 42,
+      "name": "SRI LANKA",
+      "name_ru_eng": "ШРИ-ЛАНКА (SRI LANKA)",
+      "kod": "LKA"
+    },
+    {
+      "id": 188,
+      "name": "ECUADOR",
+      "name_ru_eng": "ЭКВАДОР (ECUADOR)",
+      "kod": "ECU"
+    },
+    {
+      "id": 237,
+      "name": "SCHENGEN - ESTONIA",
+      "name_ru_eng": "ЭСТОНИЯ  (SCHENGEN - ESTONIA)",
+      "kod": "EST"
+    },
+    {
+      "id": 238,
+      "name": "ETHIOPIA",
+      "name_ru_eng": "ЭФИОПИЯ (ETHIOPIA)",
+      "kod": "ETH"
+    },
+    {
+      "id": 209,
+      "name": "YUGOSLAVIA",
+      "name_ru_eng": "ЮГОСЛАВИЯ (YUGOSLAVIA)",
+      "kod": "YUG"
+    },
+    {
+      "id": 287,
+      "name": "South African Republic (SAR)",
+      "name_ru_eng": "Южно-Африканская Республика (South African Republic (SAR))",
+      "kod": "SAR"
+    },
+    {
+      "id": 239,
+      "name": "JAMAICA",
+      "name_ru_eng": "ЯМАЙКА (JAMAICA)",
+      "kod": "JAM"
+    },
+    {
+      "id": 240,
+      "name": "JAPAN",
+      "name_ru_eng": "ЯПОНИЯ (JAPAN)",
+      "kod": "JPN"
+    }
+  ]

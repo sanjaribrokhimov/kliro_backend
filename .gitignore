@@ -1,7 +1,14 @@
 .env 
+.example
+.yaml
+.txt
+.json
+.pdf
+.logs
 index.html
 test.js
 ./logs
 ./docs
 ./bankNames.txt
 deploy.py
+./staticDate
