@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -821,6 +822,7 @@ func (tc *TravelController) CalculateTravel(c *gin.Context) {
 
 				if result, ok := apexResponse["result"].(float64); ok {
 					if result == 0 {
+						apexResponse["program_id"] = programID
 						apexResults = append(apexResults, apexResponse)
 						fmt.Printf("Program %d: Success (result=0)\n", programID)
 					} else {
@@ -1133,26 +1135,311 @@ func (tc *TravelController) SaveTravel(c *gin.Context) {
 			}
 		}
 
-		finalResponse := gin.H{
+		c.JSON(200, gin.H{
 			"result": gin.H{
-				"session_id":  req.SessionID,
-				"response":    neoResponse,
-				"request_neo": neoReq,
+				"session_id": req.SessionID,
+				"provider":   "neo",
+				"response":   neoResponse,
 			},
 			"success": true,
-		}
-
-		fmt.Println("\nFINAL RESPONSE TO CLIENT:")
-		finalResponseJSON, _ := json.MarshalIndent(finalResponse, "", "  ")
-		fmt.Println(string(finalResponseJSON))
-		fmt.Println("========================================\n")
-
-		c.JSON(200, finalResponse)
+		})
 		return
 	}
 
-	fmt.Printf("ERROR: Unsupported provider: %s\n", req.Provider)
-	fmt.Println("========================================\n")
+	if req.Provider == "trust" {
+		trustPurposeID, exists := getProviderPurposeID("trust", purposeID)
+		if !exists {
+			c.JSON(400, gin.H{"result": nil, "success": false, "error": "provider does not support this purpose"})
+			return
+		}
+
+		trustCountryIDs := make([]int, 0)
+		for _, countryCode := range countries {
+			alpha3Code := countryCode
+			if mapped, ok := countryCodeMap[countryCode]; ok {
+				alpha3Code = mapped
+			}
+			if id := getCountryIDByCode(alpha3Code); id > 0 {
+				trustCountryIDs = append(trustCountryIDs, id)
+			}
+		}
+
+		location, _ := time.LoadLocation("Asia/Tashkent")
+		currentDate := time.Now().In(location).Format("02.01.2006")
+
+		trustApplicant := map[string]interface{}{
+			"fizyur":     0,
+			"pass_sery":  req.Sugurtalovchi.PassportSeries,
+			"pass_num":   req.Sugurtalovchi.PassportNumber,
+			"date_birth": convertDateFormat(req.Sugurtalovchi.Birthday),
+			"last_name":  req.Sugurtalovchi.LastName,
+			"first_name": req.Sugurtalovchi.FirstName,
+			"phone":      req.Sugurtalovchi.Phone,
+		}
+
+		trustInsured := make([]map[string]interface{}, len(req.Travelers))
+		for i, traveler := range req.Travelers {
+			trustInsured[i] = map[string]interface{}{
+				"pinfl":      traveler.PINFL,
+				"pass_sery":  traveler.PassportSeries,
+				"pass_num":   traveler.PassportNumber,
+				"date_birth": convertDateFormat(traveler.Birthday),
+				"last_name":  traveler.LastName,
+				"first_name": traveler.FirstName,
+			}
+		}
+
+		trustReq := map[string]interface{}{
+			"activity_id": trustPurposeID,
+			"applicant":   trustApplicant,
+			"countries":   trustCountryIDs,
+			"date_reg":    currentDate,
+			"days":        days,
+			"end_date":    convertDateFormat(endDate),
+			"start_date":  convertDateFormat(startDate),
+			"group_id":    0,
+			"program_id":  req.ProgramID,
+			"type_id":     0,
+			"multi_id":    0,
+			"insured":     trustInsured,
+		}
+
+		fmt.Println("=== TRUST SAVE REQUEST ===")
+		trustReqJSON, _ := json.MarshalIndent(trustReq, "", "  ")
+		fmt.Println("Request Body:", string(trustReqJSON))
+
+		baseURL := os.Getenv("TRUST_BASE_URL")
+		if baseURL == "" {
+			baseURL = "https://api.online-trust.uz"
+		}
+
+		trustLogin := os.Getenv("TRUST_LOGIN")
+		trustPassword := os.Getenv("TRUST_PASSWORD")
+
+		creds := trustLogin + ":" + trustPassword
+		authHeader := "Basic " + base64.StdEncoding.EncodeToString([]byte(creds))
+
+		reqBody, _ := json.Marshal(trustReq)
+		trustURL := fmt.Sprintf("%s/api/travel/save/create", baseURL)
+
+		fmt.Printf("Trust URL: %s\n", trustURL)
+		fmt.Printf("Trust Login: %s\n", trustLogin)
+		fmt.Printf("Trust Password: %s\n", trustPassword)
+
+		httpReq, err := http.NewRequest("POST", trustURL, bytes.NewBuffer(reqBody))
+		if err != nil {
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to create request"})
+			return
+		}
+
+		httpReq.Header.Set("Content-Type", "application/json")
+		httpReq.Header.Set("Authorization", authHeader)
+
+		client := &http.Client{Timeout: 30 * time.Second}
+		resp, err := client.Do(httpReq)
+		if err != nil {
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to send request to Trust"})
+			return
+		}
+		defer resp.Body.Close()
+
+		body, _ := io.ReadAll(resp.Body)
+
+		fmt.Printf("Trust API Response Status: %d\n", resp.StatusCode)
+		fmt.Printf("Trust API Response Body: %s\n", string(body))
+
+		var trustResponse map[string]interface{}
+		if err := json.Unmarshal(body, &trustResponse); err != nil {
+			fmt.Printf("Trust parse error: %v\n", err)
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": fmt.Sprintf("failed to parse Trust response: %v, body: %s", err, string(body))})
+			return
+		}
+
+		if result, ok := trustResponse["result"].(float64); ok && result == 0 {
+			if anketaID, ok := trustResponse["anketa_id"].(string); ok {
+				sessionData["order_id"] = anketaID
+				sessionData["provider"] = req.Provider
+
+				updatedSessionJSON, _ := json.Marshal(sessionData)
+				tc.RDB.Set(ctx, redisKey, updatedSessionJSON, 30*time.Minute)
+
+				premiumUZS := "0"
+				premiumTiyin := "0"
+				if premium, ok := trustResponse["premium_uzs"].(string); ok {
+					premiumUZS = premium
+					if amount, err := strconv.ParseFloat(premium, 64); err == nil {
+						premiumTiyin = fmt.Sprintf("%.0f", amount*100)
+					}
+				}
+
+				clickURL := fmt.Sprintf("https://my.click.uz/services/pay?service_id=23572&merchant_id=14417&amount=%s&transaction_param=%s", premiumUZS, anketaID)
+
+				paymeString := fmt.Sprintf("m=646c8bff2cb83937a7551c95;ac.order_id=%s;a=%s", anketaID, premiumTiyin)
+				paymeEncoded := base64.StdEncoding.EncodeToString([]byte(paymeString))
+				paymeURL := fmt.Sprintf("https://checkout.paycom.uz/%s", paymeEncoded)
+
+				trustResponse["click_url"] = clickURL
+				trustResponse["payme_url"] = paymeURL
+			}
+		}
+
+		c.JSON(200, gin.H{
+			"result": gin.H{
+				"session_id": req.SessionID,
+				"provider":   "trust",
+				"response":   trustResponse,
+			},
+			"success": true,
+		})
+		return
+	}
+
+	if req.Provider == "apex" {
+		apexPurposeID, exists := getProviderPurposeID("apex", purposeID)
+		if !exists {
+			c.JSON(400, gin.H{"result": nil, "success": false, "error": "provider does not support this purpose"})
+			return
+		}
+
+		destinationsRaw := sessionData["destinations"].([]interface{})
+		apexCountries := make([]map[string]interface{}, len(destinationsRaw))
+		for i, dest := range destinationsRaw {
+			apexCountries[i] = map[string]interface{}{
+				"iso": dest.(string),
+			}
+		}
+
+		trID := fmt.Sprintf("%d%d", time.Now().Unix(), time.Now().UnixNano()%1000000)
+
+		apexPersonInfo := make([]map[string]interface{}, len(req.Travelers))
+		for i, traveler := range req.Travelers {
+			apexPersonInfo[i] = map[string]interface{}{
+				"resident_p": 0,
+				"country_p":  "UZ",
+				"region_p":   0,
+				"district_p": 0,
+				"address_p":  "-",
+				"gender_p":   0,
+				"surname_p":  traveler.LastName,
+				"name_p":     traveler.FirstName,
+				"middle_p":   "-",
+				"birthday_p": convertDateFormat(traveler.Birthday),
+				"phone_p":    req.Sugurtalovchi.Phone,
+				"email_p":    "-",
+				"passport_p": map[string]interface{}{
+					"pinfl_p":  nil,
+					"series_p": traveler.PassportSeries,
+					"number_p": traveler.PassportNumber,
+				},
+			}
+		}
+
+		apexReq := map[string]interface{}{
+			"transaction_info": map[string]interface{}{
+				"tr_id":   trID,
+				"user_id": 30541,
+			},
+			"travel_info": map[string]interface{}{
+				"start_date": convertDateFormat(startDate),
+				"end_date":   convertDateFormat(endDate),
+				"country":    apexCountries,
+				"program_id": req.ProgramID,
+				"purpose_id": apexPurposeID,
+				"group_id":   0,
+			},
+			"insurance_info": map[string]interface{}{
+				"resident_s": 0,
+				"country_s":  "UZ",
+				"region_s":   0,
+				"district_s": 0,
+				"address_s":  "-",
+				"gender_s":   0,
+				"surname_s":  req.Sugurtalovchi.LastName,
+				"name_s":     req.Sugurtalovchi.FirstName,
+				"middle_s":   "-",
+				"birthday_s": convertDateFormat(req.Sugurtalovchi.Birthday),
+				"phone_s":    req.Sugurtalovchi.Phone,
+				"email_s":    "-",
+				"passport_s": map[string]interface{}{
+					"pinfl_s":  nil,
+					"series_s": req.Sugurtalovchi.PassportSeries,
+					"number_s": req.Sugurtalovchi.PassportNumber,
+				},
+			},
+			"person_info": apexPersonInfo,
+		}
+
+		baseURL := os.Getenv("APEX_TRAVEL_BASE_URL")
+		if baseURL == "" {
+			baseURL = "https://rest.aic.uz/api/ins/apex_travel"
+		}
+
+		apexLogin := os.Getenv("APEX_LOGIN")
+		apexPassword := os.Getenv("APEX_PASSWORD")
+
+		creds := apexLogin + ":" + apexPassword
+		authHeader := "Basic " + base64.StdEncoding.EncodeToString([]byte(creds))
+
+		reqBody, _ := json.Marshal(apexReq)
+		apexURL := fmt.Sprintf("%s/contract_wop", baseURL)
+
+		fmt.Println("\n=== APEX SAVE REQUEST ===")
+		fmt.Printf("URL: %s\n", apexURL)
+		apexReqJSON, _ := json.MarshalIndent(apexReq, "", "  ")
+		fmt.Println(string(apexReqJSON))
+
+		httpReq, err := http.NewRequest("POST", apexURL, bytes.NewBuffer(reqBody))
+		if err != nil {
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to create request"})
+			return
+		}
+
+		httpReq.Header.Set("Content-Type", "application/json")
+		httpReq.Header.Set("Authorization", authHeader)
+
+		client := &http.Client{Timeout: 30 * time.Second}
+		resp, err := client.Do(httpReq)
+		if err != nil {
+			fmt.Printf("ERROR: Failed to send request: %v\n", err)
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to send request to Apex"})
+			return
+		}
+		defer resp.Body.Close()
+
+		body, _ := io.ReadAll(resp.Body)
+
+		fmt.Println("\n=== APEX SAVE RESPONSE ===")
+		fmt.Printf("Status Code: %d\n", resp.StatusCode)
+		fmt.Printf("Response Body: %s\n", string(body))
+
+		var apexResponse map[string]interface{}
+		if err := json.Unmarshal(body, &apexResponse); err != nil {
+			fmt.Printf("Parse error: %v\n", err)
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": fmt.Sprintf("failed to parse Apex response: %v", err)})
+			return
+		}
+
+		if result, ok := apexResponse["result"].(float64); ok && result == 0 {
+			if contractID, ok := apexResponse["contract_id"]; ok {
+				sessionData["order_id"] = contractID
+				sessionData["provider"] = req.Provider
+
+				updatedSessionJSON, _ := json.Marshal(sessionData)
+				tc.RDB.Set(ctx, redisKey, updatedSessionJSON, 30*time.Minute)
+			}
+		}
+
+		c.JSON(200, gin.H{
+			"result": gin.H{
+				"session_id": req.SessionID,
+				"provider":   "apex",
+				"response":   apexResponse,
+			},
+			"success": true,
+		})
+		return
+	}
+
 	c.JSON(400, gin.H{"result": nil, "success": false, "error": "unsupported provider"})
 }
 
@@ -1212,21 +1499,33 @@ func (tc *TravelController) CheckTravel(c *gin.Context) {
 		return
 	}
 
-	orderIDFloat, orderOk := sessionData["order_id"].(float64)
-	if !orderOk {
+	var orderID interface{}
+	var orderIDInt int
+	var orderIDString string
+
+	if orderIDFloat, ok := sessionData["order_id"].(float64); ok {
+		orderID = orderIDFloat
+		orderIDInt = int(orderIDFloat)
+		orderIDString = fmt.Sprintf("%.0f", orderIDFloat)
+	} else if orderIDStr, ok := sessionData["order_id"].(string); ok {
+		orderID = orderIDStr
+		orderIDString = orderIDStr
+		if val, err := strconv.Atoi(orderIDStr); err == nil {
+			orderIDInt = val
+		}
+	} else {
 		fmt.Println("ERROR: Order ID not found in session")
 		c.JSON(400, gin.H{"result": nil, "success": false, "error": "order_id not found in session"})
 		return
 	}
-	orderID := int(orderIDFloat)
 
 	fmt.Printf("\nEXTRACTED FROM SESSION:\n")
 	fmt.Printf("  provider: %s\n", provider)
-	fmt.Printf("  order_id: %d\n", orderID)
+	fmt.Printf("  order_id: %v\n", orderID)
 
 	if provider == "neo" {
 		checkReq := map[string]interface{}{
-			"order_id": orderID,
+			"order_id": orderIDInt,
 		}
 
 		fmt.Println("\n>>> SENDING CHECK REQUEST TO NEO API <<<")
@@ -1284,26 +1583,117 @@ func (tc *TravelController) CheckTravel(c *gin.Context) {
 		neoResponseJSON, _ := json.MarshalIndent(neoResponse, "", "  ")
 		fmt.Println(string(neoResponseJSON))
 
-		finalResponse := gin.H{
+		c.JSON(200, gin.H{
 			"result": gin.H{
 				"session_id": req.SessionID,
 				"provider":   provider,
-				"order_id":   orderID,
 				"response":   neoResponse,
 			},
 			"success": true,
-		}
-
-		fmt.Println("\nFINAL RESPONSE TO CLIENT:")
-		finalResponseJSON, _ := json.MarshalIndent(finalResponse, "", "  ")
-		fmt.Println(string(finalResponseJSON))
-		fmt.Println("========================================\n")
-
-		c.JSON(200, finalResponse)
+		})
 		return
 	}
 
-	fmt.Printf("ERROR: Unsupported provider for check: %s\n", provider)
-	fmt.Println("========================================\n")
+	if provider == "trust" {
+		checkReq := map[string]interface{}{
+			"anketa_id": orderIDString,
+			"lan":       "uz",
+		}
+
+		baseURL := os.Getenv("TRUST_BASE_URL")
+		if baseURL == "" {
+			baseURL = "https://api.online-trust.uz"
+		}
+
+		trustLogin := os.Getenv("TRUST_LOGIN")
+		trustPassword := os.Getenv("TRUST_PASSWORD")
+
+		creds := trustLogin + ":" + trustPassword
+		authHeader := "Basic " + base64.StdEncoding.EncodeToString([]byte(creds))
+
+		reqBody, _ := json.Marshal(checkReq)
+		trustURL := fmt.Sprintf("%s/api/payments/check", baseURL)
+
+		httpReq, err := http.NewRequest("POST", trustURL, bytes.NewBuffer(reqBody))
+		if err != nil {
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to create request"})
+			return
+		}
+
+		httpReq.Header.Set("Content-Type", "application/json")
+		httpReq.Header.Set("Authorization", authHeader)
+
+		client := &http.Client{Timeout: 30 * time.Second}
+		resp, err := client.Do(httpReq)
+		if err != nil {
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to send request to Trust"})
+			return
+		}
+		defer resp.Body.Close()
+
+		body, _ := io.ReadAll(resp.Body)
+
+		var trustResponse map[string]interface{}
+		if err := json.Unmarshal(body, &trustResponse); err != nil {
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to parse Trust response"})
+			return
+		}
+
+		c.JSON(200, gin.H{
+			"result": gin.H{
+				"session_id": req.SessionID,
+				"provider":   provider,
+				"response":   trustResponse,
+			},
+			"success": true,
+		})
+		return
+	}
+
 	c.JSON(400, gin.H{"result": nil, "success": false, "error": "unsupported provider"})
 }
+
+func (tc *TravelController) GetCountries(c *gin.Context) {
+	baseURL := os.Getenv("NEO_BASE_URL")
+	if baseURL == "" {
+		baseURL = "https://api.neoinsurance.uz"
+	}
+
+	neoLogin := os.Getenv("NEO_LOGIN")
+	neoPassword := os.Getenv("NEO_PASSWORD")
+
+	creds := neoLogin + ":" + neoPassword
+	authHeader := "Basic " + base64.StdEncoding.EncodeToString([]byte(creds))
+
+	neoURL := fmt.Sprintf("%s/api/travel-neo/get-data", baseURL)
+
+	httpReq, err := http.NewRequest("GET", neoURL, nil)
+	if err != nil {
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to create request"})
+		return
+	}
+
+	httpReq.Header.Set("Authorization", authHeader)
+
+	client := &http.Client{Timeout: 30 * time.Second}
+	resp, err := client.Do(httpReq)
+	if err != nil {
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to send request"})
+		return
+	}
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+
+	var neoResponse map[string]interface{}
+	if err := json.Unmarshal(body, &neoResponse); err != nil {
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to parse response"})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"result":  neoResponse,
+		"success": true,
+	})
+}
+

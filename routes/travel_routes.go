@@ -15,4 +15,5 @@ func SetupTravelRoutes(r *gin.Engine, rdb *redis.Client) {
 	r.POST("/travel/calculate", travelController.CalculateTravel)
 	r.POST("/travel/save", travelController.SaveTravel)
 	r.POST("/travel/check", travelController.CheckTravel)
+	r.GET("/travel/country", travelController.GetCountries)
 }
