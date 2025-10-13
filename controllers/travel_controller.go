@@ -1650,6 +1650,62 @@ func (tc *TravelController) CheckTravel(c *gin.Context) {
 		return
 	}
 
+	if provider == "apex" {
+		checkReq := map[string]interface{}{
+			"user_id":     30541,
+			"contract_id": orderIDString,
+		}
+
+		baseURL := os.Getenv("APEX_TRAVEL_BASE_URL")
+		if baseURL == "" {
+			baseURL = "https://rest.aic.uz/api/ins/apex_travel"
+		}
+
+		apexLogin := os.Getenv("APEX_LOGIN")
+		apexPassword := os.Getenv("APEX_PASSWORD")
+
+		creds := apexLogin + ":" + apexPassword
+		authHeader := "Basic " + base64.StdEncoding.EncodeToString([]byte(creds))
+
+		reqBody, _ := json.Marshal(checkReq)
+		apexURL := fmt.Sprintf("%s/policy_wop", baseURL)
+
+		httpReq, err := http.NewRequest("POST", apexURL, bytes.NewBuffer(reqBody))
+		if err != nil {
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to create request"})
+			return
+		}
+
+		httpReq.Header.Set("Content-Type", "application/json")
+		httpReq.Header.Set("Authorization", authHeader)
+
+		client := &http.Client{Timeout: 30 * time.Second}
+		resp, err := client.Do(httpReq)
+		if err != nil {
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to send request to Apex"})
+			return
+		}
+		defer resp.Body.Close()
+
+		body, _ := io.ReadAll(resp.Body)
+
+		var apexResponse map[string]interface{}
+		if err := json.Unmarshal(body, &apexResponse); err != nil {
+			c.JSON(500, gin.H{"result": nil, "success": false, "error": "failed to parse Apex response"})
+			return
+		}
+
+		c.JSON(200, gin.H{
+			"result": gin.H{
+				"session_id": req.SessionID,
+				"provider":   provider,
+				"response":   apexResponse,
+			},
+			"success": true,
+		})
+		return
+	}
+
 	c.JSON(400, gin.H{"result": nil, "success": false, "error": "unsupported provider"})
 }
 
@@ -1696,4 +1752,3 @@ func (tc *TravelController) GetCountries(c *gin.Context) {
 		"success": true,
 	})
 }
-
