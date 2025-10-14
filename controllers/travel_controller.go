@@ -1747,8 +1747,177 @@ func (tc *TravelController) GetCountries(c *gin.Context) {
 		return
 	}
 
+	responseData := make(map[string]interface{})
+	if response, ok := neoResponse["response"].(map[string]interface{}); ok {
+		if country, ok := response["country"]; ok {
+			responseData["country"] = country
+		}
+	}
+
 	c.JSON(200, gin.H{
-		"result":  neoResponse,
+		"result":  responseData,
+		"success": true,
+	})
+}
+
+type TarifsRequest struct {
+	Country string `json:"country" binding:"required"`
+}
+
+func (tc *TravelController) GetTarifs(c *gin.Context) {
+	fmt.Println("\n========================================")
+	fmt.Println("API: GET TARIFS")
+	fmt.Println("========================================")
+
+	bodyBytes, _ := io.ReadAll(c.Request.Body)
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	fmt.Println("REQUEST BODY:")
+	fmt.Println(string(bodyBytes))
+
+	var req TarifsRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		fmt.Printf("VALIDATION ERROR: %v\n", err)
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "invalid request"})
+		return
+	}
+
+	alpha3Code := req.Country
+	if mapped, ok := countryCodeMap[req.Country]; ok {
+		alpha3Code = mapped
+	}
+
+	fmt.Printf("Country code: %s -> %s\n", req.Country, alpha3Code)
+
+	countryID := getCountryIDByCode(alpha3Code)
+	if countryID == 0 {
+		fmt.Printf("Country ID not found for code: %s\n", alpha3Code)
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "country not found"})
+		return
+	}
+
+	fmt.Printf("Country ID: %d\n", countryID)
+
+	result := make(map[string]interface{})
+
+	data, err := os.ReadFile("staticDate/neoCountry.json")
+	if err != nil {
+		result["neo"] = map[string]interface{}{"error": "failed to read neoCountry.json"}
+	} else {
+		var neoData map[string]interface{}
+		if err := json.Unmarshal(data, &neoData); err != nil {
+			result["neo"] = map[string]interface{}{"error": "failed to parse neoCountry.json"}
+		} else {
+			neoResult := make(map[string]interface{})
+			if response, ok := neoData["response"].(map[string]interface{}); ok {
+				if tarifs, ok := response["tarifs"]; ok {
+					neoResult["tarifs"] = tarifs
+				}
+				if risk, ok := response["risk"]; ok {
+					neoResult["risk"] = risk
+				}
+			}
+			result["neo"] = neoResult
+		}
+	}
+
+	trustBaseURL := os.Getenv("TRUST_BASE_URL")
+	if trustBaseURL == "" {
+		trustBaseURL = "https://api.online-trust.uz"
+	}
+
+	trustLogin := os.Getenv("TRUST_LOGIN")
+	trustPassword := os.Getenv("TRUST_PASSWORD")
+
+	trustCreds := trustLogin + ":" + trustPassword
+	trustAuthHeader := "Basic " + base64.StdEncoding.EncodeToString([]byte(trustCreds))
+
+	trustReqBody := map[string]interface{}{
+		"countries": []int{countryID},
+	}
+
+	trustReqJSON, _ := json.Marshal(trustReqBody)
+	trustURL := fmt.Sprintf("%s/api/reference/abroad-program", trustBaseURL)
+
+	httpReq, err := http.NewRequest("POST", trustURL, bytes.NewBuffer(trustReqJSON))
+	if err != nil {
+		result["trust"] = map[string]interface{}{"error": "failed to create request"}
+	} else {
+		httpReq.Header.Set("Content-Type", "application/json")
+		httpReq.Header.Set("Authorization", trustAuthHeader)
+
+		client := &http.Client{Timeout: 30 * time.Second}
+		resp, err := client.Do(httpReq)
+		if err != nil {
+			result["trust"] = map[string]interface{}{"error": "failed to send request"}
+		} else {
+			defer resp.Body.Close()
+
+			body, _ := io.ReadAll(resp.Body)
+
+			var trustResponse interface{}
+			if err := json.Unmarshal(body, &trustResponse); err != nil {
+				result["trust"] = map[string]interface{}{"error": "failed to parse response"}
+			} else {
+				result["trust"] = trustResponse
+			}
+		}
+	}
+
+	apexBaseURL := os.Getenv("APEX_TRAVEL_BASE_URL")
+	if apexBaseURL == "" {
+		apexBaseURL = "https://rest.aic.uz/api/ins/apex_travel"
+	}
+
+	apexLogin := os.Getenv("APEX_LOGIN")
+	apexPassword := os.Getenv("APEX_PASSWORD")
+
+	apexCreds := apexLogin + ":" + apexPassword
+	apexAuthHeader := "Basic " + base64.StdEncoding.EncodeToString([]byte(apexCreds))
+
+	var apexPrograms []interface{}
+
+	for programID := 1; programID <= 5; programID++ {
+		apexReqBody := map[string]interface{}{
+			"program_id": programID,
+		}
+
+		apexReqJSON, _ := json.Marshal(apexReqBody)
+		apexURL := fmt.Sprintf("%s/program_travel", apexBaseURL)
+
+		httpReq, err := http.NewRequest("POST", apexURL, bytes.NewBuffer(apexReqJSON))
+		if err != nil {
+			continue
+		}
+
+		httpReq.Header.Set("Content-Type", "application/json")
+		httpReq.Header.Set("Authorization", apexAuthHeader)
+
+		client := &http.Client{Timeout: 30 * time.Second}
+		resp, err := client.Do(httpReq)
+		if err != nil {
+			continue
+		}
+
+		body, _ := io.ReadAll(resp.Body)
+		resp.Body.Close()
+
+		var apexResponse interface{}
+		if err := json.Unmarshal(body, &apexResponse); err != nil {
+			continue
+		}
+
+		apexPrograms = append(apexPrograms, apexResponse)
+	}
+
+	result["apex"] = apexPrograms
+
+	fmt.Println("\nRESPONSE:")
+	responseJSON, _ := json.MarshalIndent(result, "", "  ")
+	fmt.Println(string(responseJSON))
+	fmt.Println("========================================\n")
+
+	c.JSON(200, gin.H{
+		"result":  result,
 		"success": true,
 	})
 }
