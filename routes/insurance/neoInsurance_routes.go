@@ -13,7 +13,7 @@ func SetupNeoInsuranceRoutes(r *gin.Engine) {
 	osagoController := neoInsurancectl.NewOsagoController(cfg)
 	travelController := neoInsurancectl.NewTravelController(cfg)
 
-	neoInsuranceGroup := r.Group("/neoInsurance")
+	neoInsuranceGroup := r.Group("/insurance")
 	{
 		kasko := neoInsuranceGroup.Group("/kasko")
 		{
