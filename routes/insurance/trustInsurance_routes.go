@@ -17,6 +17,7 @@ func SetupTrustInsuranceRoutes(r *gin.Engine) {
 		{
 			accident.GET("/tarifs", accidentController.GetTariffs)
 			accident.POST("/create", accidentController.Create)
+			accident.POST("/check-payment", accidentController.CheckPayment)
 		}
 	}
 }

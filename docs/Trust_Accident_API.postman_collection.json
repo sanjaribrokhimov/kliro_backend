@@ -1,0 +1,263 @@
+{
+	"info": {
+		"_postman_id": "trust-accident-api-collection",
+		"name": "Trust Accident Insurance API",
+		"description": "API для страхования от несчастных случаев (Trust Insurance)\n\n## 🔐 Авторизация\nAPI использует Basic Auth с credentials из .env:\n- TRUST_LOGIN\n- TRUST_PASSWORD\n\n## 📋 Процесс оформления страховки:\n1. GET /tarifs - получить список тарифов\n2. POST /create - создать заявку и получить ссылки на оплату\n3. POST /check-payment - проверить статус оплаты и получить полис\n\n## 📊 Статусы полиса (status_policy):\n- 2 - ВЫДАН (успешно)\n- 3 - БРАКОВАН\n- 4 - УТЕРЯН\n- 8 - РАСТОРГНУТ\n\n## 💳 Статусы оплаты (status_payment):\n- 1 - НЕОПЛАЧЕННЫЙ\n- 2 - ОПЛАЧЕННЫЙ\n\n## 💰 Типы оплаты (payment_type):\n- 3 - ДЕНЬГИ У АГЕНТА\n- 8 - PayMe\n- 9 - Click\n- 10 - Paynet",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Get Tariffs",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/trust-insurance/accident/tarifs",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"trust-insurance",
+						"accident",
+						"tarifs"
+					]
+				},
+				"description": "Получает список всех доступных тарифов для страхования от несчастных случаев.\n\n**Шаг 1:** Вызовите этот endpoint чтобы получить список тарифов.\n\n**Тарифы:**\n- id: ID тарифа (используется при создании заявки)\n- insurance_premium: страховая премия (стоимость страховки в сум)\n- insurance_otv: страховая ответственность (сумма выплаты при страховом случае)"
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/trust-insurance/accident/tarifs",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"trust-insurance",
+								"accident",
+								"tarifs"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n  \"result\": {\n    \"result\": 0,\n    \"result_message\": \"Successful\",\n    \"tariffs\": [\n      {\n        \"id\": 1,\n        \"insurance_premium\": 3000000,\n        \"insurance_otv\": 15000\n      },\n      {\n        \"id\": 2,\n        \"insurance_premium\": 4000000,\n        \"insurance_otv\": 20000\n      },\n      {\n        \"id\": 3,\n        \"insurance_premium\": 5000000,\n        \"insurance_otv\": 25000\n      },\n      {\n        \"id\": 4,\n        \"insurance_premium\": 6000000,\n        \"insurance_otv\": 30000\n      },\n      {\n        \"id\": 5,\n        \"insurance_premium\": 7000000,\n        \"insurance_otv\": 35000\n      },\n      {\n        \"id\": 6,\n        \"insurance_premium\": 8000000,\n        \"insurance_otv\": 40000\n      },\n      {\n        \"id\": 7,\n        \"insurance_premium\": 9000000,\n        \"insurance_otv\": 45000\n      },\n      {\n        \"id\": 8,\n        \"insurance_premium\": 10000000,\n        \"insurance_otv\": 50000\n      },\n      {\n        \"id\": 10,\n        \"insurance_premium\": 2000000,\n        \"insurance_otv\": 10000\n      },\n      {\n        \"id\": 11,\n        \"insurance_premium\": 25000000,\n        \"insurance_otv\": 100000\n      },\n      {\n        \"id\": 12,\n        \"insurance_premium\": 35000000,\n        \"insurance_otv\": 150000\n      },\n      {\n        \"id\": 13,\n        \"insurance_premium\": 62500000,\n        \"insurance_otv\": 250000\n      },\n      {\n        \"id\": 14,\n        \"insurance_premium\": 75000000,\n        \"insurance_otv\": 300000\n      }\n    ]\n  }\n}"
+				}
+			]
+		},
+		{
+			"name": "2. Create Insurance Application",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"start_date\": \"2024-11-10\",\n  \"tariff_id\": 1,\n  \"person\": {\n    \"pinfl\": \"30101995750028\",\n    \"pass_sery\": \"AB\",\n    \"pass_num\": \"0160608\",\n    \"date_birth\": \"1999-01-01\",\n    \"last_name\": \"Rasulov\",\n    \"first_name\": \"Bunyod\",\n    \"patronym_name\": \"Ravshan o`g`li\",\n    \"oblast\": 10,\n    \"rayon\": 1012,\n    \"phone\": \"998123456789\",\n    \"address\": \"Tashkent, Yunusabad district\"\n  }\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/trust-insurance/accident/create",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"trust-insurance",
+						"accident",
+						"create"
+					]
+				},
+				"description": "Создает заявку на страхование от несчастных случаев и возвращает ссылки для оплаты.\n\n**Шаг 2:** После получения тарифов, выберите подходящий тариф и создайте заявку.\n\n**Request Parameters:**\n- start_date: Дата начала страхования (YYYY-MM-DD)\n- tariff_id: ID тарифа из GET /tarifs\n- person: Данные застрахованного лица\n  - pinfl: ПИНФЛ (14 цифр)\n  - pass_sery: Серия паспорта (2 буквы)\n  - pass_num: Номер паспорта\n  - date_birth: Дата рождения (YYYY-MM-DD)\n  - last_name: Фамилия\n  - first_name: Имя\n  - patronym_name: Отчество\n  - oblast: ID области\n  - rayon: ID района\n  - phone: Телефон (998XXXXXXXXX)\n  - address: Адрес\n\n**Response:**\nВозвращает anketa_id (ID заявки) и ссылки для оплаты через Click и Payme.\n\n**Important:**\nСохраните anketa_id - он понадобится для проверки статуса оплаты."
+			},
+			"response": [
+				{
+					"name": "Success Response with Payment URLs",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"start_date\": \"2024-11-10\",\n  \"tariff_id\": 1,\n  \"person\": {\n    \"pinfl\": \"30101995750028\",\n    \"pass_sery\": \"AB\",\n    \"pass_num\": \"0160608\",\n    \"date_birth\": \"1999-01-01\",\n    \"last_name\": \"Rasulov\",\n    \"first_name\": \"Bunyod\",\n    \"patronym_name\": \"Ravshan o`g`li\",\n    \"oblast\": 10,\n    \"rayon\": 1012,\n    \"phone\": \"998123456789\",\n    \"address\": \"Tashkent, Yunusabad district\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/trust-insurance/accident/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"trust-insurance",
+								"accident",
+								"create"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n  \"result\": {\n    \"result\": 0,\n    \"result_message\": \"Successful request processing\",\n    \"anketa_id\": 46622,\n    \"insurance_premium\": 3000000,\n    \"insurance_otv\": 15000,\n    \"payment_urls\": {\n      \"click\": \"https://my.click.uz/services/pay?service_id=23572&merchant_id=14417&amount=3000000&transaction_param=46622&return_url=https://kliro.uz/payment/return\",\n      \"payme\": \"https://checkout.paycom.uz/bT02NDZjOGJmZjJjYjgzOTM3YTc1NTFjOTU7YWMub3JkZXJfaWQ9NDY2MjI7YT0zMDAwMDAwMDA=\"\n    }\n  }\n}"
+				},
+				{
+					"name": "Error - Validation Failed",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"start_date\": \"2024-11-10\",\n  \"tariff_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/trust-insurance/accident/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"trust-insurance",
+								"accident",
+								"create"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n  \"error\": \"Key: 'CreateRequest.Person' Error:Field validation for 'Person' failed on the 'required' tag\"\n}"
+				}
+			]
+		},
+		{
+			"name": "3. Check Payment Status",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"anketa_id\": 46622,\n  \"lan\": \"uz\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/trust-insurance/accident/check-payment",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"trust-insurance",
+						"accident",
+						"check-payment"
+					]
+				},
+				"description": "Проверяет статус оплаты заявки и возвращает информацию о полисе.\n\n**Шаг 3:** После оплаты (или периодически) проверяйте статус заявки.\n\n**Request Parameters:**\n- anketa_id: ID заявки из POST /create\n- lan: Язык интерфейса (uz, ru, en)\n\n**Response Fields:**\n- result: Код результата (0 = успешно)\n- result_message: Сообщение о результате\n- policy_id: ID полиса\n- policy_sery: Серия страхового полиса\n- policy_number: Номер страхового полиса\n- status_policy: Статус полиса\n  - 2 = ВЫДАН (успешно)\n  - 3 = БРАКОВАН\n  - 4 = УТЕРЯН\n  - 8 = РАСТОРГНУТ\n- status_payment: Статус оплаты\n  - 1 = НЕОПЛАЧЕННЫЙ\n  - 2 = ОПЛАЧЕННЫЙ\n- payment_type: Тип оплаты\n  - 3 = ДЕНЬГИ У АГЕНТА\n  - 8 = PayMe\n  - 9 = Click\n  - 10 = Paynet\n- url: Ссылка для скачивания полиса\n- url_napp: Ссылка для скачивания полиса NAPP\n\n**Important:**\nКогда status_policy = 2 и status_payment = 2, полис готов к скачиванию."
+			},
+			"response": [
+				{
+					"name": "Success - Policy Issued and Paid",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"anketa_id\": 46622,\n  \"lan\": \"uz\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/trust-insurance/accident/check-payment",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"trust-insurance",
+								"accident",
+								"check-payment"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n  \"result\": {\n    \"result\": 0,\n    \"result_message\": \"Successful request processing\",\n    \"policy_id\": \"8966133\",\n    \"policy_sery\": \"NS\",\n    \"policy_number\": 4213,\n    \"status_policy\": \"2\",\n    \"url\": \"http://api.online-trust.uz/users/policy/download/8966133\",\n    \"url_napp\": \"https://ersp.e-osgo.uz/site/export-to-pdf?id=UUIDPOLISA\",\n    \"status_payment\": \"2\",\n    \"payment_type\": \"9\"\n  }\n}"
+				},
+				{
+					"name": "Status - Not Paid Yet",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"anketa_id\": 46622,\n  \"lan\": \"uz\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/trust-insurance/accident/check-payment",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"trust-insurance",
+								"accident",
+								"check-payment"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n  \"result\": {\n    \"result\": 0,\n    \"result_message\": \"Successful request processing\",\n    \"policy_id\": \"\",\n    \"policy_sery\": \"\",\n    \"policy_number\": 0,\n    \"status_policy\": \"\",\n    \"url\": \"\",\n    \"url_napp\": \"\",\n    \"status_payment\": \"1\",\n    \"payment_type\": \"\"\n  }\n}"
+				},
+				{
+					"name": "Error - Invalid Anketa ID",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"anketa_id\": 999999,\n  \"lan\": \"uz\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/trust-insurance/accident/check-payment",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"trust-insurance",
+								"accident",
+								"check-payment"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n  \"result\": {\n    \"result\": 1,\n    \"result_message\": \"Anketa not found\",\n    \"policy_id\": \"\",\n    \"policy_sery\": \"\",\n    \"policy_number\": 0,\n    \"status_policy\": \"\",\n    \"url\": \"\",\n    \"url_napp\": \"\",\n    \"status_payment\": \"\",\n    \"payment_type\": \"\"\n  }\n}"
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
+
