@@ -1,0 +1,306 @@
+{
+	"info": {
+		"_postman_id": "analytics-api-collection",
+		"name": "Analytics API - Click Tracking",
+		"description": "API для отслеживания кликов по банковским продуктам и получения статистики\n\n📋 Валидные направления (direction):\n1. deposit - вклады\n2. card - карты\n3. credit - кредиты\n4. mortgage - ипотека\n5. microcredit - микрокредиты\n6. autocredit - автокредиты\n7. transfer - переводы\n\n⚠️ Только эти 7 направлений принимаются API. Любое другое значение вернет ошибку 400.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Track Click",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"key\": \"Kapitalbank\",\n  \"direction\": \"deposit\",\n  \"url\": \"https://kapitalbank.uz/deposits/savings\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/analytics/track-click",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"analytics",
+						"track-click"
+					]
+				},
+				"description": "Отслеживает клик по банковскому продукту. Если запись с key и direction существует, увеличивает счетчик на +1, иначе создает новую запись с счетчиком 1."
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"key\": \"Kapitalbank\",\n  \"direction\": \"deposit\",\n  \"url\": \"https://kapitalbank.uz/deposits/savings\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/analytics/track-click",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"analytics",
+								"track-click"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n  \"result\": {\n    \"key\": \"Kapitalbank\",\n    \"direction\": \"deposit\",\n    \"click_count\": 15,\n    \"message\": \"Click tracked successfully\"\n  }\n}"
+				},
+				{
+					"name": "Error - Invalid Direction",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"key\": \"Kapitalbank\",\n  \"direction\": \"invalid_direction\",\n  \"url\": \"https://kapitalbank.uz/deposits/savings\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/analytics/track-click",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"analytics",
+								"track-click"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n  \"error\": \"invalid direction. Valid directions are: deposit, card, credit, mortgage, microcredit, autocredit, transfer\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get All Clicks",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/analytics/clicks",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"analytics",
+						"clicks"
+					]
+				},
+				"description": "Получает все записи кликов, отсортированные по количеству (от большего к меньшему)."
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/analytics/clicks",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"analytics",
+								"clicks"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n  \"result\": [\n    {\n      \"id\": 1,\n      \"key\": \"Kapitalbank\",\n      \"direction\": \"deposit\",\n      \"url\": \"https://kapitalbank.uz/deposits/savings\",\n      \"click_count\": 150,\n      \"created_at\": \"2024-10-15T10:30:00Z\",\n      \"updated_at\": \"2024-10-16T15:20:00Z\"\n    },\n    {\n      \"id\": 2,\n      \"key\": \"Uzum Bank\",\n      \"direction\": \"card\",\n      \"url\": \"https://uzumbank.uz/cards/uzcard\",\n      \"click_count\": 120,\n      \"created_at\": \"2024-10-14T08:00:00Z\",\n      \"updated_at\": \"2024-10-16T14:00:00Z\"\n    }\n  ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Clicks by Direction",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/analytics/clicks/:direction",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"analytics",
+						"clicks",
+						":direction"
+					],
+					"variable": [
+						{
+							"key": "direction",
+							"value": "deposit",
+							"description": "Направление: deposit, card, credit, mortgage, microcredit, autocredit, transfer, currency"
+						}
+					]
+				},
+				"description": "Получает все клики по конкретному направлению (deposit, card, credit, mortgage, microcredit, autocredit, transfer, currency)."
+			},
+			"response": [
+				{
+					"name": "Success Response - Deposit",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/analytics/clicks/deposit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"analytics",
+								"clicks",
+								"deposit"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n  \"result\": [\n    {\n      \"id\": 1,\n      \"key\": \"Kapitalbank\",\n      \"direction\": \"deposit\",\n      \"url\": \"https://kapitalbank.uz/deposits/savings\",\n      \"click_count\": 150,\n      \"created_at\": \"2024-10-15T10:30:00Z\",\n      \"updated_at\": \"2024-10-16T15:20:00Z\"\n    },\n    {\n      \"id\": 5,\n      \"key\": \"Hamkorbank\",\n      \"direction\": \"deposit\",\n      \"url\": \"https://hamkorbank.uz/deposits\",\n      \"click_count\": 85,\n      \"created_at\": \"2024-10-13T12:00:00Z\",\n      \"updated_at\": \"2024-10-16T10:30:00Z\"\n    }\n  ]\n}"
+				},
+				{
+					"name": "Error - Invalid Direction",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/analytics/clicks/invalid_direction",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"analytics",
+								"clicks",
+								"invalid_direction"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n  \"error\": \"invalid direction. Valid directions are: deposit, card, credit, mortgage, microcredit, autocredit, transfer\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Top 10 Clicks",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/analytics/top-clicks",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"analytics",
+						"top-clicks"
+					]
+				},
+				"description": "Получает топ 10 продуктов с наибольшим количеством кликов."
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/analytics/top-clicks",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"analytics",
+								"top-clicks"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n  \"result\": [\n    {\n      \"id\": 1,\n      \"key\": \"Kapitalbank\",\n      \"direction\": \"deposit\",\n      \"url\": \"https://kapitalbank.uz/deposits/savings\",\n      \"click_count\": 250,\n      \"created_at\": \"2024-10-15T10:30:00Z\",\n      \"updated_at\": \"2024-10-16T15:20:00Z\"\n    },\n    {\n      \"id\": 2,\n      \"key\": \"Uzum Bank\",\n      \"direction\": \"card\",\n      \"url\": \"https://uzumbank.uz/cards/uzcard\",\n      \"click_count\": 220,\n      \"created_at\": \"2024-10-14T08:00:00Z\",\n      \"updated_at\": \"2024-10-16T14:00:00Z\"\n    }\n  ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Stats by Direction",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/analytics/stats-by-direction",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"analytics",
+						"stats-by-direction"
+					]
+				},
+				"description": "Получает общую статистику кликов, сгруппированную по направлениям."
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/analytics/stats-by-direction",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"analytics",
+								"stats-by-direction"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n  \"result\": [\n    {\n      \"direction\": \"deposit\",\n      \"total_clicks\": 1250\n    },\n    {\n      \"direction\": \"card\",\n      \"total_clicks\": 980\n    },\n    {\n      \"direction\": \"mortgage\",\n      \"total_clicks\": 750\n    },\n    {\n      \"direction\": \"credit\",\n      \"total_clicks\": 620\n    },\n    {\n      \"direction\": \"autocredit\",\n      \"total_clicks\": 450\n    },\n    {\n      \"direction\": \"microcredit\",\n      \"total_clicks\": 380\n    },\n    {\n      \"direction\": \"transfer\",\n      \"total_clicks\": 290\n    },\n    {\n      \"direction\": \"currency\",\n      \"total_clicks\": 180\n    }\n  ]\n}"
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
+

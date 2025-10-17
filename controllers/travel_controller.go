@@ -155,7 +155,7 @@ func getCountryIDByCode(code string) int {
 }
 
 type TravelPurposeRequest struct {
-	PurposeID    int      `json:"purpose_id" binding:"required,max=6"`
+	PurposeID    *int     `json:"purpose_id" binding:"required,min=0,max=6"`
 	Destinations []string `json:"destinations" binding:"required,min=1,max=5"`
 }
 
@@ -176,7 +176,7 @@ func (tc *TravelController) SetTravelPurpose(c *gin.Context) {
 		return
 	}
 
-	fmt.Printf("PARSED: PurposeID=%d, Destinations=%v\n", req.PurposeID, req.Destinations)
+	fmt.Printf("PARSED: PurposeID=%d, Destinations=%v\n", *req.PurposeID, req.Destinations)
 
 	if len(req.Destinations) > 5 {
 		c.JSON(400, gin.H{"result": nil, "success": false, "error": "maximum 5 countries allowed"})
@@ -188,7 +188,7 @@ func (tc *TravelController) SetTravelPurpose(c *gin.Context) {
 	redisKey := "travel:session:" + sessionID
 
 	sessionData := map[string]interface{}{
-		"purpose_id":   req.PurposeID,
+		"purpose_id":   *req.PurposeID,
 		"destinations": req.Destinations,
 	}
 
@@ -212,7 +212,7 @@ func (tc *TravelController) SetTravelPurpose(c *gin.Context) {
 	response := gin.H{
 		"result": gin.H{
 			"session_id":   sessionID,
-			"purpose_id":   req.PurposeID,
+			"purpose_id":   *req.PurposeID,
 			"destinations": req.Destinations,
 		},
 		"success": true,

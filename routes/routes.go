@@ -56,6 +56,12 @@ func SetupRouter() *gin.Engine {
 	// NeoInsurance proxy routes
 	insurance.SetupNeoInsuranceRoutes(r)
 
+	// TrustInsurance proxy routes
+	insurance.SetupTrustInsuranceRoutes(r)
+
+	// Analytics routes for tracking clicks
+	SetupAnalyticsRoutes(r)
+
 	userGroup := r.Group("/user", middleware.JWTAuthMiddleware())
 	{
 		userGroup.GET("/profile", userProfileController.GetProfile)

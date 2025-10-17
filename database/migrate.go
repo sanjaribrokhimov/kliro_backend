@@ -8,7 +8,11 @@ import (
 )
 
 func Migrate(db *gorm.DB) error {
-	if err := db.AutoMigrate(&models.User{}, &models.Region{}, &models.Category{}, &models.Currency{}, &models.OsagoOrder{}); err != nil {
+	if err := db.AutoMigrate(&models.User{}, &models.Region{}, &models.Category{}, &models.Currency{}, &models.OsagoOrder{}, &models.ProductClick{}); err != nil {
+		return err
+	}
+
+	if err := db.Exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_product_click_key_direction ON product_clicks(key, direction)`).Error; err != nil {
 		return err
 	}
 
