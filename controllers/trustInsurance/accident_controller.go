@@ -95,8 +95,8 @@ type PersonData struct {
 	LastName     string `json:"last_name" binding:"required"`
 	FirstName    string `json:"first_name" binding:"required"`
 	PatronymName string `json:"patronym_name" binding:"required"`
-	Oblast       int    `json:"oblast" binding:"required"`
-	Rayon        int    `json:"rayon" binding:"required"`
+	Region       int    `json:"region" binding:"required"`
+	Rayon        int    `json:"rayon"`
 	Phone        string `json:"phone" binding:"required"`
 	Address      string `json:"address" binding:"required"`
 }
@@ -147,6 +147,50 @@ type CheckPaymentResponse struct {
 	PaymentType   string `json:"payment_type"`
 }
 
+func (ac *AccidentController) GetRegions(c *gin.Context) {
+	url := ac.cfg.TrustBaseURL + "/api/reference/regions"
+
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to build request"})
+		return
+	}
+
+	req.Header.Set("Authorization", ac.basicAuthHeader())
+
+	resp, err := ac.cl.Do(req)
+	if err != nil {
+		c.JSON(http.StatusBadGateway, gin.H{"error": "external api error", "details": err.Error()})
+		return
+	}
+	defer resp.Body.Close()
+
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to read response"})
+		return
+	}
+
+	fmt.Printf("Trust Regions API Response Status: %d\n", resp.StatusCode)
+	fmt.Printf("Trust Regions API Response Body: %s\n", string(bodyBytes))
+
+	if resp.StatusCode != http.StatusOK {
+		c.JSON(resp.StatusCode, gin.H{"error": "external api returned non-200 status", "details": string(bodyBytes)})
+		return
+	}
+
+	var regionsResp interface{}
+	if err := json.Unmarshal(bodyBytes, &regionsResp); err != nil {
+		fmt.Printf("Failed to decode response: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to decode response", "details": err.Error(), "raw_response": string(bodyBytes)})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"result": regionsResp,
+	})
+}
+
 func (ac *AccidentController) Create(c *gin.Context) {
 	var req CreateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -154,13 +198,36 @@ func (ac *AccidentController) Create(c *gin.Context) {
 		return
 	}
 
+	req.Person.Rayon = 0
+
 	url := ac.cfg.TrustBaseURL + "/api/v1/accident/create"
 
-	jsonData, err := json.Marshal(req)
+	trustRequest := map[string]interface{}{
+		"start_date": req.StartDate,
+		"tariff_id":  req.TariffID,
+		"person": map[string]interface{}{
+			"pinfl":         req.Person.Pinfl,
+			"pass_sery":     req.Person.PassSery,
+			"pass_num":      req.Person.PassNum,
+			"date_birth":    req.Person.DateBirth,
+			"last_name":     req.Person.LastName,
+			"first_name":    req.Person.FirstName,
+			"patronym_name": req.Person.PatronymName,
+			"oblast":        req.Person.Region,
+			"rayon":         0,
+			"phone":         req.Person.Phone,
+			"address":       req.Person.Address,
+		},
+	}
+
+	jsonData, err := json.Marshal(trustRequest)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to marshal request"})
 		return
 	}
+
+	fmt.Printf("Trust Create API Request URL: %s\n", url)
+	fmt.Printf("Trust Create API Request Body: %s\n", string(jsonData))
 
 	httpReq, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(jsonData))
 	if err != nil {
