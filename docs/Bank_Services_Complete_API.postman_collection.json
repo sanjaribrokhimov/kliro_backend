@@ -1,0 +1,742 @@
+{
+	"info": {
+		"name": "Bank Services Complete API",
+		"description": "Полная коллекция API для банковских сервисов с 7 направлениями, фильтрацией и поиском",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Микрокредиты",
+			"item": [
+				{
+					"name": "Получить все микрокредиты",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/microcredits/new",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "microcredits", "new"]
+						}
+					}
+				},
+				{
+					"name": "Микрокредиты с пагинацией",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/microcredits/new?page=0&size=10",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "microcredits", "new"],
+							"query": [
+								{"key": "page", "value": "0"},
+								{"key": "size", "value": "10"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Фильтр по банку",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/microcredits/new?bank=kapitalBank",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "microcredits", "new"],
+							"query": [
+								{"key": "bank", "value": "kapitalBank"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Фильтр по ставке от",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/microcredits/new?rate_from=20.0",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "microcredits", "new"],
+							"query": [
+								{"key": "rate_from", "value": "20.0"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Фильтр по сроку от",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/microcredits/new?term_months_from=12",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "microcredits", "new"],
+							"query": [
+								{"key": "term_months_from", "value": "12"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Фильтр по сумме от",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/microcredits/new?amount_from=1000000",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "microcredits", "new"],
+							"query": [
+								{"key": "amount_from", "value": "1000000"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Фильтр по каналу открытия",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/microcredits/new?opening=online",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "microcredits", "new"],
+							"query": [
+								{"key": "opening", "value": "online"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Сортировка по банку",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/microcredits/new?sort=bank_name&direction=asc",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "microcredits", "new"],
+							"query": [
+								{"key": "sort", "value": "bank_name"},
+								{"key": "direction", "value": "asc"}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Автокредиты",
+			"item": [
+				{
+					"name": "Получить все автокредиты",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/autocredits/new",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "autocredits", "new"]
+						}
+					}
+				},
+				{
+					"name": "Автокредиты с пагинацией",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/autocredits/new?page=0&size=10",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "autocredits", "new"],
+							"query": [
+								{"key": "page", "value": "0"},
+								{"key": "size", "value": "10"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Фильтр по банку",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/autocredits/new?bank=turonBank",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "autocredits", "new"],
+							"query": [
+								{"key": "bank", "value": "turonBank"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Фильтр по ставке от",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/autocredits/new?rate_from=15.0",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "autocredits", "new"],
+							"query": [
+								{"key": "rate_from", "value": "15.0"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Фильтр по сроку от",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/autocredits/new?term_months_from=24",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "autocredits", "new"],
+							"query": [
+								{"key": "term_months_from", "value": "24"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Фильтр по сумме от",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/autocredits/new?amount_from=50000000",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "autocredits", "new"],
+							"query": [
+								{"key": "amount_from", "value": "50000000"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Фильтр по каналу открытия",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/autocredits/new?opening=bank",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "autocredits", "new"],
+							"query": [
+								{"key": "opening", "value": "bank"}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Переводы",
+			"item": [
+				{
+					"name": "Получить все переводы",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/transfers/new",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "transfers", "new"]
+						}
+					}
+				},
+				{
+					"name": "Переводы с пагинацией",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/transfers/new?page=0&size=10",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "transfers", "new"],
+							"query": [
+								{"key": "page", "value": "0"},
+								{"key": "size", "value": "10"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Фильтр по приложению",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/transfers/new?app=paynet",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "transfers", "new"],
+							"query": [
+								{"key": "app", "value": "paynet"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Фильтр по комиссии от",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/transfers/new?commission_from=1000",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "transfers", "new"],
+							"query": [
+								{"key": "commission_from", "value": "1000"}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Ипотека",
+			"item": [
+				{
+					"name": "Получить все ипотеки",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/mortgages/new",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "mortgages", "new"]
+						}
+					}
+				},
+				{
+					"name": "Ипотеки с пагинацией",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/mortgages/new?page=0&size=10",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "mortgages", "new"],
+							"query": [
+								{"key": "page", "value": "0"},
+								{"key": "size", "value": "10"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Фильтр по банку",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/mortgages/new?bank=ipotekaBank",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "mortgages", "new"],
+							"query": [
+								{"key": "bank", "value": "ipotekaBank"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Фильтр по ставке от",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/mortgages/new?rate_from=12.0",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "mortgages", "new"],
+							"query": [
+								{"key": "rate_from", "value": "12.0"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Фильтр по сроку от",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/mortgages/new?term_months_from=60",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "mortgages", "new"],
+							"query": [
+								{"key": "term_months_from", "value": "60"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Фильтр по сумме от",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/mortgages/new?amount_from=100000000",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "mortgages", "new"],
+							"query": [
+								{"key": "amount_from", "value": "100000000"}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "5. Депозиты",
+			"item": [
+				{
+					"name": "Получить все депозиты",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/deposits/new",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "deposits", "new"]
+						}
+					}
+				},
+				{
+					"name": "Депозиты с пагинацией",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/deposits/new?page=0&size=10",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "deposits", "new"],
+							"query": [
+								{"key": "page", "value": "0"},
+								{"key": "size", "value": "10"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Фильтр по банку",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/deposits/new?bank=agroBank",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "deposits", "new"],
+							"query": [
+								{"key": "bank", "value": "agroBank"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Фильтр по ставке от",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/deposits/new?rate_from=18.0",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "deposits", "new"],
+							"query": [
+								{"key": "rate_from", "value": "18.0"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Фильтр по сроку от",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/deposits/new?term_months_from=6",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "deposits", "new"],
+							"query": [
+								{"key": "term_months_from", "value": "6"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Фильтр по сумме от",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/deposits/new?amount_from=1000000",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "deposits", "new"],
+							"query": [
+								{"key": "amount_from", "value": "1000000"}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "6. Карты",
+			"item": [
+				{
+					"name": "Получить все карты",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/cards/new",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "cards", "new"]
+						}
+					}
+				},
+				{
+					"name": "Кредитные карты",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/credit-cards/new",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "credit-cards", "new"]
+						}
+					}
+				},
+				{
+					"name": "Карты с пагинацией",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/cards/new?page=0&size=10",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "cards", "new"],
+							"query": [
+								{"key": "page", "value": "0"},
+								{"key": "size", "value": "10"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Фильтр по банку",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/cards/new?bank=hamkorBank",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "cards", "new"],
+							"query": [
+								{"key": "bank", "value": "hamkorBank"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Фильтр по типу карты",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/cards/new?card_type=debit",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "cards", "new"],
+							"query": [
+								{"key": "card_type", "value": "debit"}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "7. Курсы валют",
+			"item": [
+				{
+					"name": "Получить актуальные курсы",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/currencies/new",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "currencies", "new"]
+						}
+					}
+				},
+				{
+					"name": "Курсы по дате",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/currencies/by-date?date=2024-01-15",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "currencies", "by-date"],
+							"query": [
+								{"key": "date", "value": "2024-01-15"}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Поиск и фильтрация",
+			"item": [
+				{
+					"name": "Поиск микрокредитов",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/search?q=kapital&category=microcredits",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "search"],
+							"query": [
+								{"key": "q", "value": "kapital"},
+								{"key": "category", "value": "microcredits"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Поиск автокредитов",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/search?q=turon&category=autocredits",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "search"],
+							"query": [
+								{"key": "q", "value": "turon"},
+								{"key": "category", "value": "autocredits"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Поиск переводов",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/search?q=paynet&category=transfers",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "search"],
+							"query": [
+								{"key": "q", "value": "paynet"},
+								{"key": "category", "value": "transfers"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Поиск ипотеки",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/search?q=ipoteka&category=mortgages",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "search"],
+							"query": [
+								{"key": "q", "value": "ipoteka"},
+								{"key": "category", "value": "mortgages"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Поиск депозитов",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/search?q=agro&category=deposits",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "search"],
+							"query": [
+								{"key": "q", "value": "agro"},
+								{"key": "category", "value": "deposits"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Поиск карт",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/search?q=hamkor&category=cards",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "search"],
+							"query": [
+								{"key": "q", "value": "hamkor"},
+								{"key": "category", "value": "cards"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Поиск кредитных карт",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/search?q=universal&category=credit-cards",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "search"],
+							"query": [
+								{"key": "q", "value": "universal"},
+								{"key": "category", "value": "credit-cards"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Поиск с пагинацией",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/search?q=bank&category=microcredits&page=0&size=5",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "search"],
+							"query": [
+								{"key": "q", "value": "bank"},
+								{"key": "category", "value": "microcredits"},
+								{"key": "page", "value": "0"},
+								{"key": "size", "value": "5"}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Управление банками",
+			"item": [
+				{
+					"name": "Получить список банков",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/banks/list",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "banks", "list"]
+						}
+					}
+				},
+				{
+					"name": "Получить информацию о банке",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/banks/Kapital Bank",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "banks", "Kapital Bank"]
+						}
+					}
+				},
+				{
+					"name": "Обновить логотип банка",
+					"request": {
+						"method": "POST",
+						"url": {
+							"raw": "{{base_url}}/bank/banks/Kapital Bank/logo",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "banks", "Kapital Bank", "logo"]
+						},
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "logo_path",
+									"value": "/logos/kapital-bank.png",
+									"type": "text"
+								}
+							]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
+

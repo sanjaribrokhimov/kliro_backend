@@ -2,18 +2,17 @@ package bank
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
-// BankController - контроллер для работы с банками
 type BankController struct {
 	db *gorm.DB
 }
 
-// NewBankController - создает новый экземпляр контроллера банков
 func NewBankController(db *gorm.DB) *BankController {
 	return &BankController{db: db}
 }
@@ -145,12 +144,97 @@ func (bc *BankController) UpdateBankLogo(c *gin.Context) {
 	})
 }
 
-// normalizeBankName - нормализует название банка
+func (bc *BankController) SearchBanks(c *gin.Context) {
+	query := strings.TrimSpace(c.Query("q"))
+	category := strings.TrimSpace(c.Query("category"))
+
+	if query == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Параметр 'q' обязателен",
+		})
+		return
+	}
+
+	if category == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Параметр 'category' обязателен",
+		})
+		return
+	}
+
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "0"))
+	size, _ := strconv.Atoi(c.DefaultQuery("size", "10"))
+
+	if page < 0 {
+		page = 0
+	}
+	if size < 1 || size > 100 {
+		size = 10
+	}
+
+	tableMap := map[string]string{
+		"microcredits": "new_microcredit",
+		"autocredits":  "new_autocredit",
+		"transfers":    "new_transfer",
+		"mortgages":    "new_mortgage",
+		"deposits":     "new_deposit",
+		"cards":        "new_card",
+		"credit-cards": "new_credit_card",
+	}
+
+	tableName, exists := tableMap[category]
+	if !exists {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Неверная категория",
+		})
+		return
+	}
+
+	searchField := "bank_name"
+	if category == "transfers" {
+		searchField = "app_name"
+	}
+
+	var totalElements int64
+	bc.db.Table(tableName).
+		Where(searchField+" ILIKE ?", "%"+query+"%").
+		Count(&totalElements)
+
+	totalPages := int((totalElements + int64(size) - 1) / int64(size))
+
+	offset := page * size
+	var results []map[string]interface{}
+
+	err := bc.db.Table(tableName).
+		Where(searchField+" ILIKE ?", "%"+query+"%").
+		Offset(offset).
+		Limit(size).
+		Find(&results).Error
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Ошибка при получении данных",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"result": gin.H{
+			"content":          results,
+			"totalElements":    totalElements,
+			"totalPages":       totalPages,
+			"size":             size,
+			"number":           page,
+			"numberOfElements": len(results),
+			"first":            page == 0,
+			"last":             page >= totalPages-1,
+		},
+	})
+}
+
 func (bc *BankController) normalizeBankName(bankName string) string {
-	// Базовые правила нормализации
 	normalized := strings.TrimSpace(bankName)
 
-	// Маппинг для стандартизации
 	mappings := map[string]string{
 		"Turon bank":               "Turon Bank",
 		"Davr bank":                "Davr Bank",
@@ -169,7 +253,6 @@ func (bc *BankController) normalizeBankName(bankName string) string {
 		return mapped
 	}
 
-	// Если нет в маппинге, применяем общие правила
 	words := strings.Fields(normalized)
 	for i, word := range words {
 		if strings.ToLower(word) == "bank" || strings.ToLower(word) == "banki" {

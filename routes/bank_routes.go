@@ -23,6 +23,7 @@ func SetupBankRoutes(router *gin.Engine) {
 	depositController := bank.NewDepositController()
 	cardController := bank.NewCardController()
 	currencyController := bank.NewCurrencyController(currencyService)
+	bankController := bank.NewBankController(db)
 
 	// Bank group for all bank-related endpoints
 	bankGroup := router.Group("/bank")
@@ -37,5 +38,6 @@ func SetupBankRoutes(router *gin.Engine) {
 		bankGroup.GET("/credit-cards/new", cardController.GetNewCreditCards)
 		bankGroup.GET("/currencies/new", currencyController.GetLatestCurrencyRates)
 		bankGroup.GET("/currencies/by-date", currencyController.GetCurrencyRatesByDate)
+		bankGroup.GET("/search", bankController.SearchBanks)
 	}
 }
