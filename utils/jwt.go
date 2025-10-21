@@ -20,8 +20,13 @@ func ParseJWT(tokenStr, secret string) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secret), nil
 	})
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		return claims, nil
+	if err != nil {
+		return nil, err
+	}
+	if token != nil && token.Valid {
+		if claims, ok := token.Claims.(jwt.MapClaims); ok {
+			return claims, nil
+		}
 	}
 	return nil, err
 }

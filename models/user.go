@@ -11,6 +11,7 @@ type User struct {
 	Confirmed  bool   `gorm:"default:false"`
 	Role       string `gorm:"default:user"`
 	CategoryID *uint
-	Name     *string
-	GoogleID *string
+	FirstName  *string
+	LastName   *string
+	GoogleID   *string
 }

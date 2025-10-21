@@ -69,6 +69,7 @@ func SetupRouter() *gin.Engine {
 		userGroup.POST("/confirm-update-contact", userProfileController.ConfirmUpdateContact)
 		userGroup.POST("/change-password", userProfileController.ChangePassword)
 		userGroup.POST("/change-region", userProfileController.ChangeRegion)
+		userGroup.POST("/update-profile", userProfileController.UpdateProfile)
 		userGroup.POST("/add-contact", userProfileController.AddContact)
 		userGroup.POST("/logout", userProfileController.Logout)
 	}

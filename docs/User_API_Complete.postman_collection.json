@@ -1,0 +1,616 @@
+{
+	"info": {
+		"_postman_id": "user-api-complete-2024",
+		"name": "KLIRO User API Complete",
+		"description": "Полная коллекция всех API для пользователей: регистрация, логин, профиль, обновление данных",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refresh_token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Authentication",
+			"item": [
+				{
+					"name": "1.1 Register - Send OTP",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    console.log('OTP sent successfully');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						},
+						"description": "Отправка OTP кода на email или phone для регистрации"
+					},
+					"response": []
+				},
+				{
+					"name": "1.1 Register - Send OTP (Phone)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"+998901234567\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						},
+						"description": "Отправка OTP кода на телефон для регистрации"
+					},
+					"response": []
+				},
+				{
+					"name": "1.2 Confirm OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@example.com\",\n    \"otp\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/confirm-otp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"confirm-otp"
+							]
+						},
+						"description": "Подтверждение OTP кода (промежуточный шаг)"
+					},
+					"response": []
+				},
+				{
+					"name": "1.3 Set Region, Password, Name (Final)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('access_token', jsonData.result.accessToken);",
+									"    pm.collectionVariables.set('refresh_token', jsonData.result.refreshToken);",
+									"    console.log('Registration successful! Tokens saved.');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@example.com\",\n    \"region_id\": 1,\n    \"password\": \"SecurePass123\",\n    \"first_name\": \"Иван\",\n    \"last_name\": \"Иванов\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/set-region-password-final",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"set-region-password-final"
+							]
+						},
+						"description": "Финальный шаг регистрации: установка региона, пароля, имени и фамилии"
+					},
+					"response": []
+				},
+				{
+					"name": "1.4 Login (Email)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('access_token', jsonData.result.accessToken);",
+									"    pm.collectionVariables.set('refresh_token', jsonData.result.refreshToken);",
+									"    console.log('Login successful! Tokens saved.');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"SecurePass123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Вход пользователя через email и пароль"
+					},
+					"response": []
+				},
+				{
+					"name": "1.4 Login (Phone)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('access_token', jsonData.result.accessToken);",
+									"    pm.collectionVariables.set('refresh_token', jsonData.result.refreshToken);",
+									"    console.log('Login successful! Tokens saved.');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"+998901234567\",\n    \"password\": \"SecurePass123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Вход пользователя через телефон и пароль"
+					},
+					"response": []
+				},
+				{
+					"name": "1.5 Forgot Password - Send OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/forgot-password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"forgot-password"
+							]
+						},
+						"description": "Отправка OTP для восстановления пароля"
+					},
+					"response": []
+				},
+				{
+					"name": "1.6 Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@example.com\",\n    \"otp\": \"123456\",\n    \"password\": \"NewSecurePass123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/reset-password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"reset-password"
+							]
+						},
+						"description": "Сброс пароля с использованием OTP кода"
+					},
+					"response": []
+				}
+			],
+			"description": "API для аутентификации: регистрация, логин, восстановление пароля"
+		},
+		{
+			"name": "2. Google OAuth",
+			"item": [
+				{
+					"name": "2.1 Google Login (Browser Redirect)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/google?redirect_url=https://kliro.uz/auth-callback",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"google"
+							],
+							"query": [
+								{
+									"key": "redirect_url",
+									"value": "https://kliro.uz/auth-callback"
+								}
+							]
+						},
+						"description": "Инициализация входа через Google (открыть в браузере)"
+					},
+					"response": []
+				},
+				{
+					"name": "2.2 Google Complete Registration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('access_token', jsonData.result.accessToken);",
+									"    pm.collectionVariables.set('refresh_token', jsonData.result.refreshToken);",
+									"    console.log('Google registration complete! Tokens saved.');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"session_id\": \"google_session_id_from_redirect\",\n    \"region_id\": 1,\n    \"first_name\": \"Алексей\",\n    \"last_name\": \"Сидоров\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/google/complete",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"google",
+								"complete"
+							]
+						},
+						"description": "Завершение регистрации через Google OAuth (установка имени, фамилии, региона)"
+					},
+					"response": []
+				}
+			],
+			"description": "API для OAuth авторизации через Google"
+		},
+		{
+			"name": "3. User Profile",
+			"item": [
+				{
+					"name": "3.1 Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"profile"
+							]
+						},
+						"description": "Получение профиля текущего пользователя (требуется JWT токен)"
+					},
+					"response": []
+				},
+				{
+					"name": "3.2 Update Profile (Name)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"Дмитрий\",\n    \"last_name\": \"Дмитриев\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/user/update-profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"update-profile"
+							]
+						},
+						"description": "Обновление имени и фамилии пользователя"
+					},
+					"response": []
+				},
+				{
+					"name": "3.3 Change Region",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"region_id\": 2\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/user/change-region",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"change-region"
+							]
+						},
+						"description": "Изменение региона пользователя"
+					},
+					"response": []
+				},
+				{
+					"name": "3.4 Change Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"old_password\": \"SecurePass123\",\n    \"new_password\": \"NewSecurePass456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/user/change-password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"change-password"
+							]
+						},
+						"description": "Изменение пароля пользователя"
+					},
+					"response": []
+				},
+				{
+					"name": "3.5 Update Contact - Send OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"newemail@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/user/update-contact",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"update-contact"
+							]
+						},
+						"description": "Отправка OTP для смены email или телефона"
+					},
+					"response": []
+				},
+				{
+					"name": "3.6 Confirm Update Contact",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"otp\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/user/confirm-update-contact",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"confirm-update-contact"
+							]
+						},
+						"description": "Подтверждение смены email или телефона с помощью OTP"
+					},
+					"response": []
+				},
+				{
+					"name": "3.7 Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"logout"
+							]
+						},
+						"description": "Выход из системы (добавление токена в черный список)"
+					},
+					"response": []
+				}
+			],
+			"description": "API для управления профилем пользователя"
+		}
+	]
+}
+

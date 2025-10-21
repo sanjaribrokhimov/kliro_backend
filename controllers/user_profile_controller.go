@@ -36,7 +36,8 @@ func (upc *UserProfileController) GetProfile(c *gin.Context) {
 		"email":       user.Email,
 		"phone":       user.Phone,
 		"region_id":   user.RegionID,
-		"name":        user.Name,
+		"first_name":  user.FirstName,
+		"last_name":   user.LastName,
 		"role":        user.Role,
 		"category_id": user.CategoryID,
 	}, "success": true})
@@ -247,6 +248,36 @@ func (upc *UserProfileController) AddContact(c *gin.Context) {
 	}
 	// Можно добавить контакт в отдельную таблицу, если нужно. Сейчас просто возвращаем успех.
 	c.JSON(http.StatusOK, gin.H{"result": gin.H{"status": "contact added (mock)"}, "success": true})
+}
+
+// POST /user/update-profile
+func (upc *UserProfileController) UpdateProfile(c *gin.Context) {
+	userID := c.GetInt("user_id")
+	var req struct {
+		FirstName string `json:"first_name"`
+		LastName  string `json:"last_name"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"result": nil, "success": false, "error": "invalid request"})
+		return
+	}
+	if req.FirstName == "" || req.LastName == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"result": nil, "success": false, "error": "first_name и last_name обязательны"})
+		return
+	}
+	db := utils.GetDB()
+	var user models.User
+	if err := db.First(&user, userID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"result": nil, "success": false, "error": "Пользователь не найден"})
+		return
+	}
+	user.FirstName = &req.FirstName
+	user.LastName = &req.LastName
+	if err := db.Save(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"result": nil, "success": false, "error": "Ошибка обновления профиля"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"result": gin.H{"status": "profile updated"}, "success": true})
 }
 
 // POST /user/logout

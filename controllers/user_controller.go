@@ -2,16 +2,16 @@ package controllers
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 	"time"
 
 	"kliro/models"
 	"kliro/utils"
-
-	"encoding/base64"
-	"encoding/json"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
@@ -48,14 +48,18 @@ func NewUserController(rdb *redis.Client) *UserController {
 func (uc *UserController) Register(c *gin.Context) {
 	var req UserRegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Printf("[REGISTER] Invalid request: %v", err)
 		c.JSON(400, gin.H{"result": nil, "success": false, "error": "invalid request"})
 		return
 	}
 
 	if (req.Email == "" && req.Phone == "") || (req.Email != "" && req.Phone != "") {
+		log.Printf("[REGISTER] Invalid credentials: email=%s, phone=%s", req.Email, req.Phone)
 		c.JSON(400, gin.H{"result": nil, "success": false, "error": "Укажите только email или только phone"})
 		return
 	}
+
+	log.Printf("[REGISTER] Starting registration for: email=%s, phone=%s", req.Email, req.Phone)
 
 	// Проверка на существование пользователя
 	db := utils.GetDB()
@@ -115,6 +119,7 @@ func (uc *UserController) Register(c *gin.Context) {
 	// Сохраняем временные данные (можно расширить по ТЗ)
 	uc.RDB.Set(ctx, redisKey+":data", "pending", 5*time.Minute)
 
+	log.Printf("[REGISTER] OTP sent successfully via %s to: %s", channel, to)
 	c.JSON(200, gin.H{"result": gin.H{"status": "otp sent deploy"}, "success": true})
 }
 
@@ -160,13 +165,17 @@ func (uc *UserController) ConfirmOTP(c *gin.Context) {
 func (uc *UserController) ConfirmOTPCreate(c *gin.Context) {
 	var req ConfirmOTPRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Printf("[CONFIRM_OTP_CREATE] Invalid request: %v", err)
 		c.JSON(400, gin.H{"result": nil, "success": false, "error": "invalid request"})
 		return
 	}
 	if (req.Email == "" && req.Phone == "") || (req.Email != "" && req.Phone != "") {
+		log.Printf("[CONFIRM_OTP_CREATE] Invalid credentials: email=%s, phone=%s", req.Email, req.Phone)
 		c.JSON(400, gin.H{"result": nil, "success": false, "error": "Укажите только email или только phone"})
 		return
 	}
+
+	log.Printf("[CONFIRM_OTP_CREATE] Starting user creation for: email=%s, phone=%s", req.Email, req.Phone)
 	ctx := context.Background()
 	var redisKey string
 	if req.Email != "" {
@@ -196,41 +205,52 @@ func (uc *UserController) ConfirmOTPCreate(c *gin.Context) {
 		user.Phone = &phone
 	}
 	if err := db.Create(user).Error; err != nil {
+		log.Printf("[CONFIRM_OTP_CREATE] Error creating user: %v", err)
 		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка сохранения пользователя"})
 		return
 	}
-	// Очищаем временные данные
+	log.Printf("[CONFIRM_OTP_CREATE] User created successfully with ID: %d, email=%s, phone=%s", user.ID, req.Email, req.Phone)
 	uc.RDB.Del(ctx, redisKey+":otp", redisKey+":confirmed", redisKey+":data")
 	c.JSON(200, gin.H{"result": gin.H{"status": "user created, set region and password"}, "success": true})
 }
 
 type SetRegionPasswordRequest struct {
-	Email    string `json:"email"`
-	Phone    string `json:"phone"`
-	RegionID uint   `json:"region_id"`
-	Password string `json:"password"`
+	Email     string `json:"email"`
+	Phone     string `json:"phone"`
+	RegionID  uint   `json:"region_id"`
+	Password  string `json:"password"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
 }
 
 // POST /set-region-password-final
 func (uc *UserController) SetRegionPasswordFinal(c *gin.Context) {
 	var req struct {
-		Email    string `json:"email"`
-		Phone    string `json:"phone"`
-		RegionID uint   `json:"region_id"`
-		Password string `json:"password"`
+		Email     string `json:"email"`
+		Phone     string `json:"phone"`
+		RegionID  uint   `json:"region_id"`
+		Password  string `json:"password"`
+		FirstName string `json:"first_name"`
+		LastName  string `json:"last_name"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Printf("[SET_REGION_PASSWORD] Invalid request: %v", err)
 		c.JSON(400, gin.H{"result": nil, "success": false, "error": "invalid request"})
 		return
 	}
 	if (req.Email == "" && req.Phone == "") || (req.Email != "" && req.Phone != "") {
+		log.Printf("[SET_REGION_PASSWORD] Invalid credentials: email=%s, phone=%s", req.Email, req.Phone)
 		c.JSON(400, gin.H{"result": nil, "success": false, "error": "Укажите только email или только phone"})
 		return
 	}
-	if req.RegionID == 0 || req.Password == "" {
-		c.JSON(400, gin.H{"result": nil, "success": false, "error": "region_id и password обязательны"})
+	if req.RegionID == 0 || req.Password == "" || req.FirstName == "" || req.LastName == "" {
+		log.Printf("[SET_REGION_PASSWORD] Missing required fields for: email=%s, phone=%s", req.Email, req.Phone)
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "region_id, password, first_name и last_name обязательны"})
 		return
 	}
+
+	log.Printf("[SET_REGION_PASSWORD] Starting final registration for: email=%s, phone=%s, first_name=%s, last_name=%s, region_id=%d",
+		req.Email, req.Phone, req.FirstName, req.LastName, req.RegionID)
 	ctx := context.Background()
 	var redisKey string
 	if req.Email != "" {
@@ -267,6 +287,8 @@ func (uc *UserController) SetRegionPasswordFinal(c *gin.Context) {
 		Phone:     nil,
 		RegionID:  &req.RegionID,
 		Password:  hash,
+		FirstName: &req.FirstName,
+		LastName:  &req.LastName,
 		Confirmed: true,
 		Role:      "user",
 	}
@@ -279,13 +301,16 @@ func (uc *UserController) SetRegionPasswordFinal(c *gin.Context) {
 		user.Phone = &phoneVal
 	}
 	if err := db.Create(user).Error; err != nil {
+		log.Printf("[SET_REGION_PASSWORD] Error creating user: %v", err)
 		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка сохранения пользователя"})
 		return
 	}
-	// Очищаем временные данные из Redis
+
+	log.Printf("[SET_REGION_PASSWORD] User registered successfully with ID: %d, email=%s, phone=%s, first_name=%s, last_name=%s",
+		user.ID, req.Email, req.Phone, req.FirstName, req.LastName)
+
 	uc.RDB.Del(ctx, redisKey+":otp", redisKey+":confirmed", redisKey+":data")
 
-	// Генерируем JWT-токен
 	accessToken, err := utils.GenerateJWT(user.ID, user.Role, os.Getenv("JWT_SECRET"))
 	if err != nil {
 		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка генерации токена"})
@@ -316,17 +341,22 @@ type LoginRequest struct {
 func (uc *UserController) Login(c *gin.Context) {
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Printf("[LOGIN] Invalid request: %v", err)
 		c.JSON(400, gin.H{"result": nil, "success": false, "error": "invalid request"})
 		return
 	}
 	if (req.Email == "" && req.Phone == "") || (req.Email != "" && req.Phone != "") {
+		log.Printf("[LOGIN] Invalid credentials: email=%s, phone=%s", req.Email, req.Phone)
 		c.JSON(400, gin.H{"result": nil, "success": false, "error": "Укажите только email или только phone"})
 		return
 	}
 	if req.Password == "" {
+		log.Printf("[LOGIN] Password missing for: email=%s, phone=%s", req.Email, req.Phone)
 		c.JSON(400, gin.H{"result": nil, "success": false, "error": "Пароль обязателен"})
 		return
 	}
+
+	log.Printf("[LOGIN] Login attempt for: email=%s, phone=%s", req.Email, req.Phone)
 	db := utils.GetDB()
 	var user models.User
 	var result *gorm.DB
@@ -336,18 +366,22 @@ func (uc *UserController) Login(c *gin.Context) {
 		result = db.Where("phone = ? AND confirmed = ?", req.Phone, true).First(&user)
 	}
 	if result.Error != nil {
+		log.Printf("[LOGIN] User not found: email=%s, phone=%s", req.Email, req.Phone)
 		c.JSON(404, gin.H{"result": nil, "success": false, "error": "Пользователь не найден"})
 		return
 	}
-	// Проверка: если это Google-аккаунт (GoogleID заполнен, пароль пустой или дефолтный)
 	if user.GoogleID != nil && *user.GoogleID != "" && (user.Password == "" || user.Password == "-") {
+		log.Printf("[LOGIN] Google OAuth user tried to login with password: user_id=%d, email=%s", user.ID, req.Email)
 		c.JSON(400, gin.H{"result": nil, "success": false, "error": "Этот аккаунт зарегистрирован через Google. Войдите через Google OAuth."})
 		return
 	}
 	if !utils.CheckPasswordHash(req.Password, user.Password) {
+		log.Printf("[LOGIN] Invalid password for user_id=%d, email=%s, phone=%s", user.ID, req.Email, req.Phone)
 		c.JSON(401, gin.H{"result": nil, "success": false, "error": "Пароль неверный"})
 		return
 	}
+
+	log.Printf("[LOGIN] User logged in successfully: user_id=%d, email=%s, phone=%s, role=%s", user.ID, req.Email, req.Phone, user.Role)
 	accessToken, err := utils.GenerateJWT(user.ID, user.Role, os.Getenv("JWT_SECRET"))
 	if err != nil {
 		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка генерации токена"})
@@ -568,7 +602,6 @@ func (uc *UserController) GoogleCallback(c *gin.Context) {
 	userData := map[string]string{
 		"email":     userInfo.Email,
 		"google_id": userInfo.Id,
-		"name":      userInfo.Name,
 	}
 	userDataJson, _ := json.Marshal(userData)
 	uc.RDB.Set(ctx, redisKey, userDataJson, 10*time.Minute)
@@ -582,16 +615,23 @@ func (uc *UserController) GoogleComplete(c *gin.Context) {
 	type CompleteReq struct {
 		SessionID string `json:"session_id"`
 		RegionID  uint   `json:"region_id"`
+		FirstName string `json:"first_name"`
+		LastName  string `json:"last_name"`
 	}
 	var req CompleteReq
 	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Printf("[GOOGLE_COMPLETE] Invalid request: %v", err)
 		c.JSON(400, gin.H{"result": nil, "success": false, "error": "invalid request"})
 		return
 	}
-	if req.SessionID == "" || req.RegionID == 0 {
-		c.JSON(400, gin.H{"result": nil, "success": false, "error": "session_id и region_id обязательны"})
+	if req.SessionID == "" || req.RegionID == 0 || req.FirstName == "" || req.LastName == "" {
+		log.Printf("[GOOGLE_COMPLETE] Missing required fields: session_id=%s, region_id=%d", req.SessionID, req.RegionID)
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "session_id, region_id, first_name и last_name обязательны"})
 		return
 	}
+
+	log.Printf("[GOOGLE_COMPLETE] Starting Google registration completion: session_id=%s, first_name=%s, last_name=%s, region_id=%d",
+		req.SessionID, req.FirstName, req.LastName, req.RegionID)
 	ctx := context.Background()
 	redisKey := "google:session:" + req.SessionID
 	userDataJson, err := uc.RDB.Get(ctx, redisKey).Result()
@@ -613,20 +653,25 @@ func (uc *UserController) GoogleComplete(c *gin.Context) {
 		return
 	}
 	email := userData["email"]
-	name := userData["name"]
 	googleID := userData["google_id"]
 	user = models.User{
 		Email:     &email,
-		Name:      &name,
+		FirstName: &req.FirstName,
+		LastName:  &req.LastName,
 		GoogleID:  &googleID,
 		RegionID:  &req.RegionID,
 		Confirmed: true,
 		Role:      "user",
 	}
 	if err := db.Create(&user).Error; err != nil {
+		log.Printf("[GOOGLE_COMPLETE] Error creating user: %v", err)
 		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка сохранения пользователя"})
 		return
 	}
+
+	log.Printf("[GOOGLE_COMPLETE] User registered successfully via Google with ID: %d, email=%s, first_name=%s, last_name=%s",
+		user.ID, userData["email"], req.FirstName, req.LastName)
+
 	uc.RDB.Del(ctx, redisKey)
 	accessToken, err := utils.GenerateJWT(user.ID, user.Role, os.Getenv("JWT_SECRET"))
 	if err != nil {
