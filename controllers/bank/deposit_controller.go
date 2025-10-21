@@ -58,6 +58,7 @@ func (dc *DepositController) getDepositsWithPagination(c *gin.Context, tableName
 
 	// Фильтры
 	bank := c.Query("bank")
+	search := c.Query("search")
 	currency := strings.ToLower(strings.TrimSpace(c.DefaultQuery("currency", ""))) // usd|eur|rub|uzs|sum
 	rateFromStr := c.DefaultQuery("rate_from", "")
 	termFromStr := c.DefaultQuery("term_months_from", "")
@@ -105,7 +106,9 @@ func (dc *DepositController) getDepositsWithPagination(c *gin.Context, tableName
 
 	// Базовый SQL фильтр по банку и валюте (по строке MinAmount)
 	baseQ := db.Table(tableName)
-	if bankFilter != "" {
+	if search != "" {
+		baseQ = baseQ.Where("bank_name ILIKE ?", "%"+search+"%")
+	} else if bankFilter != "" {
 		baseQ = baseQ.Where("bank_name ILIKE ?", "%"+bankFilter+"%")
 	}
 	if currency != "" {

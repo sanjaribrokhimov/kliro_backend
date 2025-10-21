@@ -50,6 +50,7 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 	currency := c.Query("currency")
 	system := c.Query("system")
 	bank := c.Query("bank")
+	search := c.Query("search")
 	opening := strings.ToLower(strings.TrimSpace(c.DefaultQuery("opening", "all"))) // bank|online|all
 
 	// Нормализация bank camelCase -> точное название (если передан ключ)
@@ -130,7 +131,9 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 	if system != "" {
 		query = query.Where("system ILIKE ?", "%"+system+"%")
 	}
-	if bankFilter != "" {
+	if search != "" {
+		query = query.Where("bank_name ILIKE ?", "%"+search+"%")
+	} else if bankFilter != "" {
 		query = query.Where("bank_name ILIKE ?", "%"+bankFilter+"%")
 	}
 	if opening == "bank" {
@@ -246,7 +249,9 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 	if system != "" {
 		query = query.Where("system ILIKE ?", "%"+system+"%")
 	}
-	if bankFilter != "" {
+	if search != "" {
+		query = query.Where("bank_name ILIKE ?", "%"+search+"%")
+	} else if bankFilter != "" {
 		query = query.Where("bank_name ILIKE ?", "%"+bankFilter+"%")
 	}
 	if opening == "bank" {
@@ -321,6 +326,8 @@ func (cc *CardController) getCreditCardsWithPagination(c *gin.Context, tableName
 
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "0"))
 	size, _ := strconv.Atoi(c.DefaultQuery("size", "10"))
+	search := c.Query("search")
+
 	if page < 0 {
 		page = 0
 	}
@@ -329,11 +336,21 @@ func (cc *CardController) getCreditCardsWithPagination(c *gin.Context, tableName
 	}
 	offset := page * size
 
+	query := db.Table(tableName)
+	if search != "" {
+		query = query.Where("bank_name ILIKE ?", "%"+search+"%")
+	}
+
 	var total int64
-	db.Table(tableName).Count(&total)
+	query.Count(&total)
 
 	var items []models.CreditCard
-	if err := db.Table(tableName).Order("created_at DESC").Offset(offset).Limit(size).Find(&items).Error; err != nil {
+	dataQuery := db.Table(tableName)
+	if search != "" {
+		dataQuery = dataQuery.Where("bank_name ILIKE ?", "%"+search+"%")
+	}
+
+	if err := dataQuery.Order("created_at DESC").Offset(offset).Limit(size).Find(&items).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при получении данных"})
 		return
 	}

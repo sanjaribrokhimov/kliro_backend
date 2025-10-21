@@ -56,6 +56,7 @@ func (ac *AutocreditController) getAutocreditsWithPagination(c *gin.Context, tab
 
 	// Фильтры (строки)
 	bank := c.Query("bank")
+	search := c.Query("search")
 	rateFilter := c.Query("rate")
 	termFilter := c.Query("term")
 	amountFilter := c.Query("amount")
@@ -107,7 +108,9 @@ func (ac *AutocreditController) getAutocreditsWithPagination(c *gin.Context, tab
 
 	// Базовый запрос по строковым фильтрам и каналу
 	baseQ := db.Table(tableName)
-	if bankFilter != "" {
+	if search != "" {
+		baseQ = baseQ.Where("bank_name ILIKE ?", "%"+search+"%")
+	} else if bankFilter != "" {
 		baseQ = baseQ.Where("bank_name ILIKE ?", "%"+bankFilter+"%")
 	}
 	if rateFilter != "" {

@@ -38,6 +38,6 @@ func SetupBankRoutes(router *gin.Engine) {
 		bankGroup.GET("/credit-cards/new", cardController.GetNewCreditCards)
 		bankGroup.GET("/currencies/new", currencyController.GetLatestCurrencyRates)
 		bankGroup.GET("/currencies/by-date", currencyController.GetCurrencyRatesByDate)
-		bankGroup.GET("/search", bankController.SearchBanks)
+		bankGroup.GET("/search", bankController.SmartSearchAllCategories)
 	}
 }

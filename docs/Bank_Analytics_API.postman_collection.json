@@ -1,0 +1,298 @@
+{
+	"info": {
+		"name": "Bank Analytics API",
+		"description": "API для отслеживания переходов и аналитики по банковским продуктам\n\n📊 **7 направлений аналитики:**\n1. deposit - вклады\n2. card - карты\n3. credit - кредиты\n4. mortgage - ипотека\n5. microcredit - микрокредиты\n6. autocredit - автокредиты\n7. transfer - переводы\n\n🔍 **Функции:**\n- Отслеживание кликов по продуктам\n- Получение статистики по направлениям\n- Топ популярных продуктов\n- Агрегированная аналитика",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Отслеживание переходов (Track Clicks)",
+			"item": [
+				{
+					"name": "Отследить клик - Депозит",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"key\": \"Kapital Bank\",\n  \"direction\": \"deposit\",\n  \"url\": \"https://kapitalbank.uz/deposits/savings\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/analytics/bank/track-click",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "bank", "track-click"]
+						}
+					}
+				},
+				{
+					"name": "Отследить клик - Карта",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"key\": \"Hamkor Bank\",\n  \"direction\": \"card\",\n  \"url\": \"https://hamkorbank.uz/cards/debit\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/analytics/bank/track-click",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "bank", "track-click"]
+						}
+					}
+				},
+				{
+					"name": "Отследить клик - Микрокредит",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"key\": \"Agro Bank\",\n  \"direction\": \"microcredit\",\n  \"url\": \"https://agrobank.uz/loans/micro\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/analytics/bank/track-click",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "bank", "track-click"]
+						}
+					}
+				},
+				{
+					"name": "Отследить клик - Автокредит",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"key\": \"Turon Bank\",\n  \"direction\": \"autocredit\",\n  \"url\": \"https://turonbank.uz/loans/auto\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/analytics/bank/track-click",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "bank", "track-click"]
+						}
+					}
+				},
+				{
+					"name": "Отследить клик - Ипотека",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"key\": \"Ipoteka Bank\",\n  \"direction\": \"mortgage\",\n  \"url\": \"https://ipotekabank.uz/mortgage/new\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/analytics/bank/track-click",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "bank", "track-click"]
+						}
+					}
+				},
+				{
+					"name": "Отследить клик - Перевод",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"key\": \"Paynet\",\n  \"direction\": \"transfer\",\n  \"url\": \"https://paynet.uz/transfer\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/analytics/bank/track-click",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "bank", "track-click"]
+						}
+					}
+				},
+				{
+					"name": "Отследить клик - Кредит",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"key\": \"Universal Bank\",\n  \"direction\": \"credit\",\n  \"url\": \"https://universalbank.uz/loans/personal\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/analytics/bank/track-click",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "bank", "track-click"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Получение всех кликов",
+			"item": [
+				{
+					"name": "Получить все клики",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/analytics/bank/clicks",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "bank", "clicks"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Клики по направлениям",
+			"item": [
+				{
+					"name": "Клики - Депозиты",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/analytics/bank/clicks/deposit",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "bank", "clicks", "deposit"]
+						}
+					}
+				},
+				{
+					"name": "Клики - Карты",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/analytics/bank/clicks/card",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "bank", "clicks", "card"]
+						}
+					}
+				},
+				{
+					"name": "Клики - Микрокредиты",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/analytics/bank/clicks/microcredit",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "bank", "clicks", "microcredit"]
+						}
+					}
+				},
+				{
+					"name": "Клики - Автокредиты",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/analytics/bank/clicks/autocredit",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "bank", "clicks", "autocredit"]
+						}
+					}
+				},
+				{
+					"name": "Клики - Ипотека",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/analytics/bank/clicks/mortgage",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "bank", "clicks", "mortgage"]
+						}
+					}
+				},
+				{
+					"name": "Клики - Переводы",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/analytics/bank/clicks/transfer",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "bank", "clicks", "transfer"]
+						}
+					}
+				},
+				{
+					"name": "Клики - Кредиты",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/analytics/bank/clicks/credit",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "bank", "clicks", "credit"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Топ кликов",
+			"item": [
+				{
+					"name": "Получить топ-10 кликов",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/analytics/bank/top-clicks",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "bank", "top-clicks"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "5. Статистика по направлениям",
+			"item": [
+				{
+					"name": "Получить статистику всех направлений",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/analytics/bank/stats-by-direction",
+							"host": ["{{base_url}}"],
+							"path": ["analytics", "bank", "stats-by-direction"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}

@@ -74,6 +74,7 @@ func (mc *MicrocreditController) getMicrocreditsWithPagination(c *gin.Context, t
 
 	// Фильтры (строковые)
 	bank := c.Query("bank")
+	search := c.Query("search")
 	rateFilter := c.Query("rate")
 	termFilter := c.Query("term")
 	amountFilter := c.Query("amount")
@@ -125,7 +126,9 @@ func (mc *MicrocreditController) getMicrocreditsWithPagination(c *gin.Context, t
 
 	// Базовый запрос (строковые фильтры + opening)
 	baseQ := db.Table(tableName)
-	if bankFilter != "" {
+	if search != "" {
+		baseQ = baseQ.Where("bank_name ILIKE ?", "%"+search+"%")
+	} else if bankFilter != "" {
 		baseQ = baseQ.Where("bank_name ILIKE ?", "%"+bankFilter+"%")
 	}
 	if rateFilter != "" {

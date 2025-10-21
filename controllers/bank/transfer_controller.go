@@ -86,6 +86,7 @@ func (tc *TransferController) getTransfersWithPagination(c *gin.Context, tableNa
 	size, _ := strconv.Atoi(c.DefaultQuery("size", "10"))
 	sortBy := c.DefaultQuery("sort", "app_name")
 	sortDir := c.DefaultQuery("direction", "asc")
+	search := c.Query("search")
 
 	// Валидация параметров
 	if page < 0 {
@@ -95,9 +96,15 @@ func (tc *TransferController) getTransfersWithPagination(c *gin.Context, tableNa
 		size = 10
 	}
 
+	// Базовый запрос с фильтром поиска
+	query := db.Table(tableName)
+	if search != "" {
+		query = query.Where("app_name ILIKE ?", "%"+search+"%")
+	}
+
 	// Подсчет общего количества записей
 	var totalElements int64
-	db.Table(tableName).Count(&totalElements)
+	query.Count(&totalElements)
 
 	// Вычисление пагинации
 	totalPages := int((totalElements + int64(size) - 1) / int64(size))
@@ -159,24 +166,27 @@ func (tc *TransferController) getTransfersWithPagination(c *gin.Context, tableNa
 
 	// Выполнение запроса с пагинацией и сортировкой
 	var transfers []models.Transfer
-	query := db.Table(tableName)
+	dataQuery := db.Table(tableName)
+	if search != "" {
+		dataQuery = dataQuery.Where("app_name ILIKE ?", "%"+search+"%")
+	}
 
 	// Применение сортировки
 	if sortField == "app_name" {
 		// Для текстовых полей добавляем COLLATE для правильной сортировки
 		if sortDirection == "ASC" {
-			query = query.Order("app_name COLLATE \"C\" ASC")
+			dataQuery = dataQuery.Order("app_name COLLATE \"C\" ASC")
 		} else {
-			query = query.Order("app_name COLLATE \"C\" DESC")
+			dataQuery = dataQuery.Order("app_name COLLATE \"C\" DESC")
 		}
 	} else {
-		query = query.Order(sortField + " " + sortDirection)
+		dataQuery = dataQuery.Order(sortField + " " + sortDirection)
 	}
 
 	// Применение пагинации
-	query = query.Offset(offset).Limit(size)
+	dataQuery = dataQuery.Offset(offset).Limit(size)
 
-	if err := query.Find(&transfers).Error; err != nil {
+	if err := dataQuery.Find(&transfers).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при получении данных"})
 		return
 	}

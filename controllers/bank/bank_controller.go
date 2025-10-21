@@ -144,20 +144,12 @@ func (bc *BankController) UpdateBankLogo(c *gin.Context) {
 	})
 }
 
-func (bc *BankController) SearchBanks(c *gin.Context) {
-	query := strings.TrimSpace(c.Query("q"))
-	category := strings.TrimSpace(c.Query("category"))
+func (bc *BankController) SmartSearchAllCategories(c *gin.Context) {
+	search := strings.TrimSpace(c.Query("search"))
 
-	if query == "" {
+	if search == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Параметр 'q' обязателен",
-		})
-		return
-	}
-
-	if category == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Параметр 'category' обязателен",
+			"error": "Параметр 'search' обязателен",
 		})
 		return
 	}
@@ -172,6 +164,8 @@ func (bc *BankController) SearchBanks(c *gin.Context) {
 		size = 10
 	}
 
+	normalizedSearch := bc.normalizeSearchQuery(search)
+
 	tableMap := map[string]string{
 		"microcredits": "new_microcredit",
 		"autocredits":  "new_autocredit",
@@ -182,54 +176,119 @@ func (bc *BankController) SearchBanks(c *gin.Context) {
 		"credit-cards": "new_credit_card",
 	}
 
-	tableName, exists := tableMap[category]
-	if !exists {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Неверная категория",
-		})
-		return
-	}
-
-	searchField := "bank_name"
-	if category == "transfers" {
-		searchField = "app_name"
-	}
-
+	var allResults []map[string]interface{}
 	var totalElements int64
-	bc.db.Table(tableName).
-		Where(searchField+" ILIKE ?", "%"+query+"%").
-		Count(&totalElements)
+
+	for catName, tableName := range tableMap {
+		searchField := "bank_name"
+		if catName == "transfers" {
+			searchField = "app_name"
+		}
+
+		var categoryResults []map[string]interface{}
+
+		query := bc.db.Table(tableName)
+		if len(normalizedSearch) > 0 {
+			conditions := make([]string, len(normalizedSearch))
+			args := make([]interface{}, len(normalizedSearch))
+			for i, searchTerm := range normalizedSearch {
+				conditions[i] = searchField + " ILIKE ?"
+				args[i] = "%" + searchTerm + "%"
+			}
+			query = query.Where(strings.Join(conditions, " OR "), args...)
+		}
+
+		err := query.Find(&categoryResults).Error
+
+		if err != nil {
+			continue
+		}
+
+		for _, item := range categoryResults {
+			item["category"] = catName
+			allResults = append(allResults, item)
+		}
+
+		var count int64
+		countQuery := bc.db.Table(tableName)
+		if len(normalizedSearch) > 0 {
+			conditions := make([]string, len(normalizedSearch))
+			args := make([]interface{}, len(normalizedSearch))
+			for i, searchTerm := range normalizedSearch {
+				conditions[i] = searchField + " ILIKE ?"
+				args[i] = "%" + searchTerm + "%"
+			}
+			countQuery = countQuery.Where(strings.Join(conditions, " OR "), args...)
+		}
+		countQuery.Count(&count)
+		totalElements += count
+	}
 
 	totalPages := int((totalElements + int64(size) - 1) / int64(size))
-
 	offset := page * size
-	var results []map[string]interface{}
+	end := offset + size
+	if end > len(allResults) {
+		end = len(allResults)
+	}
 
-	err := bc.db.Table(tableName).
-		Where(searchField+" ILIKE ?", "%"+query+"%").
-		Offset(offset).
-		Limit(size).
-		Find(&results).Error
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Ошибка при получении данных",
-		})
-		return
+	var paginatedResults []map[string]interface{}
+	if offset < len(allResults) {
+		paginatedResults = allResults[offset:end]
 	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"result": gin.H{
-			"content":          results,
+			"content":          paginatedResults,
 			"totalElements":    totalElements,
 			"totalPages":       totalPages,
 			"size":             size,
 			"number":           page,
-			"numberOfElements": len(results),
+			"numberOfElements": len(paginatedResults),
 			"first":            page == 0,
 			"last":             page >= totalPages-1,
 		},
 	})
+}
+
+func (bc *BankController) normalizeSearchQuery(search string) []string {
+	search = strings.ToLower(strings.TrimSpace(search))
+
+	bankVariants := map[string][]string{
+		"kapital":   {"kapital", "capital", "kapital bank", "capital bank"},
+		"agro":      {"agro", "agro bank", "agrobank"},
+		"turon":     {"turon", "turon bank", "turonbank"},
+		"hamkor":    {"hamkor", "hamkor bank", "hamkorbank", "xamkor"},
+		"ipoteka":   {"ipoteka", "ipoteka bank", "ipotekabank", "ipoteka banki"},
+		"xalq":      {"xalq", "xalq bank", "xalq banki", "halq"},
+		"asaka":     {"asaka", "asaka bank", "asakabank"},
+		"infinbank": {"infinbank", "infin bank", "infin", "infinbank"},
+		"universal": {"universal", "universal bank", "universalbank"},
+		"orient":    {"orient", "orient finans", "orient finans bank"},
+		"davr":      {"davr", "davr bank", "davrbank"},
+		"octo":      {"octo", "octo bank", "octobank"},
+		"aloqa":     {"aloqa", "aloqa bank", "aloqabank", "aloqa banki"},
+		"anor":      {"anor", "anor bank", "anorbank"},
+		"poytaxt":   {"poytaxt", "poytaxt bank", "poytaxtbank"},
+		"garant":    {"garant", "garant bank", "garantbank"},
+		"tenge":     {"tenge", "tenge bank", "tengebank"},
+		"tbc":       {"tbc", "tbc bank", "tbc uz"},
+		"avo":       {"avo", "avo bank", "avobank"},
+		"mk":        {"mk", "mk bank", "mkbank"},
+		"smart":     {"smart", "smart bank", "smartbank"},
+		"ziraat":    {"ziraat", "ziraat bank", "ziraatbank"},
+		"paynet":    {"paynet", "pay net"},
+		"payme":     {"payme", "pay me"},
+		"click":     {"click", "klik"},
+		"uzum":      {"uzum", "uzum bank", "uzumbank"},
+	}
+
+	for key, variants := range bankVariants {
+		if strings.Contains(search, key) {
+			return variants
+		}
+	}
+
+	return []string{search}
 }
 
 func (bc *BankController) normalizeBankName(bankName string) string {

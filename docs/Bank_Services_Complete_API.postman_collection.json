@@ -556,109 +556,184 @@
 			]
 		},
 		{
-			"name": "Поиск и фильтрация",
+			"name": "Поиск по каждому направлению (search параметр)",
 			"item": [
 				{
-					"name": "Поиск микрокредитов",
+					"name": "1. Микрокредиты - поиск Kapital",
 					"request": {
 						"method": "GET",
 						"url": {
-							"raw": "{{base_url}}/bank/search?q=kapital&category=microcredits",
+							"raw": "{{base_url}}/bank/microcredits/new?search=kapital&size=5",
 							"host": ["{{base_url}}"],
-							"path": ["bank", "search"],
+							"path": ["bank", "microcredits", "new"],
 							"query": [
-								{"key": "q", "value": "kapital"},
-								{"key": "category", "value": "microcredits"}
+								{"key": "search", "value": "kapital"},
+								{"key": "size", "value": "5"}
 							]
 						}
 					}
 				},
 				{
-					"name": "Поиск автокредитов",
+					"name": "2. Автокредиты - поиск Turon",
 					"request": {
 						"method": "GET",
 						"url": {
-							"raw": "{{base_url}}/bank/search?q=turon&category=autocredits",
+							"raw": "{{base_url}}/bank/autocredits/new?search=turon&size=5",
 							"host": ["{{base_url}}"],
-							"path": ["bank", "search"],
+							"path": ["bank", "autocredits", "new"],
 							"query": [
-								{"key": "q", "value": "turon"},
-								{"key": "category", "value": "autocredits"}
+								{"key": "search", "value": "turon"},
+								{"key": "size", "value": "5"}
 							]
 						}
 					}
 				},
 				{
-					"name": "Поиск переводов",
+					"name": "3. Переводы - поиск Paynet",
 					"request": {
 						"method": "GET",
 						"url": {
-							"raw": "{{base_url}}/bank/search?q=paynet&category=transfers",
+							"raw": "{{base_url}}/bank/transfers/new?search=paynet&size=5",
 							"host": ["{{base_url}}"],
-							"path": ["bank", "search"],
+							"path": ["bank", "transfers", "new"],
 							"query": [
-								{"key": "q", "value": "paynet"},
-								{"key": "category", "value": "transfers"}
+								{"key": "search", "value": "paynet"},
+								{"key": "size", "value": "5"}
 							]
 						}
 					}
 				},
 				{
-					"name": "Поиск ипотеки",
+					"name": "4. Ипотека - поиск Ipoteka Bank",
 					"request": {
 						"method": "GET",
 						"url": {
-							"raw": "{{base_url}}/bank/search?q=ipoteka&category=mortgages",
+							"raw": "{{base_url}}/bank/mortgages/new?search=ipoteka&size=5",
 							"host": ["{{base_url}}"],
-							"path": ["bank", "search"],
+							"path": ["bank", "mortgages", "new"],
 							"query": [
-								{"key": "q", "value": "ipoteka"},
-								{"key": "category", "value": "mortgages"}
+								{"key": "search", "value": "ipoteka"},
+								{"key": "size", "value": "5"}
 							]
 						}
 					}
 				},
 				{
-					"name": "Поиск депозитов",
+					"name": "5. Депозиты - поиск Agro Bank",
 					"request": {
 						"method": "GET",
 						"url": {
-							"raw": "{{base_url}}/bank/search?q=agro&category=deposits",
+							"raw": "{{base_url}}/bank/deposits/new?search=agro&size=5",
 							"host": ["{{base_url}}"],
-							"path": ["bank", "search"],
+							"path": ["bank", "deposits", "new"],
 							"query": [
-								{"key": "q", "value": "agro"},
-								{"key": "category", "value": "deposits"}
+								{"key": "search", "value": "agro"},
+								{"key": "size", "value": "5"}
 							]
 						}
 					}
 				},
 				{
-					"name": "Поиск карт",
+					"name": "6. Карты - поиск Universal",
 					"request": {
 						"method": "GET",
 						"url": {
-							"raw": "{{base_url}}/bank/search?q=hamkor&category=cards",
+							"raw": "{{base_url}}/bank/cards/new?search=universal&size=5",
 							"host": ["{{base_url}}"],
-							"path": ["bank", "search"],
+							"path": ["bank", "cards", "new"],
 							"query": [
-								{"key": "q", "value": "hamkor"},
-								{"key": "category", "value": "cards"}
+								{"key": "search", "value": "universal"},
+								{"key": "size", "value": "5"}
 							]
 						}
 					}
 				},
 				{
-					"name": "Поиск кредитных карт",
+					"name": "7. Кредитные карты - поиск Kapital",
 					"request": {
 						"method": "GET",
 						"url": {
-							"raw": "{{base_url}}/bank/search?q=universal&category=credit-cards",
+							"raw": "{{base_url}}/bank/credit-cards/new?search=kapital&size=5",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "credit-cards", "new"],
+							"query": [
+								{"key": "search", "value": "kapital"},
+								{"key": "size", "value": "5"}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Умный поиск по всем 7 направлениям (/bank/search)",
+			"item": [
+				{
+					"name": "Поиск по всем направлениям",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/search?search=kapital",
 							"host": ["{{base_url}}"],
 							"path": ["bank", "search"],
 							"query": [
-								{"key": "q", "value": "universal"},
-								{"key": "category", "value": "credit-cards"}
+								{"key": "search", "value": "kapital"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Поиск с опечаткой - capital",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/search?search=capital",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "search"],
+							"query": [
+								{"key": "search", "value": "capital"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Поиск hamkor (xamkor)",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/search?search=xamkor",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "search"],
+							"query": [
+								{"key": "search", "value": "xamkor"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Поиск xalq (halq)",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/search?search=halq",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "search"],
+							"query": [
+								{"key": "search", "value": "halq"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Поиск click (klik)",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/search?search=klik",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "search"],
+							"query": [
+								{"key": "search", "value": "klik"}
 							]
 						}
 					}
@@ -668,14 +743,69 @@
 					"request": {
 						"method": "GET",
 						"url": {
-							"raw": "{{base_url}}/bank/search?q=bank&category=microcredits&page=0&size=5",
+							"raw": "{{base_url}}/bank/search?search=bank&page=0&size=10",
 							"host": ["{{base_url}}"],
 							"path": ["bank", "search"],
 							"query": [
-								{"key": "q", "value": "bank"},
-								{"key": "category", "value": "microcredits"},
+								{"key": "search", "value": "bank"},
 								{"key": "page", "value": "0"},
-								{"key": "size", "value": "5"}
+								{"key": "size", "value": "10"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Поиск Agro Bank",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/search?search=agro",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "search"],
+							"query": [
+								{"key": "search", "value": "agro"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Поиск Turon Bank",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/search?search=turon",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "search"],
+							"query": [
+								{"key": "search", "value": "turon"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Поиск Ipoteka Bank",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/search?search=ipoteka",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "search"],
+							"query": [
+								{"key": "search", "value": "ipoteka"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Поиск Paynet",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/bank/search?search=paynet",
+							"host": ["{{base_url}}"],
+							"path": ["bank", "search"],
+							"query": [
+								{"key": "search", "value": "paynet"}
 							]
 						}
 					}

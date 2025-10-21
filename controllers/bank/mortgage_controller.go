@@ -81,6 +81,7 @@ func getMortgagesWithPagination(c *gin.Context, db *gorm.DB, tableName string) {
 
 	// Фильтры
 	bank := c.Query("bank")
+	search := c.Query("search")
 	opening := strings.ToLower(strings.TrimSpace(c.DefaultQuery("opening", ""))) // bank|online|all
 	rateFromStr := c.DefaultQuery("rate_from", "")
 	termFromStr := c.DefaultQuery("term_months_from", "")
@@ -115,7 +116,9 @@ func getMortgagesWithPagination(c *gin.Context, db *gorm.DB, tableName string) {
 
 	// Базовый запрос по строковым фильтрам
 	baseQ := db.Table(tableName)
-	if bankFilter != "" {
+	if search != "" {
+		baseQ = baseQ.Where("bank_name ILIKE ?", "%"+search+"%")
+	} else if bankFilter != "" {
 		baseQ = baseQ.Where("bank_name ILIKE ?", "%"+bankFilter+"%")
 	}
 	if opening == "bank" {
