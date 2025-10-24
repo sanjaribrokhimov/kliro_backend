@@ -92,6 +92,9 @@ func SetupRouter() *gin.Engine {
 	// Travel API routes
 	SetupTravelRoutes(r, rdb)
 
+	// Insurance Profile API routes
+	SetupInsuranceProfileRoutes(r)
+
 	return r
 }
 

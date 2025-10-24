@@ -1,0 +1,453 @@
+{
+	"info": {
+		"_postman_id": "insurance-profile-api-2024",
+		"name": "KLIRO Insurance Profile API",
+		"description": "API для управления профилем страховки пользователя: создание, получение профилей страховки",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refresh_token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Authentication",
+			"item": [
+				{
+					"name": "1.1 Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.success && response.result) {",
+									"        pm.collectionVariables.set('access_token', response.result.accessToken);",
+									"        pm.collectionVariables.set('refresh_token', response.result.refreshToken);",
+									"        console.log('Tokens saved successfully');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "login"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Insurance Profile API",
+			"item": [
+				{
+					"name": "2.1 Create Insurance Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.success && response.result) {",
+									"        pm.collectionVariables.set('profile_id', response.result.id);",
+									"        console.log('Insurance profile created with ID:', response.result.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product\": \"OSAGO\",\n    \"date\": \"2024-01-15\",\n    \"order_id\": \"ORD-12345\",\n    \"amount\": 150000.50,\n    \"is_paid\": true,\n    \"document_url\": \"https://example.com/documents/insurance-policy.pdf\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/insurance-profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "insurance-profile"]
+						}
+					}
+				},
+				{
+					"name": "2.2 Create Insurance Profile (ACCIDENT)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.success && response.result) {",
+									"        console.log('Unpaid insurance profile created with ID:', response.result.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product\": \"ACCIDENT\",\n    \"date\": \"2024/02/20\",\n    \"order_id\": \"ORD-67890\",\n    \"amount\": 250000.00,\n    \"is_paid\": false,\n    \"document_url\": null\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/insurance-profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "insurance-profile"]
+						}
+					}
+				},
+				{
+					"name": "2.3 Get All Insurance Profiles",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.success && response.result) {",
+									"        console.log('Total profiles:', response.result.total);",
+									"        console.log('Profiles found:', response.result.profiles.length);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/insurance-profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "insurance-profile"]
+						}
+					}
+				},
+				{
+					"name": "2.4 Get Insurance Profiles with Pagination",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.success && response.result) {",
+									"        console.log('Page:', response.result.page);",
+									"        console.log('Limit:', response.result.limit);",
+									"        console.log('Total pages:', response.result.total_pages);",
+									"        console.log('Profiles on this page:', response.result.profiles.length);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/insurance-profile?page=1&limit=5",
+							"host": ["{{base_url}}"],
+							"path": ["api", "insurance-profile"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "2.5 Get Insurance Profiles by Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.success && response.result) {",
+									"        console.log('Profiles for OSAGO product:', response.result.profiles.length);",
+									"        response.result.profiles.forEach(profile => {",
+									"            console.log('Profile ID:', profile.id, 'Product:', profile.product);",
+									"        });",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/insurance-profile?product=OSAGO",
+							"host": ["{{base_url}}"],
+							"path": ["api", "insurance-profile"],
+							"query": [
+								{
+									"key": "product",
+									"value": "OSAGO"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "2.6 Get Insurance Profile by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.success && response.result) {",
+									"        console.log('Profile details:');",
+									"        console.log('ID:', response.result.id);",
+									"        console.log('Product:', response.result.product);",
+									"        console.log('Direction:', response.result.direction);",
+									"        console.log('Order ID:', response.result.order_id);",
+									"        console.log('Amount:', response.result.amount);",
+									"        console.log('Is Paid:', response.result.is_paid);",
+									"        console.log('Document URL:', response.result.document_url);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/insurance-profile/{{profile_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "insurance-profile", "{{profile_id}}"]
+						}
+					}
+				},
+				{
+					"name": "2.7 Get Insurance Profile by ID (Non-existent)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 404) {",
+									"    console.log('Profile not found as expected');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/insurance-profile/99999",
+							"host": ["{{base_url}}"],
+							"path": ["api", "insurance-profile", "99999"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Error Cases",
+			"item": [
+				{
+					"name": "3.1 Create Insurance Profile (No Auth)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 401) {",
+									"    console.log('Unauthorized as expected');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product\": \"OSAGO\",\n    \"date\": \"2024-01-15\",\n    \"order_id\": \"ORD-12345\",\n    \"amount\": 150000.50,\n    \"is_paid\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/insurance-profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "insurance-profile"]
+						}
+					}
+				},
+				{
+					"name": "3.2 Create Insurance Profile (Invalid Data)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 400) {",
+									"    console.log('Bad request as expected');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product\": \"INVALID_PRODUCT\",\n    \"date\": \"2024-01-15\",\n    \"order_id\": \"ORD-12345\",\n    \"amount\": 150000.50,\n    \"is_paid\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/insurance-profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "insurance-profile"]
+						}
+					}
+				},
+				{
+					"name": "3.3 Get Insurance Profiles (No Auth)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 401) {",
+									"    console.log('Unauthorized as expected');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/insurance-profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "insurance-profile"]
+						}
+					}
+				}
+			]
+		}
+	]
+}

@@ -8,7 +8,7 @@ import (
 )
 
 func Migrate(db *gorm.DB) error {
-	if err := db.AutoMigrate(&models.User{}, &models.Region{}, &models.Category{}, &models.Currency{}, &models.OsagoOrder{}, &models.ProductClick{}); err != nil {
+	if err := db.AutoMigrate(&models.User{}, &models.Region{}, &models.Category{}, &models.Currency{}, &models.OsagoOrder{}, &models.ProductClick{}, &models.InsuranceProfile{}); err != nil {
 		return err
 	}
 
@@ -207,6 +207,16 @@ func Migrate(db *gorm.DB) error {
 
 	// Создаем таблицу orders
 	if err := migrations.CreateOrdersTable(db); err != nil {
+		return err
+	}
+
+	// Создаем таблицу insurance_profiles
+	if err := migrations.CreateInsuranceProfileTable(db); err != nil {
+		return err
+	}
+
+	// Обновляем колонку direction на date в таблице insurance_profiles
+	if err := migrations.UpdateInsuranceProfileDirectionToDate(db); err != nil {
 		return err
 	}
 

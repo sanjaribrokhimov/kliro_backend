@@ -12,3 +12,4 @@ test.js
 ./bankNames.txt
 deploy.py
 ./staticDate
+.json
