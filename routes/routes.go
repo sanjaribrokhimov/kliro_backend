@@ -20,6 +20,9 @@ func SetupRouter() *gin.Engine {
 
 	r := gin.Default()
 
+	// Recovery middleware для перехвата паник
+	r.Use(middleware.RecoveryMiddleware())
+
 	// CORS middleware ДО роутов
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000", "https://kliro.uz", "https://www.kliro.uz", "https://kliro-frontend.vercel.app"},
@@ -94,6 +97,10 @@ func SetupRouter() *gin.Engine {
 
 	// Insurance Profile API routes
 	SetupInsuranceProfileRoutes(r)
+
+	// Test routes for logging
+	r.GET("/test/error", controllers.TestError)
+	r.GET("/test/panic", controllers.TestPanic)
 
 	return r
 }

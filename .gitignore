@@ -4,12 +4,10 @@
 .txt
 .json
 .pdf
-.logs
+logs/
+docs/
+bankNames.txt
+deploy.py
+staticDate/
 index.html
 test.js
-./logs
-./docs
-./bankNames.txt
-deploy.py
-./staticDate
-.json

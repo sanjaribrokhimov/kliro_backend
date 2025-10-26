@@ -28,6 +28,11 @@ func main() {
 	}
 	time.Local = uzbekLocation
 
+	// Инициализация логгера
+	if err := utils.InitLogger(); err != nil {
+		log.Fatalf("Failed to initialize logger: %v", err)
+	}
+
 	// Загрузка .env
 	err = godotenv.Load(".env")
 	if err != nil {
@@ -44,6 +49,7 @@ func main() {
 	)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
+		utils.LogError(err, "Database connection")
 		log.Fatalf("failed to connect to postgres: %v", err)
 	}
 	log.Println("Connected to PostgreSQL")
@@ -53,12 +59,14 @@ func main() {
 
 	// Миграция
 	if err := database.Migrate(db); err != nil {
+		utils.LogError(err, "Database migration")
 		log.Fatalf("failed to migrate: %v", err)
 	}
 	log.Println("Migration complete")
 
 	// Сидирование регионов
 	if err := database.SeedRegions(db); err != nil {
+		utils.LogError(err, "Database seeding")
 		log.Fatalf("failed to seed regions: %v", err)
 	}
 	log.Println("Regions seeded (if needed)")
@@ -111,6 +119,7 @@ func main() {
 		DB:       0,
 	})
 	if err := rdb.Ping(context.Background()).Err(); err != nil {
+		utils.LogError(err, "Redis connection")
 		log.Fatalf("failed to connect to redis: %v", err)
 	}
 	utils.SetRedis(rdb)
@@ -135,6 +144,7 @@ func main() {
 	log.Printf("Server is running on port %s", port)
 
 	if err := r.Run(":" + port); err != nil {
+		utils.LogError(err, "Server startup")
 		log.Fatalf("Failed to run server: %v", err)
 	}
 
