@@ -266,9 +266,9 @@ func (pc *PaymentMulticardController) QuickPay(c *gin.Context) {
 
 // CallbackSuccess — POST /payment/callback/success (эхо без изменений)
 func (pc *PaymentMulticardController) CallbackSuccess(c *gin.Context) {
-	// Ограничение по IP (рекомендуется документацией), допускаем отключение и localhost, учитываем X-Forwarded-For
+	// Ограничение по IP включаем только если явно задано MULTICARD_CALLBACK_IP_CHECK_ENABLE=1
 	allowedIP := "195.158.26.90"
-	if os.Getenv("MULTICARD_CALLBACK_IP_CHECK_DISABLE") != "1" {
+	if os.Getenv("MULTICARD_CALLBACK_IP_CHECK_ENABLE") == "1" {
 		ip := c.ClientIP()
 		if xff := c.GetHeader("X-Forwarded-For"); xff != "" {
 			if idx := strings.Index(xff, ","); idx > 0 {
@@ -293,9 +293,10 @@ func (pc *PaymentMulticardController) CallbackSuccess(c *gin.Context) {
 	// Логируем вход в терминал
 	fmt.Printf("[multicard-callback] success payload: %+v\n", payload)
 
-	// Валидация подписи sign (если присутствует)
+	// Проверка подписи включается только если MULTICARD_CALLBACK_SIGN_CHECK_ENABLE=1
+	doSignCheck := os.Getenv("MULTICARD_CALLBACK_SIGN_CHECK_ENABLE") == "1"
 	secret := os.Getenv("MULTICARD_SECRET")
-	if secret == "" {
+	if doSignCheck && secret == "" {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": "server secret not configured"})
 		return
 	}
@@ -311,7 +312,7 @@ func (pc *PaymentMulticardController) CallbackSuccess(c *gin.Context) {
 	}
 
 	var valid bool
-	if recvSign != "" {
+	if doSignCheck && recvSign != "" {
 		// md5 вариант
 		storeID := toString(payload["store_id"])
 		md5sum := md5.Sum([]byte(storeID + invoiceID + amountStr + secret))
@@ -348,7 +349,7 @@ func (pc *PaymentMulticardController) CallbackSuccess(c *gin.Context) {
 
 // CallbackWebhooks — POST /payment/callback/webhooks (эхо без изменений)
 func (pc *PaymentMulticardController) CallbackWebhooks(c *gin.Context) {
-	// Вебхуки статусов: допускаем success на 2xx, при наличии sign валидация по sha1 (можно отключить)
+	// Вебхуки статусов: допускаем success на 2xx, валидация подписи включается только если MULTICARD_CALLBACK_SIGN_CHECK_ENABLE=1
 	var payload map[string]interface{}
 	if err := c.ShouldBindJSON(&payload); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "invalid json"})
@@ -357,7 +358,7 @@ func (pc *PaymentMulticardController) CallbackWebhooks(c *gin.Context) {
 
 	fmt.Printf("[multicard-webhook] payload: %+v\n", payload)
 
-	if os.Getenv("MULTICARD_CALLBACK_SIGN_CHECK_DISABLE") != "1" {
+	if os.Getenv("MULTICARD_CALLBACK_SIGN_CHECK_ENABLE") == "1" {
 		recvSign, _ := payload["sign"].(string)
 		if recvSign != "" {
 			secret := os.Getenv("MULTICARD_SECRET")
