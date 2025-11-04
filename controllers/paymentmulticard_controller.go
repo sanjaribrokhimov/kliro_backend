@@ -2,7 +2,11 @@ package controllers
 
 import (
 	"bytes"
+	"crypto/md5"
+	"crypto/sha1"
+	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -58,7 +62,7 @@ func (pc *PaymentMulticardController) ensureToken() error {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return err
+		return fmt.Errorf("auth status %d", resp.StatusCode)
 	}
 	var res struct {
 		Token  string `json:"token"`
@@ -262,15 +266,115 @@ func (pc *PaymentMulticardController) QuickPay(c *gin.Context) {
 
 // CallbackSuccess — POST /payment/callback/success (эхо без изменений)
 func (pc *PaymentMulticardController) CallbackSuccess(c *gin.Context) {
-	// Возвращаем 200 и то же тело без обработки
-	body, _ := io.ReadAll(c.Request.Body)
-	_ = c.Request.Body.Close()
-	c.Data(http.StatusOK, c.ContentType(), body)
+	// Ограничение по IP (рекомендуется документацией), допускаем отключение и localhost, учитываем X-Forwarded-For
+	allowedIP := "195.158.26.90"
+	if os.Getenv("MULTICARD_CALLBACK_IP_CHECK_DISABLE") != "1" {
+		ip := c.ClientIP()
+		if xff := c.GetHeader("X-Forwarded-For"); xff != "" {
+			if idx := strings.Index(xff, ","); idx > 0 {
+				ip = strings.TrimSpace(xff[:idx])
+			} else {
+				ip = strings.TrimSpace(xff)
+			}
+		}
+		if ip != allowedIP && ip != "127.0.0.1" && ip != "::1" {
+			c.JSON(http.StatusForbidden, gin.H{"success": false, "message": "forbidden ip"})
+			return
+		}
+	}
+
+	// Читаем JSON
+	var payload map[string]interface{}
+	if err := c.ShouldBindJSON(&payload); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "invalid json"})
+		return
+	}
+
+	// Валидация подписи sign (если присутствует)
+	secret := os.Getenv("MULTICARD_SECRET")
+	if secret == "" {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": "server secret not configured"})
+		return
+	}
+
+	// Пытаемся определить формат подписи. Документация упоминает 2 варианта:
+	// md5: {store_id}{invoice_id}{amount}{secret}
+	// sha1: {uuid}{invoice_id}{amount}{secret}
+	recvSign, _ := payload["sign"].(string)
+	amountStr := toString(payload["amount"]) // конвертация к строке без форматирования
+	invoiceID := toString(payload["invoice_id"])
+
+	var valid bool
+	if recvSign != "" {
+		// md5 вариант
+		storeID := toString(payload["store_id"])
+		md5sum := md5.Sum([]byte(storeID + invoiceID + amountStr + secret))
+		md5hex := hex.EncodeToString(md5sum[:])
+		if strings.EqualFold(md5hex, recvSign) {
+			valid = true
+		}
+
+		// sha1 вариант
+		if !valid {
+			uuid := toString(payload["uuid"])
+			h := sha1.New()
+			io.WriteString(h, uuid+invoiceID+amountStr+secret)
+			sha1hex := hex.EncodeToString(h.Sum(nil))
+			if strings.EqualFold(sha1hex, recvSign) {
+				valid = true
+			}
+		}
+		if !valid {
+			c.JSON(http.StatusOK, gin.H{"success": false, "message": "invalid sign"})
+			return
+		}
+	}
+
+	// Идемпотентность должна обеспечиваться на стороне БД; здесь просто возвращаем success
+	c.JSON(http.StatusOK, gin.H{"success": true})
 }
 
 // CallbackWebhooks — POST /payment/callback/webhooks (эхо без изменений)
 func (pc *PaymentMulticardController) CallbackWebhooks(c *gin.Context) {
-	body, _ := io.ReadAll(c.Request.Body)
-	_ = c.Request.Body.Close()
-	c.Data(http.StatusOK, c.ContentType(), body)
+	// Вебхуки статусов: допускаем success на 2xx, при наличии sign валидация по sha1 (можно отключить)
+	var payload map[string]interface{}
+	if err := c.ShouldBindJSON(&payload); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "invalid json"})
+		return
+	}
+
+	if os.Getenv("MULTICARD_CALLBACK_SIGN_CHECK_DISABLE") != "1" {
+		recvSign, _ := payload["sign"].(string)
+		if recvSign != "" {
+			secret := os.Getenv("MULTICARD_SECRET")
+			amountStr := toString(payload["amount"])
+			invoiceID := toString(payload["invoice_id"])
+			uuid := toString(payload["uuid"])
+			h := sha1.New()
+			io.WriteString(h, uuid+invoiceID+amountStr+secret)
+			if !strings.EqualFold(hex.EncodeToString(h.Sum(nil)), recvSign) {
+				c.JSON(http.StatusOK, gin.H{"success": false, "message": "invalid sign"})
+				return
+			}
+		}
+	}
+	c.JSON(http.StatusOK, gin.H{"success": true})
+}
+
+// toString — аккуратное преобразование числовых/строковых значений к строке без форматирования
+func toString(v interface{}) string {
+	switch val := v.(type) {
+	case string:
+		return val
+	case float64:
+		return strconv.FormatInt(int64(val), 10)
+	case int:
+		return strconv.Itoa(val)
+	case int64:
+		return strconv.FormatInt(val, 10)
+	case json.Number:
+		return string(val)
+	default:
+		return ""
+	}
 }
