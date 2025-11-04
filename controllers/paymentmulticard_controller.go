@@ -16,6 +16,8 @@ import (
 	"strings"
 	"time"
 
+	"kliro/utils"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -290,6 +292,11 @@ func (pc *PaymentMulticardController) CallbackSuccess(c *gin.Context) {
 		return
 	}
 
+	// DEBUG: логируем вход
+	if utils.ErrorLogger != nil {
+		utils.ErrorLogger.Printf("[multicard-callback] success payload: %+v", payload)
+	}
+
 	// Валидация подписи sign (если присутствует)
 	secret := os.Getenv("MULTICARD_SECRET")
 	if secret == "" {
@@ -324,6 +331,14 @@ func (pc *PaymentMulticardController) CallbackSuccess(c *gin.Context) {
 				valid = true
 			}
 		}
+		// DEBUG: лог сравнения
+		if utils.ErrorLogger != nil {
+			// отдельно посчитаем sha1 для логов
+			h := sha1.New()
+			io.WriteString(h, toString(payload["uuid"])+invoiceID+amountStr+secret)
+			sha1hex := hex.EncodeToString(h.Sum(nil))
+			utils.ErrorLogger.Printf("[multicard-callback] sign recv=%s md5=%s sha1=%s invoice_id=%s amount=%s store_id=%s uuid=%s", recvSign, md5hex, sha1hex, invoiceID, amountStr, toString(payload["store_id"]), toString(payload["uuid"]))
+		}
 		if !valid {
 			c.JSON(http.StatusOK, gin.H{"success": false, "message": "invalid sign"})
 			return
@@ -341,6 +356,10 @@ func (pc *PaymentMulticardController) CallbackWebhooks(c *gin.Context) {
 	if err := c.ShouldBindJSON(&payload); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "invalid json"})
 		return
+	}
+
+	if utils.ErrorLogger != nil {
+		utils.ErrorLogger.Printf("[multicard-webhook] payload: %+v", payload)
 	}
 
 	if os.Getenv("MULTICARD_CALLBACK_SIGN_CHECK_DISABLE") != "1" {
