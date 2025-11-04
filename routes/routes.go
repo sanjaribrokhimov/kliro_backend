@@ -98,6 +98,11 @@ func SetupRouter() *gin.Engine {
 	// Insurance Profile API routes
 	SetupInsuranceProfileRoutes(r)
 
+	// Payment API routes
+	SetupPaymentRoutes(r)
+	// Multicard Payment Page proxy routes (отдельно)
+	SetupPaymentMulticardRoutes(r)
+
 	// Test routes for logging
 	r.GET("/test/error", controllers.TestError)
 	r.GET("/test/panic", controllers.TestPanic)

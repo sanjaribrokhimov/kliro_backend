@@ -149,8 +149,13 @@ type FlightSegment struct {
 
 // Airline авиакомпания
 type Airline struct {
-	Code  string `json:"code"`
-	Title string `json:"title"`
+	Code      string            `json:"code"`
+	Title     string            `json:"title"`
+	TitleIntl map[string]string `json:"title_intl"`         // названия на разных языках (uz, ru, en)
+	Logo      string            `json:"logo,omitempty"`     // URL логотипа
+	Image     string            `json:"image,omitempty"`    // URL изображения
+	Icon      string            `json:"icon,omitempty"`     // URL иконки
+	LogoURL   string            `json:"logo_url,omitempty"` // URL логотипа (альтернативное поле)
 }
 
 // BaggageInfo информация о багаже

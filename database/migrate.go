@@ -220,5 +220,10 @@ func Migrate(db *gorm.DB) error {
 		return err
 	}
 
+	// Создаем таблицы для платежей
+	if err := migrations.CreatePaymentsTable(db); err != nil {
+		return err
+	}
+
 	return nil
 }
