@@ -16,8 +16,6 @@ import (
 	"strings"
 	"time"
 
-	"kliro/utils"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -292,10 +290,8 @@ func (pc *PaymentMulticardController) CallbackSuccess(c *gin.Context) {
 		return
 	}
 
-	// DEBUG: логируем вход
-	if utils.ErrorLogger != nil {
-		utils.ErrorLogger.Printf("[multicard-callback] success payload: %+v", payload)
-	}
+	// Логируем вход в терминал
+	fmt.Printf("[multicard-callback] success payload: %+v\n", payload)
 
 	// Валидация подписи sign (если присутствует)
 	secret := os.Getenv("MULTICARD_SECRET")
@@ -334,15 +330,12 @@ func (pc *PaymentMulticardController) CallbackSuccess(c *gin.Context) {
 				valid = true
 			}
 		}
-		// DEBUG: лог сравнения
-		if utils.ErrorLogger != nil {
-			// отдельно посчитаем sha1 для логов
-			h := sha1.New()
-			io.WriteString(h, toString(payload["uuid"])+invoiceID+amountStr+secret)
-			sha1hex := hex.EncodeToString(h.Sum(nil))
-			secFP := md5.Sum([]byte(secret))
-			utils.ErrorLogger.Printf("[multicard-callback] sign recv=%s md5=%s sha1=%s | components: store_id=%s invoice_id=%s amount=%s uuid=%s secret_md5=%s", recvSign, md5hex, sha1hex, toString(payload["store_id"]), invoiceID, amountStr, toString(payload["uuid"]), hex.EncodeToString(secFP[:]))
-		}
+		// Лог детальной сверки в терминал
+		h := sha1.New()
+		io.WriteString(h, toString(payload["uuid"])+invoiceID+amountStr+secret)
+		sha1hex := hex.EncodeToString(h.Sum(nil))
+		secFP := md5.Sum([]byte(secret))
+		fmt.Printf("[multicard-callback] sign recv=%s md5=%s sha1=%s | components: store_id=%s invoice_id=%s amount=%s uuid=%s secret_md5=%s\n", recvSign, md5hex, sha1hex, toString(payload["store_id"]), invoiceID, amountStr, toString(payload["uuid"]), hex.EncodeToString(secFP[:]))
 		if !valid {
 			c.JSON(http.StatusOK, gin.H{"success": false, "message": "invalid sign"})
 			return
@@ -362,9 +355,7 @@ func (pc *PaymentMulticardController) CallbackWebhooks(c *gin.Context) {
 		return
 	}
 
-	if utils.ErrorLogger != nil {
-		utils.ErrorLogger.Printf("[multicard-webhook] payload: %+v", payload)
-	}
+	fmt.Printf("[multicard-webhook] payload: %+v\n", payload)
 
 	if os.Getenv("MULTICARD_CALLBACK_SIGN_CHECK_DISABLE") != "1" {
 		recvSign, _ := payload["sign"].(string)
