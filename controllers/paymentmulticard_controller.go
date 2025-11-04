@@ -340,7 +340,8 @@ func (pc *PaymentMulticardController) CallbackSuccess(c *gin.Context) {
 			h := sha1.New()
 			io.WriteString(h, toString(payload["uuid"])+invoiceID+amountStr+secret)
 			sha1hex := hex.EncodeToString(h.Sum(nil))
-			utils.ErrorLogger.Printf("[multicard-callback] sign recv=%s md5=%s sha1=%s invoice_id=%s amount=%s store_id=%s uuid=%s", recvSign, md5hex, sha1hex, invoiceID, amountStr, toString(payload["store_id"]), toString(payload["uuid"]))
+			secFP := md5.Sum([]byte(secret))
+			utils.ErrorLogger.Printf("[multicard-callback] sign recv=%s md5=%s sha1=%s | components: store_id=%s invoice_id=%s amount=%s uuid=%s secret_md5=%s", recvSign, md5hex, sha1hex, toString(payload["store_id"]), invoiceID, amountStr, toString(payload["uuid"]), hex.EncodeToString(secFP[:]))
 		}
 		if !valid {
 			c.JSON(http.StatusOK, gin.H{"success": false, "message": "invalid sign"})
