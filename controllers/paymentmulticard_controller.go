@@ -308,8 +308,11 @@ func (pc *PaymentMulticardController) CallbackSuccess(c *gin.Context) {
 	// md5: {store_id}{invoice_id}{amount}{secret}
 	// sha1: {uuid}{invoice_id}{amount}{secret}
 	recvSign, _ := payload["sign"].(string)
-	amountStr := toString(payload["amount"]) // конвертация к строке без форматирования
-	invoiceID := toString(payload["invoice_id"])
+	amountStr := toString(payload["amount"])     // конвертация к строке без форматирования
+	invoiceID := toString(payload["invoice_id"]) // может отсутствовать в success-callback
+	if invoiceID == "" {
+		invoiceID = toString(payload["store_invoice_id"]) // fallback
+	}
 
 	var valid bool
 	if recvSign != "" {
@@ -367,7 +370,10 @@ func (pc *PaymentMulticardController) CallbackWebhooks(c *gin.Context) {
 		if recvSign != "" {
 			secret := os.Getenv("MULTICARD_SECRET")
 			amountStr := toString(payload["amount"])
-			invoiceID := toString(payload["invoice_id"])
+			invoiceID := toString(payload["invoice_id"]) // webhooks обычно присылают invoice_id
+			if invoiceID == "" {
+				invoiceID = toString(payload["store_invoice_id"]) // fallback на всякий случай
+			}
 			uuid := toString(payload["uuid"])
 			h := sha1.New()
 			io.WriteString(h, uuid+invoiceID+amountStr+secret)
