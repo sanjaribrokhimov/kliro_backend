@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"kliro/models"
 	"kliro/utils"
 
 	"github.com/gin-gonic/gin"
@@ -19,6 +20,99 @@ type AdminController struct {
 // NewAdminController создает новый экземпляр AdminController
 func NewAdminController(db *gorm.DB) *AdminController {
 	return &AdminController{db: db}
+}
+
+// DeleteUserRequest запрос на удаление пользователя
+type DeleteUserRequest struct {
+	Email string `json:"email"`
+	Phone string `json:"phone"`
+}
+
+// DeleteUser удаляет пользователя по email или phone (жёстко)
+func (ac *AdminController) DeleteUser(c *gin.Context) {
+	var req DeleteUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "invalid request"})
+		return
+	}
+	if (req.Email == "" && req.Phone == "") || (req.Email != "" && req.Phone != "") {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "Укажите только email или только phone"})
+		return
+	}
+	var user models.User
+	tx := ac.db
+	if req.Email != "" {
+		tx = tx.Where("email = ?", req.Email)
+	} else {
+		tx = tx.Where("phone = ?", req.Phone)
+	}
+	if err := tx.First(&user).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"success": false, "error": "Пользователь не найден"})
+		return
+	}
+	// Жёсткое удаление
+	if err := ac.db.Unscoped().Delete(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "Не удалось удалить пользователя"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"success": true})
+}
+
+// UsersList список пользователей с пагинацией и фильтрами для админки
+func (ac *AdminController) UsersList(c *gin.Context) {
+	pageSize := 20
+	page := 1
+	if v := c.Query("limit"); v != "" {
+		var n int
+		fmt.Sscanf(v, "%d", &n)
+		if n > 0 && n <= 100 {
+			pageSize = n
+		}
+	}
+	if v := c.Query("page"); v != "" {
+		var n int
+		fmt.Sscanf(v, "%d", &n)
+		if n > 0 {
+			page = n
+		}
+	}
+	email := c.Query("email")
+	phone := c.Query("phone")
+	role := c.Query("role")
+	confirmed := c.Query("confirmed") // "true"/"false"
+
+	q := ac.db.Model(&models.User{})
+	if email != "" {
+		q = q.Where("email = ?", email)
+	}
+	if phone != "" {
+		q = q.Where("phone = ?", phone)
+	}
+	if role != "" {
+		q = q.Where("role = ?", role)
+	}
+	if confirmed == "true" {
+		q = q.Where("confirmed = ?", true)
+	}
+	if confirmed == "false" {
+		q = q.Where("confirmed = ?", false)
+	}
+
+	var total int64
+	q.Count(&total)
+
+	var users []models.User
+	q.Order("created_at DESC").Limit(pageSize).Offset((page - 1) * pageSize).Find(&users)
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data": gin.H{
+			"users": users,
+			"total": total,
+			"page":  page,
+			"limit": pageSize,
+		},
+	})
 }
 
 // ParsingStatusResponse структура ответа для статуса парсинга
