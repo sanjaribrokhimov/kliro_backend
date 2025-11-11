@@ -23,6 +23,9 @@ func SetupRouter() *gin.Engine {
 	// Recovery middleware для перехвата паник
 	r.Use(middleware.RecoveryMiddleware())
 
+	// Статическая раздача загруженных файлов
+	r.Static("/uploads", "./uploads")
+
 	// CORS middleware ДО роутов
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000", "https://kliro.uz", "https://www.kliro.uz", "https://kliro-frontend.vercel.app"},
@@ -102,6 +105,9 @@ func SetupRouter() *gin.Engine {
 	SetupPaymentRoutes(r)
 	// Multicard Payment Page proxy routes (отдельно)
 	SetupPaymentMulticardRoutes(r)
+
+	// Blog routes
+	SetupBlogRoutes(r)
 
 	// Test routes for logging
 	r.GET("/test/error", controllers.TestError)
