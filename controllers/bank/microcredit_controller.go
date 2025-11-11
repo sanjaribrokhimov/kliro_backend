@@ -181,6 +181,25 @@ func (mc *MicrocreditController) getMicrocreditsWithPagination(c *gin.Context, t
 		filtered = append(filtered, m)
 	}
 
+	// Сортировка ДО пагинации: приоритет у rate_from, если нет - то по bank_name
+	if rateFromStr != "" {
+		// Автоматическая сортировка по ставкам от меньшего к большему
+		sort.SliceStable(filtered, func(i, j int) bool {
+			rateI := utils.ExtractFirstFloat(filtered[i].Rate)
+			rateJ := utils.ExtractFirstFloat(filtered[j].Rate)
+			return rateI < rateJ
+		})
+	} else if strings.EqualFold(sortBy, "bank_name") {
+		// Сортировка по банку только если нет фильтра по ставкам
+		sort.SliceStable(filtered, func(i, j int) bool {
+			if strings.ToLower(sortDir) == "desc" {
+				return filtered[i].BankName > filtered[j].BankName
+			}
+			return filtered[i].BankName < filtered[j].BankName
+		})
+	}
+	// Иные sort поля оставляем как есть (при необходимости можно расширить)
+
 	// total после числовых фильтров
 	totalElements := int64(len(filtered))
 	totalPages := int((totalElements + int64(size) - 1) / int64(size))
@@ -190,17 +209,6 @@ func (mc *MicrocreditController) getMicrocreditsWithPagination(c *gin.Context, t
 			totalPages = totalPages - 1
 		}
 	}
-
-	// Сортировка (по полям, как раньше)
-	if strings.EqualFold(sortBy, "bank_name") {
-		sort.SliceStable(filtered, func(i, j int) bool {
-			if strings.ToLower(sortDir) == "desc" {
-				return filtered[i].BankName > filtered[j].BankName
-			}
-			return filtered[i].BankName < filtered[j].BankName
-		})
-	}
-	// Иные sort поля оставляем как есть (при необходимости можно расширить)
 
 	// Пагинация в памяти
 	offset := page * size

@@ -164,8 +164,16 @@ func getMortgagesWithPagination(c *gin.Context, db *gorm.DB, tableName string) {
 		filtered = append(filtered, m)
 	}
 
-	// Сортировка (поддержим по bank_name, иначе оставим как есть)
-	if strings.EqualFold(sortBy, "bank_name") {
+	// Сортировка ДО пагинации: приоритет у rate_from, если нет - то по bank_name
+	if rateFromStr != "" {
+		// Автоматическая сортировка по ставкам от меньшего к большему
+		sort.SliceStable(filtered, func(i, j int) bool {
+			rateI := utils.ExtractFirstFloat(filtered[i].Rate)
+			rateJ := utils.ExtractFirstFloat(filtered[j].Rate)
+			return rateI < rateJ
+		})
+	} else if strings.EqualFold(sortBy, "bank_name") {
+		// Сортировка по банку только если нет фильтра по ставкам
 		sort.SliceStable(filtered, func(i, j int) bool {
 			if strings.ToLower(sortOrder) == "desc" {
 				return filtered[i].BankName > filtered[j].BankName

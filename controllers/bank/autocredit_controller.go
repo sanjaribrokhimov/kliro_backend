@@ -160,6 +160,24 @@ func (ac *AutocreditController) getAutocreditsWithPagination(c *gin.Context, tab
 		filtered = append(filtered, a)
 	}
 
+	// Сортировка ДО пагинации: приоритет у rate_from, если нет - то по bank_name
+	if useRateFrom {
+		// Автоматическая сортировка по ставкам от меньшего к большему
+		sort.SliceStable(filtered, func(i, j int) bool {
+			rateI := utils.ExtractFirstFloat(filtered[i].Rate)
+			rateJ := utils.ExtractFirstFloat(filtered[j].Rate)
+			return rateI < rateJ
+		})
+	} else if strings.EqualFold(sortBy, "bank_name") {
+		// Сортировка по банку только если нет фильтра по ставкам
+		sort.SliceStable(filtered, func(i, j int) bool {
+			if strings.ToLower(sortDir) == "desc" {
+				return filtered[i].BankName > filtered[j].BankName
+			}
+			return filtered[i].BankName < filtered[j].BankName
+		})
+	}
+
 	// Итоги и пагинация
 	totalElements := int64(len(filtered))
 	totalPages := int((totalElements + int64(size) - 1) / int64(size))
@@ -178,16 +196,6 @@ func (ac *AutocreditController) getAutocreditsWithPagination(c *gin.Context, tab
 		end = len(filtered)
 	}
 	pageItems := filtered[offset:end]
-
-	// Сортировка по банку (как у микрокредитов)
-	if strings.EqualFold(sortBy, "bank_name") {
-		sort.SliceStable(pageItems, func(i, j int) bool {
-			if strings.ToLower(sortDir) == "desc" {
-				return pageItems[i].BankName > pageItems[j].BankName
-			}
-			return pageItems[i].BankName < pageItems[j].BankName
-		})
-	}
 
 	sortObj := Sort{Direction: strings.ToUpper(sortDir), NullHandling: "NATIVE", Ascending: strings.ToLower(sortDir) == "asc", Property: sortBy, IgnoreCase: false}
 	response := AutocreditResponseByPagination{

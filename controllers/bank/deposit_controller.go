@@ -167,8 +167,16 @@ func (dc *DepositController) getDepositsWithPagination(c *gin.Context, tableName
 		filtered = append(filtered, d)
 	}
 
-	// Сортировка (по bank_name по умолчанию)
-	if strings.EqualFold(sortBy, "bank_name") {
+	// Сортировка ДО пагинации: приоритет у rate_from, если нет - то по bank_name
+	if rateFromStr != "" {
+		// Автоматическая сортировка по ставкам от меньшего к большему
+		sort.SliceStable(filtered, func(i, j int) bool {
+			rateI := utils.ExtractFirstFloat(filtered[i].Rate)
+			rateJ := utils.ExtractFirstFloat(filtered[j].Rate)
+			return rateI < rateJ
+		})
+	} else if strings.EqualFold(sortBy, "bank_name") {
+		// Сортировка по банку только если нет фильтра по ставкам
 		sort.SliceStable(filtered, func(i, j int) bool {
 			if strings.ToLower(sortDir) == "desc" {
 				return filtered[i].BankName > filtered[j].BankName
