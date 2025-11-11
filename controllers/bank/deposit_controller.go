@@ -144,7 +144,7 @@ func (dc *DepositController) getDepositsWithPagination(c *gin.Context, tableName
 	for _, d := range all {
 		if rateFromStr != "" {
 			minRate := utils.ExtractFirstFloat(d.Rate)
-			if minRate < rateFrom {
+			if minRate > rateFrom {
 				continue
 			}
 		}
@@ -173,7 +173,7 @@ func (dc *DepositController) getDepositsWithPagination(c *gin.Context, tableName
 		sort.SliceStable(filtered, func(i, j int) bool {
 			rateI := utils.ExtractFirstFloat(filtered[i].Rate)
 			rateJ := utils.ExtractFirstFloat(filtered[j].Rate)
-			return rateI < rateJ
+			return rateI > rateJ
 		})
 	} else if strings.EqualFold(sortBy, "bank_name") {
 		// Сортировка по банку только если нет фильтра по ставкам
