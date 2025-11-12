@@ -12,6 +12,11 @@ func Migrate(db *gorm.DB) error {
 		return err
 	}
 
+	// Индекс уникальности для alias постов блога
+	if err := db.Exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_blog_posts_alias ON blog_posts(alias)`).Error; err != nil {
+		return err
+	}
+
 	if err := db.Exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_product_click_key_direction ON product_clicks(key, direction)`).Error; err != nil {
 		return err
 	}

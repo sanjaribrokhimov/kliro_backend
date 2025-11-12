@@ -12,7 +12,7 @@ func SetupBlogRoutes(r *gin.Engine) {
 	{
 		grp.POST("", blogController.Create)
 		grp.GET("", blogController.List)
-		grp.GET("/category/:category", blogController.ListByCategory)
+		grp.GET("/:id", blogController.GetByID)
 		grp.PUT("/:id", blogController.Update)
 		grp.DELETE("/:id", blogController.Delete)
 	}
