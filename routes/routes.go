@@ -78,6 +78,14 @@ func SetupRouter() *gin.Engine {
 		userGroup.POST("/update-profile", userProfileController.UpdateProfile)
 		userGroup.POST("/add-contact", userProfileController.AddContact)
 		userGroup.POST("/logout", userProfileController.Logout)
+
+		// Humans (passengers) endpoints
+		humansController := controllers.NewUserHumansController()
+		userGroup.POST("/humans", humansController.CreateHuman)
+		userGroup.GET("/humans", humansController.ListHumans)
+		userGroup.GET("/humans/search", humansController.SearchByName)
+		userGroup.PUT("/humans/:id", humansController.UpdateHuman)
+		userGroup.DELETE("/humans/:id", humansController.DeleteHuman)
 	}
 
 	// Avia group (Bukhara API integration)
