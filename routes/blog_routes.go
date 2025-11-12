@@ -10,11 +10,11 @@ func SetupBlogRoutes(r *gin.Engine) {
 	blogController := controllers.NewBlogController()
 	grp := r.Group("/blog")
 	{
-		grp.POST("", blogController.Create)
-		grp.GET("", blogController.List)
-		grp.GET("/:id", blogController.GetByID)
-		grp.PUT("/:id", blogController.Update)
-		grp.DELETE("/:id", blogController.Delete)
+		grp.POST("create", blogController.Create)
+		grp.GET("list", blogController.List)
+		grp.GET("get/:id", blogController.GetByID)
+		grp.PUT("update/:id", blogController.Update)
+		grp.DELETE("delete/:id", blogController.Delete)
 	}
 }
 
