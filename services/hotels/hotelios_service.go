@@ -253,13 +253,8 @@ func (s *HoteliosService) GetAccessKey() string {
 
 // MakeBookingFlowRequest выполняет запрос к новому Booking-Flow API
 func (s *HoteliosService) MakeBookingFlowRequest(method, endpoint string, body interface{}) (map[string]interface{}, error) {
-	// Для нового API используем другой базовый URL
-	baseURL := os.Getenv("HOTELIOS_BOOKING_FLOW_URL")
-	if baseURL == "" {
-		baseURL = "https://integration-staging.hotelios.uz"
-	}
-
-	url := baseURL + endpoint
+	// Используем единый базовый URL из HOTELIOS_API_URL
+	url := s.baseURL + endpoint
 
 	// Всегда добавляем credentials к запросу (согласно OpenAPI спецификации)
 	requestData := map[string]interface{}{
