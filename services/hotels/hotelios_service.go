@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"context"
@@ -28,9 +29,6 @@ type HoteliosService struct {
 func NewHoteliosService() *HoteliosService {
 	// Получаем данные из переменных окружения
 	baseURL := os.Getenv("HOTELIOS_API_URL")
-	if baseURL == "" {
-		baseURL = "https://staging-api.hotelios.uz/api" // значение по умолчанию
-	}
 
 	login := os.Getenv("HOTELIOS_LOGIN")
 	if login == "" {
@@ -61,9 +59,32 @@ func NewHoteliosService() *HoteliosService {
 	}
 }
 
+// buildURL корректно собирает конечный URL с учетом наличия/отсутствия /api/v1 в baseURL и endpoint
+func (s *HoteliosService) buildURL(endpoint string) string {
+	base := strings.TrimRight(s.baseURL, "/")
+	path := endpoint
+	if !strings.HasPrefix(path, "/") {
+		path = "/" + path
+	}
+	baseHasV1 := strings.HasSuffix(base, "/api/v1")
+	pathHasV1 := strings.HasPrefix(path, "/api/v1/")
+
+	// Если base уже содержит /api/v1 и path тоже начинается с /api/v1 — убираем дублирование
+	if baseHasV1 && pathHasV1 {
+		path = strings.TrimPrefix(path, "/api/v1")
+	}
+	// Если base не содержит /api/v1 и path не содержит — добавляем, если это известные API-пути
+	if !baseHasV1 && !pathHasV1 {
+		if strings.HasPrefix(path, "/hotel") || strings.HasPrefix(path, "/reservation") || strings.HasPrefix(path, "/booking-flow/") {
+			path = "/api/v1" + path
+		}
+	}
+	return base + path
+}
+
 // MakeRequest выполняет запрос к Hotelios API (простое проксирование)
 func (s *HoteliosService) MakeRequest(method, endpoint string, body interface{}) (map[string]interface{}, error) {
-	url := s.baseURL + endpoint
+	url := s.buildURL(endpoint)
 
 	var reqBody io.Reader
 	if body != nil {
@@ -79,7 +100,8 @@ func (s *HoteliosService) MakeRequest(method, endpoint string, body interface{})
 		return nil, fmt.Errorf("failed to create request: %v", err)
 	}
 
-	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	req.Header.Set("Accept", "application/json")
 
 	resp, err := s.httpClient.Do(req)
 	if err != nil {
@@ -102,7 +124,7 @@ func (s *HoteliosService) MakeRequest(method, endpoint string, body interface{})
 
 // MakeRequestRaw выполняет запрос к Hotelios API и возвращает сырые байты без изменений
 func (s *HoteliosService) MakeRequestRaw(method, endpoint string, body interface{}) ([]byte, error) {
-	url := s.baseURL + endpoint
+	url := s.buildURL(endpoint)
 
 	var reqBody io.Reader
 	if body != nil {
@@ -118,7 +140,8 @@ func (s *HoteliosService) MakeRequestRaw(method, endpoint string, body interface
 		return nil, fmt.Errorf("failed to create request: %v", err)
 	}
 
-	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	req.Header.Set("Accept", "application/json")
 
 	resp, err := s.httpClient.Do(req)
 	if err != nil {
@@ -207,20 +230,12 @@ func (s *HoteliosService) MakeHoteliosActionRequestRaw(action string, data inter
 	}
 
 	endpoint := "/hotel"
-
-	cacheKey := "hotels:action:raw:" + action
-	if data != nil {
-		if b, err := json.Marshal(data); err == nil {
-			cacheKey = cacheKey + ":" + string(b)
-		}
-	}
-
-	rdb := utils.GetRedis()
-	if rdb != nil {
-		if cached, err := rdb.Get(context.Background(), cacheKey).Bytes(); err == nil && len(cached) > 0 {
-			log.Printf("[HOTELIOS CACHE RAW] HIT action=%s", action)
-			return cached, true, nil
-		}
+	// Для некоторых action нужен эндпоинт /reservation
+	if action == "SearchHotels" || action == "GetAvailableRoomsByHotel" ||
+		action == "MakeReservation" || action == "GetReservationStatus" ||
+		action == "GetReservationDetails" || action == "ConfirmReservation" ||
+		action == "CancelReservation" {
+		endpoint = "/reservation"
 	}
 
 	body, err := s.MakeRequestRaw("POST", endpoint, requestData)
@@ -228,12 +243,31 @@ func (s *HoteliosService) MakeHoteliosActionRequestRaw(action string, data inter
 		return nil, false, err
 	}
 
-	if rdb != nil {
-		_ = rdb.Set(context.Background(), cacheKey, body, 24*time.Hour).Err()
-		log.Printf("[HOTELIOS CACHE RAW] MISS action=%s stored", action)
+	return body, false, nil
+}
+
+// MakeHoteliosActionRequestRawNoCache — прямой вызов без Redis для action-методов
+func (s *HoteliosService) MakeHoteliosActionRequestRawNoCache(action string, data interface{}) ([]byte, error) {
+	requestData := map[string]interface{}{
+		"login":      s.login,
+		"password":   s.password,
+		"access_key": s.accessKey,
+		"action":     action,
+		"version":    1,
+	}
+	if data != nil {
+		requestData["data"] = data
 	}
 
-	return body, false, nil
+	endpoint := "/hotel"
+	if action == "SearchHotels" || action == "GetAvailableRoomsByHotel" ||
+		action == "MakeReservation" || action == "GetReservationStatus" ||
+		action == "GetReservationDetails" || action == "ConfirmReservation" ||
+		action == "CancelReservation" {
+		endpoint = "/reservation"
+	}
+
+	return s.MakeRequestRaw("POST", endpoint, requestData)
 }
 
 // GetLogin возвращает логин
@@ -254,7 +288,7 @@ func (s *HoteliosService) GetAccessKey() string {
 // MakeBookingFlowRequest выполняет запрос к новому Booking-Flow API
 func (s *HoteliosService) MakeBookingFlowRequest(method, endpoint string, body interface{}) (map[string]interface{}, error) {
 	// Используем единый базовый URL из HOTELIOS_API_URL
-	url := s.baseURL + endpoint
+	url := s.buildURL(endpoint)
 
 	// Всегда добавляем credentials к запросу (согласно OpenAPI спецификации)
 	requestData := map[string]interface{}{
@@ -309,4 +343,41 @@ func (s *HoteliosService) MakeBookingFlowRequest(method, endpoint string, body i
 	}
 
 	return response, nil
+}
+
+// MakeBookingFlowRequestRaw выполняет запрос к Booking-Flow API и возвращает статус + сырые байты без изменений.
+// Тело запроса пробрасывается как есть (не модифицируем JSON).
+func (s *HoteliosService) MakeBookingFlowRequestRaw(method, endpoint string, rawBody []byte, extraHeaders map[string]string) ([]byte, int, error) {
+	url := s.buildURL(endpoint)
+
+	var reqBody io.Reader
+	if rawBody != nil {
+		reqBody = bytes.NewBuffer(rawBody)
+	}
+
+	req, err := http.NewRequest(method, url, reqBody)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to create request: %v", err)
+	}
+
+	// Если явно не указан Content-Type — ставим дефолтный
+	if extraHeaders == nil || extraHeaders["Content-Type"] == "" {
+		req.Header.Set("Content-Type", "application/json;charset=UTF-8")
+	}
+	for k, v := range extraHeaders {
+		req.Header.Set(k, v)
+	}
+
+	resp, err := s.httpClient.Do(req)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to make request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, resp.StatusCode, fmt.Errorf("failed to read response: %v", err)
+	}
+
+	return responseBody, resp.StatusCode, nil
 }
