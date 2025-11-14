@@ -3,11 +3,16 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"os"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 	"unicode"
+
+	"mime/multipart"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/datatypes"
@@ -169,13 +174,127 @@ func generateUniqueAlias(db *gorm.DB, base string, excludeID uint) (string, erro
 	}
 }
 
-// POST /blog
-func (bc *BlogController) Create(c *gin.Context) {
-	var req blogPostPayload
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(400, gin.H{"success": false, "result": nil, "error": "invalid request"})
+// сохраняет файл блога в ./uploads/blog и возвращает URL вида /uploads/blog/<filename>
+func saveBlogUploadedFile(c *gin.Context, file *multipart.FileHeader) (string, error) {
+	dstDir := "./uploads/blog"
+	if err := os.MkdirAll(dstDir, 0o755); err != nil {
+		return "", err
+	}
+
+	filename := fmt.Sprintf("%d_%s", time.Now().UnixNano(), file.Filename)
+	dstPath := filepath.Join(dstDir, filename)
+
+	if err := c.SaveUploadedFile(file, dstPath); err != nil {
+		return "", err
+	}
+
+	return "/uploads/blog/" + filename, nil
+}
+
+// POST /blog/upload-photo
+// multipart/form-data, поле "file"
+// Возвращает URL вида /uploads/blog/<filename>
+func (bc *BlogController) UploadPhoto(c *gin.Context) {
+	// Ограничение по размеру файла, например 10 МБ
+	const maxUploadSize = 10 << 20 // 10 MB
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, maxUploadSize)
+
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "result": nil, "error": "file is required"})
 		return
 	}
+
+	url, err := saveBlogUploadedFile(c, file)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "result": nil, "error": "failed to save file"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"result": gin.H{
+			"url": url,
+		},
+	})
+}
+
+// POST /blog/create
+func (bc *BlogController) Create(c *gin.Context) {
+	var req blogPostPayload
+
+	contentType := strings.ToLower(c.GetHeader("Content-Type"))
+	if strings.HasPrefix(contentType, "multipart/form-data") {
+		// multipart-вариант: поля приходят как form-data, картинка(и) как file/files
+		req.Category = c.PostForm("category")
+
+		// tags как строка "tag1,tag2"
+		tagsStr := strings.TrimSpace(c.PostForm("tags"))
+		if tagsStr != "" {
+			parts := strings.Split(tagsStr, ",")
+			for _, t := range parts {
+				t = strings.TrimSpace(t)
+				if t != "" {
+					req.Tags = append(req.Tags, t)
+				}
+			}
+		}
+
+		// локализованные поля
+		req.Uz = localizedPayload{
+			Title:       c.PostForm("uz_title"),
+			Description: c.PostForm("uz_description"),
+			Content:     c.PostForm("uz_content"),
+		}
+		req.Oz = localizedPayload{
+			Title:       c.PostForm("oz_title"),
+			Description: c.PostForm("oz_description"),
+			Content:     c.PostForm("oz_content"),
+		}
+		req.Ru = localizedPayload{
+			Title:       c.PostForm("ru_title"),
+			Description: c.PostForm("ru_description"),
+			Content:     c.PostForm("ru_content"),
+		}
+		req.En = localizedPayload{
+			Title:       c.PostForm("en_title"),
+			Description: c.PostForm("en_description"),
+			Content:     c.PostForm("en_content"),
+		}
+
+		// файлы: поддерживаем files[] и один file
+		var photos []string
+		if form, err := c.MultipartForm(); err == nil && form.File != nil {
+			if files, ok := form.File["files"]; ok {
+				for _, fh := range files {
+					url, err := saveBlogUploadedFile(c, fh)
+					if err != nil {
+						c.JSON(http.StatusInternalServerError, gin.H{"success": false, "result": nil, "error": "failed to save file"})
+						return
+					}
+					photos = append(photos, url)
+				}
+			}
+		}
+		if len(photos) == 0 {
+			if fh, err := c.FormFile("file"); err == nil {
+				url, err := saveBlogUploadedFile(c, fh)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"success": false, "result": nil, "error": "failed to save file"})
+					return
+				}
+				photos = append(photos, url)
+			}
+		}
+		req.PhotosBase64 = photos
+	} else {
+		// старый JSON-вариант остаётся рабочим
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(400, gin.H{"success": false, "result": nil, "error": "invalid request"})
+			return
+		}
+	}
+
 	req.Category = normalizeCategory(req.Category)
 	if len(req.PhotosBase64) > 50 {
 		c.JSON(400, gin.H{"success": false, "result": nil, "error": "photos_base64 must be <= 50"})
@@ -192,6 +311,20 @@ func (bc *BlogController) Create(c *gin.Context) {
 			baseTitle = req.Oz.Title
 		}
 	}
+	baseDescription := req.Ru.Description
+	if baseDescription == "" {
+		if req.En.Description != "" {
+			baseDescription = req.En.Description
+		} else if req.Uz.Description != "" {
+			baseDescription = req.Uz.Description
+		} else {
+			baseDescription = req.Oz.Description
+		}
+	}
+	if baseDescription == "" {
+		baseDescription = baseTitle
+	}
+
 	base := slugify(baseTitle)
 	alias, err := generateUniqueAlias(db, base, 0)
 	if err != nil {
@@ -199,16 +332,18 @@ func (bc *BlogController) Create(c *gin.Context) {
 		return
 	}
 	post := models.BlogPost{
-		Category:     req.Category,
-		Tags:         jsonFrom(req.Tags),
+		Category:    req.Category,
+		Title:       baseTitle,
+		Description: baseDescription,
+		Tags:        jsonFrom(req.Tags),
 		PhotosBase64: jsonFrom(req.PhotosBase64),
-		Uz:           jsonFrom(req.Uz),
-		Oz:           jsonFrom(req.Oz),
-		Ru:           jsonFrom(req.Ru),
-		En:           jsonFrom(req.En),
-		Views:        0,
-		Likes:        0,
-		Alias:        alias,
+		Uz:          jsonFrom(req.Uz),
+		Oz:          jsonFrom(req.Oz),
+		Ru:          jsonFrom(req.Ru),
+		En:          jsonFrom(req.En),
+		Views:       0,
+		Likes:       0,
+		Alias:       alias,
 	}
 	if err := db.Create(&post).Error; err != nil {
 		c.JSON(500, gin.H{"success": false, "result": nil, "error": "failed to create post"})
@@ -217,7 +352,7 @@ func (bc *BlogController) Create(c *gin.Context) {
 	c.JSON(201, gin.H{"success": true, "result": bc.toItem(c, post)})
 }
 
-// PUT /blog/:id
+// PUT /blog/update/:id
 func (bc *BlogController) Update(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -226,9 +361,73 @@ func (bc *BlogController) Update(c *gin.Context) {
 		return
 	}
 	var req blogPostPayload
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(400, gin.H{"success": false, "result": nil, "error": "invalid request"})
-		return
+
+	contentType := strings.ToLower(c.GetHeader("Content-Type"))
+	if strings.HasPrefix(contentType, "multipart/form-data") {
+		// multipart-вариант обновления
+		req.Category = c.PostForm("category")
+
+		tagsStr := strings.TrimSpace(c.PostForm("tags"))
+		if tagsStr != "" {
+			parts := strings.Split(tagsStr, ",")
+			for _, t := range parts {
+				t = strings.TrimSpace(t)
+				if t != "" {
+					req.Tags = append(req.Tags, t)
+				}
+			}
+		}
+
+		req.Uz = localizedPayload{
+			Title:       c.PostForm("uz_title"),
+			Description: c.PostForm("uz_description"),
+			Content:     c.PostForm("uz_content"),
+		}
+		req.Oz = localizedPayload{
+			Title:       c.PostForm("oz_title"),
+			Description: c.PostForm("oz_description"),
+			Content:     c.PostForm("oz_content"),
+		}
+		req.Ru = localizedPayload{
+			Title:       c.PostForm("ru_title"),
+			Description: c.PostForm("ru_description"),
+			Content:     c.PostForm("ru_content"),
+		}
+		req.En = localizedPayload{
+			Title:       c.PostForm("en_title"),
+			Description: c.PostForm("en_description"),
+			Content:     c.PostForm("en_content"),
+		}
+
+		var photos []string
+		if form, err := c.MultipartForm(); err == nil && form.File != nil {
+			if files, ok := form.File["files"]; ok {
+				for _, fh := range files {
+					url, err := saveBlogUploadedFile(c, fh)
+					if err != nil {
+						c.JSON(http.StatusInternalServerError, gin.H{"success": false, "result": nil, "error": "failed to save file"})
+						return
+					}
+					photos = append(photos, url)
+				}
+			}
+		}
+		if len(photos) == 0 {
+			if fh, err := c.FormFile("file"); err == nil {
+				url, err := saveBlogUploadedFile(c, fh)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"success": false, "result": nil, "error": "failed to save file"})
+					return
+				}
+				photos = append(photos, url)
+			}
+		}
+		req.PhotosBase64 = photos
+	} else {
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(400, gin.H{"success": false, "result": nil, "error": "invalid request"})
+			return
+		}
 	}
 	req.Category = normalizeCategory(req.Category)
 	db := utils.GetDB()
@@ -247,6 +446,19 @@ func (bc *BlogController) Update(c *gin.Context) {
 			baseTitle = req.Oz.Title
 		}
 	}
+	baseDescription := req.Ru.Description
+	if baseDescription == "" {
+		if req.En.Description != "" {
+			baseDescription = req.En.Description
+		} else if req.Uz.Description != "" {
+			baseDescription = req.Uz.Description
+		} else {
+			baseDescription = req.Oz.Description
+		}
+	}
+	if baseDescription == "" {
+		baseDescription = baseTitle
+	}
 	base := slugify(baseTitle)
 	alias, err := generateUniqueAlias(db, base, post.ID)
 	if err != nil {
@@ -254,6 +466,8 @@ func (bc *BlogController) Update(c *gin.Context) {
 		return
 	}
 	post.Category = req.Category
+	post.Title = baseTitle
+	post.Description = baseDescription
 	post.Tags = jsonFrom(req.Tags)
 	post.PhotosBase64 = jsonFrom(req.PhotosBase64)
 	post.Uz = jsonFrom(req.Uz)

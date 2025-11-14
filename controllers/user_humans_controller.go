@@ -65,8 +65,8 @@ func (ctl *UserHumansController) CreateHuman(c *gin.Context) {
 func (ctl *UserHumansController) UpdateHuman(c *gin.Context) {
 	userID := c.GetInt("user_id")
 	if userID <= 0 {
-	 c.JSON(http.StatusUnauthorized, gin.H{"result": nil, "success": false, "error": "unauthorized"})
-	 return
+		c.JSON(http.StatusUnauthorized, gin.H{"result": nil, "success": false, "error": "unauthorized"})
+		return
 	}
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil || id <= 0 {
@@ -102,8 +102,8 @@ func (ctl *UserHumansController) UpdateHuman(c *gin.Context) {
 func (ctl *UserHumansController) DeleteHuman(c *gin.Context) {
 	userID := c.GetInt("user_id")
 	if userID <= 0 {
-	 c.JSON(http.StatusUnauthorized, gin.H{"result": nil, "success": false, "error": "unauthorized"})
-	 return
+		c.JSON(http.StatusUnauthorized, gin.H{"result": nil, "success": false, "error": "unauthorized"})
+		return
 	}
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil || id <= 0 {
@@ -175,5 +175,3 @@ func (ctl *UserHumansController) toResponse(h models.UserHuman) gin.H {
 		"updated_at":      h.UpdatedAt,
 	}
 }
-
-
