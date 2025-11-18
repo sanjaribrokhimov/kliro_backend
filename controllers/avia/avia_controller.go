@@ -2,8 +2,10 @@ package avia
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	avia "kliro/services/avia"
@@ -20,6 +22,59 @@ type AviaController struct {
 func NewAviaController() *AviaController {
 	return &AviaController{
 		bukharaService: avia.NewBukharaService(),
+	}
+}
+
+func (ac *AviaController) proxyRaw(c *gin.Context, method, endpoint string, includeQuery, includeBody bool) {
+	fullEndpoint := endpoint
+	if includeQuery {
+		if rawQuery := c.Request.URL.RawQuery; rawQuery != "" {
+			separator := "?"
+			if strings.Contains(fullEndpoint, "?") {
+				separator = "&"
+			}
+			fullEndpoint += separator + rawQuery
+		}
+	}
+
+	var body []byte
+	if includeBody {
+		data, err := io.ReadAll(c.Request.Body)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"error":   "Не удалось прочитать тело запроса: " + err.Error(),
+			})
+			return
+		}
+		body = data
+	}
+
+	resp, err := ac.bukharaService.ProxyRequest(method, fullEndpoint, body, c.Request.Header)
+	if err != nil {
+		c.JSON(http.StatusBadGateway, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	copyProxyHeaders(c.Writer.Header(), resp.Headers)
+	c.Status(resp.Status)
+	if len(resp.Body) > 0 {
+		_, _ = c.Writer.Write(resp.Body)
+	}
+}
+
+func copyProxyHeaders(dst http.Header, src http.Header) {
+	for key, values := range src {
+		if strings.EqualFold(key, "Content-Length") || strings.EqualFold(key, "Transfer-Encoding") {
+			continue
+		}
+		dst.Del(key)
+		for _, value := range values {
+			dst.Add(key, value)
+		}
 	}
 }
 
@@ -42,54 +97,7 @@ func NewAviaController() *AviaController {
 // @Failure 500 {object} map[string]interface{}
 // @Router /avia/search [get]
 func (ac *AviaController) SearchFlights(c *gin.Context) {
-	// Получаем параметры из query string
-	departureAirport := c.Query("directions[0][departure_airport]")
-	arrivalAirport := c.Query("directions[0][arrival_airport]")
-	date := c.Query("directions[0][date]")
-	serviceClass := c.Query("service_class")
-	adults := c.DefaultQuery("adults", "1")
-	children := c.DefaultQuery("children", "0")
-	infants := c.DefaultQuery("infants", "0")
-	infantsWithSeat := c.DefaultQuery("infants_with_seat", "0")
-
-	// Валидация обязательных параметров
-	if departureAirport == "" || arrivalAirport == "" || date == "" || serviceClass == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   "Необходимо указать все обязательные параметры: departure_airport, arrival_airport, date, service_class",
-		})
-		return
-	}
-
-	// Формируем query параметры для GET запроса
-	queryParams := fmt.Sprintf("?directions[0][departure_airport]=%s&directions[0][arrival_airport]=%s&directions[0][date]=%s&service_class=%s&adults=%s&children=%s&infants=%s&infants_with_seat=%s",
-		departureAirport, arrivalAirport, date, serviceClass, adults, children, infants, infantsWithSeat)
-
-	// Проверяем наличие обратного направления
-	if returnDeparture := c.Query("directions[1][departure_airport]"); returnDeparture != "" {
-		returnArrival := c.Query("directions[1][arrival_airport]")
-		returnDate := c.Query("directions[1][date]")
-
-		if returnArrival != "" && returnDate != "" {
-			queryParams += fmt.Sprintf("&directions[1][departure_airport]=%s&directions[1][arrival_airport]=%s&directions[1][date]=%s",
-				returnDeparture, returnArrival, returnDate)
-		}
-	}
-
-	endpoint := "/api/v1/offers" + queryParams
-
-	// Проксируем запрос напрямую к Bukhara API
-	response, err := ac.bukharaService.MakeRequest("GET", endpoint, nil)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error":   "Ошибка поиска рейсов: " + err.Error(),
-		})
-		return
-	}
-
-	// Возвращаем ответ от Bukhara API как есть
-	c.JSON(http.StatusOK, response)
+	ac.proxyRaw(c, "GET", "/api/v1/offers", true, false)
 }
 
 // CreateBooking создает бронирование
@@ -114,29 +122,7 @@ func (ac *AviaController) CreateBooking(c *gin.Context) {
 		return
 	}
 
-	var bookingReq map[string]interface{}
-	if err := c.ShouldBindJSON(&bookingReq); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   "Неверные параметры запроса: " + err.Error(),
-		})
-		return
-	}
-
-	endpoint := fmt.Sprintf("/api/v1/offers/%s/booking", offerID)
-
-	// Проксируем запрос напрямую к Bukhara API
-	response, err := ac.bukharaService.MakeRequest("POST", endpoint, bookingReq)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error":   "Ошибка создания бронирования: " + err.Error(),
-		})
-		return
-	}
-
-	// Возвращаем ответ от Bukhara API как есть
-	c.JSON(http.StatusOK, response)
+	ac.proxyRaw(c, "POST", fmt.Sprintf("/api/v1/offers/%s/booking", offerID), true, true)
 }
 
 // PayBooking оплачивает бронирование
@@ -160,20 +146,7 @@ func (ac *AviaController) PayBooking(c *gin.Context) {
 		return
 	}
 
-	endpoint := fmt.Sprintf("/api/v1/booking/%s/payment", bookingID)
-
-	// Проксируем запрос напрямую к Bukhara API
-	response, err := ac.bukharaService.MakeRequest("POST", endpoint, nil)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error":   "Ошибка оплаты: " + err.Error(),
-		})
-		return
-	}
-
-	// Возвращаем ответ от Bukhara API как есть
-	c.JSON(http.StatusOK, response)
+	ac.proxyRaw(c, "POST", fmt.Sprintf("/api/v1/booking/%s/payment", bookingID), true, true)
 }
 
 // GetBookingInfo получает информацию о бронировании
@@ -197,20 +170,7 @@ func (ac *AviaController) GetBookingInfo(c *gin.Context) {
 		return
 	}
 
-	endpoint := fmt.Sprintf("/api/v1/booking/%s", bookingID)
-
-	// Проксируем запрос напрямую к Bukhara API
-	response, err := ac.bukharaService.MakeRequest("GET", endpoint, nil)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error":   "Ошибка получения информации: " + err.Error(),
-		})
-		return
-	}
-
-	// Возвращаем ответ от Bukhara API как есть
-	c.JSON(http.StatusOK, response)
+	ac.proxyRaw(c, "GET", fmt.Sprintf("/api/v1/booking/%s", bookingID), true, false)
 }
 
 // CancelBooking отменяет бронирование
@@ -234,20 +194,7 @@ func (ac *AviaController) CancelBooking(c *gin.Context) {
 		return
 	}
 
-	// Отменяем бронирование
-	err := ac.bukharaService.CancelBooking(bookingID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error":   "Ошибка отмены бронирования: " + err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": "Бронирование отменено успешно",
-	})
+	ac.proxyRaw(c, "POST", fmt.Sprintf("/api/v1/booking/%s/cancel", bookingID), true, true)
 }
 
 // GetFareRules получает правила тарифа
@@ -271,21 +218,7 @@ func (ac *AviaController) GetFareRules(c *gin.Context) {
 		return
 	}
 
-	// Получаем правила тарифа
-	rules, err := ac.bukharaService.GetFareRules(offerID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error":   "Ошибка получения правил тарифа: " + err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"result":  rules,
-		"message": "Правила тарифа получены успешно",
-	})
+	ac.proxyRaw(c, "GET", fmt.Sprintf("/api/v1/offers/%s/rules", offerID), true, false)
 }
 
 // UpdateOffer обновляет информацию об оффере
@@ -309,21 +242,7 @@ func (ac *AviaController) UpdateOffer(c *gin.Context) {
 		return
 	}
 
-	// Обновляем информацию об оффере
-	offer, err := ac.bukharaService.UpdateOffer(offerID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error":   "Ошибка обновления оффера: " + err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"result":  offer,
-		"message": "Информация об оффере обновлена успешно",
-	})
+	ac.proxyRaw(c, "GET", fmt.Sprintf("/api/v1/offers/%s", offerID), true, false)
 }
 
 // GetAirportHints получает подсказки аэропортов от Bukhara API
@@ -450,26 +369,7 @@ func (ac *AviaController) HealthCheck(c *gin.Context) {
 // @Success 200 {object} map[string]interface{}
 // @Router /api/v1/accounts/tokens [post]
 func (ac *AviaController) Auth(c *gin.Context) {
-	var authReq map[string]interface{}
-	if err := c.ShouldBindJSON(&authReq); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   "Неверные параметры запроса: " + err.Error(),
-		})
-		return
-	}
-
-	// Проксируем запрос к Bukhara API
-	response, err := ac.bukharaService.Auth(authReq)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error":   "Ошибка авторизации: " + err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, response)
+	ac.proxyRaw(c, "POST", "/api/v1/accounts/tokens", true, true)
 }
 
 // CheckBalance получает детали по балансу
@@ -480,17 +380,7 @@ func (ac *AviaController) Auth(c *gin.Context) {
 // @Success 200 {object} map[string]interface{}
 // @Router /api/v1/accounts/check-balance [get]
 func (ac *AviaController) CheckBalance(c *gin.Context) {
-	// Проксируем запрос к Bukhara API
-	response, err := ac.bukharaService.MakeRequest("GET", "/api/v1/accounts/check-balance", nil)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error":   "Ошибка получения баланса: " + err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, response)
+	ac.proxyRaw(c, "GET", "/api/v1/accounts/check-balance", true, false)
 }
 
 // GetFareFamily запрашивает семейство тарифов
@@ -511,17 +401,7 @@ func (ac *AviaController) GetFareFamily(c *gin.Context) {
 		return
 	}
 
-	// Проксируем запрос к Bukhara API
-	response, err := ac.bukharaService.MakeRequest("GET", fmt.Sprintf("/api/v1/offers/%s/fare-family", offerID), nil)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error":   "Ошибка получения семейства тарифов: " + err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, response)
+	ac.proxyRaw(c, "GET", fmt.Sprintf("/api/v1/offers/%s/fare-family", offerID), true, false)
 }
 
 // CheckAvailability проверяет наличие мест и цену перед бронированием
@@ -542,17 +422,7 @@ func (ac *AviaController) CheckAvailability(c *gin.Context) {
 		return
 	}
 
-	// Проксируем запрос к Bukhara API
-	response, err := ac.bukharaService.MakeRequest("GET", fmt.Sprintf("/api/v1/offers/%s", offerID), nil)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error":   "Ошибка проверки наличия мест: " + err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, response)
+	ac.proxyRaw(c, "GET", fmt.Sprintf("/api/v1/offers/%s", offerID), true, false)
 }
 
 // CancelUnpaidBooking отменяет неоплаченное бронирование
@@ -573,17 +443,7 @@ func (ac *AviaController) CancelUnpaidBooking(c *gin.Context) {
 		return
 	}
 
-	// Проксируем запрос к Bukhara API
-	response, err := ac.bukharaService.MakeRequest("POST", fmt.Sprintf("/api/v1/booking/%s/cancel-unpaid", bookingID), nil)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error":   "Ошибка отмены бронирования: " + err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, response)
+	ac.proxyRaw(c, "POST", fmt.Sprintf("/api/v1/booking/%s/cancel-unpaid", bookingID), true, true)
 }
 
 // GetBookingRules получает условия тарифа после бронирования
@@ -604,17 +464,7 @@ func (ac *AviaController) GetBookingRules(c *gin.Context) {
 		return
 	}
 
-	// Проксируем запрос к Bukhara API
-	response, err := ac.bukharaService.MakeRequest("GET", fmt.Sprintf("/api/v1/booking/%s/rules", bookingID), nil)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error":   "Ошибка получения условий тарифа: " + err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, response)
+	ac.proxyRaw(c, "GET", fmt.Sprintf("/api/v1/booking/%s/rules", bookingID), true, false)
 }
 
 // CheckPrice проверяет цену перед оплатой
@@ -635,17 +485,7 @@ func (ac *AviaController) CheckPrice(c *gin.Context) {
 		return
 	}
 
-	// Проксируем запрос к Bukhara API
-	response, err := ac.bukharaService.MakeRequest("GET", fmt.Sprintf("/api/v1/booking/%s/check-price", bookingID), nil)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error":   "Ошибка проверки цены: " + err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, response)
+	ac.proxyRaw(c, "GET", fmt.Sprintf("/api/v1/booking/%s/check-price", bookingID), true, false)
 }
 
 // CheckPaymentPermission проверяет возможность оплатить заказ
@@ -666,17 +506,7 @@ func (ac *AviaController) CheckPaymentPermission(c *gin.Context) {
 		return
 	}
 
-	// Проксируем запрос к Bukhara API
-	response, err := ac.bukharaService.MakeRequest("GET", fmt.Sprintf("/api/v1/booking/%s/payment-permission", bookingID), nil)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error":   "Ошибка проверки возможности оплаты: " + err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, response)
+	ac.proxyRaw(c, "GET", fmt.Sprintf("/api/v1/booking/%s/payment-permission", bookingID), true, false)
 }
 
 // VoidBooking возврат (VOID) оплаченных билетов
@@ -697,17 +527,7 @@ func (ac *AviaController) VoidBooking(c *gin.Context) {
 		return
 	}
 
-	// Проксируем запрос к Bukhara API
-	response, err := ac.bukharaService.MakeRequest("POST", fmt.Sprintf("/api/v1/booking/%s/void", bookingID), nil)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error":   "Ошибка возврата билетов: " + err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, response)
+	ac.proxyRaw(c, "POST", fmt.Sprintf("/api/v1/booking/%s/void", bookingID), true, true)
 }
 
 // GetRefundAmounts получает сумму возмещения и штраф при возврате
@@ -728,17 +548,7 @@ func (ac *AviaController) GetRefundAmounts(c *gin.Context) {
 		return
 	}
 
-	// Проксируем запрос к Bukhara API
-	response, err := ac.bukharaService.MakeRequest("GET", fmt.Sprintf("/api/v1/booking/%s/get-refund-amounts", bookingID), nil)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error":   "Ошибка получения суммы возмещения: " + err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, response)
+	ac.proxyRaw(c, "GET", fmt.Sprintf("/api/v1/booking/%s/get-refund-amounts", bookingID), true, false)
 }
 
 // AutoCancel возврат выписанных билетов со штрафом
@@ -759,17 +569,7 @@ func (ac *AviaController) AutoCancel(c *gin.Context) {
 		return
 	}
 
-	// Проксируем запрос к Bukhara API
-	response, err := ac.bukharaService.MakeRequest("POST", fmt.Sprintf("/api/v1/booking/%s/auto-cancel", bookingID), nil)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error":   "Ошибка возврата со штрафом: " + err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, response)
+	ac.proxyRaw(c, "POST", fmt.Sprintf("/api/v1/booking/%s/auto-cancel", bookingID), true, true)
 }
 
 // GetPDFReceipt запрашивает маршрутную квитанцию
@@ -790,17 +590,7 @@ func (ac *AviaController) GetPDFReceipt(c *gin.Context) {
 		return
 	}
 
-	// Проксируем запрос к Bukhara API
-	response, err := ac.bukharaService.MakeRequest("GET", fmt.Sprintf("/api/v1/booking/%s/pdf-receipt", bookingID), nil)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error":   "Ошибка получения квитанции: " + err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, response)
+	ac.proxyRaw(c, "GET", fmt.Sprintf("/api/v1/booking/%s/pdf-receipt", bookingID), true, false)
 }
 
 // ManualRefund отмена оплаченного заказа
@@ -821,17 +611,7 @@ func (ac *AviaController) ManualRefund(c *gin.Context) {
 		return
 	}
 
-	// Проксируем запрос к Bukhara API
-	response, err := ac.bukharaService.MakeRequest("POST", fmt.Sprintf("/api/v1/booking/%s/manual-refund", bookingID), nil)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error":   "Ошибка отмены заказа: " + err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, response)
+	ac.proxyRaw(c, "POST", fmt.Sprintf("/api/v1/booking/%s/manual-refund", bookingID), true, true)
 }
 
 // GetSchedule получает расписание рейсов
@@ -842,17 +622,7 @@ func (ac *AviaController) ManualRefund(c *gin.Context) {
 // @Success 200 {object} map[string]interface{}
 // @Router /api/v1/services/schedule [get]
 func (ac *AviaController) GetSchedule(c *gin.Context) {
-	// Проксируем запрос к Bukhara API
-	response, err := ac.bukharaService.MakeRequest("GET", "/api/v1/services/schedule", nil)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error":   "Ошибка получения расписания: " + err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, response)
+	ac.proxyRaw(c, "GET", "/api/v1/services/schedule", true, false)
 }
 
 // GetVisaTypes получает типы въездных виз
@@ -863,15 +633,5 @@ func (ac *AviaController) GetSchedule(c *gin.Context) {
 // @Success 200 {object} map[string]interface{}
 // @Router /api/v1/visa-types [get]
 func (ac *AviaController) GetVisaTypes(c *gin.Context) {
-	// Проксируем запрос к Bukhara API
-	response, err := ac.bukharaService.MakeRequest("GET", "/api/v1/visa-types", nil)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error":   "Ошибка получения типов виз: " + err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, response)
+	ac.proxyRaw(c, "GET", "/api/v1/visa-types", true, false)
 }

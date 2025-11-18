@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"kliro/models"
@@ -21,6 +22,13 @@ type BukharaService struct {
 	accessToken string
 	tokenExpiry time.Time
 	httpClient  *http.Client
+}
+
+// ProxyResponse содержит сырой ответ Bukhara API
+type ProxyResponse struct {
+	Status  int
+	Headers http.Header
+	Body    []byte
 }
 
 // NewBukharaService создает новый экземпляр сервиса
@@ -544,4 +552,55 @@ func (bs *BukharaService) MakeRequest(method, endpoint string, body interface{})
 	}
 
 	return result, nil
+}
+
+// ProxyRequest выполняет сырой HTTP запрос к Bukhara API и возвращает ответ без изменений
+func (bs *BukharaService) ProxyRequest(method, endpointWithQuery string, body []byte, originalHeaders http.Header) (*ProxyResponse, error) {
+	if err := bs.EnsureTokenValid(); err != nil {
+		return nil, err
+	}
+
+	url := fmt.Sprintf("%s%s", bs.baseURL, endpointWithQuery)
+
+	var reader io.Reader
+	if len(body) > 0 {
+		reader = bytes.NewReader(body)
+	}
+
+	req, err := http.NewRequest(method, url, reader)
+	if err != nil {
+		return nil, fmt.Errorf("ошибка создания запроса: %v", err)
+	}
+
+	for key, values := range originalHeaders {
+		if strings.EqualFold(key, "Authorization") || strings.EqualFold(key, "Content-Length") || strings.EqualFold(key, "Host") {
+			continue
+		}
+		for _, value := range values {
+			req.Header.Add(key, value)
+		}
+	}
+
+	if len(body) > 0 && req.Header.Get("Content-Type") == "" {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
+	req.Header.Set("Authorization", "Bearer "+bs.accessToken)
+
+	resp, err := bs.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("ошибка выполнения запроса: %v", err)
+	}
+	defer resp.Body.Close()
+
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("ошибка чтения ответа: %v", err)
+	}
+
+	return &ProxyResponse{
+		Status:  resp.StatusCode,
+		Headers: resp.Header.Clone(),
+		Body:    respBody,
+	}, nil
 }
