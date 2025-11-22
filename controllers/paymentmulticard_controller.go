@@ -212,6 +212,12 @@ func (pc *PaymentMulticardController) CreateInvoice(c *gin.Context) {
 	}
 	filtered["ofd"] = ofd
 
+	// Формируем split массив на основе invoice_id
+	splitArray := pc.buildSplitArray(invoiceID, amountInt)
+	if len(splitArray) > 0 {
+		filtered["split"] = splitArray
+	}
+
 	// Авторизация к Multicard
 	if err := pc.ensureToken(); err != nil {
 		c.Status(http.StatusBadGateway)
@@ -377,6 +383,71 @@ func (pc *PaymentMulticardController) CallbackWebhooks(c *gin.Context) {
 		}
 	}
 	c.JSON(http.StatusOK, gin.H{"success": true})
+}
+
+// buildSplitArray создает массив split на основе invoice_id и amount
+// Для hotel и avia используются разные параметры из .env
+// Проценты разделения настраиваются через .env переменные
+func (pc *PaymentMulticardController) buildSplitArray(invoiceID string, amount int64) []map[string]interface{} {
+	var prefix string
+	if strings.HasPrefix(invoiceID, "hotel") {
+		prefix = "HOTEL"
+	} else if strings.HasPrefix(invoiceID, "avia") {
+		prefix = "AVIA"
+	} else {
+		return nil
+	}
+
+	// Читаем процент для первого split из .env
+	// Если процент не указан, split не создается
+	split1PercentStr := os.Getenv(prefix + "_SPLIT_1_PERCENT")
+	if split1PercentStr == "" {
+		return nil
+	}
+
+	// Парсим процент, если невалидный - не создаем split
+	split1Percent, err := strconv.ParseFloat(split1PercentStr, 64)
+	if err != nil || split1Percent <= 0 || split1Percent > 100 {
+		return nil
+	}
+
+	// Читаем параметры для первого split
+	split1Type := os.Getenv(prefix + "_SPLIT_1_TYPE")
+	split1Recipient := os.Getenv(prefix + "_SPLIT_1_RECIPIENT")
+	split1Details := os.Getenv(prefix + "_SPLIT_1_DETAILS")
+
+	// Читаем параметры для второго split
+	split2Type := os.Getenv(prefix + "_SPLIT_2_TYPE")
+	split2Recipient := os.Getenv(prefix + "_SPLIT_2_RECIPIENT")
+	split2Details := os.Getenv(prefix + "_SPLIT_2_DETAILS")
+
+	// Проверяем, что все необходимые параметры заданы
+	if split1Type == "" || split1Recipient == "" || split1Details == "" ||
+		split2Type == "" || split2Recipient == "" || split2Details == "" {
+		return nil
+	}
+
+	// Рассчитываем суммы на основе процента из .env
+	split1Amount := int64(float64(amount) * split1Percent / 100.0)
+	split2Amount := amount - split1Amount // Остаток идет второму split
+
+	// Формируем массив split
+	splitArray := []map[string]interface{}{
+		{
+			"type":      split1Type,
+			"recipient": split1Recipient,
+			"amount":    split1Amount,
+			"details":   split1Details,
+		},
+		{
+			"type":      split2Type,
+			"recipient": split2Recipient,
+			"amount":    split2Amount,
+			"details":   split2Details,
+		},
+	}
+
+	return splitArray
 }
 
 // toString — аккуратное преобразование числовых/строковых значений к строке без форматирования

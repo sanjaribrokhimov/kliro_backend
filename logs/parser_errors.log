@@ -11004,3 +11004,445 @@
 2025/11/18 16:10:00 Начало парсинга currency (каждые 10 минут)...
 2025/11/18 16:10:00 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-18 16:10:00)
 2025/11/18 16:10:00 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/18 16:20:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/18 16:20:00 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-18 16:20:00)
+2025/11/18 16:20:00 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/18 16:30:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/18 16:30:00 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-18 16:30:00)
+2025/11/18 16:30:00 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/18 16:40:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/18 16:40:00 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-18 16:40:00)
+2025/11/18 16:40:00 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 12:13:43 Инициализация данных microcredit - очищаем базу и парсим заново...
+2025/11/19 12:13:48 Инициализация завершена - заполнена таблица new_microcredit
+2025/11/19 12:13:48 Инициализация данных autocredit - очищаем базу и парсим заново...
+2025/11/19 12:13:53 Инициализация завершена - заполнены таблицы new_autocredit 
+2025/11/19 12:13:53 Инициализация данных переводов - очищаем базу и парсим заново...
+2025/11/19 12:13:53 Инициализация переводов завершена - заполнена таблица new_transfer
+2025/11/19 12:13:53 Инициализация данных mortgage - очищаем базу и парсим заново...
+2025/11/19 12:13:57 Инициализация завершена - заполнена таблица new_mortgage
+2025/11/19 12:13:57 Инициализация данных deposit - очищаем базу и парсим заново...
+2025/11/19 12:14:05 Инициализация завершена - заполнена таблица new_deposit
+2025/11/19 12:14:05 Инициализация данных card - очищаем базу и парсим заново...
+2025/11/19 12:14:15 Инициализация завершена - заполнена таблица new_card
+2025/11/19 12:14:15 Инициализация данных currency - первичная загрузка new_currency...
+2025/11/19 12:14:16 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 12:14:16)
+2025/11/19 12:14:16 Инициализация завершена - заполнена таблица new_currency (Asia/Tashkent)
+2025/11/19 12:14:16 Инициализация данных credit_card - очищаем базу и парсим заново...
+2025/11/19 12:14:18 Инициализация завершена - заполнена таблица new_credit_card
+2025/11/19 12:20:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 12:20:00 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 12:20:00)
+2025/11/19 12:20:00 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 12:30:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 12:30:00 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 12:30:00)
+2025/11/19 12:30:00 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 12:40:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 12:40:00 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 12:40:00)
+2025/11/19 12:40:00 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 12:50:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 12:50:00 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 12:50:00)
+2025/11/19 12:50:00 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 13:00:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 13:00:00 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 13:00:00)
+2025/11/19 13:00:00 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 13:10:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 13:10:03 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 13:10:03)
+2025/11/19 13:10:03 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 13:20:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 13:20:00 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 13:20:00)
+2025/11/19 13:20:00 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 13:30:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 13:30:03 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 13:30:03)
+2025/11/19 13:30:03 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 13:40:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 13:40:00 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 13:40:00)
+2025/11/19 13:40:00 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 13:50:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 13:50:00 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 13:50:00)
+2025/11/19 13:50:00 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 14:00:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 14:00:01 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 14:00:01)
+2025/11/19 14:00:01 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 14:10:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 14:10:00 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 14:10:00)
+2025/11/19 14:10:00 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 14:20:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 14:20:00 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 14:20:00)
+2025/11/19 14:20:01 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 14:30:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 14:30:00 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 14:30:00)
+2025/11/19 14:30:00 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 14:40:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 14:40:01 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 14:40:01)
+2025/11/19 14:40:01 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 14:50:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 14:50:00 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 14:50:00)
+2025/11/19 14:50:00 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 15:00:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 15:00:00 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 15:00:00)
+2025/11/19 15:00:01 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 15:10:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 15:10:01 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 15:10:01)
+2025/11/19 15:10:01 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 15:20:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 15:20:01 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 15:20:01)
+2025/11/19 15:20:01 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 15:30:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 15:30:01 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 15:30:01)
+2025/11/19 15:30:01 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 15:40:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 15:40:01 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 15:40:01)
+2025/11/19 15:40:01 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 15:50:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 15:50:01 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 15:50:01)
+2025/11/19 15:50:01 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 16:00:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 16:00:01 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 16:00:01)
+2025/11/19 16:00:01 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 16:10:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 16:10:00 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 16:10:00)
+2025/11/19 16:10:00 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 16:20:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 16:20:00 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 16:20:00)
+2025/11/19 16:20:00 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 16:30:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 16:30:00 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 16:30:00)
+2025/11/19 16:30:00 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 16:40:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 16:40:00 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 16:40:00)
+2025/11/19 16:40:00 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/19 16:50:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/19 16:50:00 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-19 16:50:00)
+2025/11/19 16:50:00 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/21 17:07:05 Инициализация данных microcredit - очищаем базу и парсим заново...
+2025/11/21 17:07:10 Инициализация завершена - заполнена таблица new_microcredit
+2025/11/21 17:07:10 Инициализация данных autocredit - очищаем базу и парсим заново...
+2025/11/21 17:07:15 Инициализация завершена - заполнены таблицы new_autocredit 
+2025/11/21 17:07:15 Инициализация данных переводов - очищаем базу и парсим заново...
+2025/11/21 17:07:16 Инициализация переводов завершена - заполнена таблица new_transfer
+2025/11/21 17:07:16 Инициализация данных mortgage - очищаем базу и парсим заново...
+2025/11/21 17:07:20 Инициализация завершена - заполнена таблица new_mortgage
+2025/11/21 17:07:20 Инициализация данных deposit - очищаем базу и парсим заново...
+2025/11/21 17:07:28 Инициализация завершена - заполнена таблица new_deposit
+2025/11/21 17:07:28 Инициализация данных card - очищаем базу и парсим заново...
+2025/11/21 17:07:40 Инициализация завершена - заполнена таблица new_card
+2025/11/21 17:07:40 Инициализация данных currency - первичная загрузка new_currency...
+2025/11/21 17:07:40 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-21 17:07:40)
+2025/11/21 17:07:40 Инициализация завершена - заполнена таблица new_currency (Asia/Tashkent)
+2025/11/21 17:07:40 Инициализация данных credit_card - очищаем базу и парсим заново...
+2025/11/21 17:07:42 Инициализация завершена - заполнена таблица new_credit_card
+2025/11/21 17:09:41 Инициализация данных microcredit - очищаем базу и парсим заново...
+2025/11/21 17:09:46 Инициализация завершена - заполнена таблица new_microcredit
+2025/11/21 17:09:46 Инициализация данных autocredit - очищаем базу и парсим заново...
+2025/11/21 17:09:50 Инициализация завершена - заполнены таблицы new_autocredit 
+2025/11/21 17:09:50 Инициализация данных переводов - очищаем базу и парсим заново...
+2025/11/21 17:09:51 Инициализация переводов завершена - заполнена таблица new_transfer
+2025/11/21 17:09:51 Инициализация данных mortgage - очищаем базу и парсим заново...
+2025/11/21 17:09:55 Инициализация завершена - заполнена таблица new_mortgage
+2025/11/21 17:09:55 Инициализация данных deposit - очищаем базу и парсим заново...
+2025/11/21 17:10:02 Инициализация завершена - заполнена таблица new_deposit
+2025/11/21 17:10:02 Инициализация данных card - очищаем базу и парсим заново...
+2025/11/21 17:10:15 Инициализация завершена - заполнена таблица new_card
+2025/11/21 17:10:15 Инициализация данных currency - первичная загрузка new_currency...
+2025/11/21 17:10:15 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-21 17:10:15)
+2025/11/21 17:10:15 Инициализация завершена - заполнена таблица new_currency (Asia/Tashkent)
+2025/11/21 17:10:15 Инициализация данных credit_card - очищаем базу и парсим заново...
+2025/11/21 17:10:17 Инициализация завершена - заполнена таблица new_credit_card
+2025/11/21 17:11:50 Инициализация данных microcredit - очищаем базу и парсим заново...
+2025/11/21 17:11:55 Инициализация завершена - заполнена таблица new_microcredit
+2025/11/21 17:11:55 Инициализация данных autocredit - очищаем базу и парсим заново...
+2025/11/21 17:12:00 Инициализация завершена - заполнены таблицы new_autocredit 
+2025/11/21 17:12:00 Инициализация данных переводов - очищаем базу и парсим заново...
+2025/11/21 17:12:00 Инициализация переводов завершена - заполнена таблица new_transfer
+2025/11/21 17:12:00 Инициализация данных mortgage - очищаем базу и парсим заново...
+2025/11/21 17:12:05 Инициализация завершена - заполнена таблица new_mortgage
+2025/11/21 17:12:05 Инициализация данных deposit - очищаем базу и парсим заново...
+2025/11/21 17:12:13 Инициализация завершена - заполнена таблица new_deposit
+2025/11/21 17:12:13 Инициализация данных card - очищаем базу и парсим заново...
+2025/11/21 17:12:25 Инициализация завершена - заполнена таблица new_card
+2025/11/21 17:12:25 Инициализация данных currency - первичная загрузка new_currency...
+2025/11/21 17:12:26 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-21 17:12:26)
+2025/11/21 17:12:26 Инициализация завершена - заполнена таблица new_currency (Asia/Tashkent)
+2025/11/21 17:12:26 Инициализация данных credit_card - очищаем базу и парсим заново...
+2025/11/21 17:12:28 Инициализация завершена - заполнена таблица new_credit_card
+2025/11/21 17:20:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/21 17:20:01 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-21 17:20:01)
+2025/11/21 17:20:01 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/21 17:30:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/21 17:30:01 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-21 17:30:01)
+2025/11/21 17:30:01 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/21 18:33:17 Инициализация данных microcredit - очищаем базу и парсим заново...
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=2: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=2": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=3: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=3": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=4: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=4": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=5: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=5": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=6: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=6": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=7: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=7": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=8: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=8": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Инициализация завершена - заполнена таблица new_microcredit
+2025/11/21 18:33:17 Инициализация данных autocredit - очищаем базу и парсим заново...
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/credits/avtokredit: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/credits/avtokredit?PAGEN_3=2: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit?PAGEN_3=2": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/credits/avtokredit?PAGEN_3=3: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit?PAGEN_3=3": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/credits/avtokredit?PAGEN_3=4: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit?PAGEN_3=4": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/credits/avtokredit?PAGEN_3=5: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit?PAGEN_3=5": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/credits/avtokredit?PAGEN_3=6: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit?PAGEN_3=6": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/credits/avtokredit?PAGEN_3=7: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit?PAGEN_3=7": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/credits/avtokredit?PAGEN_3=8: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit?PAGEN_3=8": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Инициализация завершена - заполнены таблицы new_autocredit 
+2025/11/21 18:33:17 Инициализация данных переводов - очищаем базу и парсим заново...
+2025/11/21 18:33:17 Ошибка парсинга переводов https://bank.uz/uz/perevodi: ошибка получения страницы: Get "https://bank.uz/uz/perevodi": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Инициализация переводов завершена - заполнена таблица new_transfer
+2025/11/21 18:33:17 Инициализация данных mortgage - очищаем базу и парсим заново...
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/ipoteka: ошибка получения страницы: Get "https://bank.uz/uz/ipoteka": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/ipoteka?PAGEN_3=2: ошибка получения страницы: Get "https://bank.uz/uz/ipoteka?PAGEN_3=2": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/ipoteka?PAGEN_3=3: ошибка получения страницы: Get "https://bank.uz/uz/ipoteka?PAGEN_3=3": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/ipoteka?PAGEN_3=4: ошибка получения страницы: Get "https://bank.uz/uz/ipoteka?PAGEN_3=4": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/ipoteka?PAGEN_3=5: ошибка получения страницы: Get "https://bank.uz/uz/ipoteka?PAGEN_3=5": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/ipoteka?PAGEN_3=6: ошибка получения страницы: Get "https://bank.uz/uz/ipoteka?PAGEN_3=6": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/ipoteka?PAGEN_3=7: ошибка получения страницы: Get "https://bank.uz/uz/ipoteka?PAGEN_3=7": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Инициализация завершена - заполнена таблица new_mortgage
+2025/11/21 18:33:17 Инициализация данных deposit - очищаем базу и парсим заново...
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/deposits: ошибка получения страницы: Get "https://bank.uz/uz/deposits": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=2: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=2": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=3: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=3": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=4: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=4": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=5: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=5": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=6: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=6": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=7: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=7": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=8: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=8": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=9: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=9": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=10: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=10": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=11: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=11": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=12: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=12": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=13: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=13": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Инициализация завершена - заполнена таблица new_deposit
+2025/11/21 18:33:17 Инициализация данных card - очищаем базу и парсим заново...
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/cards: ошибка получения страницы: Get "https://bank.uz/uz/cards": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=2: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=2": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=3: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=3": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=4: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=4": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=5: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=5": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=6: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=6": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=7: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=7": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=8: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=8": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=9: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=9": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=10: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=10": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=11: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=11": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=12: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=12": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=13: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=13": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=14: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=14": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=15: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=15": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=16: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=16": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=17: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=17": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=18: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=18": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=19: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=19": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=20: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=20": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Инициализация завершена - заполнена таблица new_card
+2025/11/21 18:33:17 Инициализация данных currency - первичная загрузка new_currency...
+2025/11/21 18:33:17 Ошибка получения страницы: Get "https://bank.uz/uz/currency": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка при парсинге валют
+2025/11/21 18:33:17 Инициализация данных credit_card - очищаем базу и парсим заново...
+2025/11/21 18:33:17 Ошибка парсинга (credit) https://bank.uz/uz/cards/kreditnye-karty: ошибка получения страницы: Get "https://bank.uz/uz/cards/kreditnye-karty": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга (credit) https://bank.uz/uz/cards/kreditnye-karty?PAGEN_4=2: ошибка получения страницы: Get "https://bank.uz/uz/cards/kreditnye-karty?PAGEN_4=2": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга (credit) https://bank.uz/uz/cards/kreditnye-karty?PAGEN_4=3: ошибка получения страницы: Get "https://bank.uz/uz/cards/kreditnye-karty?PAGEN_4=3": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Ошибка парсинга (credit) https://bank.uz/uz/cards/kreditnye-karty?PAGEN_4=4: ошибка получения страницы: Get "https://bank.uz/uz/cards/kreditnye-karty?PAGEN_4=4": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:17 Инициализация завершена - заполнена таблица new_credit_card
+2025/11/21 18:33:38 Инициализация данных microcredit - очищаем базу и парсим заново...
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=2: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=2": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=3: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=3": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=4: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=4": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=5: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=5": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=6: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=6": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=7: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=7": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=8: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=8": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Инициализация завершена - заполнена таблица new_microcredit
+2025/11/21 18:33:38 Инициализация данных autocredit - очищаем базу и парсим заново...
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/credits/avtokredit: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/credits/avtokredit?PAGEN_3=2: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit?PAGEN_3=2": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/credits/avtokredit?PAGEN_3=3: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit?PAGEN_3=3": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/credits/avtokredit?PAGEN_3=4: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit?PAGEN_3=4": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/credits/avtokredit?PAGEN_3=5: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit?PAGEN_3=5": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/credits/avtokredit?PAGEN_3=6: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit?PAGEN_3=6": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/credits/avtokredit?PAGEN_3=7: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit?PAGEN_3=7": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/credits/avtokredit?PAGEN_3=8: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit?PAGEN_3=8": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Инициализация завершена - заполнены таблицы new_autocredit 
+2025/11/21 18:33:38 Инициализация данных переводов - очищаем базу и парсим заново...
+2025/11/21 18:33:38 Ошибка парсинга переводов https://bank.uz/uz/perevodi: ошибка получения страницы: Get "https://bank.uz/uz/perevodi": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Инициализация переводов завершена - заполнена таблица new_transfer
+2025/11/21 18:33:38 Инициализация данных mortgage - очищаем базу и парсим заново...
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/ipoteka: ошибка получения страницы: Get "https://bank.uz/uz/ipoteka": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/ipoteka?PAGEN_3=2: ошибка получения страницы: Get "https://bank.uz/uz/ipoteka?PAGEN_3=2": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/ipoteka?PAGEN_3=3: ошибка получения страницы: Get "https://bank.uz/uz/ipoteka?PAGEN_3=3": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/ipoteka?PAGEN_3=4: ошибка получения страницы: Get "https://bank.uz/uz/ipoteka?PAGEN_3=4": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/ipoteka?PAGEN_3=5: ошибка получения страницы: Get "https://bank.uz/uz/ipoteka?PAGEN_3=5": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/ipoteka?PAGEN_3=6: ошибка получения страницы: Get "https://bank.uz/uz/ipoteka?PAGEN_3=6": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/ipoteka?PAGEN_3=7: ошибка получения страницы: Get "https://bank.uz/uz/ipoteka?PAGEN_3=7": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Инициализация завершена - заполнена таблица new_mortgage
+2025/11/21 18:33:38 Инициализация данных deposit - очищаем базу и парсим заново...
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/deposits: ошибка получения страницы: Get "https://bank.uz/uz/deposits": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=2: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=2": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=3: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=3": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=4: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=4": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=5: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=5": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=6: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=6": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=7: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=7": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=8: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=8": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=9: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=9": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=10: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=10": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=11: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=11": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=12: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=12": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=13: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=13": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Инициализация завершена - заполнена таблица new_deposit
+2025/11/21 18:33:38 Инициализация данных card - очищаем базу и парсим заново...
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/cards: ошибка получения страницы: Get "https://bank.uz/uz/cards": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=2: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=2": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:38 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=3: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=3": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:39 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=4: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=4": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:39 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=5: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=5": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:39 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=6: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=6": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:39 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=7: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=7": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:39 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=8: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=8": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:39 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=9: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=9": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:39 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=10: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=10": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:39 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=11: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=11": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:39 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=12: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=12": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:39 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=13: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=13": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:39 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=14: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=14": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:39 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=15: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=15": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:39 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=16: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=16": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:39 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=17: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=17": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:39 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=18: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=18": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:39 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=19: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=19": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:39 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=20: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=20": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:39 Инициализация завершена - заполнена таблица new_card
+2025/11/21 18:33:39 Инициализация данных currency - первичная загрузка new_currency...
+2025/11/21 18:33:39 Ошибка получения страницы: Get "https://bank.uz/uz/currency": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:39 Ошибка при парсинге валют
+2025/11/21 18:33:39 Инициализация данных credit_card - очищаем базу и парсим заново...
+2025/11/21 18:33:39 Ошибка парсинга (credit) https://bank.uz/uz/cards/kreditnye-karty: ошибка получения страницы: Get "https://bank.uz/uz/cards/kreditnye-karty": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:39 Ошибка парсинга (credit) https://bank.uz/uz/cards/kreditnye-karty?PAGEN_4=2: ошибка получения страницы: Get "https://bank.uz/uz/cards/kreditnye-karty?PAGEN_4=2": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:39 Ошибка парсинга (credit) https://bank.uz/uz/cards/kreditnye-karty?PAGEN_4=3: ошибка получения страницы: Get "https://bank.uz/uz/cards/kreditnye-karty?PAGEN_4=3": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:39 Ошибка парсинга (credit) https://bank.uz/uz/cards/kreditnye-karty?PAGEN_4=4: ошибка получения страницы: Get "https://bank.uz/uz/cards/kreditnye-karty?PAGEN_4=4": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:33:39 Инициализация завершена - заполнена таблица new_credit_card
+2025/11/21 18:34:19 Инициализация данных microcredit - очищаем базу и парсим заново...
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=2: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=2": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=3: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=3": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=4: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=4": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=5: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=5": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=6: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=6": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=7: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=7": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=8: ошибка получения страницы: Get "https://bank.uz/uz/credits/mikrozaymy?PAGEN_3=8": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Инициализация завершена - заполнена таблица new_microcredit
+2025/11/21 18:34:19 Инициализация данных autocredit - очищаем базу и парсим заново...
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/credits/avtokredit: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/credits/avtokredit?PAGEN_3=2: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit?PAGEN_3=2": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/credits/avtokredit?PAGEN_3=3: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit?PAGEN_3=3": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/credits/avtokredit?PAGEN_3=4: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit?PAGEN_3=4": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/credits/avtokredit?PAGEN_3=5: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit?PAGEN_3=5": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/credits/avtokredit?PAGEN_3=6: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit?PAGEN_3=6": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/credits/avtokredit?PAGEN_3=7: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit?PAGEN_3=7": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/credits/avtokredit?PAGEN_3=8: ошибка получения страницы: Get "https://bank.uz/uz/credits/avtokredit?PAGEN_3=8": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Инициализация завершена - заполнены таблицы new_autocredit 
+2025/11/21 18:34:19 Инициализация данных переводов - очищаем базу и парсим заново...
+2025/11/21 18:34:19 Ошибка парсинга переводов https://bank.uz/uz/perevodi: ошибка получения страницы: Get "https://bank.uz/uz/perevodi": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Инициализация переводов завершена - заполнена таблица new_transfer
+2025/11/21 18:34:19 Инициализация данных mortgage - очищаем базу и парсим заново...
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/ipoteka: ошибка получения страницы: Get "https://bank.uz/uz/ipoteka": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/ipoteka?PAGEN_3=2: ошибка получения страницы: Get "https://bank.uz/uz/ipoteka?PAGEN_3=2": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/ipoteka?PAGEN_3=3: ошибка получения страницы: Get "https://bank.uz/uz/ipoteka?PAGEN_3=3": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/ipoteka?PAGEN_3=4: ошибка получения страницы: Get "https://bank.uz/uz/ipoteka?PAGEN_3=4": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/ipoteka?PAGEN_3=5: ошибка получения страницы: Get "https://bank.uz/uz/ipoteka?PAGEN_3=5": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/ipoteka?PAGEN_3=6: ошибка получения страницы: Get "https://bank.uz/uz/ipoteka?PAGEN_3=6": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/ipoteka?PAGEN_3=7: ошибка получения страницы: Get "https://bank.uz/uz/ipoteka?PAGEN_3=7": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Инициализация завершена - заполнена таблица new_mortgage
+2025/11/21 18:34:19 Инициализация данных deposit - очищаем базу и парсим заново...
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/deposits: ошибка получения страницы: Get "https://bank.uz/uz/deposits": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=2: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=2": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=3: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=3": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=4: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=4": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=5: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=5": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=6: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=6": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=7: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=7": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=8: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=8": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=9: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=9": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=10: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=10": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=11: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=11": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=12: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=12": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/deposits?PAGEN_4=13: ошибка получения страницы: Get "https://bank.uz/uz/deposits?PAGEN_4=13": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Инициализация завершена - заполнена таблица new_deposit
+2025/11/21 18:34:19 Инициализация данных card - очищаем базу и парсим заново...
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/cards: ошибка получения страницы: Get "https://bank.uz/uz/cards": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=2: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=2": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=3: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=3": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=4: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=4": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=5: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=5": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=6: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=6": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=7: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=7": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=8: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=8": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=9: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=9": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=10: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=10": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=11: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=11": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=12: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=12": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=13: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=13": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=14: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=14": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=15: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=15": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=16: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=16": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=17: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=17": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=18: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=18": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=19: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=19": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга https://bank.uz/uz/cards?PAGEN_4=20: ошибка получения страницы: Get "https://bank.uz/uz/cards?PAGEN_4=20": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Инициализация завершена - заполнена таблица new_card
+2025/11/21 18:34:19 Инициализация данных currency - первичная загрузка new_currency...
+2025/11/21 18:34:19 Ошибка получения страницы: Get "https://bank.uz/uz/currency": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка при парсинге валют
+2025/11/21 18:34:19 Инициализация данных credit_card - очищаем базу и парсим заново...
+2025/11/21 18:34:19 Ошибка парсинга (credit) https://bank.uz/uz/cards/kreditnye-karty: ошибка получения страницы: Get "https://bank.uz/uz/cards/kreditnye-karty": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга (credit) https://bank.uz/uz/cards/kreditnye-karty?PAGEN_4=2: ошибка получения страницы: Get "https://bank.uz/uz/cards/kreditnye-karty?PAGEN_4=2": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга (credit) https://bank.uz/uz/cards/kreditnye-karty?PAGEN_4=3: ошибка получения страницы: Get "https://bank.uz/uz/cards/kreditnye-karty?PAGEN_4=3": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Ошибка парсинга (credit) https://bank.uz/uz/cards/kreditnye-karty?PAGEN_4=4: ошибка получения страницы: Get "https://bank.uz/uz/cards/kreditnye-karty?PAGEN_4=4": dial tcp: lookup bank.uz: no such host
+2025/11/21 18:34:19 Инициализация завершена - заполнена таблица new_credit_card
+2025/11/21 18:36:17 Инициализация данных microcredit - очищаем базу и парсим заново...
+2025/11/21 18:36:23 Инициализация завершена - заполнена таблица new_microcredit
+2025/11/21 18:36:23 Инициализация данных autocredit - очищаем базу и парсим заново...
+2025/11/21 18:36:29 Инициализация завершена - заполнены таблицы new_autocredit 
+2025/11/21 18:36:29 Инициализация данных переводов - очищаем базу и парсим заново...
+2025/11/21 18:36:30 Инициализация переводов завершена - заполнена таблица new_transfer
+2025/11/21 18:36:30 Инициализация данных mortgage - очищаем базу и парсим заново...
+2025/11/21 18:36:35 Инициализация завершена - заполнена таблица new_mortgage
+2025/11/21 18:36:35 Инициализация данных deposit - очищаем базу и парсим заново...
+2025/11/21 18:36:44 Инициализация завершена - заполнена таблица new_deposit
+2025/11/21 18:36:44 Инициализация данных card - очищаем базу и парсим заново...
+2025/11/21 18:36:58 Инициализация завершена - заполнена таблица new_card
+2025/11/21 18:36:58 Инициализация данных currency - первичная загрузка new_currency...
+2025/11/21 18:36:59 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-21 18:36:59)
+2025/11/21 18:36:59 Инициализация завершена - заполнена таблица new_currency (Asia/Tashkent)
+2025/11/21 18:36:59 Инициализация данных credit_card - очищаем базу и парсим заново...
+2025/11/21 18:37:02 Инициализация завершена - заполнена таблица new_credit_card
+2025/11/21 20:20:29 Начало парсинга currency (каждые 10 минут)...
+2025/11/21 20:20:31 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-21 20:20:31)
+2025/11/21 20:20:31 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/21 20:30:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/21 20:30:01 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-21 20:30:01)
+2025/11/21 20:30:01 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/21 20:40:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/21 20:40:01 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-21 20:40:01)
+2025/11/21 20:40:01 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/21 20:50:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/21 20:50:01 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-21 20:50:01)
+2025/11/21 20:50:01 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/21 21:00:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/21 21:00:01 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-21 21:00:01)
+2025/11/21 21:00:01 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/21 21:10:00 Начало парсинга currency (каждые 10 минут)...
+2025/11/21 21:10:01 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-21 21:10:01)
+2025/11/21 21:10:01 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/21 21:50:34 Начало парсинга currency (каждые 10 минут)...
+2025/11/21 21:50:35 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-21 21:50:35)
+2025/11/21 21:50:35 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)
+2025/11/22 10:06:06 Начало парсинга currency (каждые 10 минут)...
+2025/11/22 10:06:07 Парсинг валют завершен - найдено 80 курсов (время Узбекистана: 2025-11-22 10:06:07)
+2025/11/22 10:06:07 Парсинг currency завершен - обновлено 80 записей в new_currency (Asia/Tashkent)

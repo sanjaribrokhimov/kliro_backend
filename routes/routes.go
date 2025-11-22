@@ -109,9 +109,7 @@ func SetupRouter() *gin.Engine {
 	// Insurance Profile API routes
 	SetupInsuranceProfileRoutes(r)
 
-	// Payment API routes
-	SetupPaymentRoutes(r)
-	// Multicard Payment Page proxy routes (отдельно)
+	// Multicard Payment Page proxy routes
 	SetupPaymentMulticardRoutes(r)
 
 	// Blog routes
