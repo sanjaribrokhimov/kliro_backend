@@ -3,6 +3,7 @@ package hotels
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 	"strconv"
 
 	hotels "kliro/services/hotels"
@@ -46,6 +47,54 @@ func ensureBookingFlowCredentials(raw []byte, svc *hotels.HoteliosService) []byt
 	return b
 }
 
+// getHotelSplitPercent получает процент split для отелей из .env
+func getHotelSplitPercent() *float64 {
+	percentStr := os.Getenv("HOTEL_SPLIT_1_PERCENT")
+	if percentStr == "" {
+		return nil
+	}
+	if percent, err := strconv.ParseFloat(percentStr, 64); err == nil && percent > 0 && percent <= 100 {
+		return &percent
+	}
+	return nil
+}
+
+// addSplitPercentToResponse добавляет процент split в JSON ответ
+func addSplitPercentToResponse(respBody []byte, percent *float64) []byte {
+	if percent == nil || len(respBody) == 0 {
+		return respBody
+	}
+
+	// Пытаемся распарсить как объект
+	var responseObj map[string]interface{}
+	if err := json.Unmarshal(respBody, &responseObj); err == nil && responseObj != nil {
+		// Это объект - добавляем процент напрямую в объект
+		responseObj["split_percent"] = *percent
+		result, err := json.Marshal(responseObj)
+		if err == nil {
+			return result
+		}
+	}
+
+	// Пытаемся распарсить как массив
+	var responseArr []interface{}
+	if err := json.Unmarshal(respBody, &responseArr); err == nil && responseArr != nil {
+		// Это массив - оборачиваем в объект с массивом и процентом
+		result := map[string]interface{}{
+			"data":          responseArr,
+			"split_percent": *percent,
+		}
+		jsonResult, err := json.Marshal(result)
+		if err == nil {
+			return jsonResult
+		}
+	}
+
+	// Если не удалось распарсить как JSON, возвращаем как есть
+	// (не оборачиваем, чтобы не сломать не-JSON ответы)
+	return respBody
+}
+
 // ===== СПРАВОЧНЫЕ МЕТОДЫ (v1.0) =====
 
 // GetCountryList получает список стран
@@ -55,6 +104,8 @@ func (hc *HotelController) GetCountryList(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	percent := getHotelSplitPercent()
+	raw = addSplitPercentToResponse(raw, percent)
 	c.Data(http.StatusOK, "application/json", raw)
 }
 
@@ -72,6 +123,8 @@ func (hc *HotelController) GetRegionList(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	percent := getHotelSplitPercent()
+	raw = addSplitPercentToResponse(raw, percent)
 	c.Data(http.StatusOK, "application/json", raw)
 }
 
@@ -89,6 +142,8 @@ func (hc *HotelController) GetCityList(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	percent := getHotelSplitPercent()
+	raw = addSplitPercentToResponse(raw, percent)
 	c.Data(http.StatusOK, "application/json", raw)
 }
 
@@ -99,6 +154,8 @@ func (hc *HotelController) GetHotelTypeList(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	percent := getHotelSplitPercent()
+	raw = addSplitPercentToResponse(raw, percent)
 	c.Data(http.StatusOK, "application/json", raw)
 }
 
@@ -122,6 +179,8 @@ func (hc *HotelController) GetHotelList(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	percent := getHotelSplitPercent()
+	raw = addSplitPercentToResponse(raw, percent)
 	c.Data(http.StatusOK, "application/json", raw)
 }
 
@@ -139,6 +198,8 @@ func (hc *HotelController) GetHotelPhotoList(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	percent := getHotelSplitPercent()
+	raw = addSplitPercentToResponse(raw, percent)
 	c.Data(http.StatusOK, "application/json", raw)
 }
 
@@ -156,6 +217,8 @@ func (hc *HotelController) GetHotelRoomTypeList(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	percent := getHotelSplitPercent()
+	raw = addSplitPercentToResponse(raw, percent)
 	c.Data(http.StatusOK, "application/json", raw)
 }
 
@@ -186,6 +249,8 @@ func (hc *HotelController) GetHotelRoomTypesPhotoList(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	percent := getHotelSplitPercent()
+	raw = addSplitPercentToResponse(raw, percent)
 	c.Data(http.StatusOK, "application/json", raw)
 }
 
@@ -196,6 +261,8 @@ func (hc *HotelController) GetFacilityList(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	percent := getHotelSplitPercent()
+	raw = addSplitPercentToResponse(raw, percent)
 	c.Data(http.StatusOK, "application/json", raw)
 }
 
@@ -213,6 +280,8 @@ func (hc *HotelController) GetHotelFacilityList(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	percent := getHotelSplitPercent()
+	raw = addSplitPercentToResponse(raw, percent)
 	c.Data(http.StatusOK, "application/json", raw)
 }
 
@@ -223,6 +292,8 @@ func (hc *HotelController) GetEquipmentList(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	percent := getHotelSplitPercent()
+	raw = addSplitPercentToResponse(raw, percent)
 	c.Data(http.StatusOK, "application/json", raw)
 }
 
@@ -253,6 +324,8 @@ func (hc *HotelController) GetRoomTypeEquipmentList(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	percent := getHotelSplitPercent()
+	raw = addSplitPercentToResponse(raw, percent)
 	c.Data(http.StatusOK, "application/json", raw)
 }
 
@@ -263,6 +336,8 @@ func (hc *HotelController) GetPriceRange(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	percent := getHotelSplitPercent()
+	raw = addSplitPercentToResponse(raw, percent)
 	c.Data(http.StatusOK, "application/json", raw)
 }
 
@@ -273,6 +348,8 @@ func (hc *HotelController) GetStarList(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	percent := getHotelSplitPercent()
+	raw = addSplitPercentToResponse(raw, percent)
 	c.Data(http.StatusOK, "application/json", raw)
 }
 
@@ -283,6 +360,8 @@ func (hc *HotelController) GetNearbyPlacesTypeList(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	percent := getHotelSplitPercent()
+	raw = addSplitPercentToResponse(raw, percent)
 	c.Data(http.StatusOK, "application/json", raw)
 }
 
@@ -300,6 +379,8 @@ func (hc *HotelController) GetHotelNearbyPlacesList(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	percent := getHotelSplitPercent()
+	raw = addSplitPercentToResponse(raw, percent)
 	c.Data(http.StatusOK, "application/json", raw)
 }
 
@@ -317,6 +398,8 @@ func (hc *HotelController) GetServicesInRoomList(c *gin.Context) {
 		c.Header("X-Cache", "MISS")
 		c.Header("X-Source", "hotelios")
 	}
+	percent := getHotelSplitPercent()
+	body = addSplitPercentToResponse(body, percent)
 	c.Data(http.StatusOK, "application/json", body)
 }
 
@@ -333,6 +416,10 @@ func (hc *HotelController) GetHotelServicesInRoomList(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
+	}
+	// Добавляем процент split в ответ
+	if percent := getHotelSplitPercent(); percent != nil {
+		response["split_percent"] = *percent
 	}
 	c.JSON(http.StatusOK, response)
 }
@@ -351,6 +438,8 @@ func (hc *HotelController) GetBedTypeList(c *gin.Context) {
 		c.Header("X-Cache", "MISS")
 		c.Header("X-Source", "hotelios")
 	}
+	percent := getHotelSplitPercent()
+	body = addSplitPercentToResponse(body, percent)
 	c.Data(http.StatusOK, "application/json", body)
 }
 
@@ -368,6 +457,8 @@ func (hc *HotelController) GetCurrencyList(c *gin.Context) {
 		c.Header("X-Cache", "MISS")
 		c.Header("X-Source", "hotelios")
 	}
+	percent := getHotelSplitPercent()
+	body = addSplitPercentToResponse(body, percent)
 	c.Data(http.StatusOK, "application/json", body)
 }
 
@@ -382,6 +473,9 @@ func (hc *HotelController) BookingFlowSearch(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	// Добавляем процент split в ответ
+	percent := getHotelSplitPercent()
+	respBody = addSplitPercentToResponse(respBody, percent)
 	c.Data(status, "application/json", respBody)
 }
 
@@ -394,6 +488,9 @@ func (hc *HotelController) BookingFlowQuote(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	// Добавляем процент split в ответ
+	percent := getHotelSplitPercent()
+	respBody = addSplitPercentToResponse(respBody, percent)
 	c.Data(status, "application/json", respBody)
 }
 
@@ -406,6 +503,9 @@ func (hc *HotelController) BookingFlowCreate(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	// Добавляем процент split в ответ
+	percent := getHotelSplitPercent()
+	respBody = addSplitPercentToResponse(respBody, percent)
 	c.Data(status, "application/json", respBody)
 }
 
@@ -418,6 +518,9 @@ func (hc *HotelController) BookingFlowConfirm(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	// Добавляем процент split в ответ
+	percent := getHotelSplitPercent()
+	respBody = addSplitPercentToResponse(respBody, percent)
 	c.Data(status, "application/json", respBody)
 }
 
@@ -430,6 +533,9 @@ func (hc *HotelController) BookingFlowCancel(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	// Добавляем процент split в ответ
+	percent := getHotelSplitPercent()
+	respBody = addSplitPercentToResponse(respBody, percent)
 	c.Data(status, "application/json", respBody)
 }
 
@@ -442,5 +548,8 @@ func (hc *HotelController) BookingFlowRead(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	// Добавляем процент split в ответ
+	percent := getHotelSplitPercent()
+	respBody = addSplitPercentToResponse(respBody, percent)
 	c.Data(status, "application/json", respBody)
 }

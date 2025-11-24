@@ -1,9 +1,11 @@
 package avia
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -23,6 +25,54 @@ func NewAviaController() *AviaController {
 	return &AviaController{
 		bukharaService: avia.NewBukharaService(),
 	}
+}
+
+// getAviaSplitPercent получает процент split для авиа из .env
+func getAviaSplitPercent() *float64 {
+	percentStr := os.Getenv("AVIA_SPLIT_1_PERCENT")
+	if percentStr == "" {
+		return nil
+	}
+	if percent, err := strconv.ParseFloat(percentStr, 64); err == nil && percent > 0 && percent <= 100 {
+		return &percent
+	}
+	return nil
+}
+
+// addSplitPercentToResponse добавляет процент split в JSON ответ
+func addSplitPercentToAviaResponse(respBody []byte, percent *float64) []byte {
+	if percent == nil || len(respBody) == 0 {
+		return respBody
+	}
+
+	// Пытаемся распарсить как объект
+	var responseObj map[string]interface{}
+	if err := json.Unmarshal(respBody, &responseObj); err == nil && responseObj != nil {
+		// Это объект - добавляем процент напрямую в объект
+		responseObj["split_percent"] = *percent
+		result, err := json.Marshal(responseObj)
+		if err == nil {
+			return result
+		}
+	}
+
+	// Пытаемся распарсить как массив
+	var responseArr []interface{}
+	if err := json.Unmarshal(respBody, &responseArr); err == nil && responseArr != nil {
+		// Это массив - оборачиваем в объект с массивом и процентом
+		result := map[string]interface{}{
+			"data":          responseArr,
+			"split_percent": *percent,
+		}
+		jsonResult, err := json.Marshal(result)
+		if err == nil {
+			return jsonResult
+		}
+	}
+
+	// Если не удалось распарсить как JSON, возвращаем как есть
+	// (не оборачиваем, чтобы не сломать не-JSON ответы)
+	return respBody
 }
 
 func (ac *AviaController) proxyRaw(c *gin.Context, method, endpoint string, includeQuery, includeBody bool) {
@@ -59,10 +109,17 @@ func (ac *AviaController) proxyRaw(c *gin.Context, method, endpoint string, incl
 		return
 	}
 
+	// Добавляем процент split в ответ для всех типов запросов
+	respBody := resp.Body
+	if len(respBody) > 0 {
+		percent := getAviaSplitPercent()
+		respBody = addSplitPercentToAviaResponse(respBody, percent)
+	}
+
 	copyProxyHeaders(c.Writer.Header(), resp.Headers)
 	c.Status(resp.Status)
-	if len(resp.Body) > 0 {
-		_, _ = c.Writer.Write(resp.Body)
+	if len(respBody) > 0 {
+		_, _ = c.Writer.Write(respBody)
 	}
 }
 
@@ -281,7 +338,15 @@ func (ac *AviaController) GetAirportHints(c *gin.Context) {
 		return
 	}
 
-	// Возвращаем ответ от Bukhara API как есть
+	// Добавляем split процент в ответ
+	if response == nil {
+		response = map[string]interface{}{}
+	}
+	if percent := getAviaSplitPercent(); percent != nil {
+		response["split_percent"] = *percent
+	}
+
+	// Возвращаем ответ от Bukhara API
 	c.JSON(http.StatusOK, response)
 }
 
@@ -299,12 +364,16 @@ func (ac *AviaController) GetServiceClasses(c *gin.Context) {
 		{"code": "B", "name": "Бизнес класс", "description": "Премиум класс обслуживания"},
 		{"code": "A", "name": "Любой класс", "description": "Поиск по всем доступным классам"},
 	}
-
-	c.JSON(http.StatusOK, gin.H{
+	response := gin.H{
 		"success": true,
 		"result":  serviceClasses,
 		"message": "Классы обслуживания получены успешно",
-	})
+	}
+	if percent := getAviaSplitPercent(); percent != nil {
+		response["split_percent"] = *percent
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 // GetPassengerTypes получает типы пассажиров
@@ -323,11 +392,15 @@ func (ac *AviaController) GetPassengerTypes(c *gin.Context) {
 		{"code": "ins", "name": "Младенец с местом", "description": "От 0 до 2 лет"},
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	response := gin.H{
 		"success": true,
 		"result":  passengerTypes,
 		"message": "Типы пассажиров получены успешно",
-	})
+	}
+	if percent := getAviaSplitPercent(); percent != nil {
+		response["split_percent"] = *percent
+	}
+	c.JSON(http.StatusOK, response)
 }
 
 // HealthCheck проверка состояния сервиса
@@ -351,12 +424,17 @@ func (ac *AviaController) HealthCheck(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	response := gin.H{
 		"success":   true,
 		"status":    "available",
 		"message":   "Сервис авиабилетов работает нормально",
 		"timestamp": time.Now().Format("2006-01-02 15:04:05"),
-	})
+	}
+	if percent := getAviaSplitPercent(); percent != nil {
+		response["split_percent"] = *percent
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 // Auth выполняет авторизацию
