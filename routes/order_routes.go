@@ -42,8 +42,8 @@ func SetupOrderRoutes(r *gin.Engine) {
 		// Получение заказа по order_id
 		orderGroup.GET("/:order_id", orderController.GetOrderByID)
 
-		// Обновление статуса заказа
-		orderGroup.PUT("/:order_id/status", orderController.UpdateOrderStatus)
+		// Обновление заказа (все поля обязательны)
+		orderGroup.PUT("/:order_id", orderController.UpdateOrder)
 
 		// Удаление заказа (soft delete)
 		orderGroup.DELETE("/:order_id", orderController.DeleteOrder)

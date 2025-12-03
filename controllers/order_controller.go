@@ -44,13 +44,39 @@ func (oc *OrderController) CreateOrder(c *gin.Context) {
 		OrderID     string `json:"order_id" binding:"required"`
 		Category    string `json:"category" binding:"required"`
 		CompanyName string `json:"company_name" binding:"required"`
-		Status      string `json:"status,omitempty"`
+		Status      string `json:"status" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Неверные данные запроса",
 			"details": err.Error(),
+		})
+		return
+	}
+
+	// Валидация: проверяем, что поля не пустые
+	if req.OrderID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Поле order_id обязательно и не может быть пустым",
+		})
+		return
+	}
+	if req.Category == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Поле category обязательно и не может быть пустым",
+		})
+		return
+	}
+	if req.CompanyName == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Поле company_name обязательно и не может быть пустым",
+		})
+		return
+	}
+	if req.Status == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Поле status обязательно и не может быть пустым",
 		})
 		return
 	}
@@ -62,11 +88,6 @@ func (oc *OrderController) CreateOrder(c *gin.Context) {
 			"error": "Заказ с таким order_id уже существует",
 		})
 		return
-	}
-
-	// Устанавливаем статус по умолчанию
-	if req.Status == "" {
-		req.Status = "pending"
 	}
 
 	// Создаем заказ
@@ -238,17 +259,55 @@ func (oc *OrderController) GetOrderByID(c *gin.Context) {
 	})
 }
 
-// UpdateOrderStatus обновляет статус заказа
-func (oc *OrderController) UpdateOrderStatus(c *gin.Context) {
+// UpdateOrder обновляет заказ (все поля обязательны)
+func (oc *OrderController) UpdateOrder(c *gin.Context) {
 	orderID := c.Param("order_id")
 
 	var req struct {
-		Status string `json:"status" binding:"required"`
+		OrderID     string `json:"order_id" binding:"required"`
+		Category    string `json:"category" binding:"required"`
+		CompanyName string `json:"company_name" binding:"required"`
+		Status      string `json:"status" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Неверные данные запроса",
+			"error":   "Неверные данные запроса",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	// Валидация: проверяем, что поля не пустые
+	if req.OrderID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Поле order_id обязательно и не может быть пустым",
+		})
+		return
+	}
+	if req.Category == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Поле category обязательно и не может быть пустым",
+		})
+		return
+	}
+	if req.CompanyName == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Поле company_name обязательно и не может быть пустым",
+		})
+		return
+	}
+	if req.Status == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Поле status обязательно и не может быть пустым",
+		})
+		return
+	}
+
+	// Проверяем, что order_id в URL совпадает с order_id в теле запроса
+	if req.OrderID != orderID {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "order_id в URL не совпадает с order_id в теле запроса",
 		})
 		return
 	}
@@ -267,16 +326,17 @@ func (oc *OrderController) UpdateOrderStatus(c *gin.Context) {
 		return
 	}
 
-	// Обновляем статус
-	if err := oc.db.Model(&order).Update("status", req.Status).Error; err != nil {
+	// Обновляем все поля заказа
+	order.Category = req.Category
+	order.CompanyName = req.CompanyName
+	order.Status = req.Status
+
+	if err := oc.db.Save(&order).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Ошибка при обновлении статуса",
+			"error": "Ошибка при обновлении заказа",
 		})
 		return
 	}
-
-	// Получаем обновленный заказ
-	oc.db.First(&order, order.ID)
 
 	response := models.OrderResponse{
 		ID:          order.ID,
@@ -292,7 +352,7 @@ func (oc *OrderController) UpdateOrderStatus(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"result":  response,
 		"success": true,
-		"message": "Статус заказа обновлен",
+		"message": "Заказ успешно обновлен",
 	})
 }
 
