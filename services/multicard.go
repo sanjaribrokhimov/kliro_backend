@@ -122,9 +122,10 @@ func (m *Multicard) CreatePayment(paymentMethod string, amount int64, invoiceID 
 	storeIDInt, _ := strconv.Atoi(m.storeID)
 
 	payload := map[string]interface{}{
-		"amount":     amount,
-		"store_id":   storeIDInt,
-		"invoice_id": invoiceID,
+		"application_id": m.appID,
+		"amount":         amount,
+		"store_id":       storeIDInt,
+		"invoice_id":     invoiceID,
 	}
 
 	// Для оплаты картой используем поле card, иначе payment_system

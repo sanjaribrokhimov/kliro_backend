@@ -192,6 +192,12 @@ func (pc *PaymentMulticardController) CreateInvoice(c *gin.Context) {
 
 	// Разрешённые поля тела, остальные отбрасываем
 	filtered := map[string]interface{}{}
+	// application_id всегда берём из .env
+	if pc.appID == "" {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "MULTICARD_APPLICATION_ID is not configured"})
+		return
+	}
+	filtered["application_id"] = pc.appID
 	// store_id всегда берём из .env
 	envStoreID := os.Getenv("MULTICARD_STORE_ID")
 	if envStoreID == "" {
