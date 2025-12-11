@@ -27,14 +27,14 @@ func SetupAviaRoutes(router *gin.Engine) {
 
 		// Работа с бронированиями offline
 		apiGroup.GET("/booking/:booking_id", aviaController.GetBookingInfo)
-		apiGroup.POST("/booking/:booking_id/cancel-unpaid", aviaController.CancelUnpaidBooking)
+		apiGroup.DELETE("/booking/:booking_id/cancel-unpaid", aviaController.CancelUnpaidBooking)
 		apiGroup.GET("/booking/:booking_id/rules", aviaController.GetBookingRules)
 		apiGroup.GET("/booking/:booking_id/check-price", aviaController.CheckPrice)
 		apiGroup.GET("/booking/:booking_id/payment-permission", aviaController.CheckPaymentPermission)
 		apiGroup.POST("/booking/:booking_id/payment", aviaController.PayBooking)
-		apiGroup.POST("/booking/:booking_id/void", aviaController.VoidBooking)
+		apiGroup.DELETE("/booking/:booking_id/void", aviaController.VoidBooking)
 		apiGroup.GET("/booking/:booking_id/get-refund-amounts", aviaController.GetRefundAmounts)
-		apiGroup.POST("/booking/:booking_id/auto-cancel", aviaController.AutoCancel)
+		apiGroup.DELETE("/booking/:booking_id/auto-cancel", aviaController.AutoCancel)
 		apiGroup.GET("/booking/:booking_id/pdf-receipt", aviaController.GetPDFReceipt)
 		apiGroup.POST("/booking/:booking_id/manual-refund", aviaController.ManualRefund)
 

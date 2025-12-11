@@ -5,6 +5,7 @@ import (
 	bankServices "kliro/services/bank"
 	"kliro/utils"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -87,6 +88,7 @@ func (tc *TransferController) getTransfersWithPagination(c *gin.Context, tableNa
 	sortBy := c.DefaultQuery("sort", "app_name")
 	sortDir := c.DefaultQuery("direction", "asc")
 	search := c.Query("search")
+	commissionFromStr := c.Query("commission_from")
 
 	// Валидация параметров
 	if page < 0 {
@@ -96,28 +98,85 @@ func (tc *TransferController) getTransfersWithPagination(c *gin.Context, tableNa
 		size = 10
 	}
 
-	// Базовый запрос с фильтром поиска
-	query := db.Table(tableName)
+	// Парсим commission_from
+	commissionFrom := utils.ParseFloatSafe(commissionFromStr)
+
+	// Загружаем все данные из БД
+	var all []models.Transfer
+	baseQuery := db.Table(tableName)
 	if search != "" {
-		query = query.Where("app_name ILIKE ?", "%"+search+"%")
+		baseQuery = baseQuery.Where("app_name ILIKE ?", "%"+search+"%")
 	}
 
-	// Подсчет общего количества записей
-	var totalElements int64
-	query.Count(&totalElements)
+	if err := baseQuery.Find(&all).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при получении данных"})
+		return
+	}
 
-	// Вычисление пагинации
-	totalPages := int((totalElements + int64(size) - 1) / int64(size))
-	// Проверяем, есть ли данные на последней странице
-	if totalPages > 0 {
-		lastPageOffset := (totalPages - 1) * size
-		var lastPageCount int64
-		db.Table(tableName).Offset(lastPageOffset).Limit(size).Count(&lastPageCount)
-		if lastPageCount == 0 {
-			totalPages = totalPages - 1
+	// Фильтрация по commission_from
+	// commission_from показывает записи с комиссией >= указанного значения
+	filtered := make([]models.Transfer, 0, len(all))
+	for _, t := range all {
+		if commissionFromStr != "" {
+			commissionValue := utils.ExtractFirstFloat(t.Commission)
+			if commissionValue < commissionFrom {
+				continue
+			}
 		}
+		filtered = append(filtered, t)
 	}
+
+	// Сортировка ДО пагинации
+	if commissionFromStr != "" {
+		// Автоматическая сортировка по комиссии от большего к меньшему при наличии фильтра
+		// чтобы сначала показывались записи с комиссией ближе к указанному значению
+		sort.SliceStable(filtered, func(i, j int) bool {
+			commI := utils.ExtractFirstFloat(filtered[i].Commission)
+			commJ := utils.ExtractFirstFloat(filtered[j].Commission)
+			return commI > commJ
+		})
+	} else if strings.EqualFold(sortBy, "commission") {
+		// Сортировка по комиссии если явно указано
+		sort.SliceStable(filtered, func(i, j int) bool {
+			commI := utils.ExtractFirstFloat(filtered[i].Commission)
+			commJ := utils.ExtractFirstFloat(filtered[j].Commission)
+			if strings.ToLower(sortDir) == "desc" {
+				return commI > commJ
+			}
+			return commI < commJ
+		})
+	} else if strings.EqualFold(sortBy, "app_name") {
+		// Сортировка по имени приложения
+		sort.SliceStable(filtered, func(i, j int) bool {
+			if strings.ToLower(sortDir) == "desc" {
+				return filtered[i].AppName > filtered[j].AppName
+			}
+			return filtered[i].AppName < filtered[j].AppName
+		})
+	} else if strings.EqualFold(sortBy, "created_at") {
+		// Сортировка по дате создания
+		sort.SliceStable(filtered, func(i, j int) bool {
+			if strings.ToLower(sortDir) == "desc" {
+				return filtered[i].CreatedAt.After(filtered[j].CreatedAt)
+			}
+			return filtered[i].CreatedAt.Before(filtered[j].CreatedAt)
+		})
+	}
+
+	// Подсчет общего количества после фильтрации
+	totalElements := int64(len(filtered))
+	totalPages := int((totalElements + int64(size) - 1) / int64(size))
+
+	// Пагинация в памяти
 	offset := page * size
+	end := offset + size
+	if offset > len(filtered) {
+		offset = len(filtered)
+	}
+	if end > len(filtered) {
+		end = len(filtered)
+	}
+	pageItems := filtered[offset:end]
 
 	// Проверка на пустой результат
 	if totalElements == 0 {
@@ -145,52 +204,6 @@ func (tc *TransferController) getTransfersWithPagination(c *gin.Context, tableNa
 		return
 	}
 
-	// Создание сортировки
-	sortDirection := "ASC"
-	if strings.ToLower(sortDir) == "desc" {
-		sortDirection = "DESC"
-	}
-
-	// Валидация поля сортировки для переводов
-	allowedSortFields := map[string]string{
-		"app_name":   "app_name",
-		"commission": "commission",
-		"limit_info": "limit_info",
-		"created_at": "created_at",
-	}
-
-	sortField, exists := allowedSortFields[sortBy]
-	if !exists {
-		sortField = "app_name"
-	}
-
-	// Выполнение запроса с пагинацией и сортировкой
-	var transfers []models.Transfer
-	dataQuery := db.Table(tableName)
-	if search != "" {
-		dataQuery = dataQuery.Where("app_name ILIKE ?", "%"+search+"%")
-	}
-
-	// Применение сортировки
-	if sortField == "app_name" {
-		// Для текстовых полей добавляем COLLATE для правильной сортировки
-		if sortDirection == "ASC" {
-			dataQuery = dataQuery.Order("app_name COLLATE \"C\" ASC")
-		} else {
-			dataQuery = dataQuery.Order("app_name COLLATE \"C\" DESC")
-		}
-	} else {
-		dataQuery = dataQuery.Order(sortField + " " + sortDirection)
-	}
-
-	// Применение пагинации
-	dataQuery = dataQuery.Offset(offset).Limit(size)
-
-	if err := dataQuery.Find(&transfers).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при получении данных"})
-		return
-	}
-
 	// Создание объекта сортировки
 	sortObj := Sort{
 		Direction:    strings.ToUpper(sortDir),
@@ -207,10 +220,10 @@ func (tc *TransferController) getTransfersWithPagination(c *gin.Context, tableNa
 		First:            page == 0,
 		Last:             page >= totalPages-1,
 		Size:             size,
-		Content:          transfers,
+		Content:          pageItems,
 		Number:           page,
 		Sort:             []Sort{sortObj},
-		NumberOfElements: len(transfers),
+		NumberOfElements: len(pageItems),
 		Pageable: Pageable{
 			Offset:     offset,
 			Sort:       []Sort{sortObj},
@@ -219,7 +232,7 @@ func (tc *TransferController) getTransfersWithPagination(c *gin.Context, tableNa
 			PageSize:   size,
 			Unpaged:    false,
 		},
-		Empty: len(transfers) == 0,
+		Empty: len(pageItems) == 0,
 	}
 
 	c.JSON(http.StatusOK, gin.H{"result": response, "success": true})

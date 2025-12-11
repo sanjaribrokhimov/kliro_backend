@@ -528,7 +528,7 @@ func (hc *HotelController) BookingFlowConfirm(c *gin.Context) {
 func (hc *HotelController) BookingFlowCancel(c *gin.Context) {
 	raw, _ := c.GetRawData()
 	raw = ensureBookingFlowCredentials(raw, hc.hoteliosService)
-	respBody, status, err := hc.hoteliosService.MakeBookingFlowRequestRaw("POST", "/api/v1/booking-flow/booking/cancel", raw, nil)
+	respBody, status, err := hc.hoteliosService.MakeBookingFlowRequestRaw("DELETE", "/api/v1/booking-flow/booking/cancel", raw, nil)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

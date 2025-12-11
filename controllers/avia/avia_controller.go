@@ -240,7 +240,7 @@ func (ac *AviaController) GetBookingInfo(c *gin.Context) {
 // @Success 200 {object} map[string]interface{}
 // @Failure 400 {object} map[string]interface{}
 // @Failure 500 {object} map[string]interface{}
-// @Router /avia/booking/{booking_id}/cancel [post]
+// @Router /avia/booking/{booking_id}/cancel [delete]
 func (ac *AviaController) CancelBooking(c *gin.Context) {
 	bookingID := c.Param("booking_id")
 	if bookingID == "" {
@@ -251,7 +251,7 @@ func (ac *AviaController) CancelBooking(c *gin.Context) {
 		return
 	}
 
-	ac.proxyRaw(c, "POST", fmt.Sprintf("/api/v1/booking/%s/cancel", bookingID), true, true)
+	ac.proxyRaw(c, "DELETE", fmt.Sprintf("/api/v1/booking/%s/cancel", bookingID), true, false)
 }
 
 // GetFareRules получает правила тарифа
@@ -510,7 +510,7 @@ func (ac *AviaController) CheckAvailability(c *gin.Context) {
 // @Produce json
 // @Param booking_id path string true "ID бронирования"
 // @Success 200 {object} map[string]interface{}
-// @Router /api/v1/booking/{booking_id}/cancel-unpaid [post]
+// @Router /api/v1/booking/{booking_id}/cancel-unpaid [delete]
 func (ac *AviaController) CancelUnpaidBooking(c *gin.Context) {
 	bookingID := c.Param("booking_id")
 	if bookingID == "" {
@@ -521,7 +521,7 @@ func (ac *AviaController) CancelUnpaidBooking(c *gin.Context) {
 		return
 	}
 
-	ac.proxyRaw(c, "POST", fmt.Sprintf("/api/v1/booking/%s/cancel-unpaid", bookingID), true, true)
+	ac.proxyRaw(c, "DELETE", fmt.Sprintf("/api/v1/booking/%s/cancel-unpaid", bookingID), true, false)
 }
 
 // GetBookingRules получает условия тарифа после бронирования
@@ -594,7 +594,7 @@ func (ac *AviaController) CheckPaymentPermission(c *gin.Context) {
 // @Produce json
 // @Param booking_id path string true "ID бронирования"
 // @Success 200 {object} map[string]interface{}
-// @Router /api/v1/booking/{booking_id}/void [post]
+// @Router /api/v1/booking/{booking_id}/void [delete]
 func (ac *AviaController) VoidBooking(c *gin.Context) {
 	bookingID := c.Param("booking_id")
 	if bookingID == "" {
@@ -605,7 +605,7 @@ func (ac *AviaController) VoidBooking(c *gin.Context) {
 		return
 	}
 
-	ac.proxyRaw(c, "POST", fmt.Sprintf("/api/v1/booking/%s/void", bookingID), true, true)
+	ac.proxyRaw(c, "DELETE", fmt.Sprintf("/api/v1/booking/%s/void", bookingID), true, false)
 }
 
 // GetRefundAmounts получает сумму возмещения и штраф при возврате
@@ -636,7 +636,7 @@ func (ac *AviaController) GetRefundAmounts(c *gin.Context) {
 // @Produce json
 // @Param booking_id path string true "ID бронирования"
 // @Success 200 {object} map[string]interface{}
-// @Router /api/v1/booking/{booking_id}/auto-cancel [post]
+// @Router /api/v1/booking/{booking_id}/auto-cancel [delete]
 func (ac *AviaController) AutoCancel(c *gin.Context) {
 	bookingID := c.Param("booking_id")
 	if bookingID == "" {
@@ -647,7 +647,7 @@ func (ac *AviaController) AutoCancel(c *gin.Context) {
 		return
 	}
 
-	ac.proxyRaw(c, "POST", fmt.Sprintf("/api/v1/booking/%s/auto-cancel", bookingID), true, true)
+	ac.proxyRaw(c, "DELETE", fmt.Sprintf("/api/v1/booking/%s/auto-cancel", bookingID), true, false)
 }
 
 // GetPDFReceipt запрашивает маршрутную квитанцию

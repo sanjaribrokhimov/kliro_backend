@@ -260,7 +260,7 @@ func (bs *BukharaService) GetBookingInfo(bookingID string) (*models.BookingRespo
 func (bs *BukharaService) CancelBooking(bookingID string) error {
 	endpoint := fmt.Sprintf("/api/v1/booking/%s/cancel", bookingID)
 
-	_, err := bs.makeRequest("POST", endpoint, nil)
+	_, err := bs.makeRequest("DELETE", endpoint, nil)
 	return err
 }
 

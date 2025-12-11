@@ -45,7 +45,7 @@ func SetupHotelRoutes(router *gin.Engine) {
 		bookingFlowGroup.POST("/quote", hotelController.BookingFlowQuote)
 		bookingFlowGroup.POST("/booking/create", hotelController.BookingFlowCreate)
 		bookingFlowGroup.POST("/booking/confirm", hotelController.BookingFlowConfirm)
-		bookingFlowGroup.POST("/booking/cancel", hotelController.BookingFlowCancel)
+		bookingFlowGroup.DELETE("/booking/cancel", hotelController.BookingFlowCancel)
 		bookingFlowGroup.POST("/booking/read", hotelController.BookingFlowRead)
 	}
 }
