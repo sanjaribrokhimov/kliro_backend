@@ -3,6 +3,7 @@ package admin
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"kliro/models"
@@ -318,5 +319,142 @@ func (ac *AdminController) ClearAllParserData(c *gin.Context) {
 			"message": "Все данные парсеров очищены",
 		},
 		"success": true,
+	})
+}
+
+// GetAviaOrders получает все заказы авиабилетов с фильтрацией и пагинацией
+// @Summary Получение заказов авиабилетов
+// @Description Получение всех заказов с category='avia' с фильтрацией по статусу, датам, компании и пагинацией
+// @Tags Админка
+// @Accept json
+// @Produce json
+// @Param page query int false "Номер страницы (по умолчанию 1)"
+// @Param limit query int false "Количество записей на странице (по умолчанию 20, максимум 100)"
+// @Param status query string false "Фильтр по статусу"
+// @Param company query string false "Фильтр по названию компании"
+// @Param order_id query string false "Поиск по order_id"
+// @Param user_id query int false "Фильтр по ID пользователя"
+// @Param date_from query string false "Начальная дата (формат: YYYY-MM-DD)"
+// @Param date_to query string false "Конечная дата (формат: YYYY-MM-DD)"
+// @Param last_day query bool false "Получить заказы за последний день (true/false)"
+// @Success 200 {object} map[string]interface{}
+// @Router /admin/orders/avia [get]
+func (ac *AdminController) GetAviaOrders(c *gin.Context) {
+	// Параметры пагинации
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
+	if page < 1 {
+		page = 1
+	}
+	if limit < 1 || limit > 100 {
+		limit = 20
+	}
+
+	offset := (page - 1) * limit
+
+	// Фильтры
+	status := c.Query("status")
+	company := c.Query("company")
+	orderID := c.Query("order_id")
+	userIDStr := c.Query("user_id")
+	dateFrom := c.Query("date_from")
+	dateTo := c.Query("date_to")
+	lastDayStr := c.Query("last_day")
+
+	// Строим запрос - фильтруем только по category='avia'
+	query := ac.db.Model(&models.Order{}).Where("category = ?", "avia")
+
+	// Фильтр по статусу
+	if status != "" {
+		query = query.Where("status = ?", status)
+	}
+
+	// Фильтр по компании
+	if company != "" {
+		query = query.Where("company_name ILIKE ?", "%"+company+"%")
+	}
+
+	// Поиск по order_id
+	if orderID != "" {
+		query = query.Where("order_id ILIKE ?", "%"+orderID+"%")
+	}
+
+	// Фильтр по user_id
+	if userIDStr != "" {
+		if userID, err := strconv.ParseUint(userIDStr, 10, 32); err == nil {
+			query = query.Where("user_id = ?", uint(userID))
+		}
+	}
+
+	// Фильтр за последний день
+	if lastDayStr == "true" {
+		lastDay := time.Now().Add(-24 * time.Hour)
+		query = query.Where("created_at >= ?", lastDay)
+	} else {
+		// Фильтрация по датам (если не используется last_day)
+		if dateFrom != "" {
+			fromTime, err := time.Parse("2006-01-02", dateFrom)
+			if err == nil {
+				query = query.Where("created_at >= ?", fromTime)
+			}
+		}
+		if dateTo != "" {
+			toTime, err := time.Parse("2006-01-02", dateTo)
+			if err == nil {
+				// Добавляем 23:59:59 к конечной дате
+				toTime = toTime.Add(23*time.Hour + 59*time.Minute + 59*time.Second)
+				query = query.Where("created_at <= ?", toTime)
+			}
+		}
+	}
+
+	// Получаем общее количество
+	var total int64
+	if err := query.Count(&total).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"error":   "Ошибка при подсчете заказов",
+		})
+		return
+	}
+
+	// Получаем заказы с пагинацией, включая информацию о пользователе
+	var orders []models.Order
+	if err := query.Preload("User").Order("created_at DESC").Offset(offset).Limit(limit).Find(&orders).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"error":   "Ошибка при получении заказов",
+		})
+		return
+	}
+
+	// Преобразуем в response
+	var orderResponses []models.OrderResponse
+	for _, order := range orders {
+		orderResponses = append(orderResponses, models.OrderResponse{
+			ID:          order.ID,
+			UserID:      order.UserID,
+			OrderID:     order.OrderID,
+			Category:    order.Category,
+			CompanyName: order.CompanyName,
+			Status:      order.Status,
+			CreatedAt:   order.CreatedAt,
+			UpdatedAt:   order.UpdatedAt,
+		})
+	}
+
+	totalPages := int((total + int64(limit) - 1) / int64(limit))
+
+	response := models.OrderListResponse{
+		Orders:     orderResponses,
+		Total:      total,
+		Page:       page,
+		Limit:      limit,
+		TotalPages: totalPages,
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"result":  response,
 	})
 }
