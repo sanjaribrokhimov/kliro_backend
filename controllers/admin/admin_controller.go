@@ -83,11 +83,20 @@ func (ac *AdminController) UsersList(c *gin.Context) {
 	confirmed := c.Query("confirmed") // "true"/"false"
 
 	q := ac.db.Model(&models.User{})
+	// Для email и phone используем частичное совпадение (hints/автодополнение)
 	if email != "" {
-		q = q.Where("email = ?", email)
+		q = q.Where("email ILIKE ?", "%"+email+"%")
+		// Для hints ограничиваем количество результатов
+		if pageSize > 20 {
+			pageSize = 20
+		}
 	}
 	if phone != "" {
-		q = q.Where("phone = ?", phone)
+		q = q.Where("phone ILIKE ?", "%"+phone+"%")
+		// Для hints ограничиваем количество результатов
+		if pageSize > 20 {
+			pageSize = 20
+		}
 	}
 	if role != "" {
 		q = q.Where("role = ?", role)
