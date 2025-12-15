@@ -59,6 +59,8 @@ func SetupAdminRoutes(r *gin.Engine) {
 
 		// Заказы авиабилетов (админка)
 		adminGroup.GET("/orders/avia", adminController.GetAviaOrders)
+		// Заказы отелей (админка)
+		adminGroup.GET("/orders/hotel", adminController.GetHotelOrders)
 	}
 
 	fmt.Println("DEBUG: Админские routes настроены успешно")
