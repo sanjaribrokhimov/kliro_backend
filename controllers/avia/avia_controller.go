@@ -75,7 +75,7 @@ func addSplitPercentToAviaResponse(respBody []byte, percent *float64) []byte {
 	return respBody
 }
 
-func (ac *AviaController) proxyRaw(c *gin.Context, method, endpoint string, includeQuery, includeBody bool) {
+func (ac *AviaController) proxyRawWithOptions(c *gin.Context, method, endpoint string, includeQuery, includeBody bool, addSplitToResponse bool) {
 	fullEndpoint := endpoint
 	if includeQuery {
 		if rawQuery := c.Request.URL.RawQuery; rawQuery != "" {
@@ -109,9 +109,8 @@ func (ac *AviaController) proxyRaw(c *gin.Context, method, endpoint string, incl
 		return
 	}
 
-	// Добавляем процент split в ответ для всех типов запросов
 	respBody := resp.Body
-	if len(respBody) > 0 {
+	if addSplitToResponse && len(respBody) > 0 {
 		percent := getAviaSplitPercent()
 		respBody = addSplitPercentToAviaResponse(respBody, percent)
 	}
@@ -121,6 +120,15 @@ func (ac *AviaController) proxyRaw(c *gin.Context, method, endpoint string, incl
 	if len(respBody) > 0 {
 		_, _ = c.Writer.Write(respBody)
 	}
+}
+
+func (ac *AviaController) proxyRaw(c *gin.Context, method, endpoint string, includeQuery, includeBody bool) {
+	ac.proxyRawWithOptions(c, method, endpoint, includeQuery, includeBody, true)
+}
+
+// proxyRawPure делает полностью "сырой" прокси: без модификации тела ответа (например, без split_percent).
+func (ac *AviaController) proxyRawPure(c *gin.Context, method, endpoint string, includeQuery, includeBody bool) {
+	ac.proxyRawWithOptions(c, method, endpoint, includeQuery, includeBody, false)
 }
 
 func copyProxyHeaders(dst http.Header, src http.Header) {
@@ -521,7 +529,7 @@ func (ac *AviaController) CancelUnpaidBooking(c *gin.Context) {
 		return
 	}
 
-	ac.proxyRaw(c, "DELETE", fmt.Sprintf("/api/v1/booking/%s/cancel-unpaid", bookingID), true, false)
+	ac.proxyRawPure(c, "DELETE", fmt.Sprintf("/api/v1/booking/%s/cancel-unpaid", bookingID), true, false)
 }
 
 // GetBookingRules получает условия тарифа после бронирования
@@ -605,7 +613,7 @@ func (ac *AviaController) VoidBooking(c *gin.Context) {
 		return
 	}
 
-	ac.proxyRaw(c, "DELETE", fmt.Sprintf("/api/v1/booking/%s/void", bookingID), true, false)
+	ac.proxyRawPure(c, "DELETE", fmt.Sprintf("/api/v1/booking/%s/void", bookingID), true, false)
 }
 
 // GetRefundAmounts получает сумму возмещения и штраф при возврате
@@ -647,7 +655,7 @@ func (ac *AviaController) AutoCancel(c *gin.Context) {
 		return
 	}
 
-	ac.proxyRaw(c, "DELETE", fmt.Sprintf("/api/v1/booking/%s/auto-cancel", bookingID), true, false)
+	ac.proxyRawPure(c, "DELETE", fmt.Sprintf("/api/v1/booking/%s/auto-cancel", bookingID), true, false)
 }
 
 // GetPDFReceipt запрашивает маршрутную квитанцию
@@ -678,7 +686,7 @@ func (ac *AviaController) GetPDFReceipt(c *gin.Context) {
 // @Produce json
 // @Param booking_id path string true "ID бронирования"
 // @Success 200 {object} map[string]interface{}
-// @Router /api/v1/booking/{booking_id}/manual-refund [post]
+// @Router /api/v1/booking/{booking_id}/manual-refund [delete]
 func (ac *AviaController) ManualRefund(c *gin.Context) {
 	bookingID := c.Param("booking_id")
 	if bookingID == "" {
@@ -689,7 +697,7 @@ func (ac *AviaController) ManualRefund(c *gin.Context) {
 		return
 	}
 
-	ac.proxyRaw(c, "POST", fmt.Sprintf("/api/v1/booking/%s/manual-refund", bookingID), true, true)
+	ac.proxyRawPure(c, "DELETE", fmt.Sprintf("/api/v1/booking/%s/manual-refund", bookingID), true, true)
 }
 
 // GetSchedule получает расписание рейсов

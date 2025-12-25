@@ -209,6 +209,46 @@
 			]
 		},
 		{
+			"name": "Get Clicks by Direction and Date",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/analytics/clicks/:direction/by-date?date_from=2024-01-01&date_to=2024-01-31",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"analytics",
+						"clicks",
+						":direction",
+						"by-date"
+					],
+					"query": [
+						{
+							"key": "date_from",
+							"value": "2024-01-01",
+							"description": "Начальная дата (YYYY-MM-DD)"
+						},
+						{
+							"key": "date_to",
+							"value": "2024-01-31",
+							"description": "Конечная дата (YYYY-MM-DD)"
+						}
+					],
+					"variable": [
+						{
+							"key": "direction",
+							"value": "deposit",
+							"description": "Направление: deposit, card, credit, mortgage, microcredit, autocredit, transfer"
+						}
+					]
+				},
+				"description": "Фильтрация кликов по направлению и диапазону дат. Формат дат: YYYY-MM-DD."
+			},
+			"response": []
+		},
+		{
 			"name": "Get Top 10 Clicks",
 			"request": {
 				"method": "GET",

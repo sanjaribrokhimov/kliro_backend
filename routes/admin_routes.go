@@ -55,7 +55,8 @@ func SetupAdminRoutes(r *gin.Engine) {
 
 		// Пользователи (админка)
 		adminGroup.GET("/users", adminController.UsersList)
-		adminGroup.DELETE("/users", adminController.DeleteUser) // body: {email} или {phone}
+		adminGroup.PUT("/users/:id", adminController.UpdateUser)
+		adminGroup.DELETE("/users", adminController.DeleteUser)
 
 		// Заказы авиабилетов (админка)
 		adminGroup.GET("/orders/avia", adminController.GetAviaOrders)

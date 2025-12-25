@@ -36,7 +36,7 @@ func SetupAviaRoutes(router *gin.Engine) {
 		apiGroup.GET("/booking/:booking_id/get-refund-amounts", aviaController.GetRefundAmounts)
 		apiGroup.DELETE("/booking/:booking_id/auto-cancel", aviaController.AutoCancel)
 		apiGroup.GET("/booking/:booking_id/pdf-receipt", aviaController.GetPDFReceipt)
-		apiGroup.POST("/booking/:booking_id/manual-refund", aviaController.ManualRefund)
+		apiGroup.DELETE("/booking/:booking_id/manual-refund", aviaController.ManualRefund)
 
 		// Сервисы
 		apiGroup.GET("/services/schedule", aviaController.GetSchedule)

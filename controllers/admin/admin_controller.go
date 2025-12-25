@@ -29,6 +29,19 @@ type DeleteUserRequest struct {
 	Phone string `json:"phone"`
 }
 
+// UpdateUserRequest запрос на обновление пользователя
+type UpdateUserRequest struct {
+	Email      *string `json:"email"`
+	Phone      *string `json:"phone"`
+	FirstName  *string `json:"first_name"`
+	LastName   *string `json:"last_name"`
+	Role       *string `json:"role"`
+	RegionID   *uint   `json:"region_id"`
+	CategoryID *uint   `json:"category_id"`
+	Confirmed  *bool   `json:"confirmed"`
+	Password   *string `json:"password"`
+}
+
 // DeleteUser удаляет пользователя по email или phone (жёстко)
 func (ac *AdminController) DeleteUser(c *gin.Context) {
 	var req DeleteUserRequest
@@ -57,6 +70,101 @@ func (ac *AdminController) DeleteUser(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"success": true})
+}
+
+// UpdateUser обновляет пользователя по ID
+func (ac *AdminController) UpdateUser(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "Неверный ID пользователя"})
+		return
+	}
+
+	var user models.User
+	if err := ac.db.First(&user, uint(id)).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"success": false, "error": "Пользователь не найден"})
+		return
+	}
+
+	var req UpdateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "invalid request"})
+		return
+	}
+
+	if req.Email != nil {
+		var count int64
+		ac.db.Model(&models.User{}).Where("email = ? AND id != ?", *req.Email, id).Count(&count)
+		if count > 0 {
+			c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "Email уже используется"})
+			return
+		}
+		user.Email = req.Email
+	}
+
+	if req.Phone != nil {
+		var count int64
+		ac.db.Model(&models.User{}).Where("phone = ? AND id != ?", *req.Phone, id).Count(&count)
+		if count > 0 {
+			c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "Телефон уже используется"})
+			return
+		}
+		user.Phone = req.Phone
+	}
+
+	if req.FirstName != nil {
+		user.FirstName = req.FirstName
+	}
+
+	if req.LastName != nil {
+		user.LastName = req.LastName
+	}
+
+	if req.Role != nil {
+		user.Role = *req.Role
+	}
+
+	if req.RegionID != nil {
+		user.RegionID = req.RegionID
+	}
+
+	if req.CategoryID != nil {
+		user.CategoryID = req.CategoryID
+	}
+
+	if req.Confirmed != nil {
+		user.Confirmed = *req.Confirmed
+	}
+
+	if req.Password != nil && *req.Password != "" {
+		hash, err := utils.HashPassword(*req.Password)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "Ошибка хэширования пароля"})
+			return
+		}
+		user.Password = hash
+	}
+
+	if err := ac.db.Save(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "Не удалось обновить пользователя"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data": gin.H{
+			"id":          user.ID,
+			"email":       user.Email,
+			"phone":       user.Phone,
+			"first_name":  user.FirstName,
+			"last_name":   user.LastName,
+			"role":        user.Role,
+			"region_id":   user.RegionID,
+			"category_id": user.CategoryID,
+			"confirmed":   user.Confirmed,
+		},
+	})
 }
 
 // UsersList список пользователей с пагинацией и фильтрами для админки

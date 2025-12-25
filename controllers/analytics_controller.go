@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -116,6 +117,62 @@ func (ac *AnalyticsController) GetClicksByDirection(c *gin.Context) {
 
 	var clicks []models.ProductClick
 	if err := db.Where("direction = ?", direction).Order("click_count DESC").Find(&clicks).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch clicks"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"result": clicks,
+	})
+}
+
+func (ac *AnalyticsController) GetClicksByDirectionAndDate(c *gin.Context) {
+	direction := c.Param("direction")
+	dateFrom := c.Query("date_from")
+	dateTo := c.Query("date_to")
+	key := c.Query("key")
+
+	if dateFrom == "" || dateTo == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "date_from and date_to are required in format YYYY-MM-DD"})
+		return
+	}
+
+	if !validDirections[strings.ToLower(direction)] {
+		validDirs := []string{"deposit", "card", "credit", "mortgage", "microcredit", "autocredit", "transfer"}
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": fmt.Sprintf("invalid direction. Valid directions are: %s", strings.Join(validDirs, ", ")),
+		})
+		return
+	}
+
+	fromTime, err := time.Parse("2006-01-02", dateFrom)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "date_from must be YYYY-MM-DD"})
+		return
+	}
+
+	toTime, err := time.Parse("2006-01-02", dateTo)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "date_to must be YYYY-MM-DD"})
+		return
+	}
+
+	if toTime.Before(fromTime) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "date_to must be >= date_from"})
+		return
+	}
+
+	toTime = toTime.Add(23*time.Hour + 59*time.Minute + 59*time.Second)
+
+	db := utils.GetDB()
+
+	var clicks []models.ProductClick
+	query := db.Where("direction = ? AND created_at BETWEEN ? AND ?", direction, fromTime, toTime)
+	if key != "" {
+		query = query.Where("key = ?", key)
+	}
+
+	if err := query.Order("created_at DESC").Find(&clicks).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch clicks"})
 		return
 	}

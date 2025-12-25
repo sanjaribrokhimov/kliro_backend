@@ -40,6 +40,9 @@ type Config struct {
 	GrossBaseURL     string
 	GrossLogin       string
 	GrossPassword    string
+	// Euroasia OSAGO settings
+	EuroasiaBaseURL string
+	EuroasiaAPIKey  string
 }
 
 func LoadConfig() *Config {
@@ -77,6 +80,8 @@ func LoadConfig() *Config {
 		GrossBaseURL:     getenvOrDefault("GROSS_BASE_URL", "https://gross.uz"),
 		GrossLogin:       os.Getenv("GROSS_LOGIN"),
 		GrossPassword:    os.Getenv("GROSS_PASSWORD"),
+		EuroasiaBaseURL:  getenvOrDefault("EUROASIA_BASE_URL", "https://api.example.com"),
+		EuroasiaAPIKey:   os.Getenv("EUROASIA_API_KEY"),
 	}
 }
 

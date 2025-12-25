@@ -221,7 +221,7 @@ func (tc *TravelController) SetTravelPurpose(c *gin.Context) {
 	fmt.Println("\nRESPONSE:")
 	responseJSON, _ := json.MarshalIndent(response, "", "  ")
 	fmt.Println(string(responseJSON))
-	fmt.Println("========================================\n")
+	fmt.Println("========================================")
 
 	c.JSON(200, response)
 }
@@ -325,7 +325,7 @@ func (tc *TravelController) SetTravelDetails(c *gin.Context) {
 	fmt.Println("\nRESPONSE:")
 	responseJSON, _ := json.MarshalIndent(response, "", "  ")
 	fmt.Println(string(responseJSON))
-	fmt.Println("========================================\n")
+	fmt.Println("========================================")
 
 	c.JSON(200, response)
 }
@@ -862,7 +862,7 @@ func (tc *TravelController) CalculateTravel(c *gin.Context) {
 	fmt.Println("FINAL RESPONSE:")
 	responseJSON, _ := json.MarshalIndent(response, "", "  ")
 	fmt.Println(string(responseJSON))
-	fmt.Println("========================================\n")
+	fmt.Println("========================================")
 
 	c.JSON(200, response)
 }
@@ -1914,7 +1914,7 @@ func (tc *TravelController) GetTarifs(c *gin.Context) {
 	fmt.Println("\nRESPONSE:")
 	responseJSON, _ := json.MarshalIndent(result, "", "  ")
 	fmt.Println(string(responseJSON))
-	fmt.Println("========================================\n")
+	fmt.Println("========================================")
 
 	c.JSON(200, gin.H{
 		"result":  result,
