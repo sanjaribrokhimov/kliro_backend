@@ -14,13 +14,14 @@ import (
 
 // Multicard - сервис для работы с платежным шлюзом Multicard
 type Multicard struct {
-	baseURL     string
-	appID       string
-	secret      string
-	storeID     string
-	token       string
-	tokenExpiry time.Time
-	client      *http.Client
+	baseURL         string
+	appID           string
+	secret          string
+	storeID         string
+	token           string
+	tokenExpiry     time.Time
+	tokenLastRefresh time.Time
+	client          *http.Client
 }
 
 // NewMulticard создает новый сервис Multicard
@@ -44,8 +45,17 @@ func getEnv(key, defaultValue string) string {
 
 // getToken получает токен авторизации
 func (m *Multicard) getToken() error {
-	// Проверяем, есть ли действующий токен
-	if m.token != "" && time.Now().Before(m.tokenExpiry.Add(-5*time.Minute)) {
+	now := time.Now()
+	
+	// Проверяем, нужно ли обновить токен:
+	// 1. Если токена нет
+	// 2. Если токен истекает в течение 5 минут
+	// 3. Если прошло более 24 часов с последнего обновления
+	shouldRefresh := m.token == "" || 
+		now.Add(5*time.Minute).After(m.tokenExpiry) || 
+		now.Sub(m.tokenLastRefresh) >= 24*time.Hour
+
+	if !shouldRefresh {
 		return nil
 	}
 
@@ -77,16 +87,25 @@ func (m *Multicard) getToken() error {
 
 	json.NewDecoder(resp.Body).Decode(&result)
 	m.token = result.Token
+	m.tokenLastRefresh = now
 
 	// Парсим время истечения
 	if expiry, err := time.Parse("2006-01-02 15:04:05", result.Expiry); err == nil {
 		m.tokenExpiry = expiry
 	} else {
-		m.tokenExpiry = time.Now().Add(1 * time.Hour)
+		m.tokenExpiry = now.Add(1 * time.Hour)
 	}
 
 	log.Printf("Multicard: получили токен, действует до %s", m.tokenExpiry.Format("2006-01-02 15:04:05"))
 	return nil
+}
+
+// refreshToken принудительно обновляет токен (используется при ошибках авторизации)
+func (m *Multicard) refreshToken() error {
+	m.token = ""
+	m.tokenExpiry = time.Time{}
+	m.tokenLastRefresh = time.Time{}
+	return m.getToken()
 }
 
 // request делает запрос к Multicard API
@@ -97,12 +116,14 @@ func (m *Multicard) request(method, endpoint string, body interface{}) (*http.Re
 
 	url := fmt.Sprintf("%s%s", m.baseURL, endpoint)
 	var reqBody io.Reader
+	var originalBody []byte
 
 	if body != nil {
 		jsonData, err := json.Marshal(body)
 		if err != nil {
 			return nil, err
 		}
+		originalBody = jsonData
 		reqBody = bytes.NewBuffer(jsonData)
 	}
 
@@ -114,7 +135,39 @@ func (m *Multicard) request(method, endpoint string, body interface{}) (*http.Re
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+m.token)
 
-	return m.client.Do(req)
+	resp, err := m.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	// Если получили ошибку авторизации (401), обновляем токен и повторяем запрос
+	if resp.StatusCode == http.StatusUnauthorized {
+		resp.Body.Close()
+		
+		// Принудительно обновляем токен
+		if err := m.refreshToken(); err != nil {
+			return nil, fmt.Errorf("failed to refresh token: %w", err)
+		}
+
+		// Повторяем запрос с новым токеном
+		if body != nil {
+			reqBody = bytes.NewBuffer(originalBody)
+		} else {
+			reqBody = nil
+		}
+		
+		req, err = http.NewRequest(method, url, reqBody)
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer "+m.token)
+
+		return m.client.Do(req)
+	}
+
+	return resp, nil
 }
 
 // CreatePayment создает платеж

@@ -43,6 +43,13 @@ type Config struct {
 	// Euroasia OSAGO settings
 	EuroasiaBaseURL string
 	EuroasiaAPIKey  string
+	// Euroasia All OSAGO settings (erp.eai.uz)
+	EuroasiaAllBaseURL string
+	EuroasiaAllAPIKey  string
+	// Apex OSAGO settings
+	ApexBaseURL  string
+	ApexLogin    string
+	ApexPassword string
 }
 
 func LoadConfig() *Config {
@@ -80,8 +87,13 @@ func LoadConfig() *Config {
 		GrossBaseURL:     getenvOrDefault("GROSS_BASE_URL", "https://gross.uz"),
 		GrossLogin:       os.Getenv("GROSS_LOGIN"),
 		GrossPassword:    os.Getenv("GROSS_PASSWORD"),
-		EuroasiaBaseURL:  getenvOrDefault("EUROASIA_BASE_URL", "https://api.example.com"),
-		EuroasiaAPIKey:   os.Getenv("EUROASIA_API_KEY"),
+		EuroasiaBaseURL:    getenvOrDefault("EUROASIA_BASE_URL", "https://api.example.com"),
+		EuroasiaAPIKey:      os.Getenv("EUROASIA_API_KEY"),
+		EuroasiaAllBaseURL: getenvOrDefault("EUROASIA_ALL_BASE_URL", "https://erp.eai.uz"),
+		EuroasiaAllAPIKey:   os.Getenv("EUROASIA_ALL_API_KEY"),
+		ApexBaseURL:         getenvOrDefault("APEX_BASE_URL", "https://rest.aic.uz/api/ins/apex_box"),
+		ApexLogin:           os.Getenv("APEX_LOGIN"),
+		ApexPassword:        os.Getenv("APEX_PASSWORD"),
 	}
 }
 

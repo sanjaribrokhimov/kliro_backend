@@ -21,12 +21,13 @@ import (
 
 // PaymentMulticardController — прозрачный прокси для платёжной страницы Multicard
 type PaymentMulticardController struct {
-	baseURL string
-	appID   string
-	secret  string
-	token   string
-	expiry  time.Time
-	client  *http.Client
+	baseURL         string
+	appID           string
+	secret          string
+	token           string
+	expiry          time.Time
+	tokenLastRefresh time.Time
+	client          *http.Client
 }
 
 func NewPaymentMulticardController() *PaymentMulticardController {
@@ -44,7 +45,17 @@ func NewPaymentMulticardController() *PaymentMulticardController {
 
 // ensureToken получает и кэширует X-Access-Token у Multicard на стороне бэкенда
 func (pc *PaymentMulticardController) ensureToken() error {
-	if pc.token != "" && time.Now().Before(pc.expiry.Add(-5*time.Minute)) {
+	now := time.Now()
+	
+	// Проверяем, нужно ли обновить токен:
+	// 1. Если токена нет
+	// 2. Если токен истекает в течение 5 минут
+	// 3. Если прошло более 24 часов с последнего обновления
+	shouldRefresh := pc.token == "" || 
+		now.Add(5*time.Minute).After(pc.expiry) || 
+		now.Sub(pc.tokenLastRefresh) >= 24*time.Hour
+
+	if !shouldRefresh {
 		return nil
 	}
 
@@ -70,12 +81,21 @@ func (pc *PaymentMulticardController) ensureToken() error {
 	}
 	_ = json.NewDecoder(resp.Body).Decode(&res)
 	pc.token = res.Token
+	pc.tokenLastRefresh = now
 	if t, err := time.Parse("2006-01-02 15:04:05", res.Expiry); err == nil {
 		pc.expiry = t
 	} else {
-		pc.expiry = time.Now().Add(55 * time.Minute)
+		pc.expiry = now.Add(55 * time.Minute)
 	}
 	return nil
+}
+
+// refreshToken принудительно обновляет токен (используется при ошибках авторизации)
+func (pc *PaymentMulticardController) refreshToken() error {
+	pc.token = ""
+	pc.expiry = time.Time{}
+	pc.tokenLastRefresh = time.Time{}
+	return pc.ensureToken()
 }
 
 // proxyRaw проксирует запрос как есть к Multicard и возвращает сырой ответ и статус код как у источника
@@ -93,37 +113,59 @@ func (pc *PaymentMulticardController) proxyRaw(c *gin.Context, targetPath string
 	bodyBytes, _ := io.ReadAll(c.Request.Body)
 	_ = c.Request.Body.Close()
 
-	// Создаём новый запрос к апстриму
-	upReq, err := http.NewRequest(c.Request.Method, u.String(), bytes.NewReader(bodyBytes))
-	if err != nil {
-		c.Status(http.StatusBadGateway)
-		return
-	}
-
 	// Авторизация на стороне бэкенда
 	if err := pc.ensureToken(); err != nil {
 		c.Status(http.StatusBadGateway)
 		return
 	}
 
-	// Ставим только необходимые заголовки: тип контента и токен
-	if ct := c.GetHeader("Content-Type"); ct != "" {
-		upReq.Header.Set("Content-Type", ct)
-	} else {
-		upReq.Header.Set("Content-Type", "application/json")
-	}
-	if accept := c.GetHeader("Accept"); accept != "" {
-		upReq.Header.Set("Accept", accept)
-	}
-	upReq.Header.Set("X-Access-Token", pc.token)
-	upReq.Header.Set("Authorization", "Bearer "+pc.token)
+	// Функция для выполнения запроса
+	doRequest := func() (*http.Response, error) {
+		upReq, err := http.NewRequest(c.Request.Method, u.String(), bytes.NewReader(bodyBytes))
+		if err != nil {
+			return nil, err
+		}
 
-	resp, err := pc.client.Do(upReq)
+		// Ставим только необходимые заголовки: тип контента и токен
+		if ct := c.GetHeader("Content-Type"); ct != "" {
+			upReq.Header.Set("Content-Type", ct)
+		} else {
+			upReq.Header.Set("Content-Type", "application/json")
+		}
+		if accept := c.GetHeader("Accept"); accept != "" {
+			upReq.Header.Set("Accept", accept)
+		}
+		upReq.Header.Set("X-Access-Token", pc.token)
+		upReq.Header.Set("Authorization", "Bearer "+pc.token)
+
+		return pc.client.Do(upReq)
+	}
+
+	resp, err := doRequest()
 	if err != nil {
 		c.Status(http.StatusBadGateway)
 		return
 	}
 	defer resp.Body.Close()
+
+	// Если получили ошибку авторизации (401), обновляем токен и повторяем запрос
+	if resp.StatusCode == http.StatusUnauthorized {
+		resp.Body.Close()
+		
+		// Принудительно обновляем токен
+		if err := pc.refreshToken(); err != nil {
+			c.Status(http.StatusBadGateway)
+			return
+		}
+
+		// Повторяем запрос с новым токеном
+		resp, err = doRequest()
+		if err != nil {
+			c.Status(http.StatusBadGateway)
+			return
+		}
+		defer resp.Body.Close()
+	}
 
 	respBody, _ := io.ReadAll(resp.Body)
 
@@ -233,24 +275,50 @@ func (pc *PaymentMulticardController) CreateInvoice(c *gin.Context) {
 	// Отправляем в Multicard
 	u := pc.baseURL + "/payment/invoice"
 	b, _ := json.Marshal(filtered)
-	upReq, _ := http.NewRequest("POST", u, bytes.NewReader(b))
-	ct := c.GetHeader("Content-Type")
-	if ct == "" {
-		ct = "application/json"
-	}
-	upReq.Header.Set("Content-Type", ct)
-	if accept := c.GetHeader("Accept"); accept != "" {
-		upReq.Header.Set("Accept", accept)
-	}
-	upReq.Header.Set("Authorization", "Bearer "+pc.token)
-	upReq.Header.Set("X-Access-Token", pc.token)
+	
+	// Функция для выполнения запроса
+	doRequest := func() (*http.Response, error) {
+		upReq, _ := http.NewRequest("POST", u, bytes.NewReader(b))
+		ct := c.GetHeader("Content-Type")
+		if ct == "" {
+			ct = "application/json"
+		}
+		upReq.Header.Set("Content-Type", ct)
+		if accept := c.GetHeader("Accept"); accept != "" {
+			upReq.Header.Set("Accept", accept)
+		}
+		upReq.Header.Set("Authorization", "Bearer "+pc.token)
+		upReq.Header.Set("X-Access-Token", pc.token)
 
-	resp, err := pc.client.Do(upReq)
+		return pc.client.Do(upReq)
+	}
+
+	resp, err := doRequest()
 	if err != nil {
 		c.Status(http.StatusBadGateway)
 		return
 	}
 	defer resp.Body.Close()
+
+	// Если получили ошибку авторизации (401), обновляем токен и повторяем запрос
+	if resp.StatusCode == http.StatusUnauthorized {
+		resp.Body.Close()
+		
+		// Принудительно обновляем токен
+		if err := pc.refreshToken(); err != nil {
+			c.Status(http.StatusBadGateway)
+			return
+		}
+
+		// Повторяем запрос с новым токеном
+		resp, err = doRequest()
+		if err != nil {
+			c.Status(http.StatusBadGateway)
+			return
+		}
+		defer resp.Body.Close()
+	}
+
 	// Пробрасываем заголовки ответа
 	for k, v := range resp.Header {
 		for _, vv := range v {

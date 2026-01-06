@@ -115,6 +115,9 @@ func SetupRouter() *gin.Engine {
 	// Blog routes
 	SetupBlogRoutes(r)
 
+	// OSAGO All routes
+	SetupOsagoAllRoutes(r)
+
 	// Test routes for logging
 	r.GET("/test/error", controllers.TestError)
 	r.GET("/test/panic", controllers.TestPanic)
