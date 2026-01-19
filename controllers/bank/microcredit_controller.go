@@ -51,6 +51,21 @@ type ResponseByPagination struct {
 	Empty            bool                 `json:"empty"`
 }
 
+// TranslatedResponseByPagination структура ответа с переводами
+type TranslatedResponseByPagination struct {
+	TotalPages       int                           `json:"totalPages"`
+	TotalElements    int64                         `json:"totalElements"`
+	First            bool                          `json:"first"`
+	Last             bool                          `json:"last"`
+	Size             int                           `json:"size"`
+	Content          []utils.TranslatedMicrocredit `json:"content"`
+	Number           int                           `json:"number"`
+	Sort             []Sort                        `json:"sort"`
+	NumberOfElements int                           `json:"numberOfElements"`
+	Pageable         Pageable                      `json:"pageable"`
+	Empty            bool                          `json:"empty"`
+}
+
 // GetNewMicrocredits godoc
 func (mc *MicrocreditController) GetNewMicrocredits(c *gin.Context) {
 	mc.getMicrocreditsWithPagination(c, "new_microcredit")
@@ -221,14 +236,34 @@ func (mc *MicrocreditController) getMicrocreditsWithPagination(c *gin.Context, t
 	}
 	pageItems := filtered[offset:end]
 
+	// Применяем переводы к каждому элементу
+	translator := utils.GetMicrocreditTranslator()
+	translatedContent := make([]utils.TranslatedMicrocredit, 0, len(pageItems))
+	
+	for _, item := range pageItems {
+		translated := translator.TranslateMicrocredit(
+			item.BankName,
+			item.Description,
+			item.Rate,
+			item.Term,
+			item.Amount,
+			item.Channel,
+		)
+		// Заполняем остальные поля
+		translated.ID = item.ID
+		translated.URL = item.URL
+		translated.CreatedAt = item.CreatedAt.Format("2006-01-02T15:04:05.000000Z")
+		translatedContent = append(translatedContent, translated)
+	}
+
 	sortObj := Sort{Direction: strings.ToUpper(sortDir), NullHandling: "NATIVE", Ascending: strings.ToLower(sortDir) == "asc", Property: sortBy, IgnoreCase: false}
-	response := ResponseByPagination{
+	response := TranslatedResponseByPagination{
 		TotalPages:       totalPages,
 		TotalElements:    totalElements,
 		First:            page == 0,
 		Last:             page >= totalPages-1,
 		Size:             size,
-		Content:          pageItems,
+		Content:          translatedContent,
 		Number:           page,
 		Sort:             []Sort{sortObj},
 		NumberOfElements: len(pageItems),

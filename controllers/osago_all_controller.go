@@ -20,6 +20,29 @@ import (
 	"kliro/utils"
 )
 
+// asString converts common JSON-unmarshaled types to string (string/float64/json.Number/int/etc).
+// Useful when external APIs sometimes return numeric IDs that we need as strings (e.g., PINFL).
+func asString(v interface{}) string {
+	switch t := v.(type) {
+	case nil:
+		return ""
+	case string:
+		return strings.TrimSpace(t)
+	case float64:
+		// JSON numbers become float64 when unmarshaled into interface{}
+		// PINFL is an integer-like identifier, so we keep 0 decimals.
+		return strings.TrimSpace(strconv.FormatFloat(t, 'f', 0, 64))
+	case int:
+		return strconv.Itoa(t)
+	case int64:
+		return strconv.FormatInt(t, 10)
+	case json.Number:
+		return strings.TrimSpace(t.String())
+	default:
+		return ""
+	}
+}
+
 type OsagoAllController struct {
 	cfg *config.Config
 	cl  *http.Client
@@ -296,13 +319,13 @@ func (oc *OsagoAllController) Calc(c *gin.Context) {
 		return
 	}
 
-	// Валидация period_id (6, 12 или 20 дней для Euroasia)
+	// Валидация period_id (3, 6, 12 или 20)
 	if req.PeriodID == nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "period_id is required"})
 		return
 	}
-	if *req.PeriodID != 6 && *req.PeriodID != 12 && *req.PeriodID != 20 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "period_id must be 6, 12 or 20"})
+	if *req.PeriodID != 3 && *req.PeriodID != 6 && *req.PeriodID != 12 && *req.PeriodID != 20 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "period_id must be 3, 6, 12 or 20"})
 		return
 	}
 
@@ -372,9 +395,7 @@ func (oc *OsagoAllController) Calc(c *gin.Context) {
 			if ownerType, ok := owner["type"].(string); ok && ownerType == "person" {
 				if person, ok := owner["person"].(map[string]interface{}); ok {
 					// pinfl из external_id
-					if externalID, ok := person["external_id"].(string); ok {
-						ownerPinfl = externalID
-					}
+					ownerPinfl = asString(person["external_id"])
 					// passport данные
 					if passport, ok := person["passport"].(map[string]interface{}); ok {
 						if series, ok := passport["series"].(string); ok {
@@ -395,9 +416,7 @@ func (oc *OsagoAllController) Calc(c *gin.Context) {
 	if personOk {
 		if pData, ok := personData["data"].(map[string]interface{}); ok {
 			// pinfl из external_id
-			if externalID, ok := pData["external_id"].(string); ok {
-				personPinfl = externalID
-			}
+			personPinfl = asString(pData["external_id"])
 			// passport данные
 			if passport, ok := pData["passport"].(map[string]interface{}); ok {
 				if series, ok := passport["series"].(string); ok {
@@ -445,8 +464,8 @@ func (oc *OsagoAllController) Calc(c *gin.Context) {
 	var neoResponseData interface{}
 	var grossResponseData interface{}
 
-	// Neo и Gross отправляются только если period_id != 20 (они не поддерживают 20 дней)
-	if *req.PeriodID != 20 {
+	// Neo и Gross отправляются только если period_id != 20 и != 3 (они не поддерживают 20 дней и 2 месяца)
+	if *req.PeriodID != 20 && *req.PeriodID != 3 {
 		// Формируем запрос к Neo Insurance (period_id и number_drivers_id как строки)
 		neoRequest := map[string]string{
 			"gos_number":        gosNumber,
@@ -535,27 +554,30 @@ func (oc *OsagoAllController) Calc(c *gin.Context) {
 	}
 
 	// Формируем и отправляем запрос на Euroasia Insurance
+	// Euroasia отправляется только если period_id != 3 (не поддерживает 2 месяца)
 	var euroasiaResponseData interface{}
-	euroasiaRequest := oc.buildEuroasiaRequest(sessionData, req, useTerritoryRegionID, vehicleGroupID)
-	if euroasiaRequest != nil {
-		euroasiaURL := oc.cfg.EuroasiaAllBaseURL + "/api/v1/insurance/osago/calculate"
+	if *req.PeriodID != 3 {
+		euroasiaRequest := oc.buildEuroasiaRequest(sessionData, req, useTerritoryRegionID, vehicleGroupID)
+		if euroasiaRequest != nil {
+			euroasiaURL := oc.cfg.EuroasiaAllBaseURL + "/api/v1/insurance/osago/calculate"
 
-		euroasiaJsonData, err := json.Marshal(euroasiaRequest)
-		if err == nil {
-			euroasiaHttpReq, err := http.NewRequest(http.MethodPost, euroasiaURL, bytes.NewBuffer(euroasiaJsonData))
+			euroasiaJsonData, err := json.Marshal(euroasiaRequest)
 			if err == nil {
-				euroasiaHttpReq.Header.Set("Content-Type", "application/json")
-				euroasiaHttpReq.Header.Set("Accept", "application/json")
-				euroasiaHttpReq.Header.Set("Accept-Language", "ru")
-				euroasiaHttpReq.Header.Set("Authorization", oc.cfg.EuroasiaAllAPIKey)
-
-				euroasiaResp, err := oc.cl.Do(euroasiaHttpReq)
+				euroasiaHttpReq, err := http.NewRequest(http.MethodPost, euroasiaURL, bytes.NewBuffer(euroasiaJsonData))
 				if err == nil {
-					defer euroasiaResp.Body.Close()
-					euroasiaResponseBody, err := io.ReadAll(euroasiaResp.Body)
+					euroasiaHttpReq.Header.Set("Content-Type", "application/json")
+					euroasiaHttpReq.Header.Set("Accept", "application/json")
+					euroasiaHttpReq.Header.Set("Accept-Language", "ru")
+					euroasiaHttpReq.Header.Set("Authorization", oc.cfg.EuroasiaAllAPIKey)
+
+					euroasiaResp, err := oc.cl.Do(euroasiaHttpReq)
 					if err == nil {
-						if err := json.Unmarshal(euroasiaResponseBody, &euroasiaResponseData); err != nil {
-							euroasiaResponseData = string(euroasiaResponseBody)
+						defer euroasiaResp.Body.Close()
+						euroasiaResponseBody, err := io.ReadAll(euroasiaResp.Body)
+						if err == nil {
+							if err := json.Unmarshal(euroasiaResponseBody, &euroasiaResponseData); err != nil {
+								euroasiaResponseData = string(euroasiaResponseBody)
+							}
 						}
 					}
 				}
@@ -564,33 +586,36 @@ func (oc *OsagoAllController) Calc(c *gin.Context) {
 	}
 
 	// Формируем и отправляем запрос на Apex Insurance
+	// Apex отправляется только если period_id != 3 (не поддерживает 2 месяца)
 	var apexResponseData interface{}
-	apexRequest := oc.buildApexRequest(sessionData, req,
-		ownerPinfl, ownerPassportSeries, ownerPassportNumber,
-		personPinfl, personPassportSeries, personPassportNumber,
-		useTerritoryRegionExternalID, vehicleTypeID, vehicleGroupID,
-		gosNumber, techSery, techNumber)
-	if apexRequest != nil {
-		apexURL := oc.cfg.ApexBaseURL + "/osago_calculation"
+	if *req.PeriodID != 3 {
+		apexRequest := oc.buildApexRequest(sessionData, req,
+			ownerPinfl, ownerPassportSeries, ownerPassportNumber,
+			personPinfl, personPassportSeries, personPassportNumber,
+			useTerritoryRegionExternalID, vehicleTypeID, vehicleGroupID,
+			gosNumber, techSery, techNumber)
+		if apexRequest != nil {
+			apexURL := oc.cfg.ApexBaseURL + "/osago_calculation"
 
-		apexJsonData, err := json.Marshal(apexRequest)
-		if err == nil {
-			apexHttpReq, err := http.NewRequest(http.MethodPost, apexURL, bytes.NewBuffer(apexJsonData))
+			apexJsonData, err := json.Marshal(apexRequest)
 			if err == nil {
-				apexHttpReq.Header.Set("Content-Type", "application/json")
-				apexHttpReq.Header.Set("Accept", "application/json")
-
-				creds := oc.cfg.ApexLogin + ":" + oc.cfg.ApexPassword
-				auth := "Basic " + base64.StdEncoding.EncodeToString([]byte(creds))
-				apexHttpReq.Header.Set("Authorization", auth)
-
-				apexResp, err := oc.cl.Do(apexHttpReq)
+				apexHttpReq, err := http.NewRequest(http.MethodPost, apexURL, bytes.NewBuffer(apexJsonData))
 				if err == nil {
-					defer apexResp.Body.Close()
-					apexResponseBody, err := io.ReadAll(apexResp.Body)
+					apexHttpReq.Header.Set("Content-Type", "application/json")
+					apexHttpReq.Header.Set("Accept", "application/json")
+
+					creds := oc.cfg.ApexLogin + ":" + oc.cfg.ApexPassword
+					auth := "Basic " + base64.StdEncoding.EncodeToString([]byte(creds))
+					apexHttpReq.Header.Set("Authorization", auth)
+
+					apexResp, err := oc.cl.Do(apexHttpReq)
 					if err == nil {
-						if err := json.Unmarshal(apexResponseBody, &apexResponseData); err != nil {
-							apexResponseData = string(apexResponseBody)
+						defer apexResp.Body.Close()
+						apexResponseBody, err := io.ReadAll(apexResp.Body)
+						if err == nil {
+							if err := json.Unmarshal(apexResponseBody, &apexResponseData); err != nil {
+								apexResponseData = string(apexResponseBody)
+							}
 						}
 					}
 				}
@@ -599,17 +624,22 @@ func (oc *OsagoAllController) Calc(c *gin.Context) {
 	}
 
 	// Формируем и отправляем запрос на Trust Insurance
-	var trustResponseData interface{}
+	var trustResponseData interface{} = map[string]interface{}{"error": "trust calculation was not attempted"}
 	trustRequest := oc.buildTrustRequest(
 		ownerPinfl, personPinfl,
 		useTerritoryRegionExternalID, vehicleTypeID, vehicleGroupID,
 		gosNumber,
 		*req.PeriodID, *req.NumberDriversID)
-	if trustRequest != nil {
+	if trustRequest == nil {
+		trustResponseData = map[string]interface{}{"error": "trust request could not be built from session data"}
+	} else {
 		trustURL := oc.cfg.TrustBaseURL + "/api/osgo/v2/calc-prem"
 
 		trustJsonData, err := json.Marshal(trustRequest)
 		if err == nil {
+			log.Printf("[TRUST CALC] URL: %s", trustURL)
+			log.Printf("[TRUST CALC] Request: %s", string(trustJsonData))
+
 			trustHttpReq, err := http.NewRequest(http.MethodPost, trustURL, bytes.NewBuffer(trustJsonData))
 			if err == nil {
 				trustHttpReq.Header.Set("Content-Type", "application/json")
@@ -620,17 +650,38 @@ func (oc *OsagoAllController) Calc(c *gin.Context) {
 				trustHttpReq.Header.Set("Authorization", auth)
 
 				trustResp, err := oc.cl.Do(trustHttpReq)
-				if err == nil {
+				if err != nil {
+					trustResponseData = map[string]interface{}{"error": "failed to send request to trust", "details": err.Error()}
+				} else {
 					defer trustResp.Body.Close()
-					trustResponseBody, err := io.ReadAll(trustResp.Body)
-					if err == nil {
-						// Возвращаем сырой ответ от Trust
-						if err := json.Unmarshal(trustResponseBody, &trustResponseData); err != nil {
-							trustResponseData = string(trustResponseBody)
+					trustResponseBody, readErr := io.ReadAll(trustResp.Body)
+					if readErr != nil {
+						trustResponseData = map[string]interface{}{"error": "failed to read trust response", "details": readErr.Error()}
+					} else {
+						log.Printf("[TRUST CALC] Status: %d", trustResp.StatusCode)
+						log.Printf("[TRUST CALC] Response: %s", string(trustResponseBody))
+
+						// Try to decode JSON even on non-200 to preserve error info for client.
+						var decoded interface{}
+						if err := json.Unmarshal(trustResponseBody, &decoded); err != nil {
+							decoded = string(trustResponseBody)
+						}
+						if trustResp.StatusCode >= 200 && trustResp.StatusCode < 300 {
+							trustResponseData = decoded
+						} else {
+							trustResponseData = map[string]interface{}{
+								"error":  "trust returned non-2xx status",
+								"status": trustResp.StatusCode,
+								"body":   decoded,
+							}
 						}
 					}
 				}
+			} else {
+				trustResponseData = map[string]interface{}{"error": "failed to create trust request", "details": err.Error()}
 			}
+		} else {
+			trustResponseData = map[string]interface{}{"error": "failed to marshal trust request", "details": err.Error()}
 		}
 	}
 
@@ -743,10 +794,9 @@ func (oc *OsagoAllController) buildApexRequest(sessionData map[string]interface{
 		return nil // Неподдерживаемый тип ТС
 	}
 
-	// Маппинг number_drivers_id в driverNumberRestriction
-	// 0 (unlimited) -> true, 5 (limited) -> false
-	// Инвертируем логику: true = unlimited, false = limited
-	driverNumberRestriction := *req.NumberDriversID == 0
+	// Маппинг number_drivers_id в driverNumberRestriction для Apex
+	// 0 (unlimited) -> false, 5 (limited) -> true
+	driverNumberRestriction := *req.NumberDriversID == 5
 
 	// contractTermConclusionId всегда статический = "2"
 	contractTermConclusionID := "2"
@@ -1020,18 +1070,19 @@ func (oc *OsagoAllController) mapUseTerritoryToTrust(externalID int) int {
 }
 
 // mapPeriodToTrust маппит period_id в period для Trust
-// Маппинг: 6 месяцев -> 1, 12 месяцев -> 2
+// Маппинг Trust: 1 -> 6 месяцев, 2 -> 12 месяцев, 3 -> 2 месяца, 4 -> 15 и 20 дней
+// period_id: 6 -> period 1 (6 месяцев), 12 -> period 2 (1 год), 20 -> period 4 (15/20 дней), 3 -> period 3 (2 месяца)
 func (oc *OsagoAllController) mapPeriodToTrust(periodID int) int {
 	if periodID == 6 {
 		return 1 // 6 месяцев
 	} else if periodID == 12 {
-		return 2 // 1 год (12 месяцев)
+		return 2 // 12 месяцев (1 год)
 	} else if periodID == 20 {
-		// Для 20 дней пока возвращаем 1 как дефолт
-		// Нужно уточнить у Trust API, какое значение использовать для 20 дней
-		return 1
+		return 4 // 15 или 20 дней
+	} else if periodID == 3 {
+		return 3 // 2 месяца
 	}
-	return 2 // дефолт (1 год)
+	return 2 // дефолт (12 месяцев)
 }
 
 // buildTrustRequest формирует запрос для Trust API на основе данных из session
@@ -1042,8 +1093,16 @@ func (oc *OsagoAllController) buildTrustRequest(
 	periodID, numberDriversID int) map[string]interface{} {
 
 	// Проверяем наличие обязательных данных
-	if ownerPinfl == "" || personPinfl == "" {
+	if ownerPinfl == "" && personPinfl == "" {
 		return nil
+	}
+	// Fallbacks: if one PINFL is missing, reuse the other one.
+	// This avoids returning nil when upstream returns numeric external_id or only one person is present.
+	if ownerPinfl == "" {
+		ownerPinfl = personPinfl
+	}
+	if personPinfl == "" {
+		personPinfl = ownerPinfl
 	}
 
 	if gosNumber == "" {
@@ -1059,19 +1118,18 @@ func (oc *OsagoAllController) buildTrustRequest(
 	trustUseTerritoryID := oc.mapUseTerritoryToTrust(useTerritoryRegionExternalID)
 	trustPeriodID := oc.mapPeriodToTrust(periodID)
 
-	// Маппинг number_drivers_id для Trust: 0 -> 1 (unlimited), 5 -> 0 (limited)
-	// Trust API принимает только 0 или 1 для driver_limit
-	// Инвертируем логику: 1 = unlimited, 0 = limited
-	driverLimit := 1 // unlimited по умолчанию
+	// Маппинг number_drivers_id для Trust: 0 -> 0 (unlimited), 5 -> 1 (limited)
+	// Trust API: 0 = неограниченное количество, 1 = ограниченное количество
+	driverLimit := 0 // unlimited по умолчанию
 	if numberDriversID == 5 {
-		driverLimit = 0 // limited
+		driverLimit = 1 // limited
 	}
 
 	return map[string]interface{}{
 		"vehicle": map[string]interface{}{
 			"vehicle":        trustVehicleTypeID,
 			"renumber":       gosNumber,
-			"foreignVehicle": true,
+			"foreignVehicle": false,
 		},
 		"period":        trustPeriodID,
 		"use_territory": trustUseTerritoryID,
@@ -1181,11 +1239,35 @@ func (oc *OsagoAllController) extractProviderAmounts(neo, gross, euroasia, apex,
 
 	// Trust: insurance_premium
 	if trustMap, ok := trust.(map[string]interface{}); ok {
-		if amount, ok := trustMap["insurance_premium"].(float64); ok {
-			result["trust"] = int(amount)
-		} else if amount, ok := trustMap["insurance_premium"].(int); ok {
-			result["trust"] = amount
-		} else {
+		// Try several common shapes:
+		// - {"insurance_premium": 12345}
+		// - {"data": {"insurance_premium": 12345}}
+		// - {"tariffs": [{"insurance_premium": 12345}, ...]}
+		var prem interface{} = nil
+		if v, ok := trustMap["insurance_premium"]; ok {
+			prem = v
+		} else if data, ok := trustMap["data"].(map[string]interface{}); ok {
+			prem = data["insurance_premium"]
+		} else if tariffs, ok := trustMap["tariffs"].([]interface{}); ok && len(tariffs) > 0 {
+			if t0, ok := tariffs[0].(map[string]interface{}); ok {
+				prem = t0["insurance_premium"]
+			}
+		}
+
+		switch v := prem.(type) {
+		case float64:
+			result["trust"] = int(v)
+		case int:
+			result["trust"] = v
+		case string:
+			// accept "192 000" or "192000"
+			s := strings.ReplaceAll(strings.TrimSpace(v), " ", "")
+			if n, err := strconv.Atoi(s); err == nil {
+				result["trust"] = n
+			} else {
+				result["trust"] = "does not exist"
+			}
+		default:
 			result["trust"] = "does not exist"
 		}
 	} else {
