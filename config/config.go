@@ -50,6 +50,8 @@ type Config struct {
 	ApexBaseURL  string
 	ApexLogin    string
 	ApexPassword string
+	// Translation API settings (бесплатный API, без токенов)
+	TranslationAPIURL string // URL для LibreTranslate (опционально, по умолчанию используется публичный)
 }
 
 func LoadConfig() *Config {
@@ -94,6 +96,7 @@ func LoadConfig() *Config {
 		ApexBaseURL:         getenvOrDefault("APEX_BASE_URL", "https://rest.aic.uz/api/ins/apex_box"),
 		ApexLogin:           os.Getenv("APEX_LOGIN"),
 		ApexPassword:        os.Getenv("APEX_PASSWORD"),
+		TranslationAPIURL:   getenvOrDefault("TRANSLATION_API_URL", "https://libretranslate.com/translate"),
 	}
 }
 

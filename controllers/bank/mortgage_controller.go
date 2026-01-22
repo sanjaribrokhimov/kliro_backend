@@ -193,6 +193,25 @@ func getMortgagesWithPagination(c *gin.Context, db *gorm.DB, tableName string) {
 	}
 	pageItems := filtered[offset:end]
 
+	// Переводим данные через API (как у microcredit и autocredit)
+	translator := utils.GetMicrocreditTranslator()
+	translatedContent := make([]utils.TranslatedMicrocredit, 0, len(pageItems))
+	
+	for _, item := range pageItems {
+		translated := translator.TranslateMicrocredit(
+			item.BankName,
+			item.Description,
+			item.Rate,
+			item.Term,
+			item.Amount,
+			item.Channel,
+		)
+		translated.ID = item.ID
+		translated.URL = "" // У mortgage нет URL
+		translated.CreatedAt = item.CreatedAt.Format("2006-01-02T15:04:05.000000Z")
+		translatedContent = append(translatedContent, translated)
+	}
+
 	// Подсчитываем total и totalPages
 	total := int64(len(filtered))
 	totalPages := (total + int64(limit) - 1) / int64(limit)
@@ -210,10 +229,10 @@ func getMortgagesWithPagination(c *gin.Context, db *gorm.DB, tableName string) {
 			"first":            page == 1,
 			"last":             page >= int(totalPages),
 			"size":             limit,
-			"content":          pageItems,
+			"content":          translatedContent,
 			"number":           page - 1, // 0-based
-			"numberOfElements": len(pageItems),
-			"empty":            len(pageItems) == 0,
+			"numberOfElements": len(translatedContent),
+			"empty":            len(translatedContent) == 0,
 		},
 		"success": true,
 	}

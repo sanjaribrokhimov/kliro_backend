@@ -8,7 +8,7 @@ import (
 )
 
 func Migrate(db *gorm.DB) error {
-	if err := db.AutoMigrate(&models.User{}, &models.Region{}, &models.Category{}, &models.Currency{}, &models.OsagoOrder{}, &models.ProductClick{}, &models.InsuranceProfile{}, &models.BlogPost{}, &models.UserHuman{}); err != nil {
+	if err := db.AutoMigrate(&models.User{}, &models.Region{}, &models.Category{}, &models.Currency{}, &models.OsagoOrder{}, &models.ProductClick{}, &models.InsuranceProfile{}, &models.BlogPost{}, &models.UserHuman{}, &models.Favorite{}, &models.AviaSearchHistory{}, &models.HotelSearchHistory{}, &models.InsuranceSearchHistory{}); err != nil {
 		return err
 	}
 
@@ -227,6 +227,26 @@ func Migrate(db *gorm.DB) error {
 
 	// Создаем таблицы для платежей
 	if err := migrations.CreatePaymentsTable(db); err != nil {
+		return err
+	}
+
+	// Создаем таблицу favorites (избранное)
+	if err := migrations.CreateFavoritesTable(db); err != nil {
+		return err
+	}
+
+	// Обновляем item_id с VARCHAR(255) на TEXT для поддержки длинных ID
+	if err := migrations.UpdateFavoritesItemIDToText(db); err != nil {
+		return err
+	}
+
+	// Создаем таблицы истории поисков (avia, hotel, insurance)
+	if err := migrations.CreateSearchHistoryTables(db); err != nil {
+		return err
+	}
+
+	// Добавляем поля техпаспорта в insurance_search_history
+	if err := migrations.UpdateInsuranceSearchAddTechPassport(db); err != nil {
 		return err
 	}
 

@@ -31,6 +31,36 @@ type CardResponseByPagination struct {
 	Empty            bool          `json:"empty"`
 }
 
+// TranslatedCardResponseByPagination структура ответа с переводами (как у deposit)
+type TranslatedCardResponseByPagination struct {
+	TotalPages       int                  `json:"totalPages"`
+	TotalElements    int64                `json:"totalElements"`
+	First            bool                 `json:"first"`
+	Last             bool                 `json:"last"`
+	Size             int                 `json:"size"`
+	Content          []utils.TranslatedCard `json:"content"`
+	Number           int                 `json:"number"`
+	Sort             []Sort              `json:"sort"`
+	NumberOfElements int                 `json:"numberOfElements"`
+	Pageable         Pageable            `json:"pageable"`
+	Empty            bool                `json:"empty"`
+}
+
+// TranslatedCreditCardResponseByPagination структура ответа с переводами для кредитных карт
+type TranslatedCreditCardResponseByPagination struct {
+	TotalPages       int                        `json:"totalPages"`
+	TotalElements    int64                      `json:"totalElements"`
+	First            bool                       `json:"first"`
+	Last             bool                       `json:"last"`
+	Size             int                        `json:"size"`
+	Content          []utils.TranslatedCreditCard `json:"content"`
+	Number           int                        `json:"number"`
+	Sort             []Sort                     `json:"sort"`
+	NumberOfElements int                        `json:"numberOfElements"`
+	Pageable         Pageable                   `json:"pageable"`
+	Empty            bool                       `json:"empty"`
+}
+
 // GetNewCards godoc
 func (cc *CardController) GetNewCards(c *gin.Context) {
 	cc.getCardsWithPagination(c, "new_card")
@@ -186,19 +216,26 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 
 	// Проверка на пустой результат
 	if totalElements == 0 {
-		response := CardResponseByPagination{
+		sortObj := Sort{
+			Direction:    strings.ToUpper(sortDir),
+			NullHandling: "NATIVE",
+			Ascending:    strings.ToLower(sortDir) == "asc",
+			Property:     sortBy,
+			IgnoreCase:   false,
+		}
+		response := TranslatedCardResponseByPagination{
 			TotalPages:       0,
 			TotalElements:    0,
 			First:            true,
 			Last:             true,
 			Size:             size,
-			Content:          []models.Card{},
+			Content:          []utils.TranslatedCard{},
 			Number:           page,
-			Sort:             []Sort{},
+			Sort:             []Sort{sortObj},
 			NumberOfElements: 0,
 			Pageable: Pageable{
 				Offset:     offset,
-				Sort:       []Sort{},
+				Sort:       []Sort{sortObj},
 				Paged:      true,
 				PageNumber: page,
 				PageSize:   size,
@@ -282,6 +319,22 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 		return
 	}
 
+	// Применяем переводы к каждому элементу (uz/ru/en/oz)
+	translator := utils.GetCardTranslator()
+	translatedContent := make([]utils.TranslatedCard, 0, len(cards))
+	for _, item := range cards {
+		translated := translator.TranslateCard(
+			item.BankName,
+			item.Title,
+			item.Currency,
+			item.System,
+			item.OpeningType,
+		)
+		translated.ID = item.ID
+		translated.CreatedAt = item.CreatedAt.Format("2006-01-02T15:04:05.000000Z")
+		translatedContent = append(translatedContent, translated)
+	}
+
 	// Создание объекта сортировки
 	sortObj := Sort{
 		Direction:    strings.ToUpper(sortDir),
@@ -291,17 +344,17 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 		IgnoreCase:   false,
 	}
 
-	// Формирование ответа
-	response := CardResponseByPagination{
+	// Формирование ответа с переводами
+	response := TranslatedCardResponseByPagination{
 		TotalPages:       totalPages,
 		TotalElements:    totalElements,
 		First:            page == 0,
 		Last:             page >= totalPages-1,
 		Size:             size,
-		Content:          cards,
+		Content:          translatedContent,
 		Number:           page,
 		Sort:             []Sort{sortObj},
-		NumberOfElements: len(cards),
+		NumberOfElements: len(translatedContent),
 		Pageable: Pageable{
 			Offset:     offset,
 			Sort:       []Sort{sortObj},
@@ -310,7 +363,7 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 			PageSize:   size,
 			Unpaged:    false,
 		},
-		Empty: len(cards) == 0,
+		Empty: len(translatedContent) == 0,
 	}
 
 	c.JSON(http.StatusOK, gin.H{"result": response, "success": true})
@@ -355,8 +408,24 @@ func (cc *CardController) getCreditCardsWithPagination(c *gin.Context, tableName
 		return
 	}
 
+	// Применяем переводы к каждому элементу (uz/ru/en/oz)
+	translator := utils.GetCardTranslator()
+	translatedContent := make([]utils.TranslatedCreditCard, 0, len(items))
+	for _, item := range items {
+		translated := translator.TranslateCreditCard(
+			item.BankName,
+			item.Title,
+			item.Rate,
+			item.Term,
+			item.Amount,
+		)
+		translated.ID = item.ID
+		translated.CreatedAt = item.CreatedAt.Format("2006-01-02T15:04:05.000000Z")
+		translatedContent = append(translatedContent, translated)
+	}
+
 	totalPages := int((total + int64(size) - 1) / int64(size))
-	response := CardResponseByPagination{
+	response := TranslatedCreditCardResponseByPagination{
 		TotalPages:       totalPages,
 		TotalElements:    total,
 		First:            page == 0,
@@ -364,22 +433,11 @@ func (cc *CardController) getCreditCardsWithPagination(c *gin.Context, tableName
 		Size:             size,
 		Number:           page,
 		Sort:             []Sort{},
-		NumberOfElements: len(items),
+		NumberOfElements: len(translatedContent),
 		Pageable:         Pageable{Offset: offset, Sort: []Sort{}, Paged: true, PageNumber: page, PageSize: size, Unpaged: false},
-		Empty:            len(items) == 0,
+		Empty:            len(translatedContent) == 0,
+		Content:          translatedContent,
 	}
-	// Переиспользуем поле Content c приведением типов через интерфейсный ответ
-	c.JSON(http.StatusOK, gin.H{"result": gin.H{
-		"totalPages":       response.TotalPages,
-		"totalElements":    response.TotalElements,
-		"first":            response.First,
-		"last":             response.Last,
-		"size":             response.Size,
-		"content":          items,
-		"number":           response.Number,
-		"sort":             response.Sort,
-		"numberOfElements": response.NumberOfElements,
-		"pageable":         response.Pageable,
-		"empty":            response.Empty,
-	}, "success": true})
+
+	c.JSON(http.StatusOK, gin.H{"result": response, "success": true})
 }

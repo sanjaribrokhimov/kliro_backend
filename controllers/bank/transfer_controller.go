@@ -33,6 +33,21 @@ type TransferResponseByPagination struct {
 	Empty            bool              `json:"empty"`
 }
 
+// TranslatedTransferResponseByPagination структура ответа с переводами
+type TranslatedTransferResponseByPagination struct {
+	TotalPages       int                        `json:"totalPages"`
+	TotalElements    int64                      `json:"totalElements"`
+	First            bool                        `json:"first"`
+	Last             bool                        `json:"last"`
+	Size             int                         `json:"size"`
+	Content          []utils.TranslatedTransfer  `json:"content"`
+	Number           int                         `json:"number"`
+	Sort             []Sort                      `json:"sort"`
+	NumberOfElements int                         `json:"numberOfElements"`
+	Pageable         Pageable                    `json:"pageable"`
+	Empty            bool                        `json:"empty"`
+}
+
 // GetNewTransfers получает новые переводы с пагинацией
 func (tc *TransferController) GetNewTransfers(c *gin.Context) {
 	tc.getTransfersWithPagination(c, "new_transfer")
@@ -180,13 +195,13 @@ func (tc *TransferController) getTransfersWithPagination(c *gin.Context, tableNa
 
 	// Проверка на пустой результат
 	if totalElements == 0 {
-		response := TransferResponseByPagination{
+		response := TranslatedTransferResponseByPagination{
 			TotalPages:       0,
 			TotalElements:    0,
 			First:            true,
 			Last:             true,
 			Size:             size,
-			Content:          []models.Transfer{},
+			Content:          []utils.TranslatedTransfer{},
 			Number:           page,
 			Sort:             []Sort{},
 			NumberOfElements: 0,
@@ -204,6 +219,21 @@ func (tc *TransferController) getTransfersWithPagination(c *gin.Context, tableNa
 		return
 	}
 
+	// Переводим данные через API
+	translator := utils.GetTransferTranslator()
+	translatedContent := make([]utils.TranslatedTransfer, 0, len(pageItems))
+
+	for _, item := range pageItems {
+		translated := translator.TranslateTransfer(
+			item.AppName,
+			item.Commission,
+			item.LimitUZ,
+		)
+		translated.ID = item.ID
+		translated.CreatedAt = item.CreatedAt.Format("2006-01-02T15:04:05.000000Z")
+		translatedContent = append(translatedContent, translated)
+	}
+
 	// Создание объекта сортировки
 	sortObj := Sort{
 		Direction:    strings.ToUpper(sortDir),
@@ -213,17 +243,17 @@ func (tc *TransferController) getTransfersWithPagination(c *gin.Context, tableNa
 		IgnoreCase:   false,
 	}
 
-	// Формирование ответа
-	response := TransferResponseByPagination{
+	// Формирование ответа с переводами
+	response := TranslatedTransferResponseByPagination{
 		TotalPages:       totalPages,
 		TotalElements:    totalElements,
 		First:            page == 0,
 		Last:             page >= totalPages-1,
 		Size:             size,
-		Content:          pageItems,
+		Content:          translatedContent,
 		Number:           page,
 		Sort:             []Sort{sortObj},
-		NumberOfElements: len(pageItems),
+		NumberOfElements: len(translatedContent),
 		Pageable: Pageable{
 			Offset:     offset,
 			Sort:       []Sort{sortObj},
@@ -232,7 +262,7 @@ func (tc *TransferController) getTransfersWithPagination(c *gin.Context, tableNa
 			PageSize:   size,
 			Unpaged:    false,
 		},
-		Empty: len(pageItems) == 0,
+		Empty: len(translatedContent) == 0,
 	}
 
 	c.JSON(http.StatusOK, gin.H{"result": response, "success": true})

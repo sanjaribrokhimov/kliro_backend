@@ -56,6 +56,9 @@ func SetupRouter() *gin.Engine {
 	r.GET("/auth/google", userController.GoogleLogin)
 	r.GET("/auth/google/callback", userController.GoogleCallback)
 	r.POST("/auth/google/complete", userController.GoogleComplete)
+	r.POST("/auth/google/mobile", userController.GoogleLoginMobile)
+	r.POST("/auth/google/mobile/complete", userController.GoogleCompleteMobile)
+	r.POST("/auth/mobile/check", userController.MobileAuthCheck)
 	// Bank group for all bank-related endpoints
 	SetupBankRoutes(r)
 
@@ -86,6 +89,42 @@ func SetupRouter() *gin.Engine {
 		userGroup.GET("/humans/search", humansController.SearchByName)
 		userGroup.PUT("/humans/:id", humansController.UpdateHuman)
 		userGroup.DELETE("/humans/:id", humansController.DeleteHuman)
+
+		// Favorites endpoints
+		favoritesController := controllers.NewFavoriteController()
+		userGroup.POST("/favorites", favoritesController.Create)
+		userGroup.GET("/favorites", favoritesController.List)
+		userGroup.GET("/favorites/:id", favoritesController.Get)
+		userGroup.PUT("/favorites/:id", favoritesController.Put)
+		userGroup.PATCH("/favorites/:id", favoritesController.Patch)
+		userGroup.DELETE("/favorites/:id", favoritesController.Delete)
+
+		// Search History endpoints (Avia, Hotel, Insurance)
+		searchHistoryController := controllers.NewSearchHistoryController()
+		
+		// Avia Search History
+		userGroup.POST("/search-history/avia", searchHistoryController.CreateAviaSearch)
+		userGroup.GET("/search-history/avia", searchHistoryController.ListAviaSearch)
+		userGroup.GET("/search-history/avia/:id", searchHistoryController.GetAviaSearch)
+		userGroup.PUT("/search-history/avia/:id", searchHistoryController.UpdateAviaSearch)
+		userGroup.PATCH("/search-history/avia/:id", searchHistoryController.PatchAviaSearch)
+		userGroup.DELETE("/search-history/avia/:id", searchHistoryController.DeleteAviaSearch)
+
+		// Hotel Search History
+		userGroup.POST("/search-history/hotel", searchHistoryController.CreateHotelSearch)
+		userGroup.GET("/search-history/hotel", searchHistoryController.ListHotelSearch)
+		userGroup.GET("/search-history/hotel/:id", searchHistoryController.GetHotelSearch)
+		userGroup.PUT("/search-history/hotel/:id", searchHistoryController.UpdateHotelSearch)
+		userGroup.PATCH("/search-history/hotel/:id", searchHistoryController.PatchHotelSearch)
+		userGroup.DELETE("/search-history/hotel/:id", searchHistoryController.DeleteHotelSearch)
+
+		// Insurance Search History
+		userGroup.POST("/search-history/insurance", searchHistoryController.CreateInsuranceSearch)
+		userGroup.GET("/search-history/insurance", searchHistoryController.ListInsuranceSearch)
+		userGroup.GET("/search-history/insurance/:id", searchHistoryController.GetInsuranceSearch)
+		userGroup.PUT("/search-history/insurance/:id", searchHistoryController.UpdateInsuranceSearch)
+		userGroup.PATCH("/search-history/insurance/:id", searchHistoryController.PatchInsuranceSearch)
+		userGroup.DELETE("/search-history/insurance/:id", searchHistoryController.DeleteInsuranceSearch)
 	}
 
 	// Avia group (Bukhara API integration)

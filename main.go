@@ -13,6 +13,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
+	"kliro/config"
 	"kliro/controllers"
 	"kliro/database"
 	"kliro/routes"
@@ -124,6 +125,28 @@ func main() {
 	}
 	utils.SetRedis(rdb)
 	log.Println("Connected to Redis")
+
+	// Инициализация сервиса переводов (бесплатный, без токенов)
+	cfg := config.LoadConfig()
+	translationService := utils.NewTranslationService(cfg.TranslationAPIURL)
+	
+	// Устанавливаем сервис для микрокредитов
+	microcreditTranslator := utils.GetMicrocreditTranslator()
+	microcreditTranslator.SetTranslationService(translationService)
+	
+	// Устанавливаем сервис для переводов (transfers)
+	transferTranslator := utils.GetTransferTranslator()
+	transferTranslator.SetTranslationService(translationService)
+
+	// Устанавливаем сервис для вкладов (deposits)
+	depositTranslator := utils.GetDepositTranslator()
+	depositTranslator.SetTranslationService(translationService)
+
+	// Устанавливаем сервис для карт и кредитных карт (cards / credit-cards)
+	cardTranslator := utils.GetCardTranslator()
+	cardTranslator.SetTranslationService(translationService)
+	
+	log.Println("Translation service initialized (free API, no tokens required)")
 
 	// Инициализация Google OAuth
 	controllers.InitGoogleOAuth()

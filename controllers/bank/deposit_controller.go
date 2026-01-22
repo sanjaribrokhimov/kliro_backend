@@ -33,6 +33,21 @@ type DepositResponseByPagination struct {
 	Empty            bool             `json:"empty"`
 }
 
+// TranslatedDepositResponseByPagination структура ответа с переводами (как у microcredit)
+type TranslatedDepositResponseByPagination struct {
+	TotalPages       int                    `json:"totalPages"`
+	TotalElements    int64                  `json:"totalElements"`
+	First            bool                   `json:"first"`
+	Last             bool                   `json:"last"`
+	Size             int                    `json:"size"`
+	Content          []utils.TranslatedDeposit `json:"content"`
+	Number           int                    `json:"number"`
+	Sort             []Sort                 `json:"sort"`
+	NumberOfElements int                    `json:"numberOfElements"`
+	Pageable         Pageable               `json:"pageable"`
+	Empty            bool                   `json:"empty"`
+}
+
 // GetNewDeposits godoc
 func (dc *DepositController) GetNewDeposits(c *gin.Context) {
 	dc.getDepositsWithPagination(c, "new_deposit")
@@ -196,19 +211,35 @@ func (dc *DepositController) getDepositsWithPagination(c *gin.Context, tableName
 	}
 	pageItems := filtered[offset:end]
 
+	// Применяем переводы к каждому элементу (uz/ru/en/oz)
+	translator := utils.GetDepositTranslator()
+	translatedContent := make([]utils.TranslatedDeposit, 0, len(pageItems))
+	for _, item := range pageItems {
+		translated := translator.TranslateDeposit(
+			item.BankName,
+			item.Title,
+			item.Rate,
+			item.TermYears,
+			item.MinAmount,
+		)
+		translated.ID = item.ID
+		translated.CreatedAt = item.CreatedAt.Format("2006-01-02T15:04:05.000000Z")
+		translatedContent = append(translatedContent, translated)
+	}
+
 	sortObj := Sort{Direction: strings.ToUpper(sortDir), NullHandling: "NATIVE", Ascending: strings.ToLower(sortDir) == "asc", Property: sortBy, IgnoreCase: false}
-	response := DepositResponseByPagination{
+	response := TranslatedDepositResponseByPagination{
 		TotalPages:       int((int64(len(filtered)) + int64(size) - 1) / int64(size)),
 		TotalElements:    int64(len(filtered)),
 		First:            page == 0,
 		Last:             (page+1)*size >= len(filtered) && len(filtered) > 0,
 		Size:             size,
-		Content:          pageItems,
+		Content:          translatedContent,
 		Number:           page,
 		Sort:             []Sort{sortObj},
-		NumberOfElements: len(pageItems),
+		NumberOfElements: len(translatedContent),
 		Pageable:         Pageable{Offset: offset, Sort: []Sort{sortObj}, Paged: true, PageNumber: page, PageSize: size, Unpaged: false},
-		Empty:            len(pageItems) == 0,
+		Empty:            len(translatedContent) == 0,
 	}
 
 	c.JSON(http.StatusOK, gin.H{"result": response, "success": true})

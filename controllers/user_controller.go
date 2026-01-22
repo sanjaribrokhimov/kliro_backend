@@ -533,14 +533,23 @@ func (uc *UserController) GoogleLogin(c *gin.Context) {
 		redirectURL = "https://kliro.uz/auth/google-complete" // default frontend page
 	}
 	state := base64.URLEncoding.EncodeToString([]byte(redirectURL))
-	url := googleOauthConfig.AuthCodeURL(state, oauth2.AccessTypeOffline)
+	// Добавляем prompt=select_account, чтобы всегда показывать выбор аккаунта
+	url := googleOauthConfig.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.SetAuthURLParam("prompt", "select_account"))
+	log.Printf("[GOOGLE_LOGIN] Redirecting to Google OAuth with prompt=select_account, redirectURL=%s", redirectURL)
 	c.Redirect(302, url)
 }
 
 // GET /auth/google/callback
+// Если передан параметр format=json или mobile=true - возвращает JSON с токенами
+// Иначе - редирект на фронтенд (как раньше)
 func (uc *UserController) GoogleCallback(c *gin.Context) {
 	code := c.Query("code")
 	state := c.Query("state")
+	format := c.Query("format") // "json" для JSON ответа
+	mobile := c.Query("mobile")  // "true" для мобильного приложения
+	
+	returnJSON := format == "json" || mobile == "true"
+	
 	redirectURL := "https://kliro.uz/auth-callback"
 	if state != "" {
 		decoded, err := base64.URLEncoding.DecodeString(state)
@@ -549,50 +558,99 @@ func (uc *UserController) GoogleCallback(c *gin.Context) {
 		}
 	}
 	if code == "" {
-		c.Redirect(302, redirectURL+"?error=code_not_found")
+		if returnJSON {
+			c.JSON(400, gin.H{"result": nil, "success": false, "error": "code_not_found"})
+		} else {
+			c.Redirect(302, redirectURL+"?error=code_not_found")
+		}
 		return
 	}
 	token, err := googleOauthConfig.Exchange(context.Background(), code)
 	if err != nil {
-		c.Redirect(302, redirectURL+"?error=token_exchange_failed")
+		if returnJSON {
+			c.JSON(400, gin.H{"result": nil, "success": false, "error": "token_exchange_failed"})
+		} else {
+			c.Redirect(302, redirectURL+"?error=token_exchange_failed")
+		}
 		return
 	}
 	client := googleOauthConfig.Client(context.Background(), token)
 	resp, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo?alt=json")
 	if err != nil || resp.StatusCode != 200 {
-		c.Redirect(302, redirectURL+"?error=failed_to_get_user_info")
+		if returnJSON {
+			c.JSON(400, gin.H{"result": nil, "success": false, "error": "failed_to_get_user_info"})
+		} else {
+			c.Redirect(302, redirectURL+"?error=failed_to_get_user_info")
+		}
 		return
 	}
 	defer resp.Body.Close()
 	var userInfo googleUserInfo
 	if err := json.NewDecoder(resp.Body).Decode(&userInfo); err != nil {
-		c.Redirect(302, redirectURL+"?error=failed_to_decode_user_info")
+		if returnJSON {
+			c.JSON(400, gin.H{"result": nil, "success": false, "error": "failed_to_decode_user_info"})
+		} else {
+			c.Redirect(302, redirectURL+"?error=failed_to_decode_user_info")
+		}
 		return
 	}
 	if userInfo.Email == "" {
-		c.Redirect(302, redirectURL+"?error=email_not_found")
+		if returnJSON {
+			c.JSON(400, gin.H{"result": nil, "success": false, "error": "email_not_found"})
+		} else {
+			c.Redirect(302, redirectURL+"?error=email_not_found")
+		}
 		return
 	}
 	db := utils.GetDB()
 	var user models.User
 	result := db.Where("email = ?", userInfo.Email).First(&user)
 	if result.Error == nil {
-		// Пользователь найден — выдаём JWT через редирект
+		// Пользователь найден — выдаём JWT
 		accessToken, err := utils.GenerateJWT(user.ID, user.Role, os.Getenv("JWT_SECRET"))
 		if err != nil {
-			c.Redirect(302, redirectURL+"?error=token_generation_failed")
+			if returnJSON {
+				c.JSON(500, gin.H{"result": nil, "success": false, "error": "token_generation_failed"})
+			} else {
+				c.Redirect(302, redirectURL+"?error=token_generation_failed")
+			}
 			return
 		}
 		refreshToken, refreshExp, err := utils.GenerateRefreshToken(user.ID, os.Getenv("JWT_SECRET"))
 		if err != nil {
-			c.Redirect(302, redirectURL+"?error=refresh_token_generation_failed")
+			if returnJSON {
+				c.JSON(500, gin.H{"result": nil, "success": false, "error": "refresh_token_generation_failed"})
+			} else {
+				c.Redirect(302, redirectURL+"?error=refresh_token_generation_failed")
+			}
 			return
 		}
 		accessClaims, _ := utils.ParseJWT(accessToken, os.Getenv("JWT_SECRET"))
 		accessExp := int64(accessClaims["exp"].(float64))
-		// Собираем query string
-		params := fmt.Sprintf("?accessToken=%s&refreshToken=%s&accessTokenExpiry=%d&refreshTokenExpiry=%d", accessToken, refreshToken, accessExp, refreshExp)
-		c.Redirect(302, redirectURL+params)
+		
+		if returnJSON {
+			// Возвращаем JSON для мобильного приложения
+			c.JSON(200, gin.H{
+				"result": gin.H{
+					"authenticated":       true,
+					"accessToken":         accessToken,
+					"refreshToken":        refreshToken,
+					"accessTokenExpiry":   accessExp,
+					"refreshTokenExpiry":  refreshExp,
+					"user": gin.H{
+						"id":         user.ID,
+						"email":      user.Email,
+						"first_name": user.FirstName,
+						"last_name":  user.LastName,
+					},
+				},
+				"success": true,
+			})
+		} else {
+			// Редирект для веб-приложения
+			params := fmt.Sprintf("?accessToken=%s&refreshToken=%s&accessTokenExpiry=%d&refreshTokenExpiry=%d", accessToken, refreshToken, accessExp, refreshExp)
+			c.Redirect(302, redirectURL+params)
+		}
 		return
 	}
 	// Новый пользователь — сохраняем данные в Redis
@@ -605,9 +663,24 @@ func (uc *UserController) GoogleCallback(c *gin.Context) {
 	}
 	userDataJson, _ := json.Marshal(userData)
 	uc.RDB.Set(ctx, redisKey, userDataJson, 10*time.Minute)
-	// Редиректим на фронт с need_region и session_id
-	params := fmt.Sprintf("?need_region=true&session_id=%s", sessionID)
-	c.Redirect(302, redirectURL+params)
+	
+	if returnJSON {
+		// Возвращаем JSON для мобильного приложения
+		c.JSON(200, gin.H{
+			"result": gin.H{
+				"authenticated":      false,
+				"session_id":         sessionID,
+				"need_registration":  true,
+				"email":              userInfo.Email,
+				"google_id":          userInfo.Id,
+			},
+			"success": true,
+		})
+	} else {
+		// Редирект для веб-приложения
+		params := fmt.Sprintf("?need_region=true&session_id=%s", sessionID)
+		c.Redirect(302, redirectURL+params)
+	}
 }
 
 // POST /auth/google/complete
@@ -691,4 +764,359 @@ func (uc *UserController) GoogleComplete(c *gin.Context) {
 		"accessTokenExpiry":  accessExp,
 		"refreshTokenExpiry": refreshExp,
 	}, "success": true})
+}
+
+// POST /auth/google/mobile - авторизация для мобильного приложения через ID токен
+func (uc *UserController) GoogleLoginMobile(c *gin.Context) {
+	type GoogleMobileRequest struct {
+		IDToken string `json:"id_token" binding:"required"`
+	}
+
+	var req GoogleMobileRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Printf("[GOOGLE_MOBILE] Invalid request: %v", err)
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "id_token обязателен"})
+		return
+	}
+
+	log.Printf("[GOOGLE_MOBILE] Received ID token for mobile auth")
+
+	// Верифицируем ID токен через Google API
+	client := googleOauthConfig.Client(context.Background(), nil)
+	resp, err := client.Get(fmt.Sprintf("https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=%s", req.IDToken))
+	if err != nil {
+		log.Printf("[GOOGLE_MOBILE] Error verifying token: %v", err)
+		c.JSON(401, gin.H{"result": nil, "success": false, "error": "Ошибка верификации токена"})
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		log.Printf("[GOOGLE_MOBILE] Invalid token, status: %d", resp.StatusCode)
+		c.JSON(401, gin.H{"result": nil, "success": false, "error": "Неверный ID токен"})
+		return
+	}
+
+	var tokenInfo struct {
+		Email string `json:"email"`
+		Sub   string `json:"sub"` // Google ID
+		Name  string `json:"name"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&tokenInfo); err != nil {
+		log.Printf("[GOOGLE_MOBILE] Error decoding token info: %v", err)
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка декодирования токена"})
+		return
+	}
+
+	if tokenInfo.Email == "" {
+		log.Printf("[GOOGLE_MOBILE] Email not found in token")
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "email не найден в токене"})
+		return
+	}
+
+	log.Printf("[GOOGLE_MOBILE] Token verified for email: %s", tokenInfo.Email)
+
+	// Проверяем пользователя в БД
+	db := utils.GetDB()
+	var user models.User
+	result := db.Where("email = ?", tokenInfo.Email).First(&user)
+
+	if result.Error != nil {
+		// Новый пользователь — нужна регистрация
+		log.Printf("[GOOGLE_MOBILE] New user, need registration: %s", tokenInfo.Email)
+		c.JSON(200, gin.H{
+			"result": gin.H{
+				"need_registration": true,
+				"email":             tokenInfo.Email,
+				"google_id":         tokenInfo.Sub,
+				"name":              tokenInfo.Name,
+			},
+			"success": true,
+		})
+		return
+	}
+
+	// Существующий пользователь — выдаем токены
+	log.Printf("[GOOGLE_MOBILE] User found, generating tokens: user_id=%d, email=%s", user.ID, *user.Email)
+	accessToken, err := utils.GenerateJWT(user.ID, user.Role, os.Getenv("JWT_SECRET"))
+	if err != nil {
+		log.Printf("[GOOGLE_MOBILE] Error generating access token: %v", err)
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка генерации токена"})
+		return
+	}
+	refreshToken, refreshExp, err := utils.GenerateRefreshToken(user.ID, os.Getenv("JWT_SECRET"))
+	if err != nil {
+		log.Printf("[GOOGLE_MOBILE] Error generating refresh token: %v", err)
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка генерации refresh токена"})
+		return
+	}
+	accessClaims, _ := utils.ParseJWT(accessToken, os.Getenv("JWT_SECRET"))
+	accessExp := int64(accessClaims["exp"].(float64))
+
+	c.JSON(200, gin.H{"result": gin.H{
+		"accessToken":        accessToken,
+		"refreshToken":       refreshToken,
+		"accessTokenExpiry":  accessExp,
+		"refreshTokenExpiry": refreshExp,
+		"user": gin.H{
+			"id":         user.ID,
+			"email":      user.Email,
+			"first_name": user.FirstName,
+			"last_name":  user.LastName,
+		},
+	}, "success": true})
+}
+
+// POST /auth/google/mobile/complete - завершение регистрации для мобильного приложения
+func (uc *UserController) GoogleCompleteMobile(c *gin.Context) {
+	type CompleteMobileReq struct {
+		Email     string `json:"email" binding:"required"`
+		GoogleID  string `json:"google_id" binding:"required"`
+		RegionID  uint   `json:"region_id" binding:"required"`
+		FirstName string `json:"first_name" binding:"required"`
+		LastName  string `json:"last_name" binding:"required"`
+	}
+
+	var req CompleteMobileReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Printf("[GOOGLE_MOBILE_COMPLETE] Invalid request: %v", err)
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "invalid request"})
+		return
+	}
+
+	log.Printf("[GOOGLE_MOBILE_COMPLETE] Completing registration: email=%s, first_name=%s, last_name=%s, region_id=%d",
+		req.Email, req.FirstName, req.LastName, req.RegionID)
+
+	db := utils.GetDB()
+	// Проверяем, что пользователь не существует
+	var existingUser models.User
+	if db.Where("email = ?", req.Email).First(&existingUser).Error == nil {
+		log.Printf("[GOOGLE_MOBILE_COMPLETE] User already exists: %s", req.Email)
+		c.JSON(400, gin.H{"result": nil, "success": false, "error": "user already exists"})
+		return
+	}
+
+	user := models.User{
+		Email:     &req.Email,
+		FirstName: &req.FirstName,
+		LastName:  &req.LastName,
+		GoogleID:  &req.GoogleID,
+		RegionID:  &req.RegionID,
+		Confirmed: true,
+		Role:      "user",
+	}
+
+	if err := db.Create(&user).Error; err != nil {
+		log.Printf("[GOOGLE_MOBILE_COMPLETE] Error creating user: %v", err)
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка сохранения пользователя"})
+		return
+	}
+
+	log.Printf("[GOOGLE_MOBILE_COMPLETE] User registered successfully: user_id=%d, email=%s", user.ID, req.Email)
+
+	// Выдаем токены
+	accessToken, err := utils.GenerateJWT(user.ID, user.Role, os.Getenv("JWT_SECRET"))
+	if err != nil {
+		log.Printf("[GOOGLE_MOBILE_COMPLETE] Error generating access token: %v", err)
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка генерации токена"})
+		return
+	}
+	refreshToken, refreshExp, err := utils.GenerateRefreshToken(user.ID, os.Getenv("JWT_SECRET"))
+	if err != nil {
+		log.Printf("[GOOGLE_MOBILE_COMPLETE] Error generating refresh token: %v", err)
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка генерации refresh токена"})
+		return
+	}
+	accessClaims, _ := utils.ParseJWT(accessToken, os.Getenv("JWT_SECRET"))
+	accessExp := int64(accessClaims["exp"].(float64))
+
+	c.JSON(200, gin.H{"result": gin.H{
+		"accessToken":        accessToken,
+		"refreshToken":       refreshToken,
+		"accessTokenExpiry":  accessExp,
+		"refreshTokenExpiry": refreshExp,
+		"user": gin.H{
+			"id":         user.ID,
+			"email":      user.Email,
+			"first_name": user.FirstName,
+			"last_name":  user.LastName,
+		},
+	}, "success": true})
+}
+
+// POST /auth/mobile/check - универсальный API для мобильного приложения
+// Если пользователь авторизован через Google (id_token) - возвращает token
+// Если нет - возвращает session_id
+func (uc *UserController) MobileAuthCheck(c *gin.Context) {
+	type MobileAuthRequest struct {
+		IDToken string `json:"id_token"` // опционально
+	}
+
+	var req MobileAuthRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		// Если нет id_token - возвращаем session_id
+		log.Printf("[MOBILE_AUTH_CHECK] No id_token provided, generating session_id")
+		sessionID := utils.GenerateSessionID()
+		ctx := context.Background()
+		// Сохраняем session_id в Redis на 30 дней
+		uc.RDB.Set(ctx, "mobile:session:"+sessionID, "active", 30*24*time.Hour)
+		
+		c.JSON(200, gin.H{
+			"result": gin.H{
+				"authenticated": false,
+				"session_id":    sessionID,
+			},
+			"success": true,
+		})
+		return
+	}
+
+	// Если есть id_token - проверяем Google авторизацию
+	log.Printf("[MOBILE_AUTH_CHECK] Received ID token, verifying...")
+
+	// Верифицируем ID токен через Google API
+	client := googleOauthConfig.Client(context.Background(), nil)
+	resp, err := client.Get(fmt.Sprintf("https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=%s", req.IDToken))
+	if err != nil {
+		log.Printf("[MOBILE_AUTH_CHECK] Error verifying token: %v", err)
+		// Если токен невалидный - возвращаем session_id
+		sessionID := utils.GenerateSessionID()
+		ctx := context.Background()
+		uc.RDB.Set(ctx, "mobile:session:"+sessionID, "active", 30*24*time.Hour)
+		
+		c.JSON(200, gin.H{
+			"result": gin.H{
+				"authenticated": false,
+				"session_id":    sessionID,
+			},
+			"success": true,
+		})
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		log.Printf("[MOBILE_AUTH_CHECK] Invalid token, status: %d", resp.StatusCode)
+		// Если токен невалидный - возвращаем session_id
+		sessionID := utils.GenerateSessionID()
+		ctx := context.Background()
+		uc.RDB.Set(ctx, "mobile:session:"+sessionID, "active", 30*24*time.Hour)
+		
+		c.JSON(200, gin.H{
+			"result": gin.H{
+				"authenticated": false,
+				"session_id":    sessionID,
+			},
+			"success": true,
+		})
+		return
+	}
+
+	var tokenInfo struct {
+		Email string `json:"email"`
+		Sub   string `json:"sub"` // Google ID
+		Name  string `json:"name"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&tokenInfo); err != nil {
+		log.Printf("[MOBILE_AUTH_CHECK] Error decoding token info: %v", err)
+		// Если ошибка декодирования - возвращаем session_id
+		sessionID := utils.GenerateSessionID()
+		ctx := context.Background()
+		uc.RDB.Set(ctx, "mobile:session:"+sessionID, "active", 30*24*time.Hour)
+		
+		c.JSON(200, gin.H{
+			"result": gin.H{
+				"authenticated": false,
+				"session_id":    sessionID,
+			},
+			"success": true,
+		})
+		return
+	}
+
+	if tokenInfo.Email == "" {
+		log.Printf("[MOBILE_AUTH_CHECK] Email not found in token")
+		// Если нет email - возвращаем session_id
+		sessionID := utils.GenerateSessionID()
+		ctx := context.Background()
+		uc.RDB.Set(ctx, "mobile:session:"+sessionID, "active", 30*24*time.Hour)
+		
+		c.JSON(200, gin.H{
+			"result": gin.H{
+				"authenticated": false,
+				"session_id":    sessionID,
+			},
+			"success": true,
+		})
+		return
+	}
+
+	log.Printf("[MOBILE_AUTH_CHECK] Token verified for email: %s", tokenInfo.Email)
+
+	// Проверяем пользователя в БД
+	db := utils.GetDB()
+	var user models.User
+	result := db.Where("email = ?", tokenInfo.Email).First(&user)
+
+	if result.Error != nil {
+		// Новый пользователь - возвращаем session_id и флаг need_registration
+		log.Printf("[MOBILE_AUTH_CHECK] New user, need registration: %s", tokenInfo.Email)
+		sessionID := utils.GenerateSessionID()
+		ctx := context.Background()
+		redisKey := "mobile:google:session:" + sessionID
+		userData := map[string]string{
+			"email":     tokenInfo.Email,
+			"google_id": tokenInfo.Sub,
+			"name":      tokenInfo.Name,
+		}
+		userDataJson, _ := json.Marshal(userData)
+		uc.RDB.Set(ctx, redisKey, userDataJson, 10*time.Minute)
+		
+		c.JSON(200, gin.H{
+			"result": gin.H{
+				"authenticated":      false,
+				"session_id":         sessionID,
+				"need_registration":  true,
+				"email":              tokenInfo.Email,
+				"google_id":          tokenInfo.Sub,
+				"name":               tokenInfo.Name,
+			},
+			"success": true,
+		})
+		return
+	}
+
+	// Существующий пользователь - выдаем токены
+	log.Printf("[MOBILE_AUTH_CHECK] User found, generating tokens: user_id=%d, email=%s", user.ID, *user.Email)
+	accessToken, err := utils.GenerateJWT(user.ID, user.Role, os.Getenv("JWT_SECRET"))
+	if err != nil {
+		log.Printf("[MOBILE_AUTH_CHECK] Error generating access token: %v", err)
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка генерации токена"})
+		return
+	}
+	refreshToken, refreshExp, err := utils.GenerateRefreshToken(user.ID, os.Getenv("JWT_SECRET"))
+	if err != nil {
+		log.Printf("[MOBILE_AUTH_CHECK] Error generating refresh token: %v", err)
+		c.JSON(500, gin.H{"result": nil, "success": false, "error": "Ошибка генерации refresh токена"})
+		return
+	}
+	accessClaims, _ := utils.ParseJWT(accessToken, os.Getenv("JWT_SECRET"))
+	accessExp := int64(accessClaims["exp"].(float64))
+
+	c.JSON(200, gin.H{
+		"result": gin.H{
+			"authenticated":       true,
+			"accessToken":         accessToken,
+			"refreshToken":        refreshToken,
+			"accessTokenExpiry":   accessExp,
+			"refreshTokenExpiry":  refreshExp,
+			"user": gin.H{
+				"id":         user.ID,
+				"email":      user.Email,
+				"first_name": user.FirstName,
+				"last_name":  user.LastName,
+			},
+		},
+		"success": true,
+	})
 }
