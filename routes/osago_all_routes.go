@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"kliro/controllers"
 	"kliro/config"
+	"kliro/controllers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,6 +16,6 @@ func SetupOsagoAllRoutes(r *gin.Engine) {
 	{
 		osagoAllGroup.POST("/find", osagoAllController.Find)
 		osagoAllGroup.POST("/calc", osagoAllController.Calc)
+		osagoAllGroup.POST("/create-policy", osagoAllController.CreatePolicy)
 	}
 }
-

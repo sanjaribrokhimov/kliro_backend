@@ -411,6 +411,7 @@ func (oc *OsagoAllController) Calc(c *gin.Context) {
 	}
 
 	// Извлекаем данные person для drivers (Apex)
+	// Если person нет, используем owner.person как fallback
 	var personPinfl, personPassportSeries, personPassportNumber string
 	personData, personOk := sessionData["person"].(map[string]interface{})
 	if personOk {
@@ -424,6 +425,36 @@ func (oc *OsagoAllController) Calc(c *gin.Context) {
 				}
 				if number, ok := passport["number"].(string); ok {
 					personPassportNumber = number
+				}
+			}
+		}
+	}
+
+	// Если person данных нет, используем owner.person как fallback
+	if personPinfl == "" || personPassportSeries == "" || personPassportNumber == "" {
+		if vehicleData, ok := sessionData["vehicle"].(map[string]interface{}); ok {
+			if data, ok := vehicleData["data"].(map[string]interface{}); ok {
+				if owner, ok := data["owner"].(map[string]interface{}); ok {
+					if ownerType, ok := owner["type"].(string); ok && ownerType == "person" {
+						if person, ok := owner["person"].(map[string]interface{}); ok {
+							if personPinfl == "" {
+								personPinfl = asString(person["external_id"])
+							}
+							// passport данные
+							if passport, ok := person["passport"].(map[string]interface{}); ok {
+								if personPassportSeries == "" {
+									if series, ok := passport["series"].(string); ok {
+										personPassportSeries = series
+									}
+								}
+								if personPassportNumber == "" {
+									if number, ok := passport["number"].(string); ok {
+										personPassportNumber = number
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -555,28 +586,75 @@ func (oc *OsagoAllController) Calc(c *gin.Context) {
 
 	// Формируем и отправляем запрос на Euroasia Insurance
 	// Euroasia отправляется только если period_id != 3 (не поддерживает 2 месяца)
-	var euroasiaResponseData interface{}
+	var euroasiaResponseData interface{} = map[string]interface{}{"error": "euroasia calculation was not attempted"}
 	if *req.PeriodID != 3 {
+		// Логируем данные для отладки
+		log.Printf("[EUROASIA DEBUG] useTerritoryRegionID: %s, vehicleGroupID: %s", useTerritoryRegionID, vehicleGroupID)
+		log.Printf("[EUROASIA DEBUG] period_id: %d, number_drivers_id: %d", *req.PeriodID, *req.NumberDriversID)
+		if _, ok := sessionData["person"].(map[string]interface{}); ok {
+			log.Printf("[EUROASIA DEBUG] person data found in session")
+		} else {
+			log.Printf("[EUROASIA DEBUG] person data NOT found in session")
+		}
+
 		euroasiaRequest := oc.buildEuroasiaRequest(sessionData, req, useTerritoryRegionID, vehicleGroupID)
-		if euroasiaRequest != nil {
+		if euroasiaRequest == nil {
+			errorMsg := "euroasia request could not be built from session data"
+			// Детализируем причину
+			if useTerritoryRegionID == "" {
+				errorMsg += ": useTerritoryRegionID is empty"
+			}
+			if vehicleGroupID == "" {
+				errorMsg += ": vehicleGroupID is empty"
+			}
+			if _, ok := sessionData["person"].(map[string]interface{}); !ok {
+				errorMsg += ": person data not found in session"
+			}
+			euroasiaResponseData = map[string]interface{}{"error": errorMsg}
+		} else {
 			euroasiaURL := oc.cfg.EuroasiaAllBaseURL + "/api/v1/insurance/osago/calculate"
 
 			euroasiaJsonData, err := json.Marshal(euroasiaRequest)
-			if err == nil {
+			if err != nil {
+				euroasiaResponseData = map[string]interface{}{"error": "failed to marshal euroasia request", "details": err.Error()}
+			} else {
+				log.Printf("[EUROASIA CALC] URL: %s", euroasiaURL)
+				log.Printf("[EUROASIA CALC] Request: %s", string(euroasiaJsonData))
+
 				euroasiaHttpReq, err := http.NewRequest(http.MethodPost, euroasiaURL, bytes.NewBuffer(euroasiaJsonData))
-				if err == nil {
+				if err != nil {
+					euroasiaResponseData = map[string]interface{}{"error": "failed to create euroasia request", "details": err.Error()}
+				} else {
 					euroasiaHttpReq.Header.Set("Content-Type", "application/json")
 					euroasiaHttpReq.Header.Set("Accept", "application/json")
 					euroasiaHttpReq.Header.Set("Accept-Language", "ru")
 					euroasiaHttpReq.Header.Set("Authorization", oc.cfg.EuroasiaAllAPIKey)
 
 					euroasiaResp, err := oc.cl.Do(euroasiaHttpReq)
-					if err == nil {
+					if err != nil {
+						euroasiaResponseData = map[string]interface{}{"error": "failed to send request to euroasia", "details": err.Error()}
+					} else {
 						defer euroasiaResp.Body.Close()
-						euroasiaResponseBody, err := io.ReadAll(euroasiaResp.Body)
-						if err == nil {
-							if err := json.Unmarshal(euroasiaResponseBody, &euroasiaResponseData); err != nil {
-								euroasiaResponseData = string(euroasiaResponseBody)
+						euroasiaResponseBody, readErr := io.ReadAll(euroasiaResp.Body)
+						if readErr != nil {
+							euroasiaResponseData = map[string]interface{}{"error": "failed to read euroasia response", "details": readErr.Error()}
+						} else {
+							log.Printf("[EUROASIA CALC] Status: %d", euroasiaResp.StatusCode)
+							log.Printf("[EUROASIA CALC] Response: %s", string(euroasiaResponseBody))
+
+							// Try to decode JSON even on non-200 to preserve error info for client.
+							var decoded interface{}
+							if err := json.Unmarshal(euroasiaResponseBody, &decoded); err != nil {
+								decoded = string(euroasiaResponseBody)
+							}
+							if euroasiaResp.StatusCode >= 200 && euroasiaResp.StatusCode < 300 {
+								euroasiaResponseData = decoded
+							} else {
+								euroasiaResponseData = map[string]interface{}{
+									"error":  "euroasia returned non-2xx status",
+									"status": euroasiaResp.StatusCode,
+									"body":   decoded,
+								}
 							}
 						}
 					}
@@ -587,20 +665,46 @@ func (oc *OsagoAllController) Calc(c *gin.Context) {
 
 	// Формируем и отправляем запрос на Apex Insurance
 	// Apex отправляется только если period_id != 3 (не поддерживает 2 месяца)
-	var apexResponseData interface{}
+	var apexResponseData interface{} = map[string]interface{}{"error": "apex calculation was not attempted"}
 	if *req.PeriodID != 3 {
+		// Логируем данные для отладки
+		log.Printf("[APEX DEBUG] ownerPinfl: %s, ownerPassportSeries: %s, ownerPassportNumber: %s", ownerPinfl, ownerPassportSeries, ownerPassportNumber)
+		log.Printf("[APEX DEBUG] personPinfl: %s, personPassportSeries: %s, personPassportNumber: %s", personPinfl, personPassportSeries, personPassportNumber)
+		log.Printf("[APEX DEBUG] vehicleTypeID: %d, vehicleGroupID: %s", vehicleTypeID, vehicleGroupID)
+
 		apexRequest := oc.buildApexRequest(sessionData, req,
 			ownerPinfl, ownerPassportSeries, ownerPassportNumber,
 			personPinfl, personPassportSeries, personPassportNumber,
 			useTerritoryRegionExternalID, vehicleTypeID, vehicleGroupID,
 			gosNumber, techSery, techNumber)
-		if apexRequest != nil {
+		if apexRequest == nil {
+			errorMsg := "apex request could not be built from session data"
+			// Детализируем причину
+			if ownerPinfl == "" || ownerPassportSeries == "" || ownerPassportNumber == "" {
+				errorMsg += ": owner passport data is missing"
+			}
+			if personPinfl == "" || personPassportSeries == "" || personPassportNumber == "" {
+				errorMsg += ": person passport data is missing"
+			}
+			apexVehicleTypeID := oc.mapVehicleTypeToApex(vehicleTypeID, vehicleGroupID)
+			if apexVehicleTypeID == 0 {
+				errorMsg += ": unsupported vehicle type (vehicleTypeID=" + strconv.Itoa(vehicleTypeID) + ", vehicleGroupID=" + vehicleGroupID + ")"
+			}
+			apexResponseData = map[string]interface{}{"error": errorMsg}
+		} else {
 			apexURL := oc.cfg.ApexBaseURL + "/osago_calculation"
 
 			apexJsonData, err := json.Marshal(apexRequest)
-			if err == nil {
+			if err != nil {
+				apexResponseData = map[string]interface{}{"error": "failed to marshal apex request", "details": err.Error()}
+			} else {
+				log.Printf("[APEX CALC] URL: %s", apexURL)
+				log.Printf("[APEX CALC] Request: %s", string(apexJsonData))
+
 				apexHttpReq, err := http.NewRequest(http.MethodPost, apexURL, bytes.NewBuffer(apexJsonData))
-				if err == nil {
+				if err != nil {
+					apexResponseData = map[string]interface{}{"error": "failed to create apex request", "details": err.Error()}
+				} else {
 					apexHttpReq.Header.Set("Content-Type", "application/json")
 					apexHttpReq.Header.Set("Accept", "application/json")
 
@@ -609,12 +713,30 @@ func (oc *OsagoAllController) Calc(c *gin.Context) {
 					apexHttpReq.Header.Set("Authorization", auth)
 
 					apexResp, err := oc.cl.Do(apexHttpReq)
-					if err == nil {
+					if err != nil {
+						apexResponseData = map[string]interface{}{"error": "failed to send request to apex", "details": err.Error()}
+					} else {
 						defer apexResp.Body.Close()
-						apexResponseBody, err := io.ReadAll(apexResp.Body)
-						if err == nil {
-							if err := json.Unmarshal(apexResponseBody, &apexResponseData); err != nil {
-								apexResponseData = string(apexResponseBody)
+						apexResponseBody, readErr := io.ReadAll(apexResp.Body)
+						if readErr != nil {
+							apexResponseData = map[string]interface{}{"error": "failed to read apex response", "details": readErr.Error()}
+						} else {
+							log.Printf("[APEX CALC] Status: %d", apexResp.StatusCode)
+							log.Printf("[APEX CALC] Response: %s", string(apexResponseBody))
+
+							// Try to decode JSON even on non-200 to preserve error info for client.
+							var decoded interface{}
+							if err := json.Unmarshal(apexResponseBody, &decoded); err != nil {
+								decoded = string(apexResponseBody)
+							}
+							if apexResp.StatusCode >= 200 && apexResp.StatusCode < 300 {
+								apexResponseData = decoded
+							} else {
+								apexResponseData = map[string]interface{}{
+									"error":  "apex returned non-2xx status",
+									"status": apexResp.StatusCode,
+									"body":   decoded,
+								}
 							}
 						}
 					}
@@ -687,6 +809,23 @@ func (oc *OsagoAllController) Calc(c *gin.Context) {
 
 	// Извлекаем суммы из ответов провайдеров
 	result := oc.extractProviderAmounts(neoResponseData, grossResponseData, euroasiaResponseData, apexResponseData, trustResponseData)
+
+	// Сохраняем результат расчета в Redis для использования в create_policy
+	calcResultKey := "osago_all:calc:" + req.SessionID
+	calcResultData := map[string]interface{}{
+		"result":            result,
+		"neo":               neoResponseData,
+		"gross":             grossResponseData,
+		"euroasia":          euroasiaResponseData,
+		"apex":              apexResponseData,
+		"trust":             trustResponseData,
+		"period_id":         req.PeriodID,
+		"number_drivers_id": req.NumberDriversID,
+	}
+	calcResultJSON, err := json.Marshal(calcResultData)
+	if err == nil {
+		rdb.Set(ctx, calcResultKey, calcResultJSON, 30*time.Minute)
+	}
 
 	// Возвращаем ответ в JSON формате с полями result, neo, gross, euroasia, apex и trust
 	// Используем структуру для гарантированного порядка полей
@@ -778,9 +917,11 @@ func (oc *OsagoAllController) buildApexRequest(sessionData map[string]interface{
 
 	// Проверяем наличие обязательных данных
 	if ownerPinfl == "" || ownerPassportSeries == "" || ownerPassportNumber == "" {
+		log.Printf("[APEX BUILD] Error: owner passport data missing (pinfl=%s, seria=%s, number=%s)", ownerPinfl, ownerPassportSeries, ownerPassportNumber)
 		return nil
 	}
 	if personPinfl == "" || personPassportSeries == "" || personPassportNumber == "" {
+		log.Printf("[APEX BUILD] Error: person passport data missing (pinfl=%s, seria=%s, number=%s)", personPinfl, personPassportSeries, personPassportNumber)
 		return nil
 	}
 
@@ -791,6 +932,7 @@ func (oc *OsagoAllController) buildApexRequest(sessionData map[string]interface{
 
 	// Проверяем, что vehicleTypeId успешно замаппился
 	if apexVehicleTypeID == 0 {
+		log.Printf("[APEX BUILD] Error: unsupported vehicle type (vehicleTypeID=%d, vehicleGroupID=%s)", vehicleTypeID, vehicleGroupID)
 		return nil // Неподдерживаемый тип ТС
 	}
 
@@ -967,52 +1109,101 @@ func (oc *OsagoAllController) buildEuroasiaRequest(sessionData map[string]interf
 	driverRestriction := *req.NumberDriversID == 5
 
 	// Извлекаем данные person из session для drivers
-	personData, ok := sessionData["person"].(map[string]interface{})
-	if !ok {
-		return nil
-	}
-
+	// Если person нет, используем owner.person как fallback
 	var drivers []map[string]string
-	if data, ok := personData["data"].(map[string]interface{}); ok {
-		var passportBirthdate, passportNumber, passportSeries string
+	var passportBirthdate, passportNumber, passportSeries string
 
-		// Извлекаем passport данные
-		if passport, ok := data["passport"].(map[string]interface{}); ok {
-			if number, ok := passport["number"].(string); ok {
-				passportNumber = number
+	// Сначала пробуем получить из person
+	personData, personOk := sessionData["person"].(map[string]interface{})
+	if personOk {
+		if data, ok := personData["data"].(map[string]interface{}); ok {
+			// Извлекаем passport данные
+			if passport, ok := data["passport"].(map[string]interface{}); ok {
+				if number, ok := passport["number"].(string); ok {
+					passportNumber = number
+				}
+				if series, ok := passport["series"].(string); ok {
+					passportSeries = series
+				}
 			}
-			if series, ok := passport["series"].(string); ok {
-				passportSeries = series
-			}
-		}
 
-		// Извлекаем birthdate и преобразуем в формат YYYY-MM-DD
-		if birthdate, ok := data["birthdate"].(string); ok {
-			// Парсим дату и преобразуем в формат YYYY-MM-DD
-			if t, err := time.Parse(time.RFC3339, birthdate); err == nil {
-				passportBirthdate = t.Format("2006-01-02")
-			} else if t, err := time.Parse("2006-01-02T15:04:05Z07:00", birthdate); err == nil {
-				passportBirthdate = t.Format("2006-01-02")
-			} else {
-				// Пробуем другие форматы
-				if t, err := time.Parse("2006-01-02", birthdate); err == nil {
+			// Извлекаем birthdate и преобразуем в формат YYYY-MM-DD
+			if birthdate, ok := data["birthdate"].(string); ok {
+				// Парсим дату и преобразуем в формат YYYY-MM-DD
+				if t, err := time.Parse(time.RFC3339, birthdate); err == nil {
 					passportBirthdate = t.Format("2006-01-02")
+				} else if t, err := time.Parse("2006-01-02T15:04:05Z07:00", birthdate); err == nil {
+					passportBirthdate = t.Format("2006-01-02")
+				} else {
+					// Пробуем другие форматы
+					if t, err := time.Parse("2006-01-02", birthdate); err == nil {
+						passportBirthdate = t.Format("2006-01-02")
+					}
 				}
 			}
 		}
+	}
 
-		if passportBirthdate != "" && passportNumber != "" && passportSeries != "" {
-			drivers = []map[string]string{
-				{
-					"passport_birthdate": passportBirthdate,
-					"passport_number":    passportNumber,
-					"passport_series":    passportSeries,
-				},
+	// Если person данных нет, пробуем использовать owner.person из vehicle
+	if passportNumber == "" || passportSeries == "" || passportBirthdate == "" {
+		if vehicleData, ok := sessionData["vehicle"].(map[string]interface{}); ok {
+			if data, ok := vehicleData["data"].(map[string]interface{}); ok {
+				if owner, ok := data["owner"].(map[string]interface{}); ok {
+					if ownerType, ok := owner["type"].(string); ok && ownerType == "person" {
+						if person, ok := owner["person"].(map[string]interface{}); ok {
+							// Извлекаем passport данные
+							if passport, ok := person["passport"].(map[string]interface{}); ok {
+								if passportNumber == "" {
+									if number, ok := passport["number"].(string); ok {
+										passportNumber = number
+									}
+								}
+								if passportSeries == "" {
+									if series, ok := passport["series"].(string); ok {
+										passportSeries = series
+									}
+								}
+							}
+							// Извлекаем birthdate
+							if passportBirthdate == "" {
+								if birthdate, ok := person["birthdate"].(string); ok {
+									// Парсим дату и преобразуем в формат YYYY-MM-DD
+									if t, err := time.Parse(time.RFC3339, birthdate); err == nil {
+										passportBirthdate = t.Format("2006-01-02")
+									} else if t, err := time.Parse("2006-01-02T15:04:05Z07:00", birthdate); err == nil {
+										passportBirthdate = t.Format("2006-01-02")
+									} else if t, err := time.Parse("2006-01-02", birthdate); err == nil {
+										passportBirthdate = t.Format("2006-01-02")
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	}
 
-	if len(drivers) == 0 || useTerritoryRegionID == "" || vehicleGroupID == "" {
+	if passportBirthdate != "" && passportNumber != "" && passportSeries != "" {
+		drivers = []map[string]string{
+			{
+				"passport_birthdate": passportBirthdate,
+				"passport_number":    passportNumber,
+				"passport_series":    passportSeries,
+			},
+		}
+	}
+
+	if len(drivers) == 0 {
+		log.Printf("[EUROASIA BUILD] Error: drivers array is empty")
+		return nil
+	}
+	if useTerritoryRegionID == "" {
+		log.Printf("[EUROASIA BUILD] Error: useTerritoryRegionID is empty")
+		return nil
+	}
+	if vehicleGroupID == "" {
+		log.Printf("[EUROASIA BUILD] Error: vehicleGroupID is empty")
 		return nil
 	}
 
@@ -1275,4 +1466,300 @@ func (oc *OsagoAllController) extractProviderAmounts(neo, gross, euroasia, apex,
 	}
 
 	return result
+}
+
+// DriverInfo - структура для данных водителя
+type DriverInfo struct {
+	PassportSeria    string `json:"passport__seria"`
+	PassportNumber   string `json:"passport__number"`
+	DriverBirthday   string `json:"driver_birthday"`
+	LicenseNumber    string `json:"licenseNumber,omitempty"`
+	LicenseSeria     string `json:"licenseSeria,omitempty"`
+	LicenseIssueDate string `json:"licenseIssueDate,omitempty"`
+	Relative         int    `json:"relative"`
+	Name             string `json:"name,omitempty"`
+}
+
+// OsagoAllCreatePolicyRequest - структура запроса для создания полиса
+type OsagoAllCreatePolicyRequest struct {
+	SessionID   string       `json:"session_id" binding:"required"`
+	Provider    string       `json:"provider" binding:"required"` // "neo", "gross", "apex", "trust", "euroasia"
+	Drivers     []DriverInfo `json:"drivers,omitempty"`           // только если number_drivers_id == 5
+	PhoneNumber string       `json:"phone_number" binding:"required"`
+}
+
+// CreatePolicy - метод для создания полиса на основе данных из session и calc
+func (oc *OsagoAllController) CreatePolicy(c *gin.Context) {
+	var req OsagoAllCreatePolicyRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body", "details": err.Error()})
+		return
+	}
+
+	// Проверяем provider
+	validProviders := map[string]bool{
+		"neo":      true,
+		"gross":    true,
+		"apex":     true,
+		"trust":    true,
+		"euroasia": true,
+	}
+	if !validProviders[req.Provider] {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "unsupported provider. Supported: neo, gross, apex, trust, euroasia"})
+		return
+	}
+
+	// Пока реализуем только для neo
+	if req.Provider != "neo" {
+		c.JSON(http.StatusNotImplemented, gin.H{"error": "provider not implemented yet", "provider": req.Provider})
+		return
+	}
+
+	// Получаем данные из Redis
+	rdb := utils.GetRedis()
+	if rdb == nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "redis not available"})
+		return
+	}
+
+	ctx := context.Background()
+	sessionKey := "osago_all:session:" + req.SessionID
+	calcResultKey := "osago_all:calc:" + req.SessionID
+
+	// Получаем данные сессии
+	sessionDataStr, err := rdb.Get(ctx, sessionKey).Result()
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "session not found or expired"})
+		return
+	}
+
+	// Получаем результат расчета
+	calcResultStr, err := rdb.Get(ctx, calcResultKey).Result()
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "calc result not found or expired. Please call calc first"})
+		return
+	}
+
+	var sessionData map[string]interface{}
+	if err := json.Unmarshal([]byte(sessionDataStr), &sessionData); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to parse session data"})
+		return
+	}
+
+	var calcResultData map[string]interface{}
+	if err := json.Unmarshal([]byte(calcResultStr), &calcResultData); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to parse calc result data"})
+		return
+	}
+
+	// Извлекаем данные vehicle из session
+	vehicleData, ok := sessionData["vehicle"].(map[string]interface{})
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "vehicle data not found in session"})
+		return
+	}
+
+	// Извлекаем нужные поля из vehicle
+	var gosNumber, techSery, techNumber string
+
+	if data, ok := vehicleData["data"].(map[string]interface{}); ok {
+		// license_plate -> gos_number
+		if lp, ok := data["license_plate"].(string); ok {
+			gosNumber = lp
+		}
+
+		// tech_passport
+		if tp, ok := data["tech_passport"].(map[string]interface{}); ok {
+			if series, ok := tp["series"].(string); ok {
+				techSery = series
+			}
+			if number, ok := tp["number"].(string); ok {
+				techNumber = number
+			}
+		}
+	}
+
+	if gosNumber == "" || techSery == "" || techNumber == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "required vehicle data missing in session"})
+		return
+	}
+
+	// Извлекаем данные owner из vehicle для owner и applicant полей
+	var ownerPassSeria, ownerPassNumber, ownerBirthday string
+	if data, ok := vehicleData["data"].(map[string]interface{}); ok {
+		if owner, ok := data["owner"].(map[string]interface{}); ok {
+			if ownerType, ok := owner["type"].(string); ok && ownerType == "person" {
+				if person, ok := owner["person"].(map[string]interface{}); ok {
+					// passport данные
+					if passport, ok := person["passport"].(map[string]interface{}); ok {
+						if series, ok := passport["series"].(string); ok {
+							ownerPassSeria = series
+						}
+						if number, ok := passport["number"].(string); ok {
+							ownerPassNumber = number
+						}
+					}
+					// birthdate - преобразуем в формат DD.MM.YYYY
+					if birthdate, ok := person["birthdate"].(string); ok {
+						// Парсим дату и преобразуем в формат DD.MM.YYYY
+						if t, err := time.Parse(time.RFC3339, birthdate); err == nil {
+							ownerBirthday = t.Format("02.01.2006")
+						} else if t, err := time.Parse("2006-01-02T15:04:05Z07:00", birthdate); err == nil {
+							ownerBirthday = t.Format("02.01.2006")
+						} else if t, err := time.Parse("2006-01-02", birthdate); err == nil {
+							ownerBirthday = t.Format("02.01.2006")
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if ownerPassSeria == "" || ownerPassNumber == "" || ownerBirthday == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "owner passport data not found in session"})
+		return
+	}
+
+	// Извлекаем amount_uzs из calc result
+	var amountUZS int
+	neoData, ok := calcResultData["neo"].(map[string]interface{})
+	if ok {
+		if response, ok := neoData["response"].(map[string]interface{}); ok {
+			if amount, ok := response["amount_uzs"].(float64); ok {
+				amountUZS = int(amount)
+			} else if amount, ok := response["amount_uzs"].(int); ok {
+				amountUZS = amount
+			}
+		}
+	}
+
+	if amountUZS == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "amount_uzs not found in calc result"})
+		return
+	}
+
+	// Извлекаем period_id и number_drivers_id из calc result
+	var periodID int = 1            // default для Neo: 1 = 12 месяцев
+	var numberDriversID int = 1     // default для Neo: 1 = unlimited
+	var calcNumberDriversID int = 0 // из calc result
+	if pid, ok := calcResultData["period_id"].(float64); ok {
+		// Маппинг для Neo: 12 -> 1, 6 -> 2
+		if int(pid) == 12 {
+			periodID = 1
+		} else if int(pid) == 6 {
+			periodID = 2
+		}
+	}
+	if ndid, ok := calcResultData["number_drivers_id"].(float64); ok {
+		calcNumberDriversID = int(ndid)
+		// Маппинг для Neo API: 0 (unlimited) -> 1, 5 (limited) -> 4
+		if calcNumberDriversID == 0 {
+			numberDriversID = 1 // unlimited
+		} else if calcNumberDriversID == 5 {
+			numberDriversID = 4 // limited
+		}
+	}
+
+	// Обрабатываем drivers: если number_drivers_id == 5 (из calc), принимаем из запроса
+	var drivers []map[string]interface{}
+	if calcNumberDriversID == 5 {
+		// Если limited (5), принимаем drivers из запроса
+		if len(req.Drivers) == 0 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "drivers are required when number_drivers_id is 5 (limited)"})
+			return
+		}
+		// Преобразуем drivers из запроса
+		for _, driver := range req.Drivers {
+			driverMap := map[string]interface{}{
+				"passport__seria":  strings.ToLower(driver.PassportSeria),
+				"passport__number": driver.PassportNumber,
+				"driver_birthday":  driver.DriverBirthday,
+				"relative":         driver.Relative,
+			}
+			// Добавляем опциональные поля лицензии
+			if driver.LicenseNumber != "" {
+				driverMap["licenseNumber"] = driver.LicenseNumber
+			}
+			if driver.LicenseSeria != "" {
+				driverMap["licenseSeria"] = driver.LicenseSeria
+			}
+			if driver.LicenseIssueDate != "" {
+				driverMap["licenseIssueDate"] = driver.LicenseIssueDate
+			}
+			if driver.Name != "" {
+				driverMap["name"] = driver.Name
+			}
+			drivers = append(drivers, driverMap)
+		}
+	}
+
+	// Формируем запрос для Neo save-policy/v2 согласно документации
+	savePolicyRequest := map[string]interface{}{
+		"gos_number":             gosNumber,
+		"tech_sery":              techSery,
+		"tech_number":            techNumber,
+		"period_id":              periodID,
+		"number_drivers_id":      numberDriversID, // Для Neo это int, не string
+		"owner__pass_seria":      ownerPassSeria,
+		"owner__pass_number":     ownerPassNumber,
+		"owner_birthday":         ownerBirthday,
+		"applicant__pass_seria":  ownerPassSeria, // Всегда те же данные что owner
+		"applicant__pass_number": ownerPassNumber,
+		"applicant__birthday":    ownerBirthday,
+		"applicant_is_driver":    false, // Всегда false
+		"phone_number":           req.PhoneNumber,
+		"amount_uzs":             amountUZS,
+	}
+
+	// Добавляем drivers только если number_drivers_id == 5 (из calc)
+	if calcNumberDriversID == 5 && len(drivers) > 0 {
+		savePolicyRequest["drivers"] = drivers
+	}
+
+	// Отправляем запрос на save-policy/v2
+	savePolicyURL := oc.cfg.NeoBaseURL + "/api/osago-neo/save-policy/v2"
+	savePolicyJsonData, err := json.Marshal(savePolicyRequest)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to marshal save-policy request", "details": err.Error()})
+		return
+	}
+
+	log.Printf("[NEO SAVE POLICY] URL: %s", savePolicyURL)
+	log.Printf("[NEO SAVE POLICY] Request: %s", string(savePolicyJsonData))
+
+	savePolicyHttpReq, err := http.NewRequest(http.MethodPost, savePolicyURL, bytes.NewBuffer(savePolicyJsonData))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create save-policy request", "details": err.Error()})
+		return
+	}
+
+	savePolicyHttpReq.Header.Set("Content-Type", "application/json")
+	creds := oc.cfg.NeoLogin + ":" + oc.cfg.NeoPassword
+	auth := "Basic " + base64.StdEncoding.EncodeToString([]byte(creds))
+	savePolicyHttpReq.Header.Set("Authorization", auth)
+
+	savePolicyResp, err := oc.cl.Do(savePolicyHttpReq)
+	if err != nil {
+		c.JSON(http.StatusBadGateway, gin.H{"error": "failed to send save-policy request", "details": err.Error()})
+		return
+	}
+	defer savePolicyResp.Body.Close()
+
+	savePolicyResponseBody, err := io.ReadAll(savePolicyResp.Body)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to read save-policy response", "details": err.Error()})
+		return
+	}
+
+	log.Printf("[NEO SAVE POLICY] Status: %d", savePolicyResp.StatusCode)
+	log.Printf("[NEO SAVE POLICY] Response: %s", string(savePolicyResponseBody))
+
+	var savePolicyResponseData interface{}
+	if err := json.Unmarshal(savePolicyResponseBody, &savePolicyResponseData); err != nil {
+		// Если не удалось распарсить JSON, возвращаем как строку
+		savePolicyResponseData = string(savePolicyResponseBody)
+	}
+
+	// Возвращаем сырой ответ от save-policy/v2
+	c.JSON(savePolicyResp.StatusCode, savePolicyResponseData)
 }

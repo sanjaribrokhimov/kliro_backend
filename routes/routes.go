@@ -139,9 +139,6 @@ func SetupRouter() *gin.Engine {
 	// Order group (Order API)
 	SetupOrderRoutes(r)
 
-	// Unified API routes
-	SetupUnifiedRoutes(r)
-
 	// Travel API routes
 	SetupTravelRoutes(r, rdb)
 
