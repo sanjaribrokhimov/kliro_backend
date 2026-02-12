@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"kliro/models"
@@ -42,13 +43,16 @@ type UpdateUserRequest struct {
 	Password   *string `json:"password"`
 }
 
-// DeleteUser удаляет пользователя по email или phone (жёстко)
+// DeleteUser удаляет пользователя по email или phone (жёстко).
+// Сначала удаляет все связанные записи (заказы, избранное, историю поиска и т.д.), затем пользователя.
 func (ac *AdminController) DeleteUser(c *gin.Context) {
 	var req DeleteUserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "invalid request"})
 		return
 	}
+	req.Email = strings.TrimSpace(req.Email)
+	req.Phone = strings.TrimSpace(req.Phone)
 	if (req.Email == "" && req.Phone == "") || (req.Email != "" && req.Phone != "") {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "Укажите только email или только phone"})
 		return
@@ -56,16 +60,36 @@ func (ac *AdminController) DeleteUser(c *gin.Context) {
 	var user models.User
 	tx := ac.db
 	if req.Email != "" {
-		tx = tx.Where("email = ?", req.Email)
+		tx = tx.Where("LOWER(email) = LOWER(?)", req.Email)
 	} else {
-		tx = tx.Where("phone = ?", req.Phone)
+		// Нормализуем телефон: убираем + и пробелы, ищем по точному совпадению и с префиксом +
+		phoneNorm := strings.TrimPrefix(req.Phone, "+")
+		phoneNorm = strings.ReplaceAll(phoneNorm, " ", "")
+		tx = tx.Where("phone = ? OR phone = ?", phoneNorm, "+"+phoneNorm)
 	}
 	if err := tx.First(&user).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"success": false, "error": "Пользователь не найден"})
 		return
 	}
-	// Жёсткое удаление
-	if err := ac.db.Unscoped().Delete(&user).Error; err != nil {
+	userID := user.ID
+
+	// Удаляем в транзакции: сначала все связанные записи, затем пользователя (избегаем FK constraint)
+	if err := ac.db.Transaction(func(tx *gorm.DB) error {
+		tx.Unscoped().Where("user_id = ?", userID).Delete(&models.Order{})
+		tx.Unscoped().Where("user_id = ?", userID).Delete(&models.Favorite{})
+		tx.Unscoped().Where("user_id = ?", userID).Delete(&models.UserHuman{})
+		tx.Unscoped().Where("user_id = ?", userID).Delete(&models.PaymentCard{})
+		tx.Unscoped().Where("user_id = ?", userID).Delete(&models.InsuranceProfile{})
+		tx.Unscoped().Where("user_id = ?", userID).Delete(&models.AviaSearchHistory{})
+		tx.Unscoped().Where("user_id = ?", userID).Delete(&models.HotelSearchHistory{})
+		tx.Unscoped().Where("user_id = ?", userID).Delete(&models.InsuranceSearchHistory{})
+		tx.Where("user_id = ?", userID).Delete(&models.OsagoOrder{})
+		if err := tx.Unscoped().Delete(&user).Error; err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
+		fmt.Printf("DeleteUser: %v\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "Не удалось удалить пользователя"})
 		return
 	}

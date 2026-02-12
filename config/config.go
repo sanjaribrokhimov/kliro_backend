@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
@@ -50,6 +51,7 @@ type Config struct {
 	ApexBaseURL  string
 	ApexLogin    string
 	ApexPassword string
+	ApexUserID   int // статический user_id для create (из .env APEX_USER_ID, по умолчанию 30541)
 	// Translation API settings (бесплатный API, без токенов)
 	TranslationAPIURL string // URL для LibreTranslate (опционально, по умолчанию используется публичный)
 }
@@ -96,6 +98,7 @@ func LoadConfig() *Config {
 		ApexBaseURL:         getenvOrDefault("APEX_BASE_URL", "https://rest.aic.uz/api/ins/apex_box"),
 		ApexLogin:           os.Getenv("APEX_LOGIN"),
 		ApexPassword:        os.Getenv("APEX_PASSWORD"),
+		ApexUserID:          getenvIntOrDefault("APEX_USER_ID", 30541),
 		TranslationAPIURL:   getenvOrDefault("TRANSLATION_API_URL", "https://libretranslate.com/translate"),
 	}
 }
@@ -104,6 +107,16 @@ func LoadConfig() *Config {
 func getenvOrDefault(key, def string) string {
 	if v := os.Getenv(key); v != "" {
 		return v
+	}
+	return def
+}
+
+// getenvIntOrDefault returns the environment variable as int if set and valid, otherwise returns def
+func getenvIntOrDefault(key string, def int) int {
+	if v := os.Getenv(key); v != "" {
+		if i, err := strconv.Atoi(v); err == nil {
+			return i
+		}
 	}
 	return def
 }
