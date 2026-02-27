@@ -3,6 +3,7 @@ package bank
 import (
 	"kliro/models"
 	"kliro/utils"
+	"math/rand"
 	"net/http"
 	"regexp"
 	"sort"
@@ -48,13 +49,14 @@ type TranslatedDepositResponseByPagination struct {
 	Empty            bool                   `json:"empty"`
 }
 
-// GetNewDeposits godoc
+// GetNewDeposits godoc — вклады: сначала самые высокие проценты, внутри одной ставки порядок случайный.
 func (dc *DepositController) GetNewDeposits(c *gin.Context) {
-	dc.getDepositsWithPagination(c, "new_deposit")
+	dc.getDepositsWithPagination(c, "new_deposit", true)
 }
 
-// getDepositsWithPagination общая функция для получения вкладов с пагинацией
-func (dc *DepositController) getDepositsWithPagination(c *gin.Context, tableName string) {
+// getDepositsWithPagination общая функция для получения вкладов с пагинацией.
+// shuffleHighRateFirst: для new — сортировка по убыванию ставки, внутри одной ставки случайный порядок.
+func (dc *DepositController) getDepositsWithPagination(c *gin.Context, tableName string, shuffleHighRateFirst bool) {
 	db := utils.GetDB()
 
 	// Параметры пагинации
@@ -182,22 +184,43 @@ func (dc *DepositController) getDepositsWithPagination(c *gin.Context, tableName
 		filtered = append(filtered, d)
 	}
 
-	// Сортировка ДО пагинации: приоритет у rate_from, если нет - то по bank_name
-	if rateFromStr != "" {
-		// Автоматическая сортировка по ставкам от меньшего к большему
+	// Для /deposits/new: сначала самые высокие проценты, внутри одной ставки — случайный порядок
+	if shuffleHighRateFirst && len(filtered) > 0 {
+		// Сортируем по ставке по убыванию
 		sort.SliceStable(filtered, func(i, j int) bool {
 			rateI := utils.ExtractFirstFloat(filtered[i].Rate)
 			rateJ := utils.ExtractFirstFloat(filtered[j].Rate)
 			return rateI > rateJ
 		})
-	} else if strings.EqualFold(sortBy, "bank_name") {
-		// Сортировка по банку только если нет фильтра по ставкам
-		sort.SliceStable(filtered, func(i, j int) bool {
-			if strings.ToLower(sortDir) == "desc" {
-				return filtered[i].BankName > filtered[j].BankName
+		// Группы по одинаковой ставке перемешиваем
+		i := 0
+		for i < len(filtered) {
+			ri := utils.ExtractFirstFloat(filtered[i].Rate)
+			j := i + 1
+			for j < len(filtered) && utils.ExtractFirstFloat(filtered[j].Rate) == ri {
+				j++
 			}
-			return filtered[i].BankName < filtered[j].BankName
-		})
+			if j-i > 1 {
+				rand.Shuffle(j-i, func(a, b int) { filtered[i+a], filtered[i+b] = filtered[i+b], filtered[i+a] })
+			}
+			i = j
+		}
+	} else {
+		// Обычная сортировка
+		if rateFromStr != "" {
+			sort.SliceStable(filtered, func(i, j int) bool {
+				rateI := utils.ExtractFirstFloat(filtered[i].Rate)
+				rateJ := utils.ExtractFirstFloat(filtered[j].Rate)
+				return rateI > rateJ
+			})
+		} else if strings.EqualFold(sortBy, "bank_name") {
+			sort.SliceStable(filtered, func(i, j int) bool {
+				if strings.ToLower(sortDir) == "desc" {
+					return filtered[i].BankName > filtered[j].BankName
+				}
+				return filtered[i].BankName < filtered[j].BankName
+			})
+		}
 	}
 
 	// Пагинация в памяти

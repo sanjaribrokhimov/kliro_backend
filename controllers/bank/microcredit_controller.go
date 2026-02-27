@@ -3,6 +3,7 @@ package bank
 import (
 	"kliro/models"
 	"kliro/utils"
+	"math/rand"
 	"net/http"
 	"sort"
 	"strconv"
@@ -68,11 +69,45 @@ type TranslatedResponseByPagination struct {
 
 // GetNewMicrocredits godoc
 func (mc *MicrocreditController) GetNewMicrocredits(c *gin.Context) {
-	mc.getMicrocreditsWithPagination(c, "new_microcredit")
+	mc.getMicrocreditsWithPagination(c, "new_microcredit", true)
 }
 
-// getMicrocreditsWithPagination общая функция для получения микрофинансов с пагинацией
-func (mc *MicrocreditController) getMicrocreditsWithPagination(c *gin.Context, tableName string) {
+// shuffleFilteredByBank переставляет элементы так, чтобы один банк не шёл подряд (round-robin по банкам, порядок банков случайный).
+func shuffleFilteredByBank(filtered []models.Microcredit) []models.Microcredit {
+	if len(filtered) <= 1 {
+		return filtered
+	}
+	byBank := make(map[string][]models.Microcredit)
+	for _, m := range filtered {
+		byBank[m.BankName] = append(byBank[m.BankName], m)
+	}
+	banks := make([]string, 0, len(byBank))
+	for b := range byBank {
+		banks = append(banks, b)
+	}
+	rand.Shuffle(len(banks), func(i, j int) { banks[i], banks[j] = banks[j], banks[i] })
+	result := make([]models.Microcredit, 0, len(filtered))
+	indices := make(map[string]int)
+	for len(result) < len(filtered) {
+		added := false
+		for _, b := range banks {
+			if indices[b] >= len(byBank[b]) {
+				continue
+			}
+			result = append(result, byBank[b][indices[b]])
+			indices[b]++
+			added = true
+		}
+		if !added {
+			break
+		}
+	}
+	return result
+}
+
+// getMicrocreditsWithPagination общая функция для получения микрофинансов с пагинацией.
+// shuffleByBank: для new_microcredit — перемешивать так, чтобы один банк не шёл подряд.
+func (mc *MicrocreditController) getMicrocreditsWithPagination(c *gin.Context, tableName string, shuffleByBank bool) {
 	db := utils.GetDB()
 
 	// Пагинация и сортировка
@@ -196,24 +231,28 @@ func (mc *MicrocreditController) getMicrocreditsWithPagination(c *gin.Context, t
 		filtered = append(filtered, m)
 	}
 
-	// Сортировка ДО пагинации: приоритет у rate_from, если нет - то по bank_name
-	if rateFromStr != "" {
-		// Автоматическая сортировка по ставкам от меньшего к большему
-		sort.SliceStable(filtered, func(i, j int) bool {
-			rateI := utils.ExtractFirstFloat(filtered[i].Rate)
-			rateJ := utils.ExtractFirstFloat(filtered[j].Rate)
-			return rateI < rateJ
-		})
-	} else if strings.EqualFold(sortBy, "bank_name") {
-		// Сортировка по банку только если нет фильтра по ставкам
-		sort.SliceStable(filtered, func(i, j int) bool {
-			if strings.ToLower(sortDir) == "desc" {
-				return filtered[i].BankName > filtered[j].BankName
-			}
-			return filtered[i].BankName < filtered[j].BankName
-		})
+	// Для /microcredits/new — случайный порядок и round-robin по банкам, чтобы один банк не шёл подряд
+	if shuffleByBank && len(filtered) > 1 {
+		filtered = shuffleFilteredByBank(filtered)
 	}
-	// Иные sort поля оставляем как есть (при необходимости можно расширить)
+
+	// Сортировка ДО пагинации (не применяем, если включён shuffle по банкам — чтобы не сгруппировать один банк подряд)
+	if !shuffleByBank {
+		if rateFromStr != "" {
+			sort.SliceStable(filtered, func(i, j int) bool {
+				rateI := utils.ExtractFirstFloat(filtered[i].Rate)
+				rateJ := utils.ExtractFirstFloat(filtered[j].Rate)
+				return rateI < rateJ
+			})
+		} else if strings.EqualFold(sortBy, "bank_name") {
+			sort.SliceStable(filtered, func(i, j int) bool {
+				if strings.ToLower(sortDir) == "desc" {
+					return filtered[i].BankName > filtered[j].BankName
+				}
+				return filtered[i].BankName < filtered[j].BankName
+			})
+		}
+	}
 
 	// total после числовых фильтров
 	totalElements := int64(len(filtered))

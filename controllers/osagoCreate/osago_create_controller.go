@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -31,11 +32,11 @@ func NewOsagoCreateController(cfg *config.Config) *OsagoCreateController {
 	}
 }
 
-// CreateRequest - единый body для create у любого провайдера (neo|gross|euroasia|trust|apex).
+// CreateRequest - единый body для create у любого провайдера (neo|gross|euroasia|trust|apex|inson).
 // Один и тот же набор полей: backend сам маппит на API провайдера. Find/calculate не трогаем.
 type CreateRequest struct {
 	SessionID         string   `json:"session_id" binding:"required"`
-	Provider          string   `json:"provider" binding:"required"` // neo|gross|euroasia|trust|apex
+	Provider          string   `json:"provider" binding:"required"` // neo|gross|euroasia|trust|apex|inson
 	PeriodID          int      `json:"period_id,omitempty"` // 1=12мес, 2=6мес, 3=20дней; для Neo можно 0 — возьмётся из сессии (после Calculate)
 	DriverRestriction bool     `json:"driver_restriction"`
 	Drivers           []Driver `json:"drivers,omitempty"`
@@ -76,6 +77,7 @@ type CreateResponse struct {
 	Euroasia interface{} `json:"euroasia,omitempty"`
 	Trust    interface{} `json:"trust,omitempty"`
 	Apex     interface{} `json:"apex,omitempty"`
+	Inson    interface{} `json:"inson,omitempty"`
 	Errors   []string    `json:"errors,omitempty"`
 }
 
@@ -259,6 +261,45 @@ func formatDateDDMMYYYY(dateYYYYMMDD string) string {
 	return dateYYYYMMDD
 }
 
+// Единые адаптеры для relative (степень родства) — наша система: 0=не родственник, 1=отец, 2=мать, 3=муж, 4=жена, 5=сын, 6=дочь, 7=старший брат, 8=младший брат, 9=старшая сестра, 10=младшая сестра
+
+// relativeToNeo конвертирует наше значение relative в формат Neo (0-10, без изменений)
+func relativeToNeo(rel int) int {
+	return rel
+}
+
+// relativeToGross конвертирует наше значение relative в формат Gross.
+// Gross порядок: 1=Отец, 2=Старший брат, 3=Младший брат, 4=Жена, 5=Мать, 6=Муж, 7=Сын, 8=Дочь, 9=Старшая сестра, 10=Младшая сестра
+func relativeToGross(rel int) int {
+	switch rel {
+	case 0:
+		return 0 // не родственник
+	case 1:
+		return 1 // Отец
+	case 2:
+		return 5 // Мать
+	case 3:
+		return 6 // Муж
+	case 4:
+		return 4 // Жена
+	case 5:
+		return 7 // Сын
+	case 6:
+		return 8 // Дочь
+	case 7:
+		return 2 // Старший брат
+	case 8:
+		return 3 // Младший брат
+	case 9:
+		return 9 // Старшая сестра
+	case 10:
+		return 10 // Младшая сестра
+	default:
+		return 0
+	}
+}
+
+// relativeToEuroasiaUUID конвертирует наше значение relative в UUID формат EuroAsia
 func relativeToEuroasiaUUID(rel int) string {
 	// from euroAsiaFlow.txt (relatives list)
 	switch rel {
@@ -287,22 +328,43 @@ func relativeToEuroasiaUUID(rel int) string {
 	}
 }
 
+// relativeToTrust конвертирует наше значение relative в формат Trust (0-10, без изменений)
+func relativeToTrust(rel int) int {
+	return rel
+}
+
+// relativeToApex конвертирует наше значение relative в формат Apex (0-10, без изменений)
+func relativeToApex(rel int) int {
+	return rel
+}
+
 func (oc *OsagoCreateController) euroasiaLookupPinflByPassport(birthdateYYYYMMDD, passportSeries, passportNumber string) (string, error) {
+	data, err := oc.euroasiaLookupPersonByPassport(birthdateYYYYMMDD, passportSeries, passportNumber)
+	if err != nil {
+		return "", err
+	}
+	pinfl := extractNestedString(data, "pinfls", "0")
+	if pinfl == "" {
+		pinfl = extractNestedString(data, "external_id")
+	}
+	return pinfl, nil
+}
+
+// euroasiaLookupPersonByPassport возвращает объект data персоны из EuroAsia API (find-by-birthdate) для подстановки ФИО, паспорта и т.д. в Apex.
+func (oc *OsagoCreateController) euroasiaLookupPersonByPassport(birthdateYYYYMMDD, passportSeries, passportNumber string) (map[string]interface{}, error) {
 	url := oc.cfg.EuroasiaAllBaseURL + "/api/v1/insurance/persons/find-by-birthdate"
+	birthNorm := strings.TrimSpace(strings.Split(birthdateYYYYMMDD, "T")[0])
 	reqBody := map[string]string{
-		"birthdate":       strings.TrimSpace(birthdateYYYYMMDD),
+		"birthdate":       birthNorm,
 		"passport_series": strings.TrimSpace(passportSeries),
 		"passport_number": strings.TrimSpace(passportNumber),
 	}
 	resp, err := oc.makeProviderRequest("POST", url, reqBody, "", "", oc.cfg.EuroasiaAllAPIKey)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	pinfl := extractNestedString(resp, "data", "pinfls", "0")
-	if pinfl == "" {
-		pinfl = extractNestedString(resp, "data", "external_id")
-	}
-	return pinfl, nil
+	data, _ := extractNestedValue(resp, "data").(map[string]interface{})
+	return data, nil
 }
 
 // makeProviderRequest - универсальный запрос к провайдеру (Basic или Authorization token)
@@ -353,6 +415,50 @@ func (oc *OsagoCreateController) makeProviderRequest(method, url string, bodyDat
 	return out, nil
 }
 
+// enrichDriversWithLicenseFromFind автоматически заполняет license_series и license_number для водителей из Find API,
+// если переданы только паспорт (серия, номер) и дата рождения, но нет данных водительского удостоверения.
+// Использует EuroAsia person API (find-by-birthdate) и извлекает IDMS_RECV_DRIVERS_LICENSE из documents.
+func (oc *OsagoCreateController) enrichDriversWithLicenseFromFind(drivers []Driver) []Driver {
+	if len(drivers) == 0 {
+		return drivers
+	}
+	enriched := make([]Driver, len(drivers))
+	for i, d := range drivers {
+		enriched[i] = d
+		// Если есть паспорт и дата рождения, но нет license — ищем через Find API
+		if d.PassportSeries != "" && d.PassportNumber != "" && d.Birthdate != "" {
+			if d.LicenseSeries == "" || d.LicenseNumber == "" {
+				birthNorm := toYYYYMMDD(d.Birthdate)
+				if personData, err := oc.euroasiaLookupPersonByPassport(birthNorm, d.PassportSeries, d.PassportNumber); err == nil && personData != nil {
+					// Ищем водительское удостоверение в documents (IDMS_RECV_DRIVERS_LICENSE)
+					docs, _ := extractNestedValue(personData, "documents").([]interface{})
+					for _, doc := range docs {
+						docMap, _ := doc.(map[string]interface{})
+						if docMap == nil {
+							continue
+						}
+						docType := extractNestedString(docMap, "document_type")
+						if docType == "IDMS_RECV_DRIVERS_LICENSE" {
+							licenseSeries := extractNestedString(docMap, "series")
+							licenseNumber := extractNestedString(docMap, "number")
+							if licenseSeries != "" && licenseNumber != "" {
+								enriched[i].LicenseSeries = licenseSeries
+								enriched[i].LicenseNumber = licenseNumber
+								// Также можно взять issue_date если есть
+								if issueDate := extractNestedString(docMap, "issue_date"); issueDate != "" && enriched[i].LicenseIssueDate == "" {
+									enriched[i].LicenseIssueDate = toYYYYMMDD(issueDate)
+								}
+								break
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return enriched
+}
+
 func (oc *OsagoCreateController) Create(c *gin.Context) {
 	var req CreateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -374,6 +480,17 @@ func (oc *OsagoCreateController) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "vehicle data not found in session"})
 		return
 	}
+	ownerType := extractNestedString(session.Vehicle, "data", "owner", "type")
+	if ownerType == "organization" && (req.Provider == "neo" || req.Provider == "gross") {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "для юридического лица Neo и Gross не поддерживаются; используйте provider: trust, euroasia, apex или inson"})
+		return
+	}
+
+	// Автозаполнение license_series/license_number из Find API для drivers и applicant (если переданы только паспорт + дата рождения)
+	req.Drivers = oc.enrichDriversWithLicenseFromFind(req.Drivers)
+	if req.ApplicantPassportSeries != "" && req.ApplicantPassportNumber != "" && req.ApplicantBirthdate != "" {
+		// Для applicant тоже можно найти license, но обычно он не водитель — пропускаем
+	}
 
 	resp := CreateResponse{Errors: []string{}}
 
@@ -383,38 +500,68 @@ func (oc *OsagoCreateController) Create(c *gin.Context) {
 		if err != nil {
 			resp.Errors = append(resp.Errors, "neo: "+err.Error())
 		} else {
-			resp.Neo = r
+			resp.Neo = oc.withPaymentUrls("neo", r)
 		}
 	case "gross":
 		r, err := oc.createGross(session, &req)
 		if err != nil {
 			resp.Errors = append(resp.Errors, "gross: "+err.Error())
 		} else {
-			resp.Gross = r
+			resp.Gross = oc.withPaymentUrls("gross", r)
 		}
 	case "euroasia":
 		r, err := oc.createEuroasia(session, &req)
 		if err != nil {
 			resp.Errors = append(resp.Errors, "euroasia: "+err.Error())
 		} else {
-			resp.Euroasia = r
+			// Только для EuroAsia: параллельно запрашиваем payment click и payme, ответ — create + payment_click + payment_payme
+			policyID := extractNestedString(r, "data", "policy_id")
+			if policyID != "" {
+				var clickResp, paymeResp interface{}
+				var wg sync.WaitGroup
+				wg.Add(2)
+				go func() {
+					clickResp, _ = oc.euroasiaPayment(policyID, "click")
+					wg.Done()
+				}()
+				go func() {
+					paymeResp, _ = oc.euroasiaPayment(policyID, "payme")
+					wg.Done()
+				}()
+				wg.Wait()
+				euroasiaObj := map[string]interface{}{
+					"create":         r,
+					"payment_click":  clickResp,
+					"payment_payme":  paymeResp,
+				}
+				resp.Euroasia = oc.withPaymentUrls("euroasia", euroasiaObj)
+			} else {
+				resp.Euroasia = oc.withPaymentUrls("euroasia", r)
+			}
 		}
 	case "trust":
 		r, err := oc.createTrust(session, &req)
 		if err != nil {
 			resp.Errors = append(resp.Errors, "trust: "+err.Error())
 		} else {
-			resp.Trust = r
+			resp.Trust = oc.trustCreateResponseWithPaymentLinks(r)
 		}
 	case "apex":
 		r, err := oc.createApex(session, &req)
 		if err != nil {
 			resp.Errors = append(resp.Errors, "apex: "+err.Error())
 		} else {
-			resp.Apex = r
+			resp.Apex = oc.withPaymentUrls("apex", r)
+		}
+	case "inson":
+		r, err := oc.createInson(session, &req)
+		if err != nil {
+			resp.Errors = append(resp.Errors, "inson: "+err.Error())
+		} else {
+			resp.Inson = r
 		}
 	default:
-		c.JSON(http.StatusBadRequest, gin.H{"error": "provider must be one of: neo, gross, euroasia, trust, apex"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "provider must be one of: neo, gross, euroasia, trust, apex, inson"})
 		return
 	}
 
@@ -499,6 +646,8 @@ func (oc *OsagoCreateController) createNeo(session *SessionData, req *CreateRequ
 	if snap := session.CalculateSnapshot; snap != nil && len(snap.Drivers) > 0 {
 		driversList = snap.Drivers
 	}
+	// Автозаполнение license_series/license_number из Find API, если переданы только паспорт + дата рождения
+	driversList = oc.enrichDriversWithLicenseFromFind(driversList)
 
 	numberDriversID := 1
 	if driverRestriction {
@@ -519,7 +668,7 @@ func (oc *OsagoCreateController) createNeo(session *SessionData, req *CreateRequ
 				"licenseNumber":     d.LicenseNumber,
 				"licenseSeria":      d.LicenseSeries,
 				"licenseIssueDate":  formatDateDDMMYYYY(licenseIssue),
-				"relative":          d.Relative,
+				"relative":          relativeToNeo(d.Relative),
 			})
 		}
 	}
@@ -597,6 +746,8 @@ func (oc *OsagoCreateController) createGross(session *SessionData, req *CreateRe
 	if snap := session.CalculateSnapshot; snap != nil && len(snap.Drivers) > 0 {
 		driversList = snap.Drivers
 	}
+	// Автозаполнение license_series/license_number из Find API, если переданы только паспорт + дата рождения
+	driversList = oc.enrichDriversWithLicenseFromFind(driversList)
 	if len(driversList) == 0 {
 		return nil, fmt.Errorf("drivers[] обязателен для Gross create (вызовите сначала Calculate с водителями по этой сессии или передайте drivers в теле)")
 	}
@@ -630,6 +781,36 @@ func (oc *OsagoCreateController) createGross(session *SessionData, req *CreateRe
 		repPinfl = "00000000000000"
 	}
 
+	// owner — из сессии Find (vehicle owner, documents/passport), как для Neo/EuroAsia
+	ownerPassS, ownerPassN := "", ""
+	ownerPersonObj := extractNestedValue(v, "data", "owner", "person")
+	if ownerPersonObj != nil {
+		ownerPassS, ownerPassN = extractPersonPassportFromFindSession(ownerPersonObj)
+	}
+	if (ownerPassS == "" || ownerPassN == "") && session.Owner != nil && *session.Owner && session.Person != nil {
+		ownerPassS, ownerPassN = extractPersonPassportFromFindSession(session.Person)
+	}
+	if ownerPassS == "" || ownerPassN == "" {
+		ownerPassS = extractNestedString(v, "data", "owner", "person", "passport", "series")
+		ownerPassN = extractNestedString(v, "data", "owner", "person", "passport", "number")
+	}
+	if ownerPassS == "" {
+		ownerPassS = rep.PassportSeries
+	}
+	if ownerPassN == "" {
+		ownerPassN = rep.PassportNumber
+	}
+	ownerPinfl := repPinfl
+	if ownerPassS != rep.PassportSeries || ownerPassN != rep.PassportNumber {
+		ownerPinfl = extractNestedString(session.Person, "data", "pinfls", "0")
+		if ownerPinfl == "" {
+			ownerPinfl = extractNestedString(session.Person, "data", "external_id")
+		}
+		if ownerPinfl == "" {
+			ownerPinfl = "00000000000000"
+		}
+	}
+
 	ownerObj := map[string]interface{}{}
 	if ownerType == "organization" {
 		inn := extractNestedString(v, "data", "owner", "organization", "inn")
@@ -643,20 +824,67 @@ func (oc *OsagoCreateController) createGross(session *SessionData, req *CreateRe
 		}
 	}
 	ownerObj["person"] = map[string]interface{}{
-		"pass_seria":  rep.PassportSeries,
-		"pass_number": rep.PassportNumber,
-		"pinfl":       repPinfl,
+		"pass_seria":  ownerPassS,
+		"pass_number": ownerPassN,
+		"pinfl":       ownerPinfl,
 	}
 
+	// applicant — из тела (applicant_*) или первый водитель (rep); PINFL должен соответствовать паспорту заявителя (Gross проверяет)
+	applicantPassS, applicantPassN := strings.TrimSpace(req.ApplicantPassportSeries), strings.TrimSpace(req.ApplicantPassportNumber)
+	if applicantPassS == "" {
+		applicantPassS = rep.PassportSeries
+	}
+	if applicantPassN == "" {
+		applicantPassN = rep.PassportNumber
+	}
+	applicantPinfl := repPinfl
+	if applicantPassS != rep.PassportSeries || applicantPassN != rep.PassportNumber {
+		// Заявитель — другой человек: ищем его PINFL по паспорту (session.Person или lookup по EuroAsia)
+		applicantPinfl = ""
+		if session.Person != nil {
+			ps, pn := extractPersonPassportFromFindSession(session.Person)
+			if ps == "" {
+				ps = extractNestedString(session.Person, "data", "passport", "series")
+				pn = extractNestedString(session.Person, "data", "passport", "number")
+			}
+			if ps == applicantPassS && pn == applicantPassN {
+				applicantPinfl = extractNestedString(session.Person, "data", "pinfls", "0")
+				if applicantPinfl == "" {
+					applicantPinfl = extractNestedString(session.Person, "data", "external_id")
+				}
+			}
+		}
+		if applicantPinfl == "" && req.ApplicantBirthdate != "" {
+			if p, err := oc.euroasiaLookupPinflByPassport(req.ApplicantBirthdate, applicantPassS, applicantPassN); err == nil {
+				applicantPinfl = p
+			}
+		}
+		if applicantPinfl == "" {
+			applicantPinfl = "00000000000000"
+		}
+	}
+	applicantBirthdate := strings.TrimSpace(req.ApplicantBirthdate)
+	if applicantBirthdate == "" {
+		applicantBirthdate = rep.Birthdate
+	}
+	// Gross API: заявитель должен указать либо ПИНФЛ, либо дату рождения (только одно из них)
+	applicantBirthdateGross := applicantBirthdate
+	if idx := strings.Index(applicantBirthdate, "T"); idx > 0 {
+		applicantBirthdateGross = strings.TrimSpace(applicantBirthdate[:idx])
+	}
 	applicantObj := map[string]interface{}{
-		"pass_seria": rep.PassportSeries,
-		"pass_number": rep.PassportNumber,
-		"pinfl": repPinfl,
-		"is_driver": false,
+		"pass_seria": applicantPassS,
+		"pass_number": applicantPassN,
+		"is_driver":  req.ApplicantIsDriver != nil && *req.ApplicantIsDriver,
 		"licenseSeria": rep.LicenseSeries,
 		"licenseNumber": rep.LicenseNumber,
 		"licenseIssueDate": formatDateDDMMYYYY(rep.LicenseIssueDate),
-		"relative": rep.Relative,
+		"relative": relativeToNeo(rep.Relative),
+	}
+	if applicantPinfl != "" && applicantPinfl != "00000000000000" {
+		applicantObj["pinfl"] = applicantPinfl
+	} else {
+		applicantObj["birthdate"] = applicantBirthdateGross
 	}
 
 	var drivers []map[string]interface{}
@@ -673,7 +901,7 @@ func (oc *OsagoCreateController) createGross(session *SessionData, req *CreateRe
 				"licenseSeria":     d.LicenseSeries,
 				"licenseNumber":    d.LicenseNumber,
 				"licenseIssueDate": formatDateDDMMYYYY(licenseIssue),
-				"relative":         d.Relative,
+				"relative":         relativeToGross(d.Relative),
 			})
 		}
 	} else {
@@ -689,7 +917,7 @@ func (oc *OsagoCreateController) createGross(session *SessionData, req *CreateRe
 				"licenseSeria":     rep.LicenseSeries,
 				"licenseNumber":    rep.LicenseNumber,
 				"licenseIssueDate": formatDateDDMMYYYY(licenseIssue),
-				"relative":         rep.Relative,
+				"relative":         relativeToGross(rep.Relative),
 			},
 		}
 	}
@@ -723,16 +951,28 @@ func (oc *OsagoCreateController) createEuroasia(session *SessionData, req *Creat
 	if req.PhoneNumber == "" {
 		return nil, fmt.Errorf("phone_number обязателен для EuroAsia create")
 	}
-	// district_id: из запроса или автоматически из session (person.district.id из Find API)
+
+	v := session.Vehicle
+	ownerType := extractNestedString(v, "data", "owner", "type")
+	// district_id: из запроса, затем из session (person или organization), иначе дефолт для юрлица
 	districtID := strings.TrimSpace(req.EuroasiaDistrictID)
 	if districtID == "" && session.Person != nil {
 		districtID = extractNestedString(session.Person, "data", "district", "id")
+	}
+	if districtID == "" && session.Organization != nil {
+		districtID = extractNestedString(session.Organization, "data", "district", "id")
+		if districtID == "" {
+			districtID = extractNestedString(session.Organization, "data", "region", "id")
+		}
+	}
+	// EuroAsia принимает district_id только в формате UUID; для юрлица без района в сессии — дефолт (Ташкент)
+	if districtID == "" && ownerType == "organization" {
+		districtID = "00000000-0000-0000-0000-000000000001"
 	}
 	if districtID == "" {
 		return nil, fmt.Errorf("euroasia_district_id обязателен для EuroAsia create (или получите session через find с паспортом/пинфл физлица — тогда район подставится из ответа автоматически)")
 	}
 
-	v := session.Vehicle
 	license := extractNestedString(v, "data", "license_plate")
 	techS := extractNestedString(v, "data", "tech_passport", "series")
 	techN := extractNestedString(v, "data", "tech_passport", "number")
@@ -740,26 +980,44 @@ func (oc *OsagoCreateController) createEuroasia(session *SessionData, req *Creat
 		return nil, fmt.Errorf("недостаточно данных о машине")
 	}
 
-	ownerType := extractNestedString(v, "data", "owner", "type") // person|organization
-
-	// period -> seasonal_insurance_id UUID
+	// period_id из сессии (calculate_snapshot), иначе из тела; по умолчанию 1 (чтобы seasonal_insurance_id не был пустым UUID)
+	periodID := req.PeriodID
+	if snap := session.CalculateSnapshot; snap != nil && snap.PeriodID >= 1 && snap.PeriodID <= 3 {
+		periodID = snap.PeriodID
+	}
+	if periodID == 0 {
+		periodID = 1
+	}
+	driverRestriction := req.DriverRestriction
+	if snap := session.CalculateSnapshot; snap != nil {
+		driverRestriction = snap.DriverRestriction
+	}
+	// period -> seasonal_insurance_id UUID (никогда не пустой)
 	var seasonalInsuranceID string
-	switch req.PeriodID {
+	switch periodID {
 	case 1:
 		seasonalInsuranceID = "8465a831-850f-4445-a995-ef71195094ab" // 365
 	case 2:
 		seasonalInsuranceID = "9848096e-cc12-4dbd-893b-41f2cdfc9a0e" // 180
 	case 3:
 		seasonalInsuranceID = "0d546748-0ba6-43bc-9ce2-1b977ad9e494" // 20
+	default:
+		seasonalInsuranceID = "8465a831-850f-4445-a995-ef71195094ab"
 	}
 
-	// details drivers
-	var detailsDrivers []map[string]interface{}
-	if req.DriverRestriction {
-		if len(req.Drivers) == 0 {
-			return nil, fmt.Errorf("drivers[] обязателен если driver_restriction=true для EuroAsia create")
+	// drivers — из сессии (calculate_snapshot) или из тела
+	driversList := req.Drivers
+	if snap := session.CalculateSnapshot; snap != nil && len(snap.Drivers) > 0 {
+		driversList = snap.Drivers
+	}
+	// Автозаполнение license_series/license_number из Find API, если переданы только паспорт + дата рождения
+	driversList = oc.enrichDriversWithLicenseFromFind(driversList)
+	detailsDrivers := []map[string]interface{}{}
+	if driverRestriction {
+		if len(driversList) == 0 {
+			return nil, fmt.Errorf("drivers[] обязателен если driver_restriction=true для EuroAsia create (вызовите Calculate с водителями или передайте drivers в теле)")
 		}
-		for _, d := range req.Drivers {
+		for _, d := range driversList {
 			detailsDrivers = append(detailsDrivers, map[string]interface{}{
 				"passport_birthdate": d.Birthdate,
 				"passport_number":    d.PassportNumber,
@@ -789,10 +1047,15 @@ func (oc *OsagoCreateController) createEuroasia(session *SessionData, req *Creat
 		}
 		insurant["organization"] = map[string]interface{}{"inn": inn}
 	} else {
-		// person insurant: берём из drivers[0] если есть, иначе из session.person или owner.person
-		var ps, pn, bd string
-		if len(req.Drivers) > 0 {
-			ps, pn, bd = req.Drivers[0].PassportSeries, req.Drivers[0].PassportNumber, req.Drivers[0].Birthdate
+		// person insurant: из тела (applicant_*) или из drivers[0], иначе session.person
+		ps := strings.TrimSpace(req.ApplicantPassportSeries)
+		pn := strings.TrimSpace(req.ApplicantPassportNumber)
+		bd := strings.TrimSpace(req.ApplicantBirthdate)
+		if (ps == "" || pn == "") && len(driversList) > 0 {
+			ps, pn, bd = driversList[0].PassportSeries, driversList[0].PassportNumber, driversList[0].Birthdate
+		}
+		if (ps == "" || pn == "") && session.Person != nil {
+			ps, pn = extractPersonPassportFromFindSession(session.Person)
 		}
 		if ps == "" || pn == "" {
 			ps = extractNestedString(session.Person, "data", "passport", "series")
@@ -802,7 +1065,7 @@ func (oc *OsagoCreateController) createEuroasia(session *SessionData, req *Creat
 			bd = extractNestedString(session.Person, "data", "birthdate")
 		}
 		if ps == "" || pn == "" || bd == "" {
-			return nil, fmt.Errorf("не хватает данных insurant.person (passport/birthdate)")
+			return nil, fmt.Errorf("не хватает данных insurant.person (passport/birthdate); укажите applicant_* в теле или вызовите Calculate с водителями)")
 		}
 		insurant["person"] = map[string]interface{}{
 			"passport_birthdate": bd,
@@ -834,8 +1097,19 @@ func (oc *OsagoCreateController) createEuroasia(session *SessionData, req *Creat
 			}
 		}
 	} else {
-		ps := extractNestedString(v, "data", "owner", "person", "passport", "series")
-		pn := extractNestedString(v, "data", "owner", "person", "passport", "number")
+		// owner person — из сессии Find (documents/passport), как для Neo
+		ownerPersonObj := extractNestedValue(v, "data", "owner", "person")
+		ps, pn := "", ""
+		if ownerPersonObj != nil {
+			ps, pn = extractPersonPassportFromFindSession(ownerPersonObj)
+		}
+		if (ps == "" || pn == "") && session.Owner != nil && *session.Owner && session.Person != nil {
+			ps, pn = extractPersonPassportFromFindSession(session.Person)
+		}
+		if ps == "" || pn == "" {
+			ps = extractNestedString(v, "data", "owner", "person", "passport", "series")
+			pn = extractNestedString(v, "data", "owner", "person", "passport", "number")
+		}
 		if ps == "" || pn == "" {
 			ps = extractNestedString(session.Person, "data", "passport", "series")
 			pn = extractNestedString(session.Person, "data", "passport", "number")
@@ -848,7 +1122,7 @@ func (oc *OsagoCreateController) createEuroasia(session *SessionData, req *Creat
 
 	body := map[string]interface{}{
 		"details": map[string]interface{}{
-			"driver_restriction":    req.DriverRestriction,
+			"driver_restriction":    driverRestriction,
 			"drivers":               detailsDrivers,
 			"seasonal_insurance_id": seasonalInsuranceID,
 			"start_at":              req.StartDate,
@@ -866,14 +1140,45 @@ func (oc *OsagoCreateController) createEuroasia(session *SessionData, req *Creat
 	return oc.makeProviderRequest("POST", url, body, "", "", oc.cfg.EuroasiaAllAPIKey)
 }
 
+// euroasiaPayment вызывает API оплаты EuroAsia (click или payme); promocode статический PROMO2024
+func (oc *OsagoCreateController) euroasiaPayment(policyID, gateway string) (interface{}, error) {
+	if policyID == "" {
+		return nil, fmt.Errorf("policy_id пустой")
+	}
+	url := oc.cfg.EuroasiaAllBaseURL + "/api/v1/insurance/policies/" + policyID + "/payments"
+	body := map[string]string{
+		"gateway":   gateway,
+		"promocode": "PROMO2024",
+	}
+	return oc.makeProviderRequest("POST", url, body, "", "", oc.cfg.EuroasiaAllAPIKey)
+}
+
 func (oc *OsagoCreateController) createTrust(session *SessionData, req *CreateRequest) (interface{}, error) {
 	if req.ProviderPayload != nil {
 		url := oc.cfg.TrustBaseURL + "/api/osgo/create"
 		return oc.makeProviderRequest("POST", url, req.ProviderPayload, oc.cfg.TrustLogin, oc.cfg.TrustPassword, "")
 	}
-	// Единый body: собираем payload из session + req
+	// period_id, driver_restriction, drivers — из сессии (calculate_snapshot), как у Neo/Gross/Apex
+	periodID := req.PeriodID
+	driverRestriction := req.DriverRestriction
+	trustDriversList := req.Drivers
+	if snap := session.CalculateSnapshot; snap != nil {
+		if snap.PeriodID >= 1 && snap.PeriodID <= 3 {
+			periodID = snap.PeriodID
+		}
+		driverRestriction = snap.DriverRestriction
+		if len(snap.Drivers) > 0 {
+			trustDriversList = snap.Drivers
+		}
+	}
+	// Автозаполнение license_series/license_number из Find API, если переданы только паспорт + дата рождения
+	trustDriversList = oc.enrichDriversWithLicenseFromFind(trustDriversList)
 	if req.StartDate == "" {
 		return nil, fmt.Errorf("start_date обязателен для Trust create")
+	}
+	// Trust API принимает только period 1 (6 мес) или 2 (12 мес); период 20 дней не поддерживается
+	if periodID == 3 {
+		return nil, fmt.Errorf("Trust поддерживает только period_id 1 (12 мес) или 2 (6 мес); для периода 20 дней выберите другого провайдера (например Apex)")
 	}
 	v := session.Vehicle
 	renumber := extractNestedString(v, "data", "license_plate")
@@ -890,6 +1195,17 @@ func (oc *OsagoCreateController) createTrust(session *SessionData, req *CreateRe
 	if vehicleTypeID == 0 {
 		vehicleTypeID = 1
 	}
+	// Trust принимает type/regionId/districtId из своих справочников; берём из Find и маппим
+	trustVehicleTypeID := mapFindVehicleTypeToTrust(vehicleTypeID)
+	ownerRegion := extractNestedInt(v, "data", "owner", "person", "region", "external_id")
+	if ownerRegion == 0 {
+		ownerRegion = 10
+	}
+	ownerDistrict := extractNestedInt(v, "data", "owner", "person", "district", "external_id")
+	if ownerDistrict == 0 {
+		ownerDistrict = 1001
+	}
+	trustDistrict := mapFindDistrictToTrust(ownerRegion, ownerDistrict)
 	useTerritory := extractNestedInt(v, "data", "use_territory_region", "external_id")
 	if useTerritory <= 0 || useTerritory > 14 {
 		useTerritory = 1
@@ -921,11 +1237,33 @@ func (oc *OsagoCreateController) createTrust(session *SessionData, req *CreateRe
 	if ownerBirthdate == "" {
 		ownerBirthdate = formatDateDDMMYYYY(extractNestedString(session.Person, "data", "birthdate"))
 	}
-	ownerPaspSery := extractNestedString(v, "data", "owner", "person", "passport", "series")
-	ownerPaspNum := extractNestedString(v, "data", "owner", "person", "passport", "number")
-	ownerSurname := extractNestedString(session.Person, "data", "last_name")
-	ownerName := extractNestedString(session.Person, "data", "first_name")
-	ownerPatronym := extractNestedString(session.Person, "data", "middle_name")
+	// Серия/номер документа владельца — как в Neo/Gross: extractPersonPassportFromFindSession (сначала ID-карта/documents, потом passport)
+	ownerPersonObj := extractNestedValue(v, "data", "owner", "person")
+	ownerPaspSery, ownerPaspNum := "", ""
+	if ownerPersonObj != nil {
+		ownerPaspSery, ownerPaspNum = extractPersonPassportFromFindSession(ownerPersonObj)
+	}
+	if (ownerPaspSery == "" || ownerPaspNum == "") && session.Owner != nil && *session.Owner && session.Person != nil {
+		ownerPaspSery, ownerPaspNum = extractPersonPassportFromFindSession(session.Person)
+	}
+	if ownerPaspSery == "" || ownerPaspNum == "" {
+		ownerPaspSery = extractNestedString(v, "data", "owner", "person", "passport", "series")
+		ownerPaspNum = extractNestedString(v, "data", "owner", "person", "passport", "number")
+	}
+	// ФИО владельца — сначала vehicle.owner.person, затем session.Person (как Neo/Gross)
+	var ownerSurname, ownerName, ownerPatronym string
+	ownerSurname = extractNestedString(v, "data", "owner", "person", "last_name")
+	if ownerSurname == "" {
+		ownerSurname = extractNestedString(session.Person, "data", "last_name")
+	}
+	ownerName = extractNestedString(v, "data", "owner", "person", "first_name")
+	if ownerName == "" {
+		ownerName = extractNestedString(session.Person, "data", "first_name")
+	}
+	ownerPatronym = extractNestedString(v, "data", "owner", "person", "middle_name")
+	if ownerPatronym == "" {
+		ownerPatronym = extractNestedString(session.Person, "data", "middle_name")
+	}
 	if ownerSurname == "" {
 		ownerSurname = "N"
 	}
@@ -947,10 +1285,10 @@ func (oc *OsagoCreateController) createTrust(session *SessionData, req *CreateRe
 		if ownerOrgname == "" {
 			ownerOrgname = extractNestedString(v, "data", "owner", "organization", "name")
 		}
-		if len(req.Drivers) == 0 {
-			return nil, fmt.Errorf("для Trust (юрлицо) укажите drivers[] (минимум 1 представитель)")
+		if len(trustDriversList) == 0 {
+			return nil, fmt.Errorf("для Trust (юрлицо) укажите drivers[] (минимум 1 представитель) или вызовите Calculate с водителями")
 		}
-		rep := req.Drivers[0]
+		rep := trustDriversList[0]
 		ownerPinfl = findPinflCreate(oc, session, rep.PassportSeries, rep.PassportNumber, rep.Birthdate)
 		if ownerPinfl == "" {
 			ownerPinfl = "00000000000000"
@@ -967,19 +1305,18 @@ func (oc *OsagoCreateController) createTrust(session *SessionData, req *CreateRe
 		ownerPhone = "998900000000"
 	}
 
+	// Trust: 1 -> 6 мес, 2 -> 12 мес (period_id 3 уже отсечён выше)
 	periodTrust := 2
-	switch req.PeriodID {
+	switch periodID {
 	case 1:
-		periodTrust = 2
+		periodTrust = 2 // 12 мес
 	case 2:
-		periodTrust = 1
-	case 3:
-		periodTrust = 4
+		periodTrust = 1 // 6 мес
 	default:
 		periodTrust = 2
 	}
 	driverLimit := 0
-	if req.DriverRestriction {
+	if driverRestriction {
 		driverLimit = 1
 	}
 	contractBegin := formatDateDDMMYYYY(req.StartDate)
@@ -988,11 +1325,15 @@ func (oc *OsagoCreateController) createTrust(session *SessionData, req *CreateRe
 	}
 
 	var driversList []map[string]interface{}
-	if req.DriverRestriction && len(req.Drivers) > 0 {
-		for _, d := range req.Drivers {
+	if driverRestriction && len(trustDriversList) > 0 {
+		for _, d := range trustDriversList {
 			pinfl := findPinflCreate(oc, session, d.PassportSeries, d.PassportNumber, d.Birthdate)
 			if pinfl == "" {
 				pinfl = ownerPinfl
+			}
+			licdate := formatDateDDMMYYYY(d.LicenseIssueDate)
+			if licdate == "" {
+				licdate = "01.01.0001"
 			}
 			driversList = append(driversList, map[string]interface{}{
 				"datebirth":  formatDateDDMMYYYY(d.Birthdate),
@@ -1004,28 +1345,14 @@ func (oc *OsagoCreateController) createTrust(session *SessionData, req *CreateRe
 				"patronym":   "N",
 				"licnumber":  d.LicenseNumber,
 				"licsery":    d.LicenseSeries,
-				"licdate":    formatDateDDMMYYYY(d.LicenseIssueDate),
-				"relative":   d.Relative,
+				"licdate":    licdate,
+				"relative":   relativeToTrust(d.Relative),
 				"resident":   1,
 			})
 		}
 	} else {
-		driversList = []map[string]interface{}{
-			{
-				"datebirth":  ownerBirthdate,
-				"paspsery":   ownerPaspSery,
-				"paspnumber": ownerPaspNum,
-				"pinfl":      ownerPinfl,
-				"surname":    ownerSurname,
-				"name":       ownerName,
-				"patronym":   ownerPatronym,
-				"licnumber":  "",
-				"licsery":    "",
-				"licdate":    "",
-				"relative":   0,
-				"resident":   1,
-			},
-		}
+		// Trust: при неограниченном полисе (driver_limit=0) не отправлять водителей
+		driversList = []map[string]interface{}{}
 	}
 
 	body := map[string]interface{}{
@@ -1033,7 +1360,7 @@ func (oc *OsagoCreateController) createTrust(session *SessionData, req *CreateRe
 		"texpsery":           texpsery,
 		"texpnumber":         texpnumber,
 		"vmodel":             vmodel,
-		"type":               vehicleTypeID,
+		"type":               trustVehicleTypeID,
 		"texpdate":           texpdate,
 		"year":               year,
 		"kuzov":              kuzov,
@@ -1048,8 +1375,8 @@ func (oc *OsagoCreateController) createTrust(session *SessionData, req *CreateRe
 		"owner_name":         ownerName,
 		"owner_patronym":     ownerPatronym,
 		"owner_isdriver":     1,
-		"owner_oblast":       1,
-		"owner_rayon":        1001,
+		"owner_oblast":       ownerRegion,
+		"owner_rayon":        trustDistrict,
 		"has_benefit":        1,
 		"owner_phone":        ownerPhone,
 		"applicant_isowner":  1,
@@ -1065,6 +1392,133 @@ func (oc *OsagoCreateController) createTrust(session *SessionData, req *CreateRe
 
 	url := oc.cfg.TrustBaseURL + "/api/osgo/create"
 	return oc.makeProviderRequest("POST", url, body, oc.cfg.TrustLogin, oc.cfg.TrustPassword, "")
+}
+
+// withPaymentUrls добавляет в ответ create единые поля click_url и payme_url для фронта (один обработчик для всех провайдеров).
+// Сырой ответ не меняется — копируется и дополняется полями из провайдер-специфичных путей.
+func (oc *OsagoCreateController) withPaymentUrls(provider string, raw interface{}) interface{} {
+	m, ok := raw.(map[string]interface{})
+	if !ok {
+		return raw
+	}
+	out := make(map[string]interface{})
+	for k, v := range m {
+		out[k] = v
+	}
+	var clickURL, paymeURL string
+	switch provider {
+	case "neo":
+		// Neo: response.url (click), response.payme_url (payme)
+		resp := extractNestedValue(m, "response")
+		if resp != nil {
+			clickURL = extractNestedString(resp, "url")
+			paymeURL = extractNestedString(resp, "payme_url")
+		}
+	case "gross":
+		// Gross: response.click.url, response.payme.url
+		resp := extractNestedValue(m, "response")
+		if resp != nil {
+			clickURL = extractNestedString(resp, "click", "url")
+			paymeURL = extractNestedString(resp, "payme", "url")
+		}
+	case "euroasia":
+		// EuroAsia: payment_click.data.payment_link, payment_payme.data.payment_link
+		clickURL = extractNestedString(m, "payment_click", "data", "payment_link")
+		paymeURL = extractNestedString(m, "payment_payme", "data", "payment_link")
+	case "apex":
+		// Apex: click_link, payme_link
+		clickURL = extractNestedString(m, "click_link")
+		paymeURL = extractNestedString(m, "payme_link")
+	}
+	out["click_url"] = clickURL
+	out["payme_url"] = paymeURL
+	return out
+}
+
+// trustCreateResponseWithPaymentLinks обогащает ответ Trust create платёжными ссылками Click и Payme при успехе (error=0).
+func (oc *OsagoCreateController) trustCreateResponseWithPaymentLinks(trustResp interface{}) interface{} {
+	m, ok := trustResp.(map[string]interface{})
+	if !ok {
+		return trustResp
+	}
+	// Проверяем успешность: error должен быть 0 (число или отсутствовать)
+	errVal := m["error"]
+	if errVal != nil {
+		if errNum, ok := errVal.(float64); ok && errNum != 0 {
+			return trustResp
+		}
+		if errNum, ok := errVal.(int); ok && errNum != 0 {
+			return trustResp
+		}
+	}
+	anketaID := ""
+	switch v := m["anketa_id"].(type) {
+	case float64:
+		anketaID = strconv.Itoa(int(v))
+	case int:
+		anketaID = strconv.Itoa(v)
+	case string:
+		anketaID = v
+	}
+	uuidStr, _ := m["uuid"].(string)
+	amountStr := ""
+	switch v := m["insurance_premium"].(type) {
+	case string:
+		amountStr = v
+	case float64:
+		amountStr = strconv.Itoa(int(v))
+	case int:
+		amountStr = strconv.Itoa(v)
+	}
+	amountSum := 0
+	if amountStr != "" {
+		amountSum, _ = strconv.Atoi(amountStr)
+	}
+	if anketaID == "" || amountSum <= 0 {
+		return trustResp
+	}
+	links := oc.trustPaymentLinks(anketaID, uuidStr, amountSum)
+	out := make(map[string]interface{})
+	for k, v := range m {
+		out[k] = v
+	}
+	out["click_url"] = links["click_url"]
+	out["payme_url"] = links["payme_url"]
+	return out
+}
+
+// trustPaymentLinks генерирует только простые URL для Click и Payme (anketa_id как transaction_param/order_id).
+// amountSum — сумма в сумах; для Payme конвертируется в тийины (×100).
+func (oc *OsagoCreateController) trustPaymentLinks(anketaID, uuid string, amountSum int) map[string]interface{} {
+	serviceID := oc.cfg.ClickServiceID
+	if serviceID == "" {
+		serviceID = "23572"
+	}
+	merchantIDClick := oc.cfg.ClickMerchantID
+	if merchantIDClick == "" {
+		merchantIDClick = "14417"
+	}
+	merchantIDPayme := oc.cfg.PaymeMerchantID
+	if merchantIDPayme == "" {
+		merchantIDPayme = "646c8bff2cb83937a7551c95"
+	}
+	returnURL := oc.cfg.PaymentReturnURL
+	if returnURL == "" || returnURL == "https://your-domain.com/payment/return" {
+		returnURL = "https://kliro.uz"
+	}
+
+	amountStr := strconv.Itoa(amountSum)
+	clickURL := fmt.Sprintf("https://my.click.uz/services/pay?service_id=%s&merchant_id=%s&amount=%s&transaction_param=%s&return_url=%s",
+		serviceID, merchantIDClick, amountStr, anketaID, returnURL)
+
+	amountTiyins := amountSum * 100
+	paramsPayme := fmt.Sprintf("m=%s;ac.order_id=%s;a=%d", merchantIDPayme, anketaID, amountTiyins)
+	paymeURL := "https://checkout.paycom.uz/" + base64.StdEncoding.EncodeToString([]byte(paramsPayme))
+
+	return map[string]interface{}{
+		"click_url": clickURL,
+		"payme_url": paymeURL,
+	}
 }
 
 func findPinflCreate(oc *OsagoCreateController, session *SessionData, series, number, birthdate string) string {
@@ -1100,12 +1554,30 @@ func (oc *OsagoCreateController) createApex(session *SessionData, req *CreateReq
 		url := oc.cfg.ApexBaseURL + "/osago?user_id=" + strconv.Itoa(userID)
 		return oc.makeProviderRequest("POST", url, req.ProviderPayload, oc.cfg.ApexLogin, oc.cfg.ApexPassword, "")
 	}
-	// Единый body: собираем payload из session + req
+	// period_id, driver_restriction, amount_uzs, drivers — из сессии (calculate_snapshot), как у Neo/Gross
+	periodID := req.PeriodID
+	driverRestriction := req.DriverRestriction
+	amountUZS := req.AmountUZS
+	driversList := req.Drivers
+	if snap := session.CalculateSnapshot; snap != nil {
+		if snap.PeriodID >= 1 && snap.PeriodID <= 3 {
+			periodID = snap.PeriodID
+		}
+		driverRestriction = snap.DriverRestriction
+		if snap.Premiums != nil && snap.Premiums["apex"] > 0 {
+			amountUZS = snap.Premiums["apex"]
+		}
+		if len(snap.Drivers) > 0 {
+			driversList = snap.Drivers
+		}
+	}
+	// Автозаполнение license_series/license_number из Find API, если переданы только паспорт + дата рождения
+	driversList = oc.enrichDriversWithLicenseFromFind(driversList)
 	if req.StartDate == "" {
 		return nil, fmt.Errorf("start_date обязателен для Apex create")
 	}
-	if req.AmountUZS <= 0 {
-		return nil, fmt.Errorf("amount_uzs обязателен для Apex create")
+	if amountUZS <= 0 {
+		return nil, fmt.Errorf("amount_uzs обязателен для Apex create (вызовите сначала Calculate по этой сессии или передайте amount_uzs в теле)")
 	}
 	if req.PhoneNumber == "" {
 		return nil, fmt.Errorf("phone_number обязателен для Apex create")
@@ -1115,10 +1587,10 @@ func (oc *OsagoCreateController) createApex(session *SessionData, req *CreateReq
 	// Представитель / владелец
 	var pinfl, passSery, passNum, birthDate string
 	if ownerType == "organization" {
-		if len(req.Drivers) == 0 {
-			return nil, fmt.Errorf("для Apex (юрлицо) укажите drivers[] (минимум 1 представитель)")
+		if len(driversList) == 0 {
+			return nil, fmt.Errorf("для Apex (юрлицо) укажите drivers[] (минимум 1 представитель) или вызовите Calculate с водителями")
 		}
-		d := req.Drivers[0]
+		d := driversList[0]
 		pinfl = findPinflCreate(oc, session, d.PassportSeries, d.PassportNumber, d.Birthdate)
 		passSery, passNum, birthDate = d.PassportSeries, d.PassportNumber, d.Birthdate
 		if pinfl == "" {
@@ -1129,16 +1601,37 @@ func (oc *OsagoCreateController) createApex(session *SessionData, req *CreateReq
 		if pinfl == "" {
 			pinfl = extractNestedString(v, "data", "owner", "person", "external_id")
 		}
-		passSery = extractNestedString(v, "data", "owner", "person", "passport", "series")
-		passNum = extractNestedString(v, "data", "owner", "person", "passport", "number")
+		// Серия/номер документа владельца — как Neo/Gross/Trust: сначала ID-карта/documents, потом passport
+		ownerPersonObj := extractNestedValue(v, "data", "owner", "person")
+		if ownerPersonObj != nil {
+			passSery, passNum = extractPersonPassportFromFindSession(ownerPersonObj)
+		}
+		if (passSery == "" || passNum == "") && session.Owner != nil && *session.Owner && session.Person != nil {
+			passSery, passNum = extractPersonPassportFromFindSession(session.Person)
+		}
+		if passSery == "" || passNum == "" {
+			passSery = extractNestedString(v, "data", "owner", "person", "passport", "series")
+			passNum = extractNestedString(v, "data", "owner", "person", "passport", "number")
+		}
 		birthDate = extractNestedString(v, "data", "owner", "person", "birthdate")
 		if birthDate == "" {
 			birthDate = extractNestedString(session.Person, "data", "birthdate")
 		}
 	}
-	firstName := extractNestedString(session.Person, "data", "first_name")
-	lastName := extractNestedString(session.Person, "data", "last_name")
-	middleName := extractNestedString(session.Person, "data", "middle_name")
+	// ФИО и даты из Find: сначала vehicle.owner.person, затем session.Person (как у других провайдеров)
+	var firstName, lastName, middleName string
+	firstName = extractNestedString(v, "data", "owner", "person", "first_name")
+	if firstName == "" {
+		firstName = extractNestedString(session.Person, "data", "first_name")
+	}
+	lastName = extractNestedString(v, "data", "owner", "person", "last_name")
+	if lastName == "" {
+		lastName = extractNestedString(session.Person, "data", "last_name")
+	}
+	middleName = extractNestedString(v, "data", "owner", "person", "middle_name")
+	if middleName == "" {
+		middleName = extractNestedString(session.Person, "data", "middle_name")
+	}
 	if firstName == "" {
 		firstName = "N"
 	}
@@ -1150,27 +1643,61 @@ func (oc *OsagoCreateController) createApex(session *SessionData, req *CreateReq
 	}
 	issueDate := extractNestedString(v, "data", "owner", "person", "passport", "issued_at")
 	if issueDate == "" {
+		issueDate = extractNestedString(session.Person, "data", "passport", "issued_at")
+	}
+	if issueDate == "" {
 		issueDate = "2022-01-01"
 	}
 	issueDate = strings.TrimSpace(strings.Split(issueDate, "T")[0])
+	// Apex ожидает даты в формате YYYY-MM-DD (без времени)
+	birthDate = toYYYYMMDD(birthDate)
+	if birthDate == "" {
+		birthDate = issueDate
+	}
+	ownerIssuedBy := "N"
+	// Обогащаем владельца/заявителя из EuroAsia person API (ФИО, паспорт issued_by / issued_at, PINFL)
+	if ownerType != "organization" && passSery != "" && passNum != "" && birthDate != "" {
+		if personData, err := oc.euroasiaLookupPersonByPassport(birthDate, passSery, passNum); err == nil && personData != nil {
+			if fn := extractNestedString(personData, "first_name"); fn != "" {
+				firstName = fn
+			}
+			if ln := extractNestedString(personData, "last_name"); ln != "" {
+				lastName = ln
+			}
+			if mn := extractNestedString(personData, "middle_name"); mn != "" {
+				middleName = mn
+			}
+			if iss := extractNestedString(personData, "passport", "issued_at"); iss != "" {
+				issueDate = toYYYYMMDD(iss)
+			}
+			if by := extractNestedString(personData, "passport", "issued_by"); by != "" {
+				ownerIssuedBy = by
+			}
+			if p := extractNestedString(personData, "pinfls", "0"); p != "" {
+				pinfl = p
+			} else if p := extractNestedString(personData, "external_id"); p != "" {
+				pinfl = p
+			}
+		}
+	}
 
-	// endDate from start_date + period
+	// endDate от start_date + период; Apex ожидает дату окончания на 1 день раньше (все периоды)
 	endDate := req.StartDate
-	if req.PeriodID == 1 {
-		// +12 months - 1 day, simple
-		endDate = addMonthsToDate(req.StartDate, 12)
-	} else if req.PeriodID == 2 {
-		endDate = addMonthsToDate(req.StartDate, 6)
+	if periodID == 1 {
+		endDate = addMonthsThenSubDays(req.StartDate, 12, 1)
+	} else if periodID == 2 {
+		endDate = addMonthsThenSubDays(req.StartDate, 6, 1)
 	} else {
-		endDate = addDaysToDate(req.StartDate, 20)
+		// период 3: 20 дней — Apex ожидает start + 19 дней (на 1 день раньше)
+		endDate = addDaysToDate(req.StartDate, 19)
 	}
 
 	contractTermID := "1"
-	seasonalID := 7
-	switch req.PeriodID {
+	seasonalID := 0 // для годового (periodID=1) Apex требует пустой seasonalInsuranceId
+	switch periodID {
 	case 1:
 		contractTermID = "1"
-		seasonalID = 7
+		seasonalID = 0 // Годовой — seasonalInsuranceId не передаём
 	case 2:
 		contractTermID = "2"
 		seasonalID = 1
@@ -1186,6 +1713,8 @@ func (oc *OsagoCreateController) createApex(session *SessionData, req *CreateReq
 	if vehicleTypeID == 0 {
 		vehicleTypeID = 1
 	}
+	// Apex принимает только id из своего справочника /api/references/vehicle-types-osago (1=легковые, 6=грузовые, 9=автобусы, 15=трамваи/мото)
+	apexVehicleTypeID := mapFindVehicleTypeToApex(vehicleTypeID)
 	issueYear := extractNestedInt(v, "data", "manufacture_year")
 	if issueYear == 0 {
 		issueYear = 2020
@@ -1197,7 +1726,7 @@ func (oc *OsagoCreateController) createApex(session *SessionData, req *CreateReq
 				"pinfl":       pinfl,
 				"seria":      passSery,
 				"number":     passNum,
-				"issuedBy":   "N",
+				"issuedBy":   ownerIssuedBy,
 				"issueDate":  issueDate,
 			},
 			"fullName": map[string]interface{}{
@@ -1215,26 +1744,115 @@ func (oc *OsagoCreateController) createApex(session *SessionData, req *CreateReq
 		"residentOfUzb":  1,
 		"citizenshipId":  210,
 	}
-	owner := map[string]interface{}{
-		"person": map[string]interface{}{
-			"passportData": map[string]interface{}{
-				"pinfl":      pinfl,
-				"seria":     passSery,
-				"number":    passNum,
-				"issuedBy":  "N",
-				"issueDate": issueDate + "T00:00:00",
-			},
-			"fullName": map[string]interface{}{
-				"firstname":  firstName,
-				"lastname":   lastName,
-				"middlename": middleName,
-			},
-		},
-		"applicantIsOwner": true,
+	applicantIsOwner := true
+	// Заявитель из тела запроса (applicant_passport_*, applicant_birthdate) — не владелец
+	if aS := strings.TrimSpace(req.ApplicantPassportSeries); aS != "" {
+		if aN := strings.TrimSpace(req.ApplicantPassportNumber); aN != "" {
+			applicantBirthNorm := toYYYYMMDD(strings.TrimSpace(req.ApplicantBirthdate))
+			if applicantBirthNorm == "" {
+				applicantBirthNorm = "2000-01-01"
+			}
+			applicantPinfl := findPinflCreate(oc, session, aS, aN, applicantBirthNorm)
+			applicantIssueDate := "2022-01-01"
+			applicantIssuedBy := "N"
+			afirst, alast, amiddle := "N", "N", "N"
+			if personData, err := oc.euroasiaLookupPersonByPassport(applicantBirthNorm, aS, aN); err == nil && personData != nil {
+				afirst = extractNestedString(personData, "first_name")
+				alast = extractNestedString(personData, "last_name")
+				amiddle = extractNestedString(personData, "middle_name")
+				if afirst == "" {
+					afirst = "N"
+				}
+				if alast == "" {
+					alast = "N"
+				}
+				if amiddle == "" {
+					amiddle = "N"
+				}
+				if iss := extractNestedString(personData, "passport", "issued_at"); iss != "" {
+					applicantIssueDate = toYYYYMMDD(iss)
+				}
+				if by := extractNestedString(personData, "passport", "issued_by"); by != "" {
+					applicantIssuedBy = by
+				}
+				if p := extractNestedString(personData, "pinfls", "0"); p != "" {
+					applicantPinfl = p
+				} else if p := extractNestedString(personData, "external_id"); p != "" {
+					applicantPinfl = p
+				}
+			}
+			if applicantPinfl == "" {
+				applicantPinfl = "00000000000000"
+			}
+			applicant = map[string]interface{}{
+				"person": map[string]interface{}{
+					"passportData": map[string]interface{}{
+						"pinfl":       applicantPinfl,
+						"seria":      aS,
+						"number":     aN,
+						"issuedBy":   applicantIssuedBy,
+						"issueDate":  applicantIssueDate,
+					},
+					"fullName": map[string]interface{}{
+						"firstname":  afirst,
+						"lastname":   alast,
+						"middlename": amiddle,
+					},
+					"phoneNumber":   req.PhoneNumber,
+					"gender":        "m",
+					"birthDate":     applicantBirthNorm,
+					"regionId":      10,
+					"districtId":    1005,
+				},
+				"address":        "N",
+				"residentOfUzb":  1,
+				"citizenshipId":  210,
+			}
+			applicantIsOwner = false
+		}
 	}
+	var owner map[string]interface{}
 	if ownerType == "organization" {
+		// Apex: нельзя передавать и Person, и Organization в owner; только organization с name (обязательно) и inn
 		inn := extractNestedString(v, "data", "owner", "organization", "inn")
-		owner["organization"] = map[string]interface{}{"inn": inn}
+		if inn == "" {
+			inn = extractNestedString(session.Organization, "data", "inn")
+		}
+		orgName := extractNestedString(v, "data", "owner", "organization", "name_short")
+		if orgName == "" {
+			orgName = extractNestedString(v, "data", "owner", "organization", "name")
+		}
+		if orgName == "" {
+			orgName = extractNestedString(session.Organization, "data", "name")
+		}
+		if orgName == "" {
+			orgName = "N"
+		}
+		owner = map[string]interface{}{
+			"organization": map[string]interface{}{
+				"inn":  inn,
+				"name": orgName,
+			},
+			"applicantIsOwner": applicantIsOwner,
+		}
+	} else {
+		owner = map[string]interface{}{
+			"person": map[string]interface{}{
+				"passportData": map[string]interface{}{
+					"pinfl":      pinfl,
+					"seria":     passSery,
+					"number":    passNum,
+					"issuedBy":  ownerIssuedBy,
+					"issueDate": issueDate + "T00:00:00",
+				},
+				"fullName": map[string]interface{}{
+					"firstname":  firstName,
+					"lastname":   lastName,
+					"middlename": middleName,
+				},
+			},
+			"applicantIsOwner": applicantIsOwner,
+		}
 	}
 	techSery := extractNestedString(v, "data", "tech_passport", "series")
 	techNum := extractNestedString(v, "data", "tech_passport", "number")
@@ -1252,59 +1870,74 @@ func (oc *OsagoCreateController) createApex(session *SessionData, req *CreateReq
 		engineNumber = "N"
 	}
 
-	var driversList []map[string]interface{}
-	if req.DriverRestriction && len(req.Drivers) > 0 {
-		for _, d := range req.Drivers {
+	var apexDriversList []map[string]interface{}
+	if driverRestriction && len(driversList) > 0 {
+		for _, d := range driversList {
 			dpinfl := findPinflCreate(oc, session, d.PassportSeries, d.PassportNumber, d.Birthdate)
 			if dpinfl == "" {
 				dpinfl = pinfl
 			}
-			driversList = append(driversList, map[string]interface{}{
+			driverBirth := toYYYYMMDD(d.Birthdate)
+			driverIssueDate := toYYYYMMDD(d.LicenseIssueDate)
+			if driverIssueDate == "" {
+				driverIssueDate = "2020-01-01"
+			}
+			dfirst, dlast, dmiddle := "N", "N", "N"
+			dissuedBy := "N"
+			// EuroAsia person API — подставляем реальные ФИО и дату выдачи паспорта
+			if personData, err := oc.euroasiaLookupPersonByPassport(driverBirth, d.PassportSeries, d.PassportNumber); err == nil && personData != nil {
+				dfirst = extractNestedString(personData, "first_name")
+				dlast = extractNestedString(personData, "last_name")
+				dmiddle = extractNestedString(personData, "middle_name")
+				if dfirst == "" {
+					dfirst = "N"
+				}
+				if dlast == "" {
+					dlast = "N"
+				}
+				if dmiddle == "" {
+					dmiddle = "N"
+				}
+				if iss := extractNestedString(personData, "passport", "issued_at"); iss != "" {
+					driverIssueDate = toYYYYMMDD(iss)
+				}
+				if by := extractNestedString(personData, "passport", "issued_by"); by != "" {
+					dissuedBy = by
+				}
+				if p := extractNestedString(personData, "pinfls", "0"); p != "" {
+					dpinfl = p
+				} else if p := extractNestedString(personData, "external_id"); p != "" {
+					dpinfl = p
+				}
+			}
+			apexDriversList = append(apexDriversList, map[string]interface{}{
 				"passportData": map[string]interface{}{
 					"pinfl":      dpinfl,
 					"seria":     d.PassportSeries,
 					"number":    d.PassportNumber,
-					"issuedBy":  "N",
-					"issueDate": toYYYYMMDD(d.LicenseIssueDate),
+					"issuedBy":  dissuedBy,
+					"issueDate": driverIssueDate,
 				},
 				"fullName": map[string]interface{}{
-					"firstname":  "N",
-					"lastname":   "N",
-					"middlename": "N",
+					"firstname":  dfirst,
+					"lastname":   dlast,
+					"middlename": dmiddle,
 				},
 				"licenseNumber":     d.LicenseNumber,
 				"licenseSeria":      d.LicenseSeries,
-				"relative":          d.Relative,
-				"birthDate":         d.Birthdate,
-				"licenseIssueDate":  d.LicenseIssueDate,
+				"relative":          relativeToApex(d.Relative),
+				"birthDate":         driverBirth,
+				"licenseIssueDate":  driverIssueDate,
 				"residentOfUzb":     1,
 			})
 		}
 	} else {
-		driversList = []map[string]interface{}{
-			{
-				"passportData": map[string]interface{}{
-					"pinfl":     "00000000000000",
-					"seria":    "AA",
-					"number":   "0000000",
-					"issuedBy": "N",
-					"issueDate": "2020-01-01",
-				},
-				"fullName": map[string]interface{}{
-					"firstname":  "N",
-					"lastname":   "N",
-					"middlename": "N",
-				},
-				"licenseNumber":    "",
-				"licenseSeria":    "",
-				"relative":        0,
-				"birthDate":       birthDate,
-				"licenseIssueDate": "2020-01-01",
-				"residentOfUzb":   1,
-			},
-		}
+		// Без ограничения водителей (unlimited): Apex запрещает отправлять drivers — только пустой массив
+		apexDriversList = []map[string]interface{}{}
 	}
 
+	// Apex требует уникальный transactionId в каждом запросе (иначе "Ошибка в поле transactionid - уникальное значение")
+	transactionID := time.Now().UnixNano() / 1000000
 	body := map[string]interface{}{
 		"applicant": applicant,
 		"owner":     owner,
@@ -1312,19 +1945,26 @@ func (oc *OsagoCreateController) createApex(session *SessionData, req *CreateReq
 			"startDate":               req.StartDate,
 			"issueDate":               req.StartDate,
 			"endDate":                 endDate,
-			"driverNumberRestriction": req.DriverRestriction,
+			"driverNumberRestriction": driverRestriction,
+			"transactionId":           transactionID,
 		},
-		"cost": map[string]interface{}{
-			"discountId":                    1,
-			"discountSum":                   "0",
-			"insurancePremium":              req.AmountUZS,
-			"sumInsured":                    "80000000",
-			"contractTermConclusionId":     contractTermID,
-			"useTerritoryId":                useTerritoryID,
-			"commission":                    "0",
-			"insurancePremiumPaidToInsurer": req.AmountUZS,
-			"seasonalInsuranceId":           seasonalID,
-		},
+		"cost": func() map[string]interface{} {
+			cost := map[string]interface{}{
+				"discountId":                    1,
+				"discountSum":                   "0",
+				"insurancePremium":              amountUZS,
+				"sumInsured":                    "80000000",
+				"contractTermConclusionId":     contractTermID,
+				"useTerritoryId":                useTerritoryID,
+				"commission":                    "0",
+				"insurancePremiumPaidToInsurer": amountUZS,
+			}
+			// Для годового (ID=1) seasonalInsuranceId должен быть пустым
+			if seasonalID != 0 {
+				cost["seasonalInsuranceId"] = seasonalID
+			}
+			return cost
+		}(),
 		"vehicle": map[string]interface{}{
 			"techPassport": map[string]interface{}{
 				"seria":  techSery,
@@ -1332,13 +1972,13 @@ func (oc *OsagoCreateController) createApex(session *SessionData, req *CreateReq
 			},
 			"modelCustomName": modelName,
 			"engineNumber":    engineNumber,
-			"typeId":          vehicleTypeID,
+			"typeId":          apexVehicleTypeID,
 			"issueYear":       issueYear,
 			"govNumber":       gosNumber,
 			"bodyNumber":      bodyNumber,
 			"regionId":        10,
 		},
-		"drivers": driversList,
+		"drivers": apexDriversList,
 	}
 
 	userID := oc.cfg.ApexUserID
@@ -1347,6 +1987,223 @@ func (oc *OsagoCreateController) createApex(session *SessionData, req *CreateReq
 	}
 	url := oc.cfg.ApexBaseURL + "/osago?user_id=" + strconv.Itoa(userID)
 	return oc.makeProviderRequest("POST", url, body, oc.cfg.ApexLogin, oc.cfg.ApexPassword, "")
+}
+
+// createInson — оформление ОСАГО через Inson Insurance (двухшаговый процесс).
+// Шаг 1: POST /api/v2/osago/contract → contractId
+// Шаг 2: PUT  /api/v1/osago/contract/payment → policyUrl
+// Auth: HTTP Basic. Для резидентов РУз достаточно паспортных данных — ФИО и PINFL система подтягивает сама.
+func (oc *OsagoCreateController) createInson(session *SessionData, req *CreateRequest) (interface{}, error) {
+	if req.PeriodID == 3 {
+		return nil, fmt.Errorf("Inson не поддерживает период 20 дней")
+	}
+	if req.StartDate == "" {
+		return nil, fmt.Errorf("start_date обязателен для Inson create")
+	}
+	if req.PhoneNumber == "" {
+		return nil, fmt.Errorf("phone_number обязателен для Inson create")
+	}
+
+	v := session.Vehicle
+	ownerType := extractNestedString(v, "data", "owner", "type")
+
+	// period: 1→12 мес, 2→6 мес
+	period := 12
+	if req.PeriodID == 2 {
+		period = 6
+	}
+	// Если period_id не передан — берём из сессии (calculate_snapshot)
+	if req.PeriodID == 0 {
+		if snap := session.CalculateSnapshot; snap != nil && snap.PeriodID >= 1 && snap.PeriodID <= 2 {
+			if snap.PeriodID == 2 {
+				period = 6
+			}
+		}
+	}
+
+	gosNumber := extractNestedString(v, "data", "license_plate")
+	techSeries := extractNestedString(v, "data", "tech_passport", "series")
+	techNumber := extractNestedString(v, "data", "tech_passport", "number")
+	if gosNumber == "" {
+		return nil, fmt.Errorf("не найден госномер автомобиля")
+	}
+
+	// Drivers list (только для ограниченного полиса)
+	driverRestriction := req.DriverRestriction
+	driversList := req.Drivers
+	if snap := session.CalculateSnapshot; snap != nil {
+		driverRestriction = snap.DriverRestriction
+		if len(snap.Drivers) > 0 {
+			driversList = snap.Drivers
+		}
+	}
+
+	// Строим applicant (страхователь)
+	var applicant map[string]interface{}
+	if ownerType == "organization" {
+		inn := extractNestedString(v, "data", "owner", "organization", "inn")
+		if inn == "" {
+			inn = extractNestedString(session.Organization, "data", "inn")
+		}
+		orgName := extractNestedString(v, "data", "owner", "organization", "name")
+		if orgName == "" {
+			orgName = extractNestedString(session.Organization, "data", "name")
+		}
+		if orgName == "" {
+			orgName = "N"
+		}
+		applicant = map[string]interface{}{
+			"organization": map[string]interface{}{
+				"inn":  inn,
+				"name": orgName,
+			},
+			"residentType":  1,
+			"citizenshipId": 1,
+			"phoneNumber":   req.PhoneNumber,
+			"isOwner":       true,
+		}
+	} else {
+		// Физлицо: только паспорт + телефон (Inson сам находит данные по МДМД/ГСБДД)
+		ownerPersonObj := extractNestedValue(v, "data", "owner", "person")
+		passSeries, passNumber := extractPersonPassportFromFindSession(ownerPersonObj)
+		if passSeries == "" {
+			passSeries = extractNestedString(v, "data", "owner", "person", "passport", "series")
+			passNumber = extractNestedString(v, "data", "owner", "person", "passport", "number")
+		}
+		if passSeries == "" && session.Person != nil {
+			passSeries, passNumber = extractPersonPassportFromFindSession(session.Person)
+		}
+		applicant = map[string]interface{}{
+			"residentType":  1,
+			"citizenshipId": 1,
+			"phoneNumber":   req.PhoneNumber,
+			"isOwner":       true,
+			"person": map[string]interface{}{
+				"passportData": map[string]interface{}{
+					"series": passSeries,
+					"number": passNumber,
+				},
+			},
+		}
+	}
+
+	// Обрабатываем drivers (только при ограниченном полисе)
+	var insonDrivers []map[string]interface{}
+	if driverRestriction && len(driversList) > 0 {
+		for _, d := range driversList {
+			insonDrivers = append(insonDrivers, map[string]interface{}{
+				"residentType": 1,
+				"passportData": map[string]interface{}{
+					"series": d.PassportSeries,
+					"number": d.PassportNumber,
+				},
+				"licenseSeries":    d.LicenseSeries,
+				"licenseNumber":    d.LicenseNumber,
+				"relative":         d.Relative,
+				"licenseIssueDate": d.LicenseIssueDate,
+			})
+		}
+	}
+	if insonDrivers == nil {
+		insonDrivers = []map[string]interface{}{}
+	}
+
+	contractBody := map[string]interface{}{
+		"applicant": applicant,
+		"details": map[string]interface{}{
+			"startDate":              req.StartDate,
+			"period":                 period,
+			"driverNumberRestricted": driverRestriction,
+		},
+		"vehicle": map[string]interface{}{
+			"governmentNumber": gosNumber,
+			"techPassport": map[string]interface{}{
+				"series": techSeries,
+				"number": techNumber,
+			},
+		},
+		"drivers": insonDrivers,
+	}
+
+	contractURL := oc.cfg.InsonBaseURL + "/api/v2/osago/contract"
+	contractResp, err := oc.makeProviderRequest("POST", contractURL, contractBody, oc.cfg.InsonLogin, oc.cfg.InsonPassword, "")
+	if err != nil {
+		return nil, fmt.Errorf("Inson contract create failed: %w", err)
+	}
+
+	// Извлекаем contractId из ответа {"data": {"contractId": 123456, ...}}
+	contractIDRaw := extractNestedValue(contractResp, "data", "contractId")
+	if contractIDRaw == nil {
+		// contractId может быть на верхнем уровне
+		contractIDRaw = contractResp["contractId"]
+	}
+	if contractIDRaw == nil {
+		// Контракт создан, но ID не получен — возвращаем ответ как есть
+		return contractResp, nil
+	}
+
+	var contractIDInt int
+	switch cid := contractIDRaw.(type) {
+	case float64:
+		contractIDInt = int(cid)
+	case int:
+		contractIDInt = cid
+	}
+
+	// Шаг 2: финализируем (выпускаем) полис
+	paymentBody := map[string]interface{}{
+		"contractId": contractIDInt,
+	}
+	paymentURL := oc.cfg.InsonBaseURL + "/api/v1/osago/contract/payment"
+	paymentResp, err := oc.makeProviderRequest("PUT", paymentURL, paymentBody, oc.cfg.InsonLogin, oc.cfg.InsonPassword, "")
+	if err != nil {
+		// Если финализация не удалась — возвращаем то что есть с contractId
+		log.Printf("[Inson create] payment step failed: %v", err)
+		return map[string]interface{}{
+			"contract": contractResp,
+			"payment":  nil,
+			"error":    "payment step failed: " + err.Error(),
+		}, nil
+	}
+
+	return map[string]interface{}{
+		"contract": contractResp,
+		"payment":  paymentResp,
+	}, nil
+}
+
+// mapFindVehicleTypeToApex переводит external_id типа ТС из Find/EuroAsia в id справочника Apex (vehicle-types-osago).
+// Apex: 1=Легковые, 6=Грузовые, 9=Автобусы, 15=Трамваи/мото. Find: 2=Легковые, 6=Грузовые и т.д.
+func mapFindVehicleTypeToApex(findExternalID int) int {
+	switch findExternalID {
+	case 2:
+		return 1 // Легковые автомобили
+	case 6:
+		return 6 // Грузовые
+	case 9:
+		return 9 // Автобусы
+	case 15:
+		return 15 // Трамваи, мотоциклы и т.д.
+	default:
+		return 1 // по умолчанию легковые
+	}
+}
+
+// mapFindVehicleTypeToTrust — то же для Trust (те же id: 1,6,9,15).
+func mapFindVehicleTypeToTrust(findExternalID int) int {
+	return mapFindVehicleTypeToApex(findExternalID)
+}
+
+// mapFindDistrictToTrust переводит район из Find (region external_id + district external_id) в id справочника Trust.
+// У Trust для региона 10 (г.Ташкент): районы 1001–1011 и 2404 (Алмазарский). Find даёт Алмазарский как 1012.
+func mapFindDistrictToTrust(regionExt, districtExt int) int {
+	if regionExt == 10 && districtExt == 1012 {
+		return 2404 // Алмазарский район
+	}
+	if districtExt != 0 {
+		return districtExt
+	}
+	return 1001
 }
 
 func toYYYYMMDD(s string) string {
@@ -1372,7 +2229,20 @@ func addMonthsToDate(ymd string, months int) string {
 	return t.Format("2006-01-02")
 }
 
+// addMonthsThenSubDays — для Apex годовой период: endDate = start + 12 мес - 1 день
+func addMonthsThenSubDays(ymd string, months, subDays int) string {
+	ymd = toYYYYMMDD(ymd)
+	t, err := time.Parse("2006-01-02", ymd)
+	if err != nil {
+		return ymd
+	}
+	t = t.AddDate(0, months, 0)
+	t = t.AddDate(0, 0, -subDays)
+	return t.Format("2006-01-02")
+}
+
 func addDaysToDate(ymd string, days int) string {
+	ymd = toYYYYMMDD(ymd)
 	t, err := time.Parse("2006-01-02", ymd)
 	if err != nil {
 		return ymd

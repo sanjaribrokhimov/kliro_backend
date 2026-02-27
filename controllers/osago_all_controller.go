@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -74,12 +75,12 @@ type FindRequest struct {
 
 // FindResponse - структура ответа
 type FindResponse struct {
-	SessionID     string      `json:"session_id,omitempty"`
-	Owner         *bool       `json:"owner,omitempty"`
-	Vehicle       interface{} `json:"vehicle,omitempty"`
-	Person        interface{} `json:"person,omitempty"`
-	Organization  interface{} `json:"organization,omitempty"`
-	Errors        []string    `json:"errors,omitempty"`
+	SessionID    string      `json:"session_id,omitempty"`
+	Owner        *bool       `json:"owner,omitempty"`
+	Vehicle      interface{} `json:"vehicle,omitempty"`
+	Person       interface{} `json:"person,omitempty"`
+	Organization interface{} `json:"organization,omitempty"`
+	Errors       []string    `json:"errors,omitempty"`
 }
 
 func (oc *OsagoAllController) makeExternalRequest(method, path string, bodyData interface{}) ([]byte, int, error) {
@@ -319,10 +320,10 @@ func (oc *OsagoAllController) Find(c *gin.Context) {
 		redisKey := "osago_all:session:" + sessionID
 
 		sessionData := map[string]interface{}{
-			"vehicle": response.Vehicle,
-			"person":  response.Person,
+			"vehicle":      response.Vehicle,
+			"person":       response.Person,
 			"organization": response.Organization,
-			"owner":   response.Owner,
+			"owner":        response.Owner,
 		}
 
 		sessionDataJSON, err := json.Marshal(sessionData)
@@ -439,31 +440,32 @@ func (oc *OsagoAllController) checkOwnerOrganization(vehicleData, organizationDa
 
 // CalculateRequest - единый запрос на расчет для всех провайдеров
 type CalculateRequest struct {
-	SessionID        string   `json:"session_id" binding:"required"`
-	PeriodID         int      `json:"period_id" binding:"required"` // 1 = 12 месяцев, 2 = 6 месяцев, 3 = 20 дней (только EuroAsia, Apex, Trust)
-	DriverRestriction bool    `json:"driver_restriction"`           // true = ограничено, false = неограничено
-	Drivers          []Driver `json:"drivers,omitempty"`            // опционально, если driver_restriction = true
+	SessionID         string   `json:"session_id" binding:"required"`
+	PeriodID          int      `json:"period_id" binding:"required"` // 1 = 12 месяцев, 2 = 6 месяцев, 3 = 20 дней (только EuroAsia, Apex, Trust)
+	DriverRestriction bool     `json:"driver_restriction"`           // true = ограничено, false = неограничено
+	Drivers           []Driver `json:"drivers,omitempty"`            // опционально, если driver_restriction = true
 }
 
 // Driver - данные водителя
 type Driver struct {
-	PassportSeries  string `json:"passport_series"`
-	PassportNumber  string `json:"passport_number"`
-	Birthdate       string `json:"birthdate"` // YYYY-MM-DD
-	LicenseSeries   string `json:"license_series,omitempty"`
-	LicenseNumber   string `json:"license_number,omitempty"`
-	Relative        int    `json:"relative,omitempty"` // 0-10, по умолчанию 0
+	PassportSeries string `json:"passport_series"`
+	PassportNumber string `json:"passport_number"`
+	Birthdate      string `json:"birthdate"` // YYYY-MM-DD
+	LicenseSeries  string `json:"license_series,omitempty"`
+	LicenseNumber  string `json:"license_number,omitempty"`
+	Relative       int    `json:"relative,omitempty"` // 0-10, по умолчанию 0
 }
 
 // CalculateResponse - ответ с расчетами от всех провайдеров
 type CalculateResponse struct {
-	Neo      interface{}       `json:"neo,omitempty"`
-	Apex     interface{}       `json:"apex,omitempty"`
-	Euroasia interface{}       `json:"euroasia,omitempty"`
-	Gross    interface{}       `json:"gross,omitempty"`
-	Trust    interface{}       `json:"trust,omitempty"`
-	Premiums map[string]int    `json:"premiums,omitempty"` // только суммы премий по провайдерам (UZS), удобно для обработки
-	Errors   []string          `json:"errors,omitempty"`
+	Neo      interface{}    `json:"neo,omitempty"`
+	Apex     interface{}    `json:"apex,omitempty"`
+	Euroasia interface{}    `json:"euroasia,omitempty"`
+	Gross    interface{}    `json:"gross,omitempty"`
+	Trust    interface{}    `json:"trust,omitempty"`
+	Inson    interface{}    `json:"inson,omitempty"`
+	Premiums map[string]int `json:"premiums,omitempty"` // только суммы премий по провайдерам (UZS), удобно для обработки
+	Errors   []string       `json:"errors,omitempty"`
 }
 
 // SessionData - структура данных из Redis session
@@ -495,6 +497,29 @@ func (oc *OsagoAllController) getSessionData(sessionID string) (*SessionData, er
 	}
 
 	return &sessionData, nil
+}
+
+// extractNestedValue - безопасное извлечение interface{} из вложенной структуры
+func extractNestedValue(data interface{}, path ...string) interface{} {
+	current := data
+	for _, key := range path {
+		if current == nil {
+			return nil
+		}
+		switch v := current.(type) {
+		case map[string]interface{}:
+			current = v[key]
+		case []interface{}:
+			idx, err := strconv.Atoi(key)
+			if err != nil || idx < 0 || idx >= len(v) {
+				return nil
+			}
+			current = v[idx]
+		default:
+			return nil
+		}
+	}
+	return current
 }
 
 // extractNestedString - безопасное извлечение строки из вложенной структуры
@@ -541,7 +566,7 @@ func extractNestedInt(data interface{}, path ...string) int {
 			return 0
 		}
 	}
-	
+
 	switch v := current.(type) {
 	case float64:
 		return int(v)
@@ -553,6 +578,71 @@ func extractNestedInt(data interface{}, path ...string) int {
 		}
 	}
 	return 0
+}
+
+// extractActiveDocumentFromPerson — возвращает серию и номер активного документа владельца из documents[]:
+// приоритет IDMS_RECV_MVD_IDCARD_CITIZEN (биометрический ID), затем IDMS_RECV_CITIZ_DOCUMENTS,
+// затем любой другой документ; если ничего нет — из поля passport.
+// Именно этот документ ожидают Apex и Neo (не поле passport, которое содержит старый паспорт).
+func extractActiveDocumentFromPerson(personData interface{}) (series, number string) {
+	pm, ok := personData.(map[string]interface{})
+	if !ok {
+		return "", ""
+	}
+	docs, _ := pm["documents"].([]interface{})
+	// 1. Биометрический ID (приоритет)
+	for _, d := range docs {
+		doc, _ := d.(map[string]interface{})
+		if doc == nil {
+			continue
+		}
+		dt := asString(doc["document_type"])
+		if dt != "IDMS_RECV_MVD_IDCARD_CITIZEN" {
+			continue
+		}
+		s := asString(doc["series"])
+		n := asString(doc["number"])
+		if s != "" && n != "" {
+			return s, n
+		}
+	}
+	// 2. Гражданский паспорт (книжка)
+	for _, d := range docs {
+		doc, _ := d.(map[string]interface{})
+		if doc == nil {
+			continue
+		}
+		dt := asString(doc["document_type"])
+		if dt != "IDMS_RECV_CITIZ_DOCUMENTS" {
+			continue
+		}
+		s := asString(doc["series"])
+		n := asString(doc["number"])
+		if s != "" && n != "" {
+			return s, n
+		}
+	}
+	// 3. Любой документ из массива
+	for _, d := range docs {
+		doc, _ := d.(map[string]interface{})
+		if doc == nil {
+			continue
+		}
+		s := asString(doc["series"])
+		n := asString(doc["number"])
+		if s != "" && n != "" {
+			return s, n
+		}
+	}
+	// 4. Fallback: поле passport
+	if passport, ok := pm["passport"].(map[string]interface{}); ok {
+		s := asString(passport["series"])
+		n := asString(passport["number"])
+		if s != "" && n != "" {
+			return s, n
+		}
+	}
+	return "", ""
 }
 
 // extractOwnerPinfl - извлечение PINFL владельца
@@ -671,6 +761,11 @@ func extractPremiumFromResponse(provider string, data interface{}) int {
 		}
 	case "trust":
 		return toInt(m["insurance_premium"])
+	case "inson":
+		// response: {"data": {"insurancePremium": 192000, ...}}
+		if dataObj, _ := m["data"].(map[string]interface{}); dataObj != nil {
+			return toInt(dataObj["insurancePremium"])
+		}
 	}
 	return -1
 }
@@ -724,84 +819,125 @@ func (oc *OsagoAllController) Calculate(c *gin.Context) {
 		return
 	}
 
+	ownerType := extractNestedString(sessionData.Vehicle, "data", "owner", "type")
+	isLegalEntity := ownerType == "organization"
+	// Для юрлица OSAGO только через Trust; Trust не поддерживает период 20 дней
+	if isLegalEntity && req.PeriodID == 3 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "для юридического лица доступен только Trust, период 20 дней не поддерживается"})
+		return
+	}
+
 	response := CalculateResponse{
 		Errors: []string{},
 	}
 
-	var wg sync.WaitGroup
+	// Ожидаемые провайдеры: при period_id=3 Trust и Inson не вызываем (только 6 и 12 мес)
+	expectedProviders := []string{"neo", "apex", "euroasia", "gross"}
+	if req.PeriodID != 3 {
+		expectedProviders = append(expectedProviders, "trust", "inson")
+	}
+
 	var mu sync.Mutex
+	hasResponse := func(name string) bool {
+		mu.Lock()
+		defer mu.Unlock()
+		switch name {
+		case "neo":
+			return response.Neo != nil
+		case "apex":
+			return response.Apex != nil
+		case "euroasia":
+			return response.Euroasia != nil
+		case "gross":
+			return response.Gross != nil
+		case "trust":
+			return response.Trust != nil
+		case "inson":
+			return response.Inson != nil
+		}
+		return false
+	}
 
-	// Neo Insurance
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		result, err := oc.calculateNeo(sessionData, &req)
+	// Вызов одного провайдера с одной повторной попыткой при отсутствии ответа
+	callOne := func(providerName string, calculateFunc func() (interface{}, error)) {
+		result, err := calculateFunc()
+		if result == nil || err != nil {
+			result, err = calculateFunc()
+		}
 		mu.Lock()
 		defer mu.Unlock()
 		if err != nil {
-			response.Errors = append(response.Errors, "neo: "+err.Error())
-		} else {
-			response.Neo = result
+			response.Errors = append(response.Errors, providerName+": "+err.Error())
+		} else if result != nil {
+			switch providerName {
+			case "neo":
+				response.Neo = result
+			case "apex":
+				response.Apex = result
+			case "euroasia":
+				response.Euroasia = result
+			case "gross":
+				response.Gross = result
+			case "trust":
+				response.Trust = result
+			case "inson":
+				response.Inson = result
+			}
 		}
-	}()
+	}
 
-	// Apex Insurance
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		result, err := oc.calculateApex(sessionData, &req)
-		mu.Lock()
-		defer mu.Unlock()
-		if err != nil {
-			response.Errors = append(response.Errors, "apex: "+err.Error())
-		} else {
-			response.Apex = result
+	const maxAttempts = 5
+	for attempt := 0; attempt < maxAttempts; attempt++ {
+		var wg sync.WaitGroup
+		for _, name := range expectedProviders {
+			if hasResponse(name) {
+				continue
+			}
+			wg.Add(1)
+			go func(providerName string) {
+				defer wg.Done()
+				switch providerName {
+				case "neo":
+					callOne("neo", func() (interface{}, error) { return oc.calculateNeo(sessionData, &req) })
+				case "apex":
+					callOne("apex", func() (interface{}, error) { return oc.calculateApex(sessionData, &req) })
+				case "euroasia":
+					callOne("euroasia", func() (interface{}, error) { return oc.calculateEuroAsia(sessionData, &req) })
+				case "gross":
+					callOne("gross", func() (interface{}, error) { return oc.calculateGross(sessionData, &req) })
+				case "trust":
+					callOne("trust", func() (interface{}, error) { return oc.calculateTrust(sessionData, &req) })
+				case "inson":
+					callOne("inson", func() (interface{}, error) { return oc.calculateInson(sessionData, &req) })
+				}
+			}(name)
 		}
-	}()
+		wg.Wait()
 
-	// EuroAsia Insurance
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		result, err := oc.calculateEuroAsia(sessionData, &req)
-		mu.Lock()
-		defer mu.Unlock()
-		if err != nil {
-			response.Errors = append(response.Errors, "euroasia: "+err.Error())
-		} else {
-			response.Euroasia = result
+		allOk := true
+		for _, name := range expectedProviders {
+			if !hasResponse(name) {
+				allOk = false
+				break
+			}
 		}
-	}()
-
-	// Gross Insurance
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		result, err := oc.calculateGross(sessionData, &req)
-		mu.Lock()
-		defer mu.Unlock()
-		if err != nil {
-			response.Errors = append(response.Errors, "gross: "+err.Error())
-		} else {
-			response.Gross = result
+		// Для юрлица обязательно нужен Trust
+		if isLegalEntity && response.Trust == nil {
+			allOk = false
 		}
-	}()
-
-	// Trust Insurance
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		result, err := oc.calculateTrust(sessionData, &req)
-		mu.Lock()
-		defer mu.Unlock()
-		if err != nil {
-			response.Errors = append(response.Errors, "trust: "+err.Error())
-		} else {
-			response.Trust = result
+		if allOk {
+			break
 		}
-	}()
+	}
 
-	wg.Wait()
+	// Для юрлица без ответа Trust возвращаем ошибку
+	if isLegalEntity && response.Trust == nil {
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"error":  "для юридического лица необходим ответ от Trust; ответ не получен после нескольких попыток",
+			"errors": response.Errors,
+		})
+		return
+	}
 
 	// Собираем отдельный объект только с суммами премий (UZS) для удобной обработки
 	response.Premiums = make(map[string]int)
@@ -819,6 +955,9 @@ func (oc *OsagoAllController) Calculate(c *gin.Context) {
 	}
 	if a := extractPremiumFromResponse("trust", response.Trust); a >= 0 {
 		response.Premiums["trust"] = a
+	}
+	if a := extractPremiumFromResponse("inson", response.Inson); a >= 0 {
+		response.Premiums["inson"] = a
 	}
 
 	// Сохраняем в сессию параметры и результаты calculate — Create возьмёт оттуда period_id, driver_restriction, drivers, amount_uzs
@@ -845,9 +984,8 @@ func (oc *OsagoAllController) Calculate(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// calculateNeo - расчет для Neo Insurance
+// calculateNeo - расчет для Neo Insurance.
 func (oc *OsagoAllController) calculateNeo(session *SessionData, req *CalculateRequest) (interface{}, error) {
-	// Проверка: Neo не поддерживает юридические лица
 	ownerType := extractNestedString(session.Vehicle, "data", "owner", "type")
 	if ownerType == "organization" {
 		return nil, fmt.Errorf("Neo Insurance не поддерживает юридические лица")
@@ -857,23 +995,22 @@ func (oc *OsagoAllController) calculateNeo(session *SessionData, req *CalculateR
 	}
 
 	vehicleData := session.Vehicle
-	gosNumber := extractNestedString(vehicleData, "data", "license_plate")
+	gosNumber  := extractNestedString(vehicleData, "data", "license_plate")
 	techSeries := extractNestedString(vehicleData, "data", "tech_passport", "series")
 	techNumber := extractNestedString(vehicleData, "data", "tech_passport", "number")
+
+	// Логируем что именно извлекли из сессии
+	log.Printf("[Neo calc] extracted from session: gos_number=%q tech_sery=%q tech_number=%q", gosNumber, techSeries, techNumber)
 
 	if gosNumber == "" || techSeries == "" || techNumber == "" {
 		return nil, fmt.Errorf("недостаточно данных о машине")
 	}
 
-	// Конвертация period_id: 1→"1", 2→"2" (string!)
 	periodIDStr := strconv.Itoa(req.PeriodID)
-	
-	// Конвертация driver_restriction: true→"4", false→"1" (string!)
 	numberDriversID := "1"
 	if req.DriverRestriction {
 		numberDriversID = "4"
 	}
-
 	requestBody := map[string]interface{}{
 		"gos_number":        gosNumber,
 		"tech_sery":         techSeries,
@@ -882,14 +1019,25 @@ func (oc *OsagoAllController) calculateNeo(session *SessionData, req *CalculateR
 		"number_drivers_id": numberDriversID,
 	}
 
+	reqJSON, _ := json.Marshal(requestBody)
+	log.Printf("[Neo calc] → sending: %s", reqJSON)
+
 	url := oc.cfg.NeoBaseURL + "/api/osago-neo/get-calc-osago"
-	return oc.makeProviderRequest("POST", url, requestBody, oc.cfg.NeoLogin, oc.cfg.NeoPassword, "")
+	result, err := oc.makeProviderRequest("POST", url, requestBody, oc.cfg.NeoLogin, oc.cfg.NeoPassword, "")
+
+	respJSON, _ := json.Marshal(result)
+	if err != nil {
+		log.Printf("[Neo calc] ← error: %v", err)
+	} else {
+		log.Printf("[Neo calc] ← response: %s", respJSON)
+	}
+	return result, err
 }
 
-// calculateApex - расчет для Apex Insurance
+// calculateApex - расчет для Apex Insurance.
 func (oc *OsagoAllController) calculateApex(session *SessionData, req *CalculateRequest) (interface{}, error) {
 	vehicleData := session.Vehicle
-	
+
 	// Owner
 	ownerType := extractNestedString(vehicleData, "data", "owner", "type")
 	var owner map[string]interface{}
@@ -898,8 +1046,14 @@ func (oc *OsagoAllController) calculateApex(session *SessionData, req *Calculate
 		if pinfl == "" {
 			pinfl = extractNestedString(vehicleData, "data", "owner", "person", "external_id")
 		}
-		passportSeries := extractNestedString(vehicleData, "data", "owner", "person", "passport", "series")
-		passportNumber := extractNestedString(vehicleData, "data", "owner", "person", "passport", "number")
+		ownerPersonObj := extractNestedValue(vehicleData, "data", "owner", "person")
+		// Используем активный документ из documents[] (ID-карта), а не устаревшее поле passport
+		passportSeries, passportNumber := extractActiveDocumentFromPerson(ownerPersonObj)
+		if passportSeries == "" || passportNumber == "" {
+			// fallback: поле passport
+			passportSeries = extractNestedString(vehicleData, "data", "owner", "person", "passport", "series")
+			passportNumber = extractNestedString(vehicleData, "data", "owner", "person", "passport", "number")
+		}
 
 		owner = map[string]interface{}{
 			"person": map[string]interface{}{
@@ -950,7 +1104,17 @@ func (oc *OsagoAllController) calculateApex(session *SessionData, req *Calculate
 	// Use territory
 	useTerritoryID := extractNestedString(vehicleData, "data", "use_territory_region", "external_id")
 	if useTerritoryID == "" {
-		useTerritoryID = "1" // по умолчанию
+		useTerritoryID = "1"
+	}
+	// Логируем что именно извлекли из сессии
+	{
+		_s, _n := extractActiveDocumentFromPerson(extractNestedValue(vehicleData, "data", "owner", "person"))
+		_pf := extractNestedString(vehicleData, "data", "owner", "person", "pinfls", "0")
+		if _pf == "" {
+			_pf = extractNestedString(vehicleData, "data", "owner", "person", "external_id")
+		}
+		log.Printf("[Apex calc] session: gos=%q tech_seria=%q tech_number=%q territory=%q pinfl=%q doc_seria=%q doc_number=%q",
+			gosNumber, techSeries, techNumber, useTerritoryID, _pf, _s, _n)
 	}
 
 	// Apex: contractTermConclusionId 1=год, 2=сезон; seasonalInsuranceId 7=1год, 1=6мес, 8=20дней
@@ -1009,18 +1173,40 @@ func (oc *OsagoAllController) calculateApex(session *SessionData, req *Calculate
 			}
 		}
 	} else {
-		// Неограничено - заглушка
+		// Неограничено водителей: Apex требует непустой массив; передаём владельца как единственного водителя
+		ownerPersonObj := extractNestedValue(vehicleData, "data", "owner", "person")
+		ownerDocSery, ownerDocNum := extractActiveDocumentFromPerson(ownerPersonObj)
+		if ownerDocSery == "" {
+			ownerDocSery = extractNestedString(vehicleData, "data", "owner", "person", "passport", "series")
+		}
+		if ownerDocNum == "" {
+			ownerDocNum = extractNestedString(vehicleData, "data", "owner", "person", "passport", "number")
+		}
+		ownerPinflFull := extractNestedString(vehicleData, "data", "owner", "person", "pinfls", "0")
+		if ownerPinflFull == "" {
+			ownerPinflFull = extractNestedString(vehicleData, "data", "owner", "person", "external_id")
+		}
+		if ownerDocSery == "" {
+			ownerDocSery = "AA"
+		}
+		if ownerDocNum == "" {
+			ownerDocNum = "0000000"
+		}
+		if ownerPinflFull == "" {
+			ownerPinflFull = "00000000000000"
+		}
 		drivers = []map[string]interface{}{
 			{
 				"passportData": map[string]interface{}{
-					"pinfl":  "00000000000000",
-					"seria":  "AA",
-					"number": "0000000",
+					"pinfl":  ownerPinflFull,
+					"seria":  ownerDocSery,
+					"number": ownerDocNum,
 				},
 			},
 		}
 	}
 
+	// Apex calc: согласно документации — НЕ передавать typeId/vehicleTypeId в calc (только в create)
 	requestBody := map[string]interface{}{
 		"owner": owner,
 		"details": map[string]interface{}{
@@ -1042,18 +1228,29 @@ func (oc *OsagoAllController) calculateApex(session *SessionData, req *Calculate
 		"drivers": drivers,
 	}
 
+	reqJSON, _ := json.Marshal(requestBody)
+	log.Printf("[Apex calc] → sending: %s", reqJSON)
+
 	url := oc.cfg.ApexBaseURL + "/osago_calculation"
-	return oc.makeProviderRequest("POST", url, requestBody, oc.cfg.ApexLogin, oc.cfg.ApexPassword, "")
+	result, err := oc.makeProviderRequest("POST", url, requestBody, oc.cfg.ApexLogin, oc.cfg.ApexPassword, "")
+
+	respJSON, _ := json.Marshal(result)
+	if err != nil {
+		log.Printf("[Apex calc] ← error: %v", err)
+	} else {
+		log.Printf("[Apex calc] ← response: %s", respJSON)
+	}
+	return result, err
 }
 
 // calculateEuroAsia - расчет для EuroAsia Insurance
 func (oc *OsagoAllController) calculateEuroAsia(session *SessionData, req *CalculateRequest) (interface{}, error) {
 	vehicleData := session.Vehicle
-	
+
 	// Проверка UUID
 	useTerritoryID := extractNestedString(vehicleData, "data", "use_territory_region", "id")
 	vehicleGroupID := extractNestedString(vehicleData, "data", "vehicle_type", "vehicle_group")
-	
+
 	if useTerritoryID == "" || vehicleGroupID == "" {
 		return nil, fmt.Errorf("недостаточно UUID данных для EuroAsia")
 	}
@@ -1083,7 +1280,7 @@ func (oc *OsagoAllController) calculateEuroAsia(session *SessionData, req *Calcu
 				{
 					"passport_birthdate": formatDateYYYYMMDD(ownerBirthdate),
 					"passport_number":    ownerPassNumber,
-					"passport_series":   ownerPassSeries,
+					"passport_series":    ownerPassSeries,
 				},
 			}
 		} else {
@@ -1115,7 +1312,7 @@ func (oc *OsagoAllController) calculateGross(session *SessionData, req *Calculat
 		return nil, fmt.Errorf("Gross Insurance не поддерживает период 20 дней")
 	}
 	vehicleData := session.Vehicle
-	
+
 	gosNumber := extractNestedString(vehicleData, "data", "license_plate")
 	techSeries := extractNestedString(vehicleData, "data", "tech_passport", "series")
 	techNumber := extractNestedString(vehicleData, "data", "tech_passport", "number")
@@ -1158,9 +1355,9 @@ func (oc *OsagoAllController) calculateGross(session *SessionData, req *Calculat
 func (oc *OsagoAllController) calculateTrust(session *SessionData, req *CalculateRequest) (interface{}, error) {
 	vehicleData := session.Vehicle
 	ownerType := extractNestedString(vehicleData, "data", "owner", "type")
-	
+
 	gosNumber := extractNestedString(vehicleData, "data", "license_plate")
-	
+
 	// Vehicle type mapping: external_id=2 → 1, 6→6, 9→9, 15→15
 	vehicleTypeExternalID := extractNestedInt(vehicleData, "data", "vehicle_type", "external_id")
 	vehicleTypeID := 1 // по умолчанию
@@ -1234,7 +1431,7 @@ func (oc *OsagoAllController) calculateTrust(session *SessionData, req *Calculat
 		if len(req.Drivers) == 0 {
 			drivers = []map[string]interface{}{
 				{
-					"pinfl":      ownerPinfl,
+					"pinfl":       ownerPinfl,
 					"coefficient": 1,
 				},
 			}
@@ -1267,14 +1464,14 @@ func (oc *OsagoAllController) calculateTrust(session *SessionData, req *Calculat
 
 	requestBody := map[string]interface{}{
 		"vehicle": map[string]interface{}{
-			"vehicle":       vehicleTypeID,
-			"renumber":      gosNumber,
+			"vehicle":        vehicleTypeID,
+			"renumber":       gosNumber,
 			"foreignVehicle": false,
 		},
-		"period":       periodID,
+		"period":        periodID,
 		"use_territory": useTerritoryID,
-		"driver_limit": driverLimit,
-		"discount":     1, // по умолчанию без льгот
+		"driver_limit":  driverLimit,
+		"discount":      1, // по умолчанию без льгот
 		"owner": map[string]interface{}{
 			"owner_pinfl": ownerPinfl,
 		},
@@ -1290,6 +1487,99 @@ func (oc *OsagoAllController) calculateTrust(session *SessionData, req *Calculat
 
 	url := oc.cfg.TrustBaseURL + "/api/osgo/v2/calc-prem"
 	return oc.makeProviderRequest("POST", url, requestBody, oc.cfg.TrustLogin, oc.cfg.TrustPassword, "")
+}
+
+// calculateInson - расчет ОСАГО для Inson Insurance.
+// Inson принимает vehicleTypeId, period (6/12), governmentNumber, drivers (массив PINFL) и owner (для физлиц).
+// Auth: HTTP Basic.
+func (oc *OsagoAllController) calculateInson(session *SessionData, req *CalculateRequest) (interface{}, error) {
+	if req.PeriodID == 3 {
+		return nil, fmt.Errorf("Inson не поддерживает период 20 дней")
+	}
+
+	vehicleData := session.Vehicle
+	gosNumber := extractNestedString(vehicleData, "data", "license_plate")
+	if gosNumber == "" {
+		return nil, fmt.Errorf("не найден госномер автомобиля")
+	}
+
+	// period: 1→12 мес, 2→6 мес
+	period := 12
+	if req.PeriodID == 2 {
+		period = 6
+	}
+
+	// vehicleTypeId: из vehicle_type.external_id; 1=легковой (default), 6=грузовой, 9=автобус, 15=мотоцикл/прочее
+	vehicleTypeExternalID := extractNestedInt(vehicleData, "data", "vehicle_type", "external_id")
+	vehicleTypeID := 1
+	switch vehicleTypeExternalID {
+	case 6:
+		vehicleTypeID = 6
+	case 9:
+		vehicleTypeID = 9
+	case 15:
+		vehicleTypeID = 15
+	}
+
+	ownerType := extractNestedString(vehicleData, "data", "owner", "type")
+
+	log.Printf("[Inson calc] extracted from session: gos_number=%q owner_type=%q period_id=%d period_sent=%d driver_restriction=%v", gosNumber, ownerType, req.PeriodID, period, req.DriverRestriction)
+
+	// Строим список водителей (только PINFLs)
+	var driverPinfls []string
+	if req.DriverRestriction {
+		for _, driver := range req.Drivers {
+			pinfl := findPinflByPassport(driver.PassportSeries, driver.PassportNumber, session)
+			if pinfl == "" && driver.Birthdate != "" {
+				if p, err := oc.euroasiaLookupPinflByPassport(formatDateYYYYMMDD(driver.Birthdate), driver.PassportSeries, driver.PassportNumber); err == nil {
+					pinfl = p
+				}
+			}
+			if pinfl != "" {
+				driverPinfls = append(driverPinfls, pinfl)
+			}
+		}
+	}
+
+	requestBody := map[string]interface{}{
+		"vehicleTypeId":          vehicleTypeID,
+		"period":                 period,
+		"governmentNumber":       gosNumber,
+		"drivers":                driverPinfls,
+		"driverNumberRestricted": req.DriverRestriction,
+	}
+
+	// owner: только для физлиц; для юрлиц не передаётся
+	if ownerType == "person" {
+		ownerPinfl := extractOwnerPinfl(session)
+		ownerPersonObj := extractNestedValue(vehicleData, "data", "owner", "person")
+		passportSeries, passportNumber := extractActiveDocumentFromPerson(ownerPersonObj)
+		if passportSeries == "" {
+			passportSeries = extractNestedString(vehicleData, "data", "owner", "person", "passport", "series")
+			passportNumber = extractNestedString(vehicleData, "data", "owner", "person", "passport", "number")
+		}
+		if ownerPinfl != "" && passportSeries != "" && passportNumber != "" {
+			requestBody["owner"] = map[string]interface{}{
+				"pinfl":          ownerPinfl,
+				"passportSeries": passportSeries,
+				"passportNumber": passportNumber,
+			}
+		}
+	}
+
+	reqJSON, _ := json.Marshal(requestBody)
+	log.Printf("[Inson calc] → sending: %s", reqJSON)
+
+	url := oc.cfg.InsonBaseURL + "/api/v2/osago/calculator"
+	result, err := oc.makeProviderRequest("POST", url, requestBody, oc.cfg.InsonLogin, oc.cfg.InsonPassword, "")
+
+	if err != nil {
+		log.Printf("[Inson calc] ← error: %v", err)
+	} else {
+		respJSON, _ := json.Marshal(result)
+		log.Printf("[Inson calc] ← response: %s", respJSON)
+	}
+	return result, err
 }
 
 // findPinflByPassport - поиск PINFL по паспортным данным
@@ -1379,4 +1669,3 @@ func (oc *OsagoAllController) makeProviderRequest(method, url string, bodyData i
 
 	return result, nil
 }
-

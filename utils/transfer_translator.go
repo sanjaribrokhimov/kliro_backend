@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"html"
 	"strings"
 )
 
@@ -89,81 +90,41 @@ func (tt *TransferTranslator) TranslateTransfer(appName, commission string, limi
 	}
 }
 
-// translateAppName - переводит название приложения через API
+// translateAppName - названия приложений не переводим через API (даёт ошибки: A Pay -> "Кусок" и т.д.), оставляем оригинал для uz/ru/en, для oz — транслит.
 func (tt *TransferTranslator) translateAppName(appName string) map[string]*string {
 	if appName == "" {
 		empty := ""
 		return map[string]*string{"uz": &empty, "ru": &empty, "en": &empty, "oz": &empty}
 	}
-
-	result := map[string]*string{
-		"uz": &appName,
-		"ru": nil,
-		"en": nil,
-		"oz": nil,
-	}
-
-	// Переводим через API для ru и en
-	if tt.translationService != nil {
-		ruTrans, err := tt.translationService.Translate(appName, "ru")
-		if err == nil && ruTrans != "" {
-			result["ru"] = &ruTrans
-		} else {
-			result["ru"] = &appName // Fallback
-		}
-
-		enTrans, err := tt.translationService.Translate(appName, "en")
-		if err == nil && enTrans != "" {
-			result["en"] = &enTrans
-		} else {
-			result["en"] = &appName // Fallback
-		}
-	} else {
-		// Если сервис не инициализирован, используем оригинал
-		result["ru"] = &appName
-		result["en"] = &appName
-	}
-
-	// Для oz используем транслитерацию
-	ozTrans := TransliterateUzToOz(appName)
-	result["oz"] = &ozTrans
-
-	return result
+	uz := appName
+	ru := appName
+	en := appName
+	oz := TransliterateUzToOz(appName)
+	return map[string]*string{"uz": &uz, "ru": &ru, "en": &en, "oz": &oz}
 }
 
-// translateCommission - переводит комиссию через API
+// translateCommission - комиссия это число/процент (0.5%, 1%), не переводим — на всех языках одно значение.
 func (tt *TransferTranslator) translateCommission(commission string) map[string]string {
 	if commission == "" {
 		return map[string]string{"uz": "", "ru": "", "en": "", "oz": ""}
 	}
-
-	result := map[string]string{
-		"uz": commission,
-		"ru": commission,
-		"en": commission,
-		"oz": commission,
-	}
-
-	// Переводим через API для ru и en
-	if tt.translationService != nil {
-		ruTrans, err := tt.translationService.Translate(commission, "ru")
-		if err == nil && ruTrans != "" {
-			result["ru"] = ruTrans
-		}
-
-		enTrans, err := tt.translationService.Translate(commission, "en")
-		if err == nil && enTrans != "" {
-			result["en"] = enTrans
-		}
-	}
-
-	// Для oz используем транслитерацию
-	result["oz"] = TransliterateUzToOz(commission)
-
-	return result
+	c := strings.TrimSpace(commission)
+	return map[string]string{"uz": c, "ru": c, "en": c, "oz": c}
 }
 
-// translateLimit - переводит лимит через API
+// isTranslationError - признак ответа API об ошибке/лимите (не подставлять как перевод).
+func isTranslationError(s string) bool {
+	return strings.Contains(s, "QUERY LENGTH LIMIT") ||
+		strings.Contains(s, "500 CHARS") ||
+		strings.Contains(s, "MAX ALLOWED QUERY")
+}
+
+// decodeHTMLEntities - заменяет &#39; на ', &#10; на \n и т.д.
+func decodeHTMLEntities(s string) string {
+	return html.UnescapeString(s)
+}
+
+// translateLimit - переводит лимит через API; при ошибке или лимите API — оригинал; в ответе декодируем HTML-сущности.
 func (tt *TransferTranslator) translateLimit(limitUZ *string) map[string]*string {
 	if limitUZ == nil || *limitUZ == "" {
 		return map[string]*string{"uz": nil, "ru": nil, "en": nil, "oz": nil}
@@ -181,30 +142,27 @@ func (tt *TransferTranslator) translateLimit(limitUZ *string) map[string]*string
 		"oz": nil,
 	}
 
-	// Переводим через API для ru и en
 	if tt.translationService != nil {
 		ruTrans, err := tt.translationService.Translate(limit, "ru")
-		if err == nil && ruTrans != "" {
-			result["ru"] = &ruTrans
+		if err == nil && ruTrans != "" && !isTranslationError(ruTrans) {
+			ruDec := decodeHTMLEntities(ruTrans)
+			result["ru"] = &ruDec
 		} else {
-			// Fallback - используем оригинал
 			result["ru"] = limitUZ
 		}
 
 		enTrans, err := tt.translationService.Translate(limit, "en")
-		if err == nil && enTrans != "" {
-			result["en"] = &enTrans
+		if err == nil && enTrans != "" && !isTranslationError(enTrans) {
+			enDec := decodeHTMLEntities(enTrans)
+			result["en"] = &enDec
 		} else {
-			// Fallback - используем оригинал
 			result["en"] = limitUZ
 		}
 	} else {
-		// Если сервис не инициализирован, используем оригинал
 		result["ru"] = limitUZ
 		result["en"] = limitUZ
 	}
 
-	// Для oz используем транслитерацию
 	ozTrans := TransliterateUzToOz(limit)
 	result["oz"] = &ozTrans
 

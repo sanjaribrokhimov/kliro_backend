@@ -106,16 +106,32 @@ func (ct *CardTranslator) TranslateCreditCard(bankName, title, rate, term, amoun
 	}
 }
 
+// removeCardWordsFromTitle убирает из названия слова "kartasi", "karta", обратный слэш и эквиваленты на других языках.
+func removeCardWordsFromTitle(s string) string {
+	if s == "" {
+		return s
+	}
+	// Удаляем обратный слэш
+	s = strings.ReplaceAll(s, "\\", "")
+	// Удаляем как отдельные слова (регистронезависимо для латиницы)
+	s = regexp.MustCompile(`(?i)\s*kartasi\s*`).ReplaceAllString(s, " ")
+	s = regexp.MustCompile(`(?i)\s*karta\s*`).ReplaceAllString(s, " ")
+	s = regexp.MustCompile(`\s*карта\s*`).ReplaceAllString(s, " ")
+	s = regexp.MustCompile(`(?i)\s*card\s*`).ReplaceAllString(s, " ")
+	return strings.TrimSpace(regexp.MustCompile(`\s+`).ReplaceAllString(s, " "))
+}
+
 func (ct *CardTranslator) translateText(text string) map[string]string {
-	// Title не переводим - оставляем оригинальное название для всех языков
+	// Title не переводим; убираем слова "kartasi", "karta" на всех языках
 	if text == "" {
 		return map[string]string{"uz": "", "ru": "", "en": "", "oz": ""}
 	}
+	clean := removeCardWordsFromTitle(text)
 	return map[string]string{
-		"uz": text,
-		"ru": text,
-		"en": text,
-		"oz": text,
+		"uz": clean,
+		"ru": clean,
+		"en": clean,
+		"oz": clean,
 	}
 }
 

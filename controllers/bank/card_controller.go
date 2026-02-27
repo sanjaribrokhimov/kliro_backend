@@ -3,6 +3,7 @@ package bank
 import (
 	"kliro/models"
 	"kliro/utils"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
@@ -61,13 +62,14 @@ type TranslatedCreditCardResponseByPagination struct {
 	Empty            bool                       `json:"empty"`
 }
 
-// GetNewCards godoc
+// GetNewCards godoc — порядок каждый раз случайный.
 func (cc *CardController) GetNewCards(c *gin.Context) {
-	cc.getCardsWithPagination(c, "new_card")
+	cc.getCardsWithPagination(c, "new_card", true)
 }
 
-// getCardsWithPagination общая функция для получения карт с пагинацией и фильтрацией
-func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName string) {
+// getCardsWithPagination общая функция для получения карт с пагинацией и фильтрацией.
+// shuffleOrder: при true загружаем все, перемешиваем, пагинируем в памяти.
+func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName string, shuffleOrder bool) {
 	db := utils.GetDB()
 
 	// Параметры пагинации
@@ -271,8 +273,6 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 	// Выполнение запроса с пагинацией, сортировкой и фильтрацией
 	var cards []models.Card
 	query = db.Table(tableName)
-
-	// Применение фильтров
 	if len(currencySynonyms) > 0 {
 		for i, syn := range currencySynonyms {
 			pattern := "%" + syn + "%"
@@ -299,24 +299,43 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 		query = query.Where("opening_type ILIKE '%Bank%'").Where("opening_type ILIKE '%Onlayn%'")
 	}
 
-	// Применение сортировки
-	if sortField == "bank_name" || sortField == "title" || sortField == "currency" || sortField == "system" || sortField == "opening_type" {
-		// Для текстовых полей добавляем COLLATE для правильной сортировки
-		if sortDirection == "ASC" {
-			query = query.Order(sortField + " COLLATE \"C\" ASC")
-		} else {
-			query = query.Order(sortField + " COLLATE \"C\" DESC")
+	if shuffleOrder {
+		var allCards []models.Card
+		if err := query.Find(&allCards).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при получении данных"})
+			return
 		}
+		if len(allCards) > 1 {
+			rand.Shuffle(len(allCards), func(i, j int) { allCards[i], allCards[j] = allCards[j], allCards[i] })
+		}
+		totalElements = int64(len(allCards))
+		totalPages = int((totalElements + int64(size) - 1) / int64(size))
+		if totalPages > 0 && (totalPages-1)*size >= len(allCards) {
+			totalPages--
+		}
+		end := offset + size
+		if end > len(allCards) {
+			end = len(allCards)
+		}
+		if offset > len(allCards) {
+			offset = len(allCards)
+		}
+		cards = allCards[offset:end]
 	} else {
-		query = query.Order(sortField + " " + sortDirection)
-	}
-
-	// Применение пагинации
-	query = query.Offset(offset).Limit(size)
-
-	if err := query.Find(&cards).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при получении данных"})
-		return
+		if sortField == "bank_name" || sortField == "title" || sortField == "currency" || sortField == "system" || sortField == "opening_type" {
+			if sortDirection == "ASC" {
+				query = query.Order(sortField + " COLLATE \"C\" ASC")
+			} else {
+				query = query.Order(sortField + " COLLATE \"C\" DESC")
+			}
+		} else {
+			query = query.Order(sortField + " " + sortDirection)
+		}
+		query = query.Offset(offset).Limit(size)
+		if err := query.Find(&cards).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при получении данных"})
+			return
+		}
 	}
 
 	// Применяем переводы к каждому элементу (uz/ru/en/oz)
@@ -369,12 +388,12 @@ func (cc *CardController) getCardsWithPagination(c *gin.Context, tableName strin
 	c.JSON(http.StatusOK, gin.H{"result": response, "success": true})
 }
 
-// GetNewCreditCards возвращает кредитные карты с пагинацией
+// GetNewCreditCards возвращает кредитные карты с пагинацией (порядок каждый раз случайный).
 func (cc *CardController) GetNewCreditCards(c *gin.Context) {
-	cc.getCreditCardsWithPagination(c, "new_credit_card")
+	cc.getCreditCardsWithPagination(c, "new_credit_card", true)
 }
 
-func (cc *CardController) getCreditCardsWithPagination(c *gin.Context, tableName string) {
+func (cc *CardController) getCreditCardsWithPagination(c *gin.Context, tableName string, shuffleOrder bool) {
 	db := utils.GetDB()
 
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "0"))
@@ -403,9 +422,28 @@ func (cc *CardController) getCreditCardsWithPagination(c *gin.Context, tableName
 		dataQuery = dataQuery.Where("bank_name ILIKE ?", "%"+search+"%")
 	}
 
-	if err := dataQuery.Order("created_at DESC").Offset(offset).Limit(size).Find(&items).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при получении данных"})
-		return
+	if shuffleOrder {
+		if err := dataQuery.Find(&items).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при получении данных"})
+			return
+		}
+		if len(items) > 1 {
+			rand.Shuffle(len(items), func(i, j int) { items[i], items[j] = items[j], items[i] })
+		}
+		total = int64(len(items))
+		end := offset + size
+		if end > len(items) {
+			end = len(items)
+		}
+		if offset > len(items) {
+			offset = len(items)
+		}
+		items = items[offset:end]
+	} else {
+		if err := dataQuery.Order("created_at DESC").Offset(offset).Limit(size).Find(&items).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при получении данных"})
+			return
+		}
 	}
 
 	// Применяем переводы к каждому элементу (uz/ru/en/oz)

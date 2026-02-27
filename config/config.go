@@ -52,6 +52,10 @@ type Config struct {
 	ApexLogin    string
 	ApexPassword string
 	ApexUserID   int // статический user_id для create (из .env APEX_USER_ID, по умолчанию 30541)
+	// Inson OSAGO settings
+	InsonBaseURL  string
+	InsonLogin    string
+	InsonPassword string
 	// Translation API settings (бесплатный API, без токенов)
 	TranslationAPIURL string // URL для LibreTranslate (опционально, по умолчанию используется публичный)
 }
@@ -99,6 +103,9 @@ func LoadConfig() *Config {
 		ApexLogin:           os.Getenv("APEX_LOGIN"),
 		ApexPassword:        os.Getenv("APEX_PASSWORD"),
 		ApexUserID:          getenvIntOrDefault("APEX_USER_ID", 30541),
+		InsonBaseURL:        getenvOrDefault("INSON_BASE_URL", "https://testapi-ersp.insonline.uz"),
+		InsonLogin:          os.Getenv("INSON_LOGIN"),
+		InsonPassword:       os.Getenv("INSON_PASSWORD"),
 		TranslationAPIURL:   getenvOrDefault("TRANSLATION_API_URL", "https://libretranslate.com/translate"),
 	}
 }

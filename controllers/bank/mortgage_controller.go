@@ -4,6 +4,7 @@ import (
 	"kliro/models"
 	bankServices "kliro/services/bank"
 	"kliro/utils"
+	"math/rand"
 	"net/http"
 	"sort"
 	"strconv"
@@ -21,9 +22,9 @@ func NewMortgageController(db *gorm.DB) *MortgageController {
 	return &MortgageController{db: db}
 }
 
-// GetNewMortgages получает новые ипотечные кредиты с пагинацией
+// GetNewMortgages получает новые ипотечные кредиты с пагинацией (порядок каждый раз случайный).
 func (mc *MortgageController) GetNewMortgages(c *gin.Context) {
-	getMortgagesWithPagination(c, mc.db, "new_mortgage")
+	getMortgagesWithPagination(c, mc.db, "new_mortgage", true)
 }
 
 // ParseMortgage парсит ипотечные кредиты с указанного URL
@@ -66,7 +67,7 @@ func (mc *MortgageController) ParseMortgage(c *gin.Context) {
 	})
 }
 
-func getMortgagesWithPagination(c *gin.Context, db *gorm.DB, tableName string) {
+func getMortgagesWithPagination(c *gin.Context, db *gorm.DB, tableName string, shuffleOrder bool) {
 	// Параметры пагинации (1-based)
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
@@ -164,22 +165,27 @@ func getMortgagesWithPagination(c *gin.Context, db *gorm.DB, tableName string) {
 		filtered = append(filtered, m)
 	}
 
-	// Сортировка ДО пагинации: приоритет у rate_from, если нет - то по bank_name
-	if rateFromStr != "" {
-		// Автоматическая сортировка по ставкам от меньшего к большему
-		sort.SliceStable(filtered, func(i, j int) bool {
-			rateI := utils.ExtractFirstFloat(filtered[i].Rate)
-			rateJ := utils.ExtractFirstFloat(filtered[j].Rate)
-			return rateI < rateJ
-		})
-	} else if strings.EqualFold(sortBy, "bank_name") {
-		// Сортировка по банку только если нет фильтра по ставкам
-		sort.SliceStable(filtered, func(i, j int) bool {
-			if strings.ToLower(sortOrder) == "desc" {
-				return filtered[i].BankName > filtered[j].BankName
-			}
-			return filtered[i].BankName < filtered[j].BankName
-		})
+	// Случайный порядок для /mortgages/new
+	if shuffleOrder && len(filtered) > 1 {
+		rand.Shuffle(len(filtered), func(i, j int) { filtered[i], filtered[j] = filtered[j], filtered[i] })
+	}
+
+	// Сортировка ДО пагинации (не применяем при shuffleOrder)
+	if !shuffleOrder {
+		if rateFromStr != "" {
+			sort.SliceStable(filtered, func(i, j int) bool {
+				rateI := utils.ExtractFirstFloat(filtered[i].Rate)
+				rateJ := utils.ExtractFirstFloat(filtered[j].Rate)
+				return rateI < rateJ
+			})
+		} else if strings.EqualFold(sortBy, "bank_name") {
+			sort.SliceStable(filtered, func(i, j int) bool {
+				if strings.ToLower(sortOrder) == "desc" {
+					return filtered[i].BankName > filtered[j].BankName
+				}
+				return filtered[i].BankName < filtered[j].BankName
+			})
+		}
 	}
 
 	// Пагинация в памяти

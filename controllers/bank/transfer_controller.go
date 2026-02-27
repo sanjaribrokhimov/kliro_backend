@@ -4,6 +4,7 @@ import (
 	"kliro/models"
 	bankServices "kliro/services/bank"
 	"kliro/utils"
+	"math/rand"
 	"net/http"
 	"sort"
 	"strconv"
@@ -48,9 +49,9 @@ type TranslatedTransferResponseByPagination struct {
 	Empty            bool                        `json:"empty"`
 }
 
-// GetNewTransfers получает новые переводы с пагинацией
+// GetNewTransfers получает новые переводы с пагинацией (порядок каждый раз случайный).
 func (tc *TransferController) GetNewTransfers(c *gin.Context) {
-	tc.getTransfersWithPagination(c, "new_transfer")
+	tc.getTransfersWithPagination(c, "new_transfer", true)
 }
 
 // ParseTransfer парсит переводы с указанного URL
@@ -93,8 +94,9 @@ func (tc *TransferController) ParseTransfer(c *gin.Context) {
 	})
 }
 
-// getTransfersWithPagination общая функция для получения переводов с пагинацией
-func (tc *TransferController) getTransfersWithPagination(c *gin.Context, tableName string) {
+// getTransfersWithPagination общая функция для получения переводов с пагинацией.
+// shuffleOrder: при true порядок записей случайный каждый раз.
+func (tc *TransferController) getTransfersWithPagination(c *gin.Context, tableName string, shuffleOrder bool) {
 	db := utils.GetDB()
 
 	// Параметры пагинации
@@ -141,8 +143,24 @@ func (tc *TransferController) getTransfersWithPagination(c *gin.Context, tableNa
 		filtered = append(filtered, t)
 	}
 
-	// Сортировка ДО пагинации
-	if commissionFromStr != "" {
+	// Для /transfers/new: сначала приложения с 0% комиссией (внутри случайно), затем остальные (внутри случайно)
+	if shuffleOrder && len(filtered) > 0 {
+		zeroComm := make([]models.Transfer, 0)
+		other := make([]models.Transfer, 0)
+		for _, t := range filtered {
+			if utils.ExtractFirstFloat(t.Commission) == 0 {
+				zeroComm = append(zeroComm, t)
+			} else {
+				other = append(other, t)
+			}
+		}
+		rand.Shuffle(len(zeroComm), func(i, j int) { zeroComm[i], zeroComm[j] = zeroComm[j], zeroComm[i] })
+		rand.Shuffle(len(other), func(i, j int) { other[i], other[j] = other[j], other[i] })
+		filtered = append(zeroComm, other...)
+	}
+
+	// Сортировка ДО пагинации (не применяем при shuffleOrder)
+	if !shuffleOrder && commissionFromStr != "" {
 		// Автоматическая сортировка по комиссии от большего к меньшему при наличии фильтра
 		// чтобы сначала показывались записи с комиссией ближе к указанному значению
 		sort.SliceStable(filtered, func(i, j int) bool {
@@ -150,8 +168,7 @@ func (tc *TransferController) getTransfersWithPagination(c *gin.Context, tableNa
 			commJ := utils.ExtractFirstFloat(filtered[j].Commission)
 			return commI > commJ
 		})
-	} else if strings.EqualFold(sortBy, "commission") {
-		// Сортировка по комиссии если явно указано
+	} else if !shuffleOrder && strings.EqualFold(sortBy, "commission") {
 		sort.SliceStable(filtered, func(i, j int) bool {
 			commI := utils.ExtractFirstFloat(filtered[i].Commission)
 			commJ := utils.ExtractFirstFloat(filtered[j].Commission)
@@ -160,16 +177,14 @@ func (tc *TransferController) getTransfersWithPagination(c *gin.Context, tableNa
 			}
 			return commI < commJ
 		})
-	} else if strings.EqualFold(sortBy, "app_name") {
-		// Сортировка по имени приложения
+	} else if !shuffleOrder && strings.EqualFold(sortBy, "app_name") {
 		sort.SliceStable(filtered, func(i, j int) bool {
 			if strings.ToLower(sortDir) == "desc" {
 				return filtered[i].AppName > filtered[j].AppName
 			}
 			return filtered[i].AppName < filtered[j].AppName
 		})
-	} else if strings.EqualFold(sortBy, "created_at") {
-		// Сортировка по дате создания
+	} else if !shuffleOrder && strings.EqualFold(sortBy, "created_at") {
 		sort.SliceStable(filtered, func(i, j int) bool {
 			if strings.ToLower(sortDir) == "desc" {
 				return filtered[i].CreatedAt.After(filtered[j].CreatedAt)

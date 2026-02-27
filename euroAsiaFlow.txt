@@ -1,0 +1,1881 @@
+FIND API  RESPONSE
+
+{
+    "session_id": "b0ad7ac8-5241-4598-aa55-35756c5a9e16",
+    "owner": false,
+    "vehicle": {
+        "data": {
+            "body_number": "XWB5M31BV9A016554",
+            "color": "БЕЛЫЙ",
+            "created_at": "2025-12-19T10:33:55.923097Z",
+            "empty_weight": 1250,
+            "engine_number": "F18D31558211",
+            "external_id": "1323514",
+            "fuel_type": "1",
+            "full_weight": 1765,
+            "horsepower": 106,
+            "id": "13a343c5-1c9c-4ec8-9297-2411e9dd581a",
+            "license_plate": "01J409QC",
+            "manufacture_year": 2009,
+            "model": "LACETTI",
+            "owner": {
+                "person": {
+                    "address": "ЁШЛИК МФЙ, БЕШҚЎРҒОН-2 ДАХАСИ,  uy:6 xonadon:2",
+                    "birth_country": "УЗБЕКИСТАН",
+                    "birth_place": "TOSHKENT",
+                    "birthdate": "1979-10-31T00:00:00Z",
+                    "country": {
+                        "external_id": 210,
+                        "id": "d00cedb4-7fc9-4e1e-95f8-38eb6f6cb5ca",
+                        "name": "Узбекистан",
+                        "translations": [
+                            {
+                                "lang": "ru",
+                                "value": "Узбекистан"
+                            },
+                            {
+                                "lang": "uz",
+                                "value": "O'zbekiston"
+                            },
+                            {
+                                "lang": "uz-cyrl",
+                                "value": "Ўзбекистон"
+                            },
+                            {
+                                "lang": "en",
+                                "value": "Uzbekistan"
+                            }
+                        ]
+                    },
+                    "created_at": "2025-09-27T01:59:28.321764Z",
+                    "district": {
+                        "external_id": 1012,
+                        "id": "1eae887a-42d4-4b85-b22a-e1670101d8a4",
+                        "name": "Алмазарский район",
+                        "region_id": "d9206ae6-3215-4fd0-a6a1-b8d80edcdd5b",
+                        "translations": [
+                            {
+                                "lang": "uz",
+                                "value": "Olmazar tumani"
+                            },
+                            {
+                                "lang": "uz-cyrl",
+                                "value": "ОЛМАЗОР ТУМАНИ"
+                            },
+                            {
+                                "lang": "en",
+                                "value": "Almazar District"
+                            },
+                            {
+                                "lang": "ru",
+                                "value": "Алмазарский район"
+                            }
+                        ]
+                    },
+                    "documents": [
+                        {
+                            "document_type": "IDMS_RECV_MVD_IDCARD_CITIZEN",
+                            "expiry_date": "2034-07-07T00:00:00Z",
+                            "id": "14c9ec7b-6ef0-464d-a2b7-3d809c183908",
+                            "issue_date": "2024-07-08T00:00:00Z",
+                            "number": "7784524",
+                            "series": "AD",
+                            "status": "active"
+                        },
+                        {
+                            "document_type": "IDMS_RECV_DRIVERS_LICENSE",
+                            "id": "e0d1c8e7-c411-41e6-88b5-83a3f770f847",
+                            "issue_date": "2022-02-02T00:00:00Z",
+                            "number": "3855022",
+                            "series": "AF",
+                            "status": "active"
+                        },
+                        {
+                            "document_type": "IDMS_RECV_IP_DOCUMENTS",
+                            "expiry_date": "2031-02-05T00:00:00Z",
+                            "id": "08238539-479b-469d-93e7-16e72bf516b7",
+                            "issue_date": "2021-02-06T00:00:00Z",
+                            "number": "2035419",
+                            "series": "FA",
+                            "status": "active"
+                        },
+                        {
+                            "document_type": "IDMS_RECV_CITIZ_DOCUMENTS",
+                            "expiry_date": "2024-07-19T00:00:00Z",
+                            "id": "ad3d08cc-0762-4f05-9326-3ea4c3930127",
+                            "issue_date": "2014-07-20T00:00:00Z",
+                            "number": "6222839",
+                            "series": "AA",
+                            "status": "unknown"
+                        }
+                    ],
+                    "external_id": "33110790221689",
+                    "first_name": "FARRUX",
+                    "gender": {
+                        "external_id": 1,
+                        "id": "c0d4f65d-b4a4-4c3b-aaa1-97c06c75eb1d",
+                        "name": "Мужской",
+                        "translations": [
+                            {
+                                "lang": "uz-cyrl",
+                                "value": "Еркак"
+                            },
+                            {
+                                "lang": "en",
+                                "value": "Male"
+                            },
+                            {
+                                "lang": "ru",
+                                "value": "Мужской"
+                            },
+                            {
+                                "lang": "uz",
+                                "value": "Erkak"
+                            }
+                        ]
+                    },
+                    "id": "2affbdff-87b3-411e-8211-05b40b5c6585",
+                    "is_disabled": false,
+                    "is_pensioner": false,
+                    "last_name": "MAXMUDOV",
+                    "middle_name": "SAGATOVICH",
+                    "passport": {
+                        "issued_at": "2014-07-20T00:00:00Z",
+                        "number": "6222839",
+                        "series": "AA"
+                    },
+                    "pinfls": [
+                        "33110790221689"
+                    ],
+                    "region": {
+                        "external_id": 10,
+                        "id": "d9206ae6-3215-4fd0-a6a1-b8d80edcdd5b",
+                        "name": "Город Ташкент",
+                        "translations": [
+                            {
+                                "lang": "uz-cyrl",
+                                "value": "Тошкент шаҳри"
+                            },
+                            {
+                                "lang": "en",
+                                "value": "Tashkent City"
+                            },
+                            {
+                                "lang": "ru",
+                                "value": "Город Ташкент"
+                            },
+                            {
+                                "lang": "uz",
+                                "value": "Toshkent shahri"
+                            }
+                        ]
+                    },
+                    "updated_at": "2026-02-09T08:20:00.172551Z"
+                },
+                "type": "person"
+            },
+            "registration_division": "2-TRO' va IOB (CHILONZOR)",
+            "seat_count": 5,
+            "tech_passport": {
+                "issue_date": "2024-04-25T00:00:00Z",
+                "number": "3899020",
+                "series": "AAG"
+            },
+            "updated_at": "2026-02-09T12:32:21.994895Z",
+            "use_territory_region": {
+                "external_id": 1,
+                "id": "1caedd00-0c1d-451a-bace-ecaa425659be",
+                "name": "г. Ташкент и Ташкентская область",
+                "translations": [
+                    {
+                        "lang": "uz",
+                        "value": "Toshkent shahri va Toshkent viloyati"
+                    },
+                    {
+                        "lang": "uz-cyrl",
+                        "value": "Тошкент шаҳри ва Тошкент вилояти"
+                    },
+                    {
+                        "lang": "en",
+                        "value": "Tashkent city and Tashkent region"
+                    },
+                    {
+                        "lang": "ru",
+                        "value": "г. Ташкент и Ташкентская область"
+                    }
+                ]
+            },
+            "vehicle_type": {
+                "external_id": 2,
+                "id": "dd20c8b8-367c-4d5b-8dcb-b7607a4d247a",
+                "name": "Легковые автомобили",
+                "translations": [
+                    {
+                        "lang": "en",
+                        "value": "Passenger Cars"
+                    },
+                    {
+                        "lang": "ru",
+                        "value": "Легковые автомобили"
+                    },
+                    {
+                        "lang": "uz",
+                        "value": "Yengil avtomobillar"
+                    },
+                    {
+                        "lang": "uz-cyrl",
+                        "value": "Енгил автомобиллар"
+                    }
+                ],
+                "vehicle_group": "dbcb09a7-8fa7-46ea-87cf-54623bff619e"
+            }
+        },
+        "message": "Vehicle found successfully",
+        "success": true
+    },
+    "organization": {
+        "data": {
+            "account": "20208000407287386001",
+            "address": "Muxandislar MFY, Muqumiy ko'chasi, 7/1-uy  ",
+            "bank_mfo": "00980",
+            "bank_name": "ТОШКЕНТ Ш., \"РАВНАК-БАНК\" ХАТ БАНКИНИНГ БОШ ОФИСИ",
+            "created_at": "2026-02-09T07:16:29.689434Z",
+            "district": "Яккасарой тумани",
+            "district_soato_code": "1726287",
+            "district_soato_name": "Яккасарайский район",
+            "external_id": "312309287",
+            "fund": 400000000,
+            "general_director_full_name": "SHONAZAROV ABRORJON ERKINOVICH",
+            "id": "45133b12-3482-4241-9e90-a6f300381838",
+            "inn": "312309287",
+            "name": "\"KLIRO TECH\" MAS'ULIYATI CHEKLANGAN JAMIYAT",
+            "name_short": "\"KLIRO TECH\" MCHJ",
+            "oked": {
+                "code": "63120",
+                "id": "434b4942-7578-45d2-b580-85bf76f84f9e",
+                "name": "Web-порталы"
+            },
+            "registration_certificate_issue_at": "2025-07-27T00:00:00Z",
+            "registration_certificate_number": "2892786",
+            "updated_at": "2026-02-09T12:31:37.294646Z"
+        },
+        "message": "Organization found successfully",
+        "success": true
+    }
+}
+{
+    "session_id": "9a5f3ec6-4d03-4a7e-b9a1-16a2548717b9",
+    "owner": true,
+    "vehicle": {
+        "data": {
+            "body_number": "XWB5M31BV9A016554",
+            "color": "БЕЛЫЙ",
+            "created_at": "2025-12-19T10:33:55.923097Z",
+            "empty_weight": 1250,
+            "engine_number": "F18D31558211",
+            "external_id": "1323514",
+            "fuel_type": "1",
+            "full_weight": 1765,
+            "horsepower": 106,
+            "id": "13a343c5-1c9c-4ec8-9297-2411e9dd581a",
+            "license_plate": "01J409QC",
+            "manufacture_year": 2009,
+            "model": "LACETTI",
+            "owner": {
+                "person": {
+                    "address": "ЁШЛИК МФЙ, БЕШҚЎРҒОН-2 ДАХАСИ,  uy:6 xonadon:2",
+                    "birth_country": "УЗБЕКИСТАН",
+                    "birth_place": "TOSHKENT",
+                    "birthdate": "1979-10-31T00:00:00Z",
+                    "country": {
+                        "external_id": 210,
+                        "id": "d00cedb4-7fc9-4e1e-95f8-38eb6f6cb5ca",
+                        "name": "Узбекистан",
+                        "translations": [
+                            {
+                                "lang": "en",
+                                "value": "Uzbekistan"
+                            },
+                            {
+                                "lang": "ru",
+                                "value": "Узбекистан"
+                            },
+                            {
+                                "lang": "uz",
+                                "value": "O'zbekiston"
+                            },
+                            {
+                                "lang": "uz-cyrl",
+                                "value": "Ўзбекистон"
+                            }
+                        ]
+                    },
+                    "created_at": "2025-09-27T01:59:28.321764Z",
+                    "district": {
+                        "external_id": 1012,
+                        "id": "1eae887a-42d4-4b85-b22a-e1670101d8a4",
+                        "name": "Алмазарский район",
+                        "region_id": "d9206ae6-3215-4fd0-a6a1-b8d80edcdd5b",
+                        "translations": [
+                            {
+                                "lang": "uz-cyrl",
+                                "value": "ОЛМАЗОР ТУМАНИ"
+                            },
+                            {
+                                "lang": "en",
+                                "value": "Almazar District"
+                            },
+                            {
+                                "lang": "ru",
+                                "value": "Алмазарский район"
+                            },
+                            {
+                                "lang": "uz",
+                                "value": "Olmazar tumani"
+                            }
+                        ]
+                    },
+                    "documents": [
+                        {
+                            "document_type": "IDMS_RECV_MVD_IDCARD_CITIZEN",
+                            "expiry_date": "2034-07-07T00:00:00Z",
+                            "id": "14c9ec7b-6ef0-464d-a2b7-3d809c183908",
+                            "issue_date": "2024-07-08T00:00:00Z",
+                            "number": "7784524",
+                            "series": "AD",
+                            "status": "active"
+                        },
+                        {
+                            "document_type": "IDMS_RECV_DRIVERS_LICENSE",
+                            "id": "e0d1c8e7-c411-41e6-88b5-83a3f770f847",
+                            "issue_date": "2022-02-02T00:00:00Z",
+                            "number": "3855022",
+                            "series": "AF",
+                            "status": "active"
+                        },
+                        {
+                            "document_type": "IDMS_RECV_IP_DOCUMENTS",
+                            "expiry_date": "2031-02-05T00:00:00Z",
+                            "id": "08238539-479b-469d-93e7-16e72bf516b7",
+                            "issue_date": "2021-02-06T00:00:00Z",
+                            "number": "2035419",
+                            "series": "FA",
+                            "status": "active"
+                        },
+                        {
+                            "document_type": "IDMS_RECV_CITIZ_DOCUMENTS",
+                            "expiry_date": "2024-07-19T00:00:00Z",
+                            "id": "ad3d08cc-0762-4f05-9326-3ea4c3930127",
+                            "issue_date": "2014-07-20T00:00:00Z",
+                            "number": "6222839",
+                            "series": "AA",
+                            "status": "unknown"
+                        }
+                    ],
+                    "external_id": "33110790221689",
+                    "first_name": "FARRUX",
+                    "gender": {
+                        "external_id": 1,
+                        "id": "c0d4f65d-b4a4-4c3b-aaa1-97c06c75eb1d",
+                        "name": "Мужской",
+                        "translations": [
+                            {
+                                "lang": "ru",
+                                "value": "Мужской"
+                            },
+                            {
+                                "lang": "uz",
+                                "value": "Erkak"
+                            },
+                            {
+                                "lang": "uz-cyrl",
+                                "value": "Еркак"
+                            },
+                            {
+                                "lang": "en",
+                                "value": "Male"
+                            }
+                        ]
+                    },
+                    "id": "2affbdff-87b3-411e-8211-05b40b5c6585",
+                    "is_disabled": false,
+                    "is_pensioner": false,
+                    "last_name": "MAXMUDOV",
+                    "middle_name": "SAGATOVICH",
+                    "passport": {
+                        "issued_at": "2014-07-20T00:00:00Z",
+                        "number": "6222839",
+                        "series": "AA"
+                    },
+                    "pinfls": [
+                        "33110790221689"
+                    ],
+                    "region": {
+                        "external_id": 10,
+                        "id": "d9206ae6-3215-4fd0-a6a1-b8d80edcdd5b",
+                        "name": "Город Ташкент",
+                        "translations": [
+                            {
+                                "lang": "uz",
+                                "value": "Toshkent shahri"
+                            },
+                            {
+                                "lang": "uz-cyrl",
+                                "value": "Тошкент шаҳри"
+                            },
+                            {
+                                "lang": "en",
+                                "value": "Tashkent City"
+                            },
+                            {
+                                "lang": "ru",
+                                "value": "Город Ташкент"
+                            }
+                        ]
+                    },
+                    "updated_at": "2026-02-03T05:57:22.146686Z"
+                },
+                "type": "person"
+            },
+            "registration_division": "2-TRO' va IOB (CHILONZOR)",
+            "seat_count": 5,
+            "tech_passport": {
+                "issue_date": "2024-04-25T00:00:00Z",
+                "number": "3899020",
+                "series": "AAG"
+            },
+            "updated_at": "2026-02-05T13:01:19.403931Z",
+            "use_territory_region": {
+                "external_id": 1,
+                "id": "1caedd00-0c1d-451a-bace-ecaa425659be",
+                "name": "г. Ташкент и Ташкентская область",
+                "translations": [
+                    {
+                        "lang": "ru",
+                        "value": "г. Ташкент и Ташкентская область"
+                    },
+                    {
+                        "lang": "uz",
+                        "value": "Toshkent shahri va Toshkent viloyati"
+                    },
+                    {
+                        "lang": "uz-cyrl",
+                        "value": "Тошкент шаҳри ва Тошкент вилояти"
+                    },
+                    {
+                        "lang": "en",
+                        "value": "Tashkent city and Tashkent region"
+                    }
+                ]
+            },
+            "vehicle_type": {
+                "external_id": 2,
+                "id": "dd20c8b8-367c-4d5b-8dcb-b7607a4d247a",
+                "name": "Легковые автомобили",
+                "translations": [
+                    {
+                        "lang": "en",
+                        "value": "Passenger Cars"
+                    },
+                    {
+                        "lang": "ru",
+                        "value": "Легковые автомобили"
+                    },
+                    {
+                        "lang": "uz",
+                        "value": "Yengil avtomobillar"
+                    },
+                    {
+                        "lang": "uz-cyrl",
+                        "value": "Енгил автомобиллар"
+                    }
+                ],
+                "vehicle_group": "dbcb09a7-8fa7-46ea-87cf-54623bff619e"
+            }
+        },
+        "message": "Vehicle found successfully",
+        "success": true
+    },
+    "person": {
+        "data": {
+            "address": "ЁШЛИК МФЙ, БЕШҚЎРҒОН-2 ДАХАСИ,  uy:6 xonadon:2",
+            "birth_country": "УЗБЕКИСТАН",
+            "birth_place": "TOSHKENT",
+            "birthdate": "1979-10-31T00:00:00+06:00",
+            "country": {
+                "external_id": 210,
+                "id": "d00cedb4-7fc9-4e1e-95f8-38eb6f6cb5ca",
+                "name": "Узбекистан",
+                "translations": [
+                    {
+                        "lang": "en",
+                        "value": "Uzbekistan"
+                    },
+                    {
+                        "lang": "ru",
+                        "value": "Узбекистан"
+                    },
+                    {
+                        "lang": "uz",
+                        "value": "O'zbekiston"
+                    },
+                    {
+                        "lang": "uz-cyrl",
+                        "value": "Ўзбекистон"
+                    }
+                ]
+            },
+            "created_at": "2025-09-27T01:59:28.321764Z",
+            "district": {
+                "external_id": 1012,
+                "id": "1eae887a-42d4-4b85-b22a-e1670101d8a4",
+                "name": "Алмазарский район",
+                "region_id": "d9206ae6-3215-4fd0-a6a1-b8d80edcdd5b",
+                "translations": [
+                    {
+                        "lang": "en",
+                        "value": "Almazar District"
+                    },
+                    {
+                        "lang": "ru",
+                        "value": "Алмазарский район"
+                    },
+                    {
+                        "lang": "uz",
+                        "value": "Olmazar tumani"
+                    },
+                    {
+                        "lang": "uz-cyrl",
+                        "value": "ОЛМАЗОР ТУМАНИ"
+                    }
+                ]
+            },
+            "documents": [
+                {
+                    "document_type": "IDMS_RECV_MVD_IDCARD_CITIZEN",
+                    "expiry_date": "2034-07-07T00:00:00Z",
+                    "id": "14c9ec7b-6ef0-464d-a2b7-3d809c183908",
+                    "issue_date": "2024-07-08T00:00:00Z",
+                    "number": "7784524",
+                    "series": "AD",
+                    "status": "active"
+                },
+                {
+                    "document_type": "IDMS_RECV_DRIVERS_LICENSE",
+                    "id": "e0d1c8e7-c411-41e6-88b5-83a3f770f847",
+                    "issue_date": "2022-02-02T00:00:00Z",
+                    "number": "3855022",
+                    "series": "AF",
+                    "status": "active"
+                },
+                {
+                    "document_type": "IDMS_RECV_IP_DOCUMENTS",
+                    "expiry_date": "2031-02-05T00:00:00Z",
+                    "id": "08238539-479b-469d-93e7-16e72bf516b7",
+                    "issue_date": "2021-02-06T00:00:00Z",
+                    "number": "2035419",
+                    "series": "FA",
+                    "status": "active"
+                },
+                {
+                    "document_type": "IDMS_RECV_CITIZ_DOCUMENTS",
+                    "expiry_date": "2024-07-19T00:00:00Z",
+                    "id": "ad3d08cc-0762-4f05-9326-3ea4c3930127",
+                    "issue_date": "2014-07-20T00:00:00Z",
+                    "number": "6222839",
+                    "series": "AA",
+                    "status": "unknown"
+                }
+            ],
+            "external_id": "33110790221689",
+            "first_name": "FARRUX",
+            "gender": {
+                "external_id": 1,
+                "id": "c0d4f65d-b4a4-4c3b-aaa1-97c06c75eb1d",
+                "name": "Мужской",
+                "translations": [
+                    {
+                        "lang": "en",
+                        "value": "Male"
+                    },
+                    {
+                        "lang": "ru",
+                        "value": "Мужской"
+                    },
+                    {
+                        "lang": "uz",
+                        "value": "Erkak"
+                    },
+                    {
+                        "lang": "uz-cyrl",
+                        "value": "Еркак"
+                    }
+                ]
+            },
+            "id": "2affbdff-87b3-411e-8211-05b40b5c6585",
+            "is_disabled": false,
+            "is_pensioner": false,
+            "last_name": "MAXMUDOV",
+            "middle_name": "SAGATOVICH",
+            "passport": {
+                "issued_at": "2014-07-20T00:00:00Z",
+                "number": "6222839",
+                "series": "AA"
+            },
+            "pinfls": [
+                "33110790221689"
+            ],
+            "region": {
+                "external_id": 10,
+                "id": "d9206ae6-3215-4fd0-a6a1-b8d80edcdd5b",
+                "name": "Город Ташкент",
+                "translations": [
+                    {
+                        "lang": "uz-cyrl",
+                        "value": "Тошкент шаҳри"
+                    },
+                    {
+                        "lang": "en",
+                        "value": "Tashkent City"
+                    },
+                    {
+                        "lang": "ru",
+                        "value": "Город Ташкент"
+                    },
+                    {
+                        "lang": "uz",
+                        "value": "Toshkent shahri"
+                    }
+                ]
+            },
+            "updated_at": "2026-02-03T05:57:22.146686Z"
+        },
+        "message": "Person found successfully",
+        "success": true
+    }
+}
+------------------------------------
+CALCULATE 
+osago/calculate
+
+
+REQUESTS
+
+{
+  "driver_restriction": true,  //  true => ogranicheniy , false => ne ogranicheniy 
+  "drivers": [
+    {
+      "passport_birthdate": "2001-02-20",
+      "passport_number": "6135606",
+      "passport_series": "AB"
+    }
+  ],
+  "seasonal_insurance_id": "8465a831-850f-4445-a995-ef71195094ab",
+  "use_territory_region_id": "1caedd00-0c1d-451a-bace-ecaa425659be",
+  "vehicle_group_id": "dbcb09a7-8fa7-46ea-87cf-54623bff619e"
+}
+
+
+RESPONSE 
+
+{
+  "message": "Premium calculated successfully",
+  "success": true,
+  "data": {
+    "premium": {
+      "amount": 192000,
+      "currency": "UZS"
+    },
+    "sum": {
+      "amount": 80000000,
+      "currency": "UZS"
+    }
+  }
+}
+
+
+{
+  "seasonal_insurances": [
+    {
+      "uuid": "0d546748-0ba6-43bc-9ce2-1b977ad9e494",
+      "type": "day",
+      "value": 20
+    },
+    {
+      "uuid": "9848096e-cc12-4dbd-893b-41f2cdfc9a0e",
+      "type": "day",
+      "value": 180
+    },
+    {
+      "uuid": "8465a831-850f-4445-a995-ef71195094ab",
+      "type": "day",
+      "value": 365
+    }
+  ],
+  "territories": [
+    {
+      "uuid": "1caedd00-0c1d-451a-bace-ecaa425659be",
+      "type": "region",
+      "value": "Tashkent city and Tashkent region"
+    },
+    {
+      "uuid": "5f8e3918-d007-4b6e-8cc1-15e987304d8b",
+      "type": "region",
+      "value": "Other regions"
+    },
+    {
+      "uuid": "4b5501a1-5349-441c-87bb-cb34c8f9b971",
+      "type": "region",
+      "value": "For foreigners"
+    }
+  ],
+  "vehicle_groups": [
+    {
+      "uuid": "dbcb09a7-8fa7-46ea-87cf-54623bff619e",
+      "type": "vehicle",
+      "value": "Passenger Cars"
+    },
+    {
+      "uuid": "ea7a4c5e-0a30-453d-9986-eada6369ae25",
+      "type": "vehicle",
+      "value": "Trucks"
+    },
+    {
+      "uuid": "781a59f5-9395-44b6-bf31-2cc2038b629a",
+      "type": "vehicle",
+      "value": "Buses and Minibuses"
+    },
+    {
+      "uuid": "66b3d262-2d6b-49a9-949e-6c87765fcbef",
+      "type": "vehicle",
+      "value": "Trams, motorcycles and scooters, tractors, self-propelled road construction and other machines"
+    }
+  ]
+}
+-----------------------------------------
+
+
+
+CREATE 
+osago/create
+
+REQUEST 
+{
+  "details": {
+    "driver_restriction": true,
+    "drivers": [
+      {
+        "passport_birthdate": "2001-02-20",
+        "passport_number": "6135606",
+        "passport_series": "AB",
+        "relative_id": "ab3391d9-a5df-4b7d-ae85-79479e9ad10b"
+      }
+    ],
+    "seasonal_insurance_id": "9848096e-cc12-4dbd-893b-41f2cdfc9a0e",
+    "start_at": "2026-02-20"
+  },
+  "insurant": {
+    "district_id": "550e8400-e29b-41d4-a716-446655440003",
+    "organization": {
+      "inn": "987654321"
+    },
+    "person": {
+      "passport_birthdate": "2001-02-20",
+      "passport_number": "6135606",
+      "passport_series": "AB"
+    },
+    "phone_number": "+998331108810",
+    "type": "person"
+  },
+  "owner": {
+    "is_insurant": false,
+    "organization": {
+      "inn": "123456789"
+    },
+    "person": {
+      "passport_number": "7784524",
+      "passport_series": "AD"
+    },
+    "type": "person"
+  },
+  "vehicle": {
+    "license_number": "01J409QC",
+    "tech_passport_number": "3899020",
+    "tech_passport_series": "AAG"
+  }
+}
+
+
+
+RESPONSE 
+
+{
+  "message": "OSAGO policy created successfully",
+  "success": true,
+  "data": {
+    "contract_id": "2e5b9c87-cff4-4939-96b9-c13c2be20fe5",
+    "policy_id": "4015e32a-3ceb-4ba1-9dcc-742e85ba1b74",
+    "policy_number": "EEIL",
+    "premium": {
+      "amount": 134400,
+      "currency": "UZS"
+    },
+    "sum": {
+      "amount": 80000000,
+      "currency": "UZS"
+    },
+    "start_date": "2026-02-20T00:00:00Z",
+    "end_date": "2026-08-19T00:00:00Z"
+  }
+}
+
+
+
+{
+  "relatives": [
+    {
+      "uuid": "903da482-1fd9-4e90-a384-9e4a52b6545c",
+      "value": "Father"
+    },
+    {
+      "uuid": "df286690-0d72-4cce-95e0-f27c30624174",
+      "value": "Mother"
+    },
+    {
+      "uuid": "94531b36-f72d-43b6-9e21-a63b251e0858",
+      "value": "Husband"
+    },
+    {
+      "uuid": "07147dd2-1c8f-424a-86e1-f79a38a5465e",
+      "value": "Wife"
+    },
+    {
+      "uuid": "6f3cb0a3-463c-498f-a0ef-09543a7c36c8",
+      "value": "Son"
+    },
+    {
+      "uuid": "ce1ddb40-e938-40cb-8653-9881817ba5a7",
+      "value": "Daughter"
+    },
+    {
+      "uuid": "44da9d2a-dee9-49b8-ad49-66f8c51d5cc1",
+      "value": "Older Brother"
+    },
+    {
+      "uuid": "10b0ac96-1004-4c71-99a1-82b2ff10847d",
+      "value": "Younger Brother"
+    },
+    {
+      "uuid": "cee50656-1d4f-4b47-aa78-ffa259bf1776",
+      "value": "Older Sister"
+    },
+    {
+      "uuid": "3e29b1ea-e10e-45dd-a73c-2e77c6e62052",
+      "value": "Younger Sister"
+    },
+    {
+      "uuid": "ab3391d9-a5df-4b7d-ae85-79479e9ad10b",
+      "value": "Not relative"
+    }
+  ]
+}
+
+
+[
+  {
+    "uuid": "db6a3ff2-588b-48f5-97d8-7f8071e24853",
+    "en": "Zomin District"
+  },
+  {
+    "uuid": "e426c2cd-9f66-403d-946b-957bacfb9045",
+    "en": "Yakkasaray District"
+  },
+  {
+    "uuid": "a8d5f10e-69ee-4a5f-806b-5417164dfe39",
+    "en": "Shaykhantahur District"
+  },
+  {
+    "uuid": "9cd2fc10-4cee-4f79-8c35-1e3111ccd906",
+    "en": "Parkent District"
+  },
+  {
+    "uuid": "c41491dc-deba-40d5-b81f-20bc4d26d6d9",
+    "en": "Quychirchiq District"
+  },
+  {
+    "uuid": "617e6d41-f783-4f1b-bf90-ea5a8ea153cf",
+    "en": "Qibray District"
+  },
+  {
+    "uuid": "a83d1b2e-c6ec-43e4-96f2-83ee5080f82b",
+    "en": "Muzrabot District"
+  },
+  {
+    "uuid": "b47e2c6f-dca3-466c-977a-c3f0500fd57a",
+    "en": "Qorauzoq District"
+  },
+  {
+    "uuid": "a2dd5ddf-961a-472d-84c5-4179a280b305",
+    "en": "Beruniy City"
+  },
+  {
+    "uuid": "e974a092-5476-4839-9881-c1983b4c9402",
+    "en": "Kungirot City"
+  },
+  {
+    "uuid": "11758f5e-7ab5-430f-a1e0-a04f8dedd89d",
+    "en": "Tashkent District"
+  },
+  {
+    "uuid": "ca6238f7-92bf-4a2c-a30a-5dc8dd0b7500",
+    "en": "Ohangarion District"
+  },
+  {
+    "uuid": "3a83b443-bb68-46a3-9f58-8275dce2b6a6",
+    "en": "Bekabad District"
+  },
+  {
+    "uuid": "6783df19-9fb3-492f-9570-df575a7842fa",
+    "en": "Forish District"
+  },
+  {
+    "uuid": "ffc96188-2061-4398-a047-89b7c8ef277b",
+    "en": "Pakhtakor District"
+  },
+  {
+    "uuid": "40bfb9b9-39b0-4ce2-9f30-6a91ad29536c",
+    "en": "Zafarabad District"
+  },
+  {
+    "uuid": "3b3eaf13-dec8-43ac-8019-06614840211c",
+    "en": "Arnasoy District"
+  },
+  {
+    "uuid": "85f6e921-a056-4cf8-9c14-fb087752f319",
+    "en": "Turtkul City"
+  },
+  {
+    "uuid": "1162be4b-5e59-4934-a1d1-1de5802662bc",
+    "en": "Khojeli City"
+  },
+  {
+    "uuid": "96c36281-6f7d-4c4a-afc3-43ff8af5a89c",
+    "en": "Bustonliq District"
+  },
+  {
+    "uuid": "2df65b9b-f6b8-4522-a904-fa86fd60c013",
+    "en": "Buka District"
+  },
+  {
+    "uuid": "baa80492-3219-4e40-8033-b7d9d91a1705",
+    "en": "Pakhtachi District"
+  },
+  {
+    "uuid": "dcb27813-2e20-4d9b-88e7-0158509ff16a",
+    "en": "Kattaqurgan District"
+  },
+  {
+    "uuid": "f552f5bd-80b3-4818-b54f-100324300627",
+    "en": "Oqdaryo District"
+  },
+  {
+    "uuid": "15ca936b-1045-44e5-b586-a41682a0ee11",
+    "en": "Ishtikhan District"
+  },
+  {
+    "uuid": "b657192e-9810-4a6f-b0a4-fc021f4f2637",
+    "en": "Tayloq District"
+  },
+  {
+    "uuid": "244cc0a1-3eaf-45af-91d4-ea2bed918f6f",
+    "en": "Yuqorichirchiq District"
+  },
+  {
+    "uuid": "6eaf0dec-c5b4-4014-be42-24253523763b",
+    "en": "Mirzachul District"
+  },
+  {
+    "uuid": "8681ebf6-6832-420b-9afd-0cd3bf55c940",
+    "en": "Yangiabad District"
+  },
+  {
+    "uuid": "5f45264d-1ce7-4804-b543-969cbf68dbeb",
+    "en": "Jizzakh City"
+  },
+  {
+    "uuid": "dcdfc9e1-39df-4558-beb4-ed43a11f3607",
+    "en": "Bulungur District"
+  },
+  {
+    "uuid": "194f130e-0f8a-4894-8302-f933d39268cf",
+    "en": "Guzalkent District"
+  },
+  {
+    "uuid": "ca535b75-5deb-4bf0-b78f-0ab5835e3910",
+    "en": "Samarkand District"
+  },
+  {
+    "uuid": "a8b3ecf2-9a48-44ec-850c-c88e574297d8",
+    "en": "Taqiyatosh City"
+  },
+  {
+    "uuid": "75667a71-e365-4136-9e67-ff6e6f97d60c",
+    "en": "Narpay District"
+  },
+  {
+    "uuid": "9f1d3395-2b6c-4cd1-b04c-4726c81cfab4",
+    "en": "Nurabad District"
+  },
+  {
+    "uuid": "0e0f9376-c995-412f-8402-f228e186a480",
+    "en": "Urgut District"
+  },
+  {
+    "uuid": "48f190d3-2067-4240-a321-2cf16a9514e7",
+    "en": "Chinoz District"
+  },
+  {
+    "uuid": "64a0fd4f-17f3-4872-b515-f2a4f076e27d",
+    "en": "Angren City"
+  },
+  {
+    "uuid": "fbfcb29e-2965-473b-ac68-d00e754c4a10",
+    "en": "Bekabad City"
+  },
+  {
+    "uuid": "0057bd19-3d4b-4b35-acd2-e0a605bfb41c",
+    "en": "Almaliq City"
+  },
+  {
+    "uuid": "0c2b6458-85fb-427a-9263-e6ba5b305d07",
+    "en": "Ohangarion City"
+  },
+  {
+    "uuid": "caafbcc3-bd42-4d6e-97fc-3bca3572a913",
+    "en": "Chirchiq City"
+  },
+  {
+    "uuid": "28861afd-010b-47eb-a1d2-5c47dd3e4b7e",
+    "en": "Yangiabad City"
+  },
+  {
+    "uuid": "467b5a8e-7590-4d65-87b3-3a29e7b1e98c",
+    "en": "Yangiyul City"
+  },
+  {
+    "uuid": "c39c3b78-7d8a-46ac-b416-39ff5cfd2912",
+    "en": "Saykhunabad District"
+  },
+  {
+    "uuid": "e99f3ecb-b895-432d-98d5-ad4ab8acdaa5",
+    "en": "Gulistan District"
+  },
+  {
+    "uuid": "dfae7c9a-20fd-483d-9871-a9fa0291dcd8",
+    "en": "Oqtosh City"
+  },
+  {
+    "uuid": "6b910ea4-efcc-4027-8d34-bd616bebe7aa",
+    "en": "Boyovut District"
+  },
+  {
+    "uuid": "b2ad3177-75f2-48ce-80a4-fb278dc5a0da",
+    "en": "Mekhnatabad District"
+  },
+  {
+    "uuid": "5245f1f9-78ae-4a8d-97af-481501977959",
+    "en": "Havos District"
+  },
+  {
+    "uuid": "e65e7423-83a2-4dd3-886b-94ba92f392eb",
+    "en": "Mirzaabad District"
+  },
+  {
+    "uuid": "ed580ac1-a8cb-44d4-9afb-a9c398127482",
+    "en": "Oqoltin District"
+  },
+  {
+    "uuid": "d9bb2006-6866-4aa3-8c06-eeacd03b51c3",
+    "en": "Sh.Rashidov District"
+  },
+  {
+    "uuid": "d117aef0-e2d6-4987-a3c9-877a9f4e200c",
+    "en": "Sirdarya District"
+  },
+  {
+    "uuid": "f5393176-891a-476d-b73a-474bb1d8828a",
+    "en": "Gulistan City"
+  },
+  {
+    "uuid": "13448002-95e8-4831-950f-c2a8d58fd160",
+    "en": "Sirdarya City"
+  },
+  {
+    "uuid": "13fa6af2-0d7e-46d8-ad88-b119fc2b8900",
+    "en": "Shirin City"
+  },
+  {
+    "uuid": "d6a974d8-1e50-4369-b1a0-32bb10f82777",
+    "en": "Yangier City"
+  },
+  {
+    "uuid": "a2383607-2c0d-4977-a721-c4dfe8292900",
+    "en": "Bakht City"
+  },
+  {
+    "uuid": "c7a58aee-39a5-49dd-8a8d-5f916a3bd3e7",
+    "en": "Sardoba District"
+  },
+  {
+    "uuid": "fb685f46-8f73-432e-a187-623d98bcd43c",
+    "en": "Zarbdor District"
+  },
+  {
+    "uuid": "01533659-5f6a-4152-9630-c5901da5712a",
+    "en": "Jomboy District"
+  },
+  {
+    "uuid": "74557faa-873e-4eab-b279-41c9b2fdeb94",
+    "en": "Namangan City"
+  },
+  {
+    "uuid": "4eab4110-17cf-4677-8bcc-56da7d7fc2ed",
+    "en": "Pastdargom District"
+  },
+  {
+    "uuid": "62d824d7-9fc7-456a-9dd9-811e61843dd9",
+    "en": "Chelak District"
+  },
+  {
+    "uuid": "33818e6a-05cf-4d47-b210-ffa4050a90d4",
+    "en": "Chust District"
+  },
+  {
+    "uuid": "b84bbd8b-67c7-4034-9049-b4966d34111e",
+    "en": "Samarkand City"
+  },
+  {
+    "uuid": "970ed67f-9fb0-4d6a-912e-47268534d8c6",
+    "en": "Temiryo'l District"
+  },
+  {
+    "uuid": "01f72061-6e21-496a-817c-de042b54d114",
+    "en": "Urgut City"
+  },
+  {
+    "uuid": "6f38261b-e11b-4f10-b36c-1469ffcd8f04",
+    "en": "Kirguli District"
+  },
+  {
+    "uuid": "01115b59-1564-43b6-bc02-c3594eed377c",
+    "en": "Furqat District"
+  },
+  {
+    "uuid": "9cc4de4d-eda7-47b2-b2f3-0a044b5708c5",
+    "en": "Beshariq District"
+  },
+  {
+    "uuid": "8d0d9f26-4f8f-4405-aed3-844ea4ce9eac",
+    "en": "Sokh District"
+  },
+  {
+    "uuid": "2e5b9dc3-f1dc-42ce-b40e-9520bdf5a2eb",
+    "en": "Quva City"
+  },
+  {
+    "uuid": "f05caf7a-0d09-4d3e-b971-aa50b31dd4fe",
+    "en": "Kokand City"
+  },
+  {
+    "uuid": "46359ade-f1bb-4580-b7f0-cfd9434c45ee",
+    "en": "Margilan City"
+  },
+  {
+    "uuid": "ee9f3988-9a45-4cdf-a9ae-cae807f37fc7",
+    "en": "Fergana City"
+  },
+  {
+    "uuid": "4d3c1726-88ba-4ead-a404-36fbc27e31a5",
+    "en": "Davlatabad District"
+  },
+  {
+    "uuid": "14206b6d-9b2f-412f-b754-780c50dcf84d",
+    "en": "Mingbuloq District"
+  },
+  {
+    "uuid": "a0ed1bc8-0ac0-4414-8f05-89703e87c5c7",
+    "en": "Namangan District"
+  },
+  {
+    "uuid": "df10e067-4f7b-462e-a56f-1edeff592ef3",
+    "en": "Yangiqurgan District"
+  },
+  {
+    "uuid": "7c6a870c-aba1-48ae-a995-cca22612604b",
+    "en": "Kosonsoy District"
+  },
+  {
+    "uuid": "fe9ef98f-201d-4bac-9564-d4afc306ed11",
+    "en": "Pop District"
+  },
+  {
+    "uuid": "860bc871-faca-4990-a34f-457b432bf897",
+    "en": "Turaqurgan District"
+  },
+  {
+    "uuid": "24cbab58-c785-4b6e-ab20-b6131680a226",
+    "en": "Qushrabad District"
+  },
+  {
+    "uuid": "92e94320-18b2-45ab-aa61-1de81737b59b",
+    "en": "Payariq District"
+  },
+  {
+    "uuid": "fb54d800-e24d-4b9e-9d99-8edf599ba885",
+    "en": "Bogishamol District"
+  },
+  {
+    "uuid": "69faf167-c3eb-4e76-b5eb-9917ded923a1",
+    "en": "Siyob District"
+  },
+  {
+    "uuid": "b0903f46-daf1-4f7c-9efb-53ec0c842aad",
+    "en": "Uzbekistan District"
+  },
+  {
+    "uuid": "347be537-0cc3-4c08-8ec4-59b415aa4f57",
+    "en": "Chartak City"
+  },
+  {
+    "uuid": "419fdb0d-b2e3-4bdd-bbeb-f8554ca2c756",
+    "en": "Uchqurgan City"
+  },
+  {
+    "uuid": "196586bd-6ab0-424f-bc52-9c599ddf1f1d",
+    "en": "Chust City"
+  },
+  {
+    "uuid": "753ee201-9c2e-45b0-83a5-ef6574b00adb",
+    "en": "Haqqulabad City"
+  },
+  {
+    "uuid": "ae5da7e7-4df9-4193-a72f-f62210a5d68c",
+    "en": "Andijan District"
+  },
+  {
+    "uuid": "e22be389-9470-44af-b8d3-8fe0c90e2fa0",
+    "en": "Oltinkul District"
+  },
+  {
+    "uuid": "0e7920e9-f9cf-4b86-9c2f-ab3d5aebf29a",
+    "en": "Asaka District"
+  },
+  {
+    "uuid": "94e96008-e325-40c4-8bde-6c6324cea59d",
+    "en": "Balikchi District"
+  },
+  {
+    "uuid": "2508d5d7-7c23-4361-a5aa-250d15653803",
+    "en": "Boz District"
+  },
+  {
+    "uuid": "fb9bef05-362e-45c7-b557-338ab336b96e",
+    "en": "Ulugnor District"
+  },
+  {
+    "uuid": "5e3c4ef1-fcd3-437c-a176-b970c90d5f26",
+    "en": "Shahrikhan District"
+  },
+  {
+    "uuid": "d73e4249-42de-4af5-a794-eaeb86ac623c",
+    "en": "Qurgantapa District"
+  },
+  {
+    "uuid": "3d0b5eba-b7ea-46d7-8217-13cdd4df18f1",
+    "en": "Jalolquduq District"
+  },
+  {
+    "uuid": "1963f220-a8cc-4e7a-b151-de7254800be8",
+    "en": "Khojaabad District"
+  },
+  {
+    "uuid": "2565e475-a025-4c86-8232-721fb0b5cf31",
+    "en": "Markhamat District"
+  },
+  {
+    "uuid": "635cf48e-fccc-488d-ad4c-57f5c180649e",
+    "en": "Izboskan District"
+  },
+  {
+    "uuid": "fc7f6ba7-eca5-4986-ae05-aa8bdd821242",
+    "en": "Buloqboshi District"
+  },
+  {
+    "uuid": "cdd70452-6b93-40d1-a365-1b46c3c1ff7f",
+    "en": "Pakhtaabad District"
+  },
+  {
+    "uuid": "533684d1-eaa6-45db-8e65-5f507b5b8000",
+    "en": "Andijan City"
+  },
+  {
+    "uuid": "e000744b-8346-4850-a4b3-a109bddb7c75",
+    "en": "Asaka City"
+  },
+  {
+    "uuid": "808321f3-6170-453f-935c-35530fbabdc9",
+    "en": "Khanabad City"
+  },
+  {
+    "uuid": "57cc49a6-75eb-4049-95c4-d4ec1c8d961d",
+    "en": "Shahrikhan City"
+  },
+  {
+    "uuid": "b65498fb-c677-4113-9829-b1f1a443ddff",
+    "en": "Qarasuw City"
+  },
+  {
+    "uuid": "c69ffbda-c173-461b-8066-c25270c7507c",
+    "en": "Chiraqchi District"
+  },
+  {
+    "uuid": "dbc2b1d0-237c-446d-8c36-b0c40faf8452",
+    "en": "Koson District"
+  },
+  {
+    "uuid": "713344ec-e146-49de-b07b-a9999fec35af",
+    "en": "Shahrisabz District"
+  },
+  {
+    "uuid": "2a875f02-28b2-4a69-8e87-24f1694c259c",
+    "en": "Dehkanabad District"
+  },
+  {
+    "uuid": "b9f21662-b920-4def-8340-611e4d0a85b6",
+    "en": "Qamashi District"
+  },
+  {
+    "uuid": "cac483f7-ad4b-4979-97c1-19594fbec31c",
+    "en": "Yakkabog District"
+  },
+  {
+    "uuid": "c0a997b3-d11a-4b32-9c7e-4e5b2df0148f",
+    "en": "Norin District"
+  },
+  {
+    "uuid": "e732555f-2b4c-435f-ab6a-e1d44f3fb579",
+    "en": "Kosonsoy City"
+  },
+  {
+    "uuid": "bbea87b9-3c91-4aa2-aa71-04bd48663198",
+    "en": "Qarshi District"
+  },
+  {
+    "uuid": "ea5abac9-1548-4331-b68e-584632218add",
+    "en": "Bahoriston District"
+  },
+  {
+    "uuid": "6b00cd58-fb4c-4dd4-bfa0-8840d39c0a1c",
+    "en": "Guzor District"
+  },
+  {
+    "uuid": "43d4f5df-b531-4477-82ce-77e9bce811aa",
+    "en": "Nishon District"
+  },
+  {
+    "uuid": "651aaab7-d6b7-493a-a21d-4c5ba5e4537b",
+    "en": "Kitob District"
+  },
+  {
+    "uuid": "abe24bc3-d8dd-4036-8fe6-4da96f01f6c7",
+    "en": "Kasbi District"
+  },
+  {
+    "uuid": "0669e320-53a6-4c4a-8fd8-92afb024fef5",
+    "en": "Muborak District"
+  },
+  {
+    "uuid": "164b7f52-58ab-4049-9d84-2c6d67f83eab",
+    "en": "Mirishkor District"
+  },
+  {
+    "uuid": "b821319f-2123-4457-9026-6a72af7e73c2",
+    "en": "Qarshi City"
+  },
+  {
+    "uuid": "b27fc723-934e-4f7d-8737-7cf681f8c01c",
+    "en": "Shahrisabz City"
+  },
+  {
+    "uuid": "c8b35866-eb41-4f7e-b263-1a6971a65e0b",
+    "en": "Termez District"
+  },
+  {
+    "uuid": "36b1c5c2-2560-4417-a7de-a0c2ac296cfd",
+    "en": "Boysun District"
+  },
+  {
+    "uuid": "fd2095fa-e691-410f-bc80-f3e828383824",
+    "en": "Sariosiyo District"
+  },
+  {
+    "uuid": "96251ca6-1b7a-47dc-9c29-4c3c0321ece2",
+    "en": "Shargun District"
+  },
+  {
+    "uuid": "bd9ef317-ce57-4053-9d8f-f38274f35c80",
+    "en": "Shorchi District"
+  },
+  {
+    "uuid": "bd2f568c-1374-44f7-93ed-2f168af9a89c",
+    "en": "Oltinsoy District"
+  },
+  {
+    "uuid": "0a998dc2-7941-4389-a579-c0721fceb2af",
+    "en": "Qumqurgan District"
+  },
+  {
+    "uuid": "b4ba247b-a12c-4bee-9e4e-9b4399545d9c",
+    "en": "Jarqurgan District"
+  },
+  {
+    "uuid": "f2e23a80-a900-4be5-8aad-128225db01d2",
+    "en": "Qiziriq District"
+  },
+  {
+    "uuid": "75e5ef95-50f3-45ec-a97c-2973bc9b321d",
+    "en": "Angor District"
+  },
+  {
+    "uuid": "3b4fe864-604a-4228-af20-e381ceee8a2c",
+    "en": "Sherobod District"
+  },
+  {
+    "uuid": "1d681ed4-4aec-4af1-9dd3-66d4a393956b",
+    "en": "Uzun District"
+  },
+  {
+    "uuid": "f0d6aa30-2c37-48b0-a2c3-d7b0334deb50",
+    "en": "Denov District"
+  },
+  {
+    "uuid": "bf87a2fb-ff48-402f-9bb4-d4f7d37ac424",
+    "en": "Bandikhan District"
+  },
+  {
+    "uuid": "814fabb5-01ad-4905-b73f-6510bfd45389",
+    "en": "Termez City"
+  },
+  {
+    "uuid": "ed4b7d3c-f6c1-425c-b6f5-3e1539e01da1",
+    "en": "Denov City"
+  },
+  {
+    "uuid": "4a96592c-a539-4582-8726-48ed6d79d222",
+    "en": "Romitan District"
+  },
+  {
+    "uuid": "88d17159-ddf7-4606-bf12-312843869a87",
+    "en": "Vabkent District"
+  },
+  {
+    "uuid": "16a7ae09-a134-414a-a414-7f13725f0b76",
+    "en": "Peshku District"
+  },
+  {
+    "uuid": "cc5089d0-730a-42e6-9223-8b2b81fd92e9",
+    "en": "Olot District"
+  },
+  {
+    "uuid": "f9585c85-3b7a-4f2b-95af-2c5b1c167f5b",
+    "en": "Uychi District"
+  },
+  {
+    "uuid": "2c9430b1-4791-4368-bb63-d02ecd4e295c",
+    "en": "Kogon City"
+  },
+  {
+    "uuid": "1418ed1f-b0b8-4c60-ba2b-c8b536d1aa5f",
+    "en": "F.Khojaev District"
+  },
+  {
+    "uuid": "93945b66-bca8-43ca-a3a8-d94d985eee19",
+    "en": "Tuqimachi District"
+  },
+  {
+    "uuid": "6133cfbb-f7a2-46e7-976c-d2cc30bfb9e2",
+    "en": "Konimex District"
+  },
+  {
+    "uuid": "629d49d6-e824-4291-b2b3-3a6b4ec12131",
+    "en": "Tomdi District"
+  },
+  {
+    "uuid": "269534c3-8328-418a-8e58-e72fbb396421",
+    "en": "Gijduvan District"
+  },
+  {
+    "uuid": "52a0f329-046b-4be0-96bc-ab224f000d54",
+    "en": "Bukhara City"
+  },
+  {
+    "uuid": "255189cc-27e1-49e4-b7a9-956e41292809",
+    "en": "Gijduvan City"
+  },
+  {
+    "uuid": "2e5cc5d0-4d8a-4f36-b3db-2a83f6d5a698",
+    "en": "Navbahor District"
+  },
+  {
+    "uuid": "b6e972b2-8c6f-4739-94b6-d9a2ffbc9d6f",
+    "en": "Navoi District"
+  },
+  {
+    "uuid": "640408f9-ccf3-49b3-91a2-53c8a1508a34",
+    "en": "Nurota District"
+  },
+  {
+    "uuid": "972143b2-c0d5-4e05-8191-1da4d19196f9",
+    "en": "Hatirchi District"
+  },
+  {
+    "uuid": "c08a1050-ba7c-4e7c-812c-f1b68a9d68c9",
+    "en": "Qiziltepa District"
+  },
+  {
+    "uuid": "fd0e6d6a-e907-4bf9-aeb6-08abc15e2a56",
+    "en": "Karmana District"
+  },
+  {
+    "uuid": "3cb8f76c-a68f-4753-9944-f2fd65231fbe",
+    "en": "Navoi City"
+  },
+  {
+    "uuid": "10c826d0-41e7-4531-be74-babf0c1298b4",
+    "en": "Uchtepa District"
+  },
+  {
+    "uuid": "06b2e00a-a7e0-4492-8b4c-65fde77ccb92",
+    "en": "Dustlik District"
+  },
+  {
+    "uuid": "8671c9ef-f7a8-4372-8335-b17f69c0c459",
+    "en": "Kattaqurgan City"
+  },
+  {
+    "uuid": "685738e9-6720-475f-822e-0fabf3fb12d3",
+    "en": "Quvasay City"
+  },
+  {
+    "uuid": "f8d447c4-997a-44fe-b974-9dd36d98325e",
+    "en": "Kirguli City"
+  },
+  {
+    "uuid": "852209da-6235-49e7-be1c-1329aa5640a1",
+    "en": "Jondor District"
+  },
+  {
+    "uuid": "1360453d-87f3-4ebe-b565-751528a4f006",
+    "en": "Qorakol District"
+  },
+  {
+    "uuid": "531bd521-6299-4967-a977-aac8100c02e2",
+    "en": "Shofirkon District"
+  },
+  {
+    "uuid": "78e2ed59-19d6-40d3-b9a4-d7bbe37988d1",
+    "en": "Qorovulbozor District"
+  },
+  {
+    "uuid": "bf5706cf-ed88-4b99-b265-18ec5f0bcae3",
+    "en": "Gazli City"
+  },
+  {
+    "uuid": "8ce3ad20-7381-4d9c-bb6e-43c622f85e2e",
+    "en": "Bukhara District"
+  },
+  {
+    "uuid": "cd1bfebc-6816-4880-a74f-60cbafda5484",
+    "en": "Kogon District"
+  },
+  {
+    "uuid": "2fd41fcc-f461-4bd1-8a08-f793683b21d0",
+    "en": "Mirzo Ulugbek District"
+  },
+  {
+    "uuid": "82be2d41-38ab-43aa-b63b-d77a90b33a94",
+    "en": "Chilanzar District"
+  },
+  {
+    "uuid": "7c367c8c-680b-4bd4-b6e9-5563c387b91f",
+    "en": "Sirgali District"
+  },
+  {
+    "uuid": "b9502bb1-2049-4ed1-aa4b-062d1bbd2632",
+    "en": "Mirobod District"
+  },
+  {
+    "uuid": "4c927bb0-4b4d-4450-8e16-6cb47809ec0f",
+    "en": "Yunusabad District"
+  },
+  {
+    "uuid": "548d16d1-647b-42a7-ba02-0a066baeffbf",
+    "en": "Bektemir District"
+  },
+  {
+    "uuid": "1eae887a-42d4-4b85-b22a-e1670101d8a4",
+    "en": "Almazar District"
+  },
+  {
+    "uuid": "42a0bec1-e1b0-45ad-aa6b-7e94a663c056",
+    "en": "Yangiyul District"
+  },
+  {
+    "uuid": "8417237f-2aba-4870-aeeb-1cc7b7babeeb",
+    "en": "Zangiota District"
+  },
+  {
+    "uuid": "6240b688-d698-4047-8f09-2bc5afd2a9dd",
+    "en": "Piskent District"
+  },
+  {
+    "uuid": "2fef3279-88e1-41c2-8a19-b6572f4e3f8e",
+    "en": "Oqqurgan District"
+  },
+  {
+    "uuid": "1060f357-e745-4e4e-bf71-f9216c9dab65",
+    "en": "Sharaf Rashidov District"
+  },
+  {
+    "uuid": "dd8b2163-b153-4e21-adaa-5307624b9e11",
+    "en": "Uchqurgan District"
+  },
+  {
+    "uuid": "7b4a5c67-1f8a-4580-870b-ea55351968ee",
+    "en": "Chartak District"
+  },
+  {
+    "uuid": "42848195-90d9-45c5-81a4-8abfffd3485c",
+    "en": "Pitnak City"
+  },
+  {
+    "uuid": "b0b9ad76-3209-47bf-b331-5e186b87546b",
+    "en": "Elliqala District"
+  },
+  {
+    "uuid": "545029d9-d3ed-46ed-919c-e80f265541fe",
+    "en": "Kegeyli District"
+  },
+  {
+    "uuid": "e35f7b89-8d3a-43b2-aa1f-f5f051bad03d",
+    "en": "Khojeli District"
+  },
+  {
+    "uuid": "dc0595b6-844e-402f-8c9f-face0c5b73fc",
+    "en": "Bozatav District"
+  },
+  {
+    "uuid": "5e0e3f2b-ca62-462a-92f8-da52e24bb089",
+    "en": "Nukus City"
+  },
+  {
+    "uuid": "880271de-15dc-4743-88f2-7b6587018b51",
+    "en": "Nukus District"
+  },
+  {
+    "uuid": "f64097bd-ba1e-4d54-898c-bde8a086faab",
+    "en": "Urtachirchiq District"
+  },
+  {
+    "uuid": "2cd7f3c3-37b4-4324-b03e-77594f587687",
+    "en": "Zarafshan City"
+  },
+  {
+    "uuid": "909a5cf1-15c6-4c76-a1af-02c8c1cdb8b1",
+    "en": "Uchquduq City"
+  },
+  {
+    "uuid": "5271a2de-ec64-4915-89fc-36f79bf321ac",
+    "en": "Hazarasp District"
+  },
+  {
+    "uuid": "ada80ee9-1fd7-4932-bc2a-c1b2dd361eaf",
+    "en": "Yangiariq District"
+  },
+  {
+    "uuid": "3366a3e7-d992-4f72-a555-eee385405149",
+    "en": "Gurlan District"
+  },
+  {
+    "uuid": "e24f2010-83ab-4de2-8683-66c2bcbe5a1f",
+    "en": "Urgench District"
+  },
+  {
+    "uuid": "fbf0aa18-09be-4dbd-8df4-21854d608e02",
+    "en": "Shovot District"
+  },
+  {
+    "uuid": "8a47064a-21d4-4526-886e-f523fe7f4abe",
+    "en": "Khonqa District"
+  },
+  {
+    "uuid": "31c531bb-214c-42c2-9fb0-ea67d5bd662b",
+    "en": "Bogot District"
+  },
+  {
+    "uuid": "adba0684-9412-4280-91d1-9b4d816a4f26",
+    "en": "Yangibozor District"
+  },
+  {
+    "uuid": "ab941d0b-e8ce-4573-97fd-02997aba46a4",
+    "en": "Qushkupir District"
+  },
+  {
+    "uuid": "25c0c2d7-5f14-4e16-a86e-4750db427efd",
+    "en": "Khiva District"
+  },
+  {
+    "uuid": "5c2e2da2-7c49-476b-bd34-a0fc4d3153c5",
+    "en": "Urgench City"
+  },
+  {
+    "uuid": "4be2628f-2fab-44f2-a310-be11d610d3cd",
+    "en": "Khiva City"
+  },
+  {
+    "uuid": "77f4258d-a5ae-4f59-9971-16770ad3e9da",
+    "en": "Kungirot District"
+  },
+  {
+    "uuid": "651d0350-d2b7-46d1-aae2-592d4d6f0db1",
+    "en": "Muynoq District"
+  },
+  {
+    "uuid": "9366d69e-7f5d-472e-95eb-a02d0482a682",
+    "en": "Turtkul District"
+  },
+  {
+    "uuid": "c66e5b25-ea4c-41aa-ae12-5f017a07388e",
+    "en": "Gallaaral District"
+  },
+  {
+    "uuid": "a5be0f97-2b8a-402f-ab5b-7f2fdb01e515",
+    "en": "Bakhmal District"
+  },
+  {
+    "uuid": "775c9f80-1acf-445d-9b72-dce7dd62d5ff",
+    "en": "Chimboy City"
+  },
+  {
+    "uuid": "77d82cd2-4906-4f58-8257-9872428b078c",
+    "en": "Qushtepa District"
+  },
+  {
+    "uuid": "bd66d2be-6936-4334-8bb4-de4552ec9405",
+    "en": "Yashnabad District"
+  },
+  {
+    "uuid": "2908a8bb-982f-4740-b898-95a1e86d128f",
+    "en": "Sharaf Rashidov District"
+  },
+  {
+    "uuid": "fd8bacab-bb07-4650-acfe-130acb8b041d",
+    "en": "Nurafshan City"
+  },
+  {
+    "uuid": "5e681cae-13d7-46f5-a55e-7418d5ad0ead",
+    "en": "Ohangaron City"
+  },
+  {
+    "uuid": "53d3c74f-c348-4d51-af9a-e3224103c33e",
+    "en": "Buston District"
+  },
+  {
+    "uuid": "9a6392aa-9fe9-4e51-8643-8530847603d4",
+    "en": "Tuproqqala District"
+  },
+  {
+    "uuid": "9c268ff1-07cd-439d-9e2d-c8d23a94324f",
+    "en": "Yangihayot District"
+  },
+  {
+    "uuid": "388643dd-3664-4d7d-be48-c8838cba8ec3",
+    "en": "Ghazgan City"
+  },
+  {
+    "uuid": "3af99715-200e-4227-9a02-c3325775fd94",
+    "en": "Kukdala District"
+  },
+  {
+    "uuid": "837fae93-842b-4159-93da-1ab2f9d6c9a7",
+    "en": "Fergana District"
+  },
+  {
+    "uuid": "6c3d80ba-f759-437a-9260-0778c0744fa5",
+    "en": "Quva District"
+  },
+  {
+    "uuid": "823db1bc-618e-48da-960e-63faeda6dd08",
+    "en": "Toshloq District"
+  },
+  {
+    "uuid": "3e9894cd-1bf2-4eb1-b69a-249505ca3621",
+    "en": "Okhunbabaev District"
+  },
+  {
+    "uuid": "798e7825-d440-410e-9160-874228a252bb",
+    "en": "Yazyavan District"
+  },
+  {
+    "uuid": "1d86ed49-0bb3-4a3c-96cc-c8fd7c26681f",
+    "en": "Oltiariq District"
+  },
+  {
+    "uuid": "5cc606b1-38d6-4e7a-a9a2-c89c77a251b4",
+    "en": "Baghdod District"
+  },
+  {
+    "uuid": "97d43a7a-6704-4485-ac26-449265168cc5",
+    "en": "Buvayda District"
+  },
+  {
+    "uuid": "4a415d46-98cf-43d5-9ecd-4693286911f3",
+    "en": "Uchkuprik District"
+  },
+  {
+    "uuid": "f303d061-f0e4-4788-a5d8-cb736401580c",
+    "en": "Rishton District"
+  },
+  {
+    "uuid": "ba8c76ae-ba3f-4013-a5a1-7ae6fb4cab44",
+    "en": "Dangara District"
+  },
+  {
+    "uuid": "7d2537c2-a302-4d18-b297-dcb849b7afa4",
+    "en": "Uchquduq District"
+  },
+  {
+    "uuid": "d6db531b-b5df-4e46-a5ce-8f1a013f9a60",
+    "en": "Amudarya District"
+  },
+  {
+    "uuid": "64a646cd-e13c-4645-876c-85e42d4ee471",
+    "en": "Beruniy District"
+  },
+  {
+    "uuid": "352126e3-b7ca-4cdf-8861-8515bdfff11b",
+    "en": "Kanlikol District"
+  },
+  {
+    "uuid": "8b2a2b3b-2e63-491d-8b9d-a95f8db057df",
+    "en": "Chimboy District"
+  },
+  {
+    "uuid": "75f14e83-b66f-4cf2-b46e-141d07cd3d53",
+    "en": "Shumanay District"
+  },
+  {
+    "uuid": "ca5a509a-b1b2-42ac-bede-aa8320151834",
+    "en": "Takhtakupir District"
+  }
+]

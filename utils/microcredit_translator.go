@@ -191,35 +191,48 @@ func (mt *MicrocreditTranslator) translateRate(rate string) map[string]string {
 		"oz": rate,
 	}
 
-	// Заменяем "dan" - обрабатываем случаи: "27 % dan", "31dan", "23dan"
-	// Сначала обрабатываем "dan" с процентом
+	// Rate: только цифры и % — убираем dan/gacha/от/до/from/to на ВСЕХ языках (включая uz)
+	// "dan" с процентом: "27 % dan" -> "27 %"
 	danPatternWithPercent := regexp.MustCompile(`(\d+(?:\.\d+)?)\s*%\s*dan`)
-	translations["ru"] = danPatternWithPercent.ReplaceAllString(translations["ru"], "$1 % от")
-	translations["en"] = danPatternWithPercent.ReplaceAllString(translations["en"], "$1 % from")
-	translations["oz"] = danPatternWithPercent.ReplaceAllString(translations["oz"], "$1 % дан")
+	translations["uz"] = danPatternWithPercent.ReplaceAllString(translations["uz"], "$1 %")
+	translations["ru"] = danPatternWithPercent.ReplaceAllString(translations["ru"], "$1 %")
+	translations["en"] = danPatternWithPercent.ReplaceAllString(translations["en"], "$1 %")
+	translations["oz"] = danPatternWithPercent.ReplaceAllString(translations["oz"], "$1 %")
 
-	// Затем обрабатываем "dan" без процента (только если не было замены выше)
+	// "dan" без процента
 	danPattern := regexp.MustCompile(`(\d+(?:\.\d+)?)\s*dan`)
-	if !danPatternWithPercent.MatchString(rate) {
-		translations["ru"] = danPattern.ReplaceAllString(translations["ru"], "$1 от")
-		translations["en"] = danPattern.ReplaceAllString(translations["en"], "$1 from")
-		translations["oz"] = danPattern.ReplaceAllString(translations["oz"], "$1 дан")
-	}
+	translations["uz"] = danPattern.ReplaceAllString(translations["uz"], "$1")
+	translations["ru"] = danPattern.ReplaceAllString(translations["ru"], "$1")
+	translations["en"] = danPattern.ReplaceAllString(translations["en"], "$1")
+	translations["oz"] = danPattern.ReplaceAllString(translations["oz"], "$1")
 
-	// Заменяем "gacha" - обрабатываем случаи: "34 % gacha", "25 % gacha"
-	// Сначала обрабатываем "gacha" с процентом
+	// "gacha" с процентом: "25 % gacha" -> "25 %"
 	gachaPatternWithPercent := regexp.MustCompile(`(\d+(?:\.\d+)?)\s*%\s*gacha`)
-	translations["ru"] = gachaPatternWithPercent.ReplaceAllString(translations["ru"], "$1 % до")
-	translations["en"] = gachaPatternWithPercent.ReplaceAllString(translations["en"], "$1 % to")
-	translations["oz"] = gachaPatternWithPercent.ReplaceAllString(translations["oz"], "$1 % гача")
+	translations["uz"] = gachaPatternWithPercent.ReplaceAllString(translations["uz"], "$1 %")
+	translations["ru"] = gachaPatternWithPercent.ReplaceAllString(translations["ru"], "$1 %")
+	translations["en"] = gachaPatternWithPercent.ReplaceAllString(translations["en"], "$1 %")
+	translations["oz"] = gachaPatternWithPercent.ReplaceAllString(translations["oz"], "$1 %")
 
-	// Затем обрабатываем "gacha" без процента (только если не было замены выше)
+	// "gacha" без процента
 	gachaPattern := regexp.MustCompile(`(\d+(?:\.\d+)?)\s*gacha`)
-	if !gachaPatternWithPercent.MatchString(rate) {
-		translations["ru"] = gachaPattern.ReplaceAllString(translations["ru"], "$1 до")
-		translations["en"] = gachaPattern.ReplaceAllString(translations["en"], "$1 to")
-		translations["oz"] = gachaPattern.ReplaceAllString(translations["oz"], "$1 гача")
-	}
+	translations["uz"] = gachaPattern.ReplaceAllString(translations["uz"], "$1")
+	translations["ru"] = gachaPattern.ReplaceAllString(translations["ru"], "$1")
+	translations["en"] = gachaPattern.ReplaceAllString(translations["en"], "$1")
+	translations["oz"] = gachaPattern.ReplaceAllString(translations["oz"], "$1")
+
+	// Удаляем оставшиеся слова от/до/from/to/дан/гача (uz: dan/gacha как отдельные слова)
+	translations["uz"] = regexp.MustCompile(`\s*dan\s*`).ReplaceAllString(translations["uz"], " ")
+	translations["uz"] = regexp.MustCompile(`\s*gacha\s*`).ReplaceAllString(translations["uz"], " ")
+	translations["ru"] = regexp.MustCompile(`\s*от\s*`).ReplaceAllString(translations["ru"], " ")
+	translations["ru"] = regexp.MustCompile(`\s*до\s*`).ReplaceAllString(translations["ru"], " ")
+	translations["en"] = regexp.MustCompile(`\s*from\s*`).ReplaceAllString(translations["en"], " ")
+	translations["en"] = regexp.MustCompile(`\s*(?:to|up\s+to)\s*`).ReplaceAllString(translations["en"], " ")
+	translations["oz"] = regexp.MustCompile(`\s*дан\s*`).ReplaceAllString(translations["oz"], " ")
+	translations["oz"] = regexp.MustCompile(`\s*гача\s*`).ReplaceAllString(translations["oz"], " ")
+	translations["uz"] = strings.Join(strings.Fields(translations["uz"]), " ")
+	translations["ru"] = strings.Join(strings.Fields(translations["ru"]), " ")
+	translations["en"] = strings.Join(strings.Fields(translations["en"]), " ")
+	translations["oz"] = strings.Join(strings.Fields(translations["oz"]), " ")
 
 	// Для oz используем транслитерацию, если есть русский перевод
 	if translations["ru"] != rate && translations["ru"] != "" {
@@ -308,34 +321,59 @@ func (mt *MicrocreditTranslator) translateAmount(amount string) map[string]strin
 		"oz": amount,
 	}
 
-	// Заменяем "so'm" и варианты (регистронезависимо)
-	// amountLower уже объявлен выше
+	// Amount: только цифры — убираем валюту (so'm, so'mgacha, сум, UZS и т.д.)
+	soomgachaPattern := regexp.MustCompile(`(?i)\s*so'?mgacha\s*`)
+	translations["uz"] = soomgachaPattern.ReplaceAllString(translations["uz"], " ")
+	translations["ru"] = soomgachaPattern.ReplaceAllString(translations["ru"], " ")
+	translations["en"] = soomgachaPattern.ReplaceAllString(translations["en"], " ")
+	translations["oz"] = soomgachaPattern.ReplaceAllString(translations["oz"], " ")
+	soomPattern := regexp.MustCompile(`(?i)\s*so'?m\s*`)
+	translations["uz"] = soomPattern.ReplaceAllString(translations["uz"], " ")
+	translations["ru"] = soomPattern.ReplaceAllString(translations["ru"], " ")
+	translations["en"] = soomPattern.ReplaceAllString(translations["en"], " ")
+	translations["oz"] = soomPattern.ReplaceAllString(translations["oz"], " ")
+	// Убираем som/sum
+	somSumPattern := regexp.MustCompile(`(?i)\s*(?:som|sum)\s*`)
+	translations["uz"] = somSumPattern.ReplaceAllString(translations["uz"], " ")
+	translations["ru"] = somSumPattern.ReplaceAllString(translations["ru"], " ")
+	translations["en"] = somSumPattern.ReplaceAllString(translations["en"], " ")
+	translations["oz"] = somSumPattern.ReplaceAllString(translations["oz"], " ")
 
-	// Сначала заменяем "so'mgacha" (более длинный паттерн)
-	if strings.Contains(amountLower, "so'mgacha") {
-		soomgachaPattern := regexp.MustCompile(`(?i)so'?mgacha`)
-		translations["ru"] = soomgachaPattern.ReplaceAllString(translations["ru"], "сум")
-		translations["en"] = soomgachaPattern.ReplaceAllString(translations["en"], "UZS")
-		translations["oz"] = soomgachaPattern.ReplaceAllString(translations["oz"], "сўмгача")
-	} else if strings.Contains(amountLower, "so'm") || strings.Contains(amountLower, "so`m") {
-		// Затем заменяем "so'm" или "so`m"
-		soomPattern := regexp.MustCompile(`(?i)so'?m`)
-		translations["ru"] = soomPattern.ReplaceAllString(translations["ru"], "сум")
-		translations["en"] = soomPattern.ReplaceAllString(translations["en"], "UZS")
-		translations["oz"] = soomPattern.ReplaceAllString(translations["oz"], "сўм")
-	}
-
-	// Заменяем "dan" с пробелом перед ним (если есть число перед ним)
+	// Убираем "dan" и "gacha" — оставляем только цифры
 	danPattern := regexp.MustCompile(`(\d+)\s*dan`)
-	translations["ru"] = danPattern.ReplaceAllString(translations["ru"], "$1 от")
-	translations["en"] = danPattern.ReplaceAllString(translations["en"], "$1 from")
-	translations["oz"] = danPattern.ReplaceAllString(translations["oz"], "$1 дан")
-
-	// Заменяем "gacha" с пробелом перед ним
+	translations["uz"] = danPattern.ReplaceAllString(translations["uz"], "$1")
+	translations["ru"] = danPattern.ReplaceAllString(translations["ru"], "$1")
+	translations["en"] = danPattern.ReplaceAllString(translations["en"], "$1")
+	translations["oz"] = danPattern.ReplaceAllString(translations["oz"], "$1")
 	gachaPattern := regexp.MustCompile(`(\d+)\s*gacha`)
-	translations["ru"] = gachaPattern.ReplaceAllString(translations["ru"], "$1 до")
-	translations["en"] = gachaPattern.ReplaceAllString(translations["en"], "$1 to")
-	translations["oz"] = gachaPattern.ReplaceAllString(translations["oz"], "$1 гача")
+	translations["uz"] = gachaPattern.ReplaceAllString(translations["uz"], "$1")
+	translations["ru"] = gachaPattern.ReplaceAllString(translations["ru"], "$1")
+	translations["en"] = gachaPattern.ReplaceAllString(translations["en"], "$1")
+	translations["oz"] = gachaPattern.ReplaceAllString(translations["oz"], "$1")
+
+	// Удаляем существующие "от" и "до" из всех языков
+	// Удаляем "от" (русский) - может быть между числами или отдельно
+	otPattern := regexp.MustCompile(`\s*от\s*`)
+	translations["ru"] = otPattern.ReplaceAllString(translations["ru"], " ")
+	// Удаляем "до" (русский) - может быть между числами или отдельно
+	doPattern := regexp.MustCompile(`\s*до\s*`)
+	translations["ru"] = doPattern.ReplaceAllString(translations["ru"], " ")
+	// Удаляем "from" (английский)
+	fromPattern := regexp.MustCompile(`\s*from\s*`)
+	translations["en"] = fromPattern.ReplaceAllString(translations["en"], " ")
+	// Удаляем "to" и "up to" (английский)
+	toPattern := regexp.MustCompile(`\s*(?:to|up\s+to)\s*`)
+	translations["en"] = toPattern.ReplaceAllString(translations["en"], " ")
+	// Удаляем "дан" и "гача" (узбекский кириллица)
+	danOzPattern := regexp.MustCompile(`\s*дан\s*`)
+	translations["oz"] = danOzPattern.ReplaceAllString(translations["oz"], " ")
+	gachaOzPattern := regexp.MustCompile(`\s*гача\s*`)
+	translations["oz"] = gachaOzPattern.ReplaceAllString(translations["oz"], " ")
+
+	// Убираем лишние пробелы после удаления слов
+	translations["ru"] = strings.Join(strings.Fields(translations["ru"]), " ")
+	translations["en"] = strings.Join(strings.Fields(translations["en"]), " ")
+	translations["oz"] = strings.Join(strings.Fields(translations["oz"]), " ")
 
 	// Для oz используем транслитерацию, если есть русский перевод
 	if translations["ru"] != amount && translations["ru"] != "" {
@@ -345,6 +383,34 @@ func (mt *MicrocreditTranslator) translateAmount(amount string) map[string]strin
 		// Если перевода нет, транслитерируем оригинал
 		translations["oz"] = TransliterateUzToOz(amount)
 	}
+
+	// Финальная очистка "от" и "до" перед возвратом (на случай если они появились после транслитерации)
+	otFinalPattern := regexp.MustCompile(`\s*от\s*`)
+	translations["ru"] = otFinalPattern.ReplaceAllString(translations["ru"], " ")
+	doFinalPattern := regexp.MustCompile(`\s*до\s*`)
+	translations["ru"] = doFinalPattern.ReplaceAllString(translations["ru"], " ")
+	fromFinalPattern := regexp.MustCompile(`\s*from\s*`)
+	translations["en"] = fromFinalPattern.ReplaceAllString(translations["en"], " ")
+	toFinalPattern := regexp.MustCompile(`\s*(?:to|up\s+to)\s*`)
+	translations["en"] = toFinalPattern.ReplaceAllString(translations["en"], " ")
+	danFinalPattern := regexp.MustCompile(`\s*дан\s*`)
+	translations["oz"] = danFinalPattern.ReplaceAllString(translations["oz"], " ")
+	gachaFinalPattern := regexp.MustCompile(`\s*гача\s*`)
+	translations["oz"] = gachaFinalPattern.ReplaceAllString(translations["oz"], " ")
+
+	// Убираем оставшуюся валюту (сум, UZS, сўм и т.д.) — amount только цифры
+	currencyRu := regexp.MustCompile(`\s*сум\s*`)
+	translations["ru"] = currencyRu.ReplaceAllString(translations["ru"], " ")
+	currencyEn := regexp.MustCompile(`\s*UZS\s*`)
+	translations["en"] = currencyEn.ReplaceAllString(translations["en"], " ")
+	currencyOz := regexp.MustCompile(`\s*сўм\s*`)
+	translations["oz"] = currencyOz.ReplaceAllString(translations["oz"], " ")
+
+	// Финальная нормализация пробелов
+	translations["uz"] = strings.Join(strings.Fields(translations["uz"]), " ")
+	translations["ru"] = strings.Join(strings.Fields(translations["ru"]), " ")
+	translations["en"] = strings.Join(strings.Fields(translations["en"]), " ")
+	translations["oz"] = strings.Join(strings.Fields(translations["oz"]), " ")
 
 	return translations
 }

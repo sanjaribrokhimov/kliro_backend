@@ -1,0 +1,1207 @@
+FIND API RESPONCE
+
+{
+    "session_id": "a6ec0757-a986-4d2a-94d2-ab5d7fd12716",
+    "owner": true,
+    "vehicle": {
+        "data": {
+            "body_number": "XWB5M31BV9A016554",
+            "color": "БЕЛЫЙ",
+            "created_at": "2025-12-19T10:33:55.923097Z",
+            "empty_weight": 1250,
+            "engine_number": "F18D31558211",
+            "external_id": "1323514",
+            "fuel_type": "1",
+            "full_weight": 1765,
+            "horsepower": 106,
+            "id": "13a343c5-1c9c-4ec8-9297-2411e9dd581a",
+            "license_plate": "01J409QC",
+            "manufacture_year": 2009,
+            "model": "LACETTI",
+            "owner": {
+                "person": {
+                    "address": "ЁШЛИК МФЙ, БЕШҚЎРҒОН-2 ДАХАСИ,  uy:6 xonadon:2",
+                    "birth_country": "УЗБЕКИСТАН",
+                    "birth_place": "TOSHKENT",
+                    "birthdate": "1979-10-31T00:00:00Z",
+                    "country": {
+                        "external_id": 210,
+                        "id": "d00cedb4-7fc9-4e1e-95f8-38eb6f6cb5ca",
+                        "name": "Узбекистан",
+                        "translations": [
+                            {
+                                "lang": "ru",
+                                "value": "Узбекистан"
+                            },
+                            {
+                                "lang": "uz",
+                                "value": "O'zbekiston"
+                            },
+                            {
+                                "lang": "uz-cyrl",
+                                "value": "Ўзбекистон"
+                            },
+                            {
+                                "lang": "en",
+                                "value": "Uzbekistan"
+                            }
+                        ]
+                    },
+                    "created_at": "2025-09-27T01:59:28.321764Z",
+                    "district": {
+                        "external_id": 1012,
+                        "id": "1eae887a-42d4-4b85-b22a-e1670101d8a4",
+                        "name": "Алмазарский район",
+                        "region_id": "d9206ae6-3215-4fd0-a6a1-b8d80edcdd5b",
+                        "translations": [
+                            {
+                                "lang": "en",
+                                "value": "Almazar District"
+                            },
+                            {
+                                "lang": "ru",
+                                "value": "Алмазарский район"
+                            },
+                            {
+                                "lang": "uz",
+                                "value": "Olmazar tumani"
+                            },
+                            {
+                                "lang": "uz-cyrl",
+                                "value": "ОЛМАЗОР ТУМАНИ"
+                            }
+                        ]
+                    },
+                    "documents": [
+                        {
+                            "document_type": "IDMS_RECV_MVD_IDCARD_CITIZEN",
+                            "expiry_date": "2034-07-07T00:00:00Z",
+                            "id": "14c9ec7b-6ef0-464d-a2b7-3d809c183908",
+                            "issue_date": "2024-07-08T00:00:00Z",
+                            "number": "7784524",
+                            "series": "AD",
+                            "status": "active"
+                        },
+                        {
+                            "document_type": "IDMS_RECV_DRIVERS_LICENSE",
+                            "id": "e0d1c8e7-c411-41e6-88b5-83a3f770f847",
+                            "issue_date": "2022-02-02T00:00:00Z",
+                            "number": "3855022",
+                            "series": "AF",
+                            "status": "active"
+                        },
+                        {
+                            "document_type": "IDMS_RECV_IP_DOCUMENTS",
+                            "expiry_date": "2031-02-05T00:00:00Z",
+                            "id": "08238539-479b-469d-93e7-16e72bf516b7",
+                            "issue_date": "2021-02-06T00:00:00Z",
+                            "number": "2035419",
+                            "series": "FA",
+                            "status": "active"
+                        },
+                        {
+                            "document_type": "IDMS_RECV_CITIZ_DOCUMENTS",
+                            "expiry_date": "2024-07-19T00:00:00Z",
+                            "id": "ad3d08cc-0762-4f05-9326-3ea4c3930127",
+                            "issue_date": "2014-07-20T00:00:00Z",
+                            "number": "6222839",
+                            "series": "AA",
+                            "status": "unknown"
+                        }
+                    ],
+                    "external_id": "33110790221689",
+                    "first_name": "FARRUX",
+                    "gender": {
+                        "external_id": 1,
+                        "id": "c0d4f65d-b4a4-4c3b-aaa1-97c06c75eb1d",
+                        "name": "Мужской",
+                        "translations": [
+                            {
+                                "lang": "uz-cyrl",
+                                "value": "Еркак"
+                            },
+                            {
+                                "lang": "en",
+                                "value": "Male"
+                            },
+                            {
+                                "lang": "ru",
+                                "value": "Мужской"
+                            },
+                            {
+                                "lang": "uz",
+                                "value": "Erkak"
+                            }
+                        ]
+                    },
+                    "id": "2affbdff-87b3-411e-8211-05b40b5c6585",
+                    "is_disabled": false,
+                    "is_pensioner": false,
+                    "last_name": "MAXMUDOV",
+                    "middle_name": "SAGATOVICH",
+                    "passport": {
+                        "issued_at": "2014-07-20T00:00:00Z",
+                        "number": "6222839",
+                        "series": "AA"
+                    },
+                    "pinfls": [
+                        "33110790221689"
+                    ],
+                    "region": {
+                        "external_id": 10,
+                        "id": "d9206ae6-3215-4fd0-a6a1-b8d80edcdd5b",
+                        "name": "Город Ташкент",
+                        "translations": [
+                            {
+                                "lang": "ru",
+                                "value": "Город Ташкент"
+                            },
+                            {
+                                "lang": "uz",
+                                "value": "Toshkent shahri"
+                            },
+                            {
+                                "lang": "uz-cyrl",
+                                "value": "Тошкент шаҳри"
+                            },
+                            {
+                                "lang": "en",
+                                "value": "Tashkent City"
+                            }
+                        ]
+                    },
+                    "updated_at": "2026-02-09T08:20:00.172551Z"
+                },
+                "type": "person"
+            },
+            "registration_division": "2-TRO' va IOB (CHILONZOR)",
+            "seat_count": 5,
+            "tech_passport": {
+                "issue_date": "2024-04-25T00:00:00Z",
+                "number": "3899020",
+                "series": "AAG"
+            },
+            "updated_at": "2026-02-09T08:40:57.541282Z",
+            "use_territory_region": {
+                "external_id": 1,
+                "id": "1caedd00-0c1d-451a-bace-ecaa425659be",
+                "name": "г. Ташкент и Ташкентская область",
+                "translations": [
+                    {
+                        "lang": "en",
+                        "value": "Tashkent city and Tashkent region"
+                    },
+                    {
+                        "lang": "ru",
+                        "value": "г. Ташкент и Ташкентская область"
+                    },
+                    {
+                        "lang": "uz",
+                        "value": "Toshkent shahri va Toshkent viloyati"
+                    },
+                    {
+                        "lang": "uz-cyrl",
+                        "value": "Тошкент шаҳри ва Тошкент вилояти"
+                    }
+                ]
+            },
+            "vehicle_type": {
+                "external_id": 2,
+                "id": "dd20c8b8-367c-4d5b-8dcb-b7607a4d247a",
+                "name": "Легковые автомобили",
+                "translations": [
+                    {
+                        "lang": "uz-cyrl",
+                        "value": "Енгил автомобиллар"
+                    },
+                    {
+                        "lang": "en",
+                        "value": "Passenger Cars"
+                    },
+                    {
+                        "lang": "ru",
+                        "value": "Легковые автомобили"
+                    },
+                    {
+                        "lang": "uz",
+                        "value": "Yengil avtomobillar"
+                    }
+                ],
+                "vehicle_group": "dbcb09a7-8fa7-46ea-87cf-54623bff619e"
+            }
+        },
+        "message": "Vehicle found successfully",
+        "success": true
+    },
+    "person": {
+        "data": {
+            "address": "ЁШЛИК МФЙ, БЕШҚЎРҒОН-2 ДАХАСИ,  uy:6 xonadon:2",
+            "birth_country": "УЗБЕКИСТАН",
+            "birth_place": "TOSHKENT",
+            "birthdate": "1979-10-31T00:00:00Z",
+            "country": {
+                "external_id": 210,
+                "id": "d00cedb4-7fc9-4e1e-95f8-38eb6f6cb5ca",
+                "name": "Узбекистан",
+                "translations": [
+                    {
+                        "lang": "en",
+                        "value": "Uzbekistan"
+                    },
+                    {
+                        "lang": "ru",
+                        "value": "Узбекистан"
+                    },
+                    {
+                        "lang": "uz",
+                        "value": "O'zbekiston"
+                    },
+                    {
+                        "lang": "uz-cyrl",
+                        "value": "Ўзбекистон"
+                    }
+                ]
+            },
+            "created_at": "2025-09-27T01:59:28.321764Z",
+            "district": {
+                "external_id": 1012,
+                "id": "1eae887a-42d4-4b85-b22a-e1670101d8a4",
+                "name": "Алмазарский район",
+                "region_id": "d9206ae6-3215-4fd0-a6a1-b8d80edcdd5b",
+                "translations": [
+                    {
+                        "lang": "en",
+                        "value": "Almazar District"
+                    },
+                    {
+                        "lang": "ru",
+                        "value": "Алмазарский район"
+                    },
+                    {
+                        "lang": "uz",
+                        "value": "Olmazar tumani"
+                    },
+                    {
+                        "lang": "uz-cyrl",
+                        "value": "ОЛМАЗОР ТУМАНИ"
+                    }
+                ]
+            },
+            "documents": [
+                {
+                    "document_type": "IDMS_RECV_MVD_IDCARD_CITIZEN",
+                    "expiry_date": "2034-07-07T00:00:00Z",
+                    "id": "14c9ec7b-6ef0-464d-a2b7-3d809c183908",
+                    "issue_date": "2024-07-08T00:00:00Z",
+                    "number": "7784524",
+                    "series": "AD",
+                    "status": "active"
+                },
+                {
+                    "document_type": "IDMS_RECV_DRIVERS_LICENSE",
+                    "id": "e0d1c8e7-c411-41e6-88b5-83a3f770f847",
+                    "issue_date": "2022-02-02T00:00:00Z",
+                    "number": "3855022",
+                    "series": "AF",
+                    "status": "active"
+                },
+                {
+                    "document_type": "IDMS_RECV_IP_DOCUMENTS",
+                    "expiry_date": "2031-02-05T00:00:00Z",
+                    "id": "08238539-479b-469d-93e7-16e72bf516b7",
+                    "issue_date": "2021-02-06T00:00:00Z",
+                    "number": "2035419",
+                    "series": "FA",
+                    "status": "active"
+                },
+                {
+                    "document_type": "IDMS_RECV_CITIZ_DOCUMENTS",
+                    "expiry_date": "2024-07-19T00:00:00Z",
+                    "id": "ad3d08cc-0762-4f05-9326-3ea4c3930127",
+                    "issue_date": "2014-07-20T00:00:00Z",
+                    "number": "6222839",
+                    "series": "AA",
+                    "status": "unknown"
+                }
+            ],
+            "external_id": "33110790221689",
+            "first_name": "FARRUX",
+            "gender": {
+                "external_id": 1,
+                "id": "c0d4f65d-b4a4-4c3b-aaa1-97c06c75eb1d",
+                "name": "Мужской",
+                "translations": [
+                    {
+                        "lang": "ru",
+                        "value": "Мужской"
+                    },
+                    {
+                        "lang": "uz",
+                        "value": "Erkak"
+                    },
+                    {
+                        "lang": "uz-cyrl",
+                        "value": "Еркак"
+                    },
+                    {
+                        "lang": "en",
+                        "value": "Male"
+                    }
+                ]
+            },
+            "id": "2affbdff-87b3-411e-8211-05b40b5c6585",
+            "is_disabled": false,
+            "is_pensioner": false,
+            "last_name": "MAXMUDOV",
+            "middle_name": "SAGATOVICH",
+            "passport": {
+                "issued_at": "2014-07-20T00:00:00Z",
+                "number": "6222839",
+                "series": "AA"
+            },
+            "pinfls": [
+                "33110790221689"
+            ],
+            "region": {
+                "external_id": 10,
+                "id": "d9206ae6-3215-4fd0-a6a1-b8d80edcdd5b",
+                "name": "Город Ташкент",
+                "translations": [
+                    {
+                        "lang": "ru",
+                        "value": "Город Ташкент"
+                    },
+                    {
+                        "lang": "uz",
+                        "value": "Toshkent shahri"
+                    },
+                    {
+                        "lang": "uz-cyrl",
+                        "value": "Тошкент шаҳри"
+                    },
+                    {
+                        "lang": "en",
+                        "value": "Tashkent City"
+                    }
+                ]
+            },
+            "updated_at": "2026-02-09T08:20:00.172551Z"
+        },
+        "message": "Person found successfully",
+        "success": true
+    }
+}
+
+{
+    "session_id": "b0ad7ac8-5241-4598-aa55-35756c5a9e16",
+    "owner": false,
+    "vehicle": {
+        "data": {
+            "body_number": "XWB5M31BV9A016554",
+            "color": "БЕЛЫЙ",
+            "created_at": "2025-12-19T10:33:55.923097Z",
+            "empty_weight": 1250,
+            "engine_number": "F18D31558211",
+            "external_id": "1323514",
+            "fuel_type": "1",
+            "full_weight": 1765,
+            "horsepower": 106,
+            "id": "13a343c5-1c9c-4ec8-9297-2411e9dd581a",
+            "license_plate": "01J409QC",
+            "manufacture_year": 2009,
+            "model": "LACETTI",
+            "owner": {
+                "person": {
+                    "address": "ЁШЛИК МФЙ, БЕШҚЎРҒОН-2 ДАХАСИ,  uy:6 xonadon:2",
+                    "birth_country": "УЗБЕКИСТАН",
+                    "birth_place": "TOSHKENT",
+                    "birthdate": "1979-10-31T00:00:00Z",
+                    "country": {
+                        "external_id": 210,
+                        "id": "d00cedb4-7fc9-4e1e-95f8-38eb6f6cb5ca",
+                        "name": "Узбекистан",
+                        "translations": [
+                            {
+                                "lang": "ru",
+                                "value": "Узбекистан"
+                            },
+                            {
+                                "lang": "uz",
+                                "value": "O'zbekiston"
+                            },
+                            {
+                                "lang": "uz-cyrl",
+                                "value": "Ўзбекистон"
+                            },
+                            {
+                                "lang": "en",
+                                "value": "Uzbekistan"
+                            }
+                        ]
+                    },
+                    "created_at": "2025-09-27T01:59:28.321764Z",
+                    "district": {
+                        "external_id": 1012,
+                        "id": "1eae887a-42d4-4b85-b22a-e1670101d8a4",
+                        "name": "Алмазарский район",
+                        "region_id": "d9206ae6-3215-4fd0-a6a1-b8d80edcdd5b",
+                        "translations": [
+                            {
+                                "lang": "uz",
+                                "value": "Olmazar tumani"
+                            },
+                            {
+                                "lang": "uz-cyrl",
+                                "value": "ОЛМАЗОР ТУМАНИ"
+                            },
+                            {
+                                "lang": "en",
+                                "value": "Almazar District"
+                            },
+                            {
+                                "lang": "ru",
+                                "value": "Алмазарский район"
+                            }
+                        ]
+                    },
+                    "documents": [
+                        {
+                            "document_type": "IDMS_RECV_MVD_IDCARD_CITIZEN",
+                            "expiry_date": "2034-07-07T00:00:00Z",
+                            "id": "14c9ec7b-6ef0-464d-a2b7-3d809c183908",
+                            "issue_date": "2024-07-08T00:00:00Z",
+                            "number": "7784524",
+                            "series": "AD",
+                            "status": "active"
+                        },
+                        {
+                            "document_type": "IDMS_RECV_DRIVERS_LICENSE",
+                            "id": "e0d1c8e7-c411-41e6-88b5-83a3f770f847",
+                            "issue_date": "2022-02-02T00:00:00Z",
+                            "number": "3855022",
+                            "series": "AF",
+                            "status": "active"
+                        },
+                        {
+                            "document_type": "IDMS_RECV_IP_DOCUMENTS",
+                            "expiry_date": "2031-02-05T00:00:00Z",
+                            "id": "08238539-479b-469d-93e7-16e72bf516b7",
+                            "issue_date": "2021-02-06T00:00:00Z",
+                            "number": "2035419",
+                            "series": "FA",
+                            "status": "active"
+                        },
+                        {
+                            "document_type": "IDMS_RECV_CITIZ_DOCUMENTS",
+                            "expiry_date": "2024-07-19T00:00:00Z",
+                            "id": "ad3d08cc-0762-4f05-9326-3ea4c3930127",
+                            "issue_date": "2014-07-20T00:00:00Z",
+                            "number": "6222839",
+                            "series": "AA",
+                            "status": "unknown"
+                        }
+                    ],
+                    "external_id": "33110790221689",
+                    "first_name": "FARRUX",
+                    "gender": {
+                        "external_id": 1,
+                        "id": "c0d4f65d-b4a4-4c3b-aaa1-97c06c75eb1d",
+                        "name": "Мужской",
+                        "translations": [
+                            {
+                                "lang": "uz-cyrl",
+                                "value": "Еркак"
+                            },
+                            {
+                                "lang": "en",
+                                "value": "Male"
+                            },
+                            {
+                                "lang": "ru",
+                                "value": "Мужской"
+                            },
+                            {
+                                "lang": "uz",
+                                "value": "Erkak"
+                            }
+                        ]
+                    },
+                    "id": "2affbdff-87b3-411e-8211-05b40b5c6585",
+                    "is_disabled": false,
+                    "is_pensioner": false,
+                    "last_name": "MAXMUDOV",
+                    "middle_name": "SAGATOVICH",
+                    "passport": {
+                        "issued_at": "2014-07-20T00:00:00Z",
+                        "number": "6222839",
+                        "series": "AA"
+                    },
+                    "pinfls": [
+                        "33110790221689"
+                    ],
+                    "region": {
+                        "external_id": 10,
+                        "id": "d9206ae6-3215-4fd0-a6a1-b8d80edcdd5b",
+                        "name": "Город Ташкент",
+                        "translations": [
+                            {
+                                "lang": "uz-cyrl",
+                                "value": "Тошкент шаҳри"
+                            },
+                            {
+                                "lang": "en",
+                                "value": "Tashkent City"
+                            },
+                            {
+                                "lang": "ru",
+                                "value": "Город Ташкент"
+                            },
+                            {
+                                "lang": "uz",
+                                "value": "Toshkent shahri"
+                            }
+                        ]
+                    },
+                    "updated_at": "2026-02-09T08:20:00.172551Z"
+                },
+                "type": "person"
+            },
+            "registration_division": "2-TRO' va IOB (CHILONZOR)",
+            "seat_count": 5,
+            "tech_passport": {
+                "issue_date": "2024-04-25T00:00:00Z",
+                "number": "3899020",
+                "series": "AAG"
+            },
+            "updated_at": "2026-02-09T12:32:21.994895Z",
+            "use_territory_region": {
+                "external_id": 1,
+                "id": "1caedd00-0c1d-451a-bace-ecaa425659be",
+                "name": "г. Ташкент и Ташкентская область",
+                "translations": [
+                    {
+                        "lang": "uz",
+                        "value": "Toshkent shahri va Toshkent viloyati"
+                    },
+                    {
+                        "lang": "uz-cyrl",
+                        "value": "Тошкент шаҳри ва Тошкент вилояти"
+                    },
+                    {
+                        "lang": "en",
+                        "value": "Tashkent city and Tashkent region"
+                    },
+                    {
+                        "lang": "ru",
+                        "value": "г. Ташкент и Ташкентская область"
+                    }
+                ]
+            },
+            "vehicle_type": {
+                "external_id": 2,
+                "id": "dd20c8b8-367c-4d5b-8dcb-b7607a4d247a",
+                "name": "Легковые автомобили",
+                "translations": [
+                    {
+                        "lang": "en",
+                        "value": "Passenger Cars"
+                    },
+                    {
+                        "lang": "ru",
+                        "value": "Легковые автомобили"
+                    },
+                    {
+                        "lang": "uz",
+                        "value": "Yengil avtomobillar"
+                    },
+                    {
+                        "lang": "uz-cyrl",
+                        "value": "Енгил автомобиллар"
+                    }
+                ],
+                "vehicle_group": "dbcb09a7-8fa7-46ea-87cf-54623bff619e"
+            }
+        },
+        "message": "Vehicle found successfully",
+        "success": true
+    },
+    "organization": {
+        "data": {
+            "account": "20208000407287386001",
+            "address": "Muxandislar MFY, Muqumiy ko'chasi, 7/1-uy  ",
+            "bank_mfo": "00980",
+            "bank_name": "ТОШКЕНТ Ш., \"РАВНАК-БАНК\" ХАТ БАНКИНИНГ БОШ ОФИСИ",
+            "created_at": "2026-02-09T07:16:29.689434Z",
+            "district": "Яккасарой тумани",
+            "district_soato_code": "1726287",
+            "district_soato_name": "Яккасарайский район",
+            "external_id": "312309287",
+            "fund": 400000000,
+            "general_director_full_name": "SHONAZAROV ABRORJON ERKINOVICH",
+            "id": "45133b12-3482-4241-9e90-a6f300381838",
+            "inn": "312309287",
+            "name": "\"KLIRO TECH\" MAS'ULIYATI CHEKLANGAN JAMIYAT",
+            "name_short": "\"KLIRO TECH\" MCHJ",
+            "oked": {
+                "code": "63120",
+                "id": "434b4942-7578-45d2-b580-85bf76f84f9e",
+                "name": "Web-порталы"
+            },
+            "registration_certificate_issue_at": "2025-07-27T00:00:00Z",
+            "registration_certificate_number": "2892786",
+            "updated_at": "2026-02-09T12:31:37.294646Z"
+        },
+        "message": "Organization found successfully",
+        "success": true
+    }
+}
+
+
+CALC
+
+/apex_box/osago_calculation
+
+REQUEST
+
+{
+  "owner": {
+    "person": {
+      "passportData": {
+        "pinfl": "33110790221689",
+        "seria": "AD",
+        "number": "7784524"
+      }
+    }
+  },
+  "details": {
+    "driverNumberRestriction": true
+  },
+  "cost": {
+    "contractTermConclusionId": "1",
+    "useTerritoryId": "1",
+    "seasonalInsuranceId": "1",
+    "foreignVehicleId": "2"
+  },
+  "vehicle": {
+    "techPassport": {
+      "number": "3899020",
+      "seria": "AAG"
+    },
+    "govNumber": "01J409QC"
+  },
+  "drivers": [
+    {
+      "passportData": {
+        "pinfl": "00000000000000",
+        "seria": "AA",
+        "number": "0000000"
+      }
+    }
+  ]
+}
+
+RESPONCE
+
+{
+  "result": 0,
+  "result_message": "Успешная обработка запроса",
+  "insurance_premium": "192 000,00 UZS"
+}
+
+------------------------------------
+
+
+
+
+CREATE 
+
+curl -X 'POST' \
+  'https://rest.aic.uz/api/ins/apex_box/osago?user_id=30541' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Basic S0xJUk9fVEVDSDo0OTQ1MTM1MUFA' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "applicant": {
+    "person": {
+      "passportData": {
+        "pinfl": "42707857760012",
+        "seria": "AD",
+        "number": "1871484",
+        "issuedBy": "ЯККАСАРАЙСКИЙ РУВД ГОРОДА ТАШКЕНТА",
+        "issueDate": "2022-10-13"
+      },
+      "fullName": {
+        "firstname": "SEVARAXON",
+        "lastname": "MAMAJONOVA",
+        "middlename": "XAMIDULLOYEVNA"
+      },
+      "phoneNumber": "998940324448",
+      "gender": "f",
+      "birthDate": "1985-07-27",
+      "regionId": 10,
+      "districtId": 1005
+    },
+    "address": "Яккасарой МФЙ, Ш.Руставели кучаси, 136/1-уй, 48-хонадон",
+    "residentOfUzb": 1,
+    "citizenshipId": 210
+  },
+  "owner": {
+    "person": {
+      "passportData": {
+        "pinfl": "42707857760012",
+        "seria": "AD",
+        "number": "1871484",
+        "issuedBy": "ЯККАСАРАЙСКИЙ РУВД ГОРОДА ТАШКЕНТА",
+        "issueDate": "2022-10-13T00:00:00"
+      },
+      "fullName": {
+        "firstname": "SEVARAXON",
+        "lastname": "MAMAJONOVA",
+        "middlename": "XAMIDULLOYEVNA"
+      }
+    },
+    "applicantIsOwner": true
+  },
+  "details": {
+    "startDate": "2026-02-10",
+    "issueDate": "2026-02-09",
+    "endDate": "2026-08-09",
+    "driverNumberRestriction": true,
+    "transactionId": 3247679445
+  },
+  "cost": {
+    "discountId": 1,
+    "discountSum": "0",
+    "insurancePremium": 134400,
+    "sumInsured": "80000000",
+    "contractTermConclusionId": "2",
+    "useTerritoryId": "1",
+    "commission": "0",
+    "insurancePremiumPaidToInsurer": 134400,
+    "seasonalInsuranceId": 1
+  },
+  "vehicle": {
+    "techPassport": {
+      "seria": "AAG",
+      "number": "4919413"
+    },
+    "modelCustomName": "SPARK",
+    "engineNumber": "XWBMF48NEFA591793",
+    "typeId": 1,
+    "issueYear": 2015,
+    "govNumber": "01F864TC",
+    "bodyNumber": "XWBMF48NEFA591793",
+    "regionId": 10
+  },
+  "drivers": [
+    {
+      "passportData": {
+        "pinfl": "31301824150031",
+        "seria": "AD",
+        "number": "1380439",
+        "issuedBy": "КУШТЕПИНСКИЙ РОВД ФЕРГАНСКОЙ ОБЛАСТИ",
+        "issueDate": "2022-05-24"
+      },
+      "fullName": {
+        "firstname": "UBAYDULLO",
+        "lastname": "MAMAJONOV",
+        "middlename": "XAMIDULLOYEVICH"
+      },
+      "licenseNumber": "4146137",
+      "licenseSeria": "AF",
+      "relative": 7,
+      "birthDate": "1982-01-13",
+      "licenseIssueDate": "2022-02-07",
+      "residentOfUzb": 1
+    },
+    {
+      "passportData": {
+        "pinfl": "31202554150024",
+        "seria": "AD",
+        "number": "3999930",
+        "issuedBy": "ФЕРГАНСКИЙ ГОВД ФЕРГАНСКОЙ ОБЛАСТИ",
+        "issueDate": "2023-07-19"
+      },
+      "fullName": {
+        "firstname": "XAMIDULLO",
+        "lastname": "MAMAJONOV",
+        "middlename": "RAXIMOVICH"
+      },
+      "licenseNumber": "2774640",
+      "licenseSeria": "AF",
+      "relative": 1,
+      "birthDate": "1955-02-12",
+      "licenseIssueDate": "2021-07-07",
+      "residentOfUzb": 1
+    },
+    {
+      "passportData": {
+        "pinfl": "50203047060014",
+        "seria": "AC",
+        "number": "2761889",
+        "issuedBy": "КУШТЕПИНСКИЙ РОВД ФЕРГАНСКОЙ ОБЛАСТИ",
+        "issueDate": "2020-03-04"
+      },
+      "fullName": {
+        "firstname": "AXMADULLO",
+        "lastname": "XAMIDULLAYEV",
+        "middlename": "UBAYDULLO O‘G‘LI"
+      },
+      "licenseNumber": "0107980",
+      "licenseSeria": "AG",
+      "relative": 0,
+      "birthDate": "2004-03-02",
+      "licenseIssueDate": "2022-10-15",
+      "residentOfUzb": 1
+    }
+  ]
+}'
+
+
+response 
+
+{
+  "result": 0,
+  "result_message": "Успешная обработка запроса.",
+  "contract_id": 4951339,
+  "uuid": "de7c4d1a-12cb-4025-9d41-8cf110df8459",
+  "click_link": "https://my.click.uz/services/pay?service_id=17769&merchant_id=9396&amount=134400&transaction_param=4951339",
+  "payme_link": "https://checkout.paycom.uz/bT02MjI1ZWJiNjA2Njk4MTY5Yzg3ZGFhYjY7YWMub3JkZXJfaWQ9NDk1MTMzOTthPTEzNDQwMDAw"
+}
+
+
+
+
+reference 
+
+
+
+
+curl -X 'GET' \
+  'https://rest.aic.uz/api/ins/apex_box/osago_references_regions' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Basic S0xJUk9fVEVDSDo0OTQ1MTM1MUFA'
+
+  {
+  "items": [
+    {
+      "id": 13,
+      "name": "Джизакская обл."
+    },
+    {
+      "id": 15,
+      "name": "Ферганская обл."
+    },
+    {
+      "id": 10,
+      "name": "Город Ташкент"
+    },
+    {
+      "id": 23,
+      "name": "Респ. Каракалпакстан"
+    },
+    {
+      "id": 11,
+      "name": "Ташкентская обл."
+    },
+    {
+      "id": 21,
+      "name": "Навоийская обл."
+    },
+    {
+      "id": 18,
+      "name": "Кашкадарьинская обл."
+    },
+    {
+      "id": 19,
+      "name": "Сурхандарьинская обл."
+    },
+    {
+      "id": 16,
+      "name": "Наманганская обл."
+    },
+    {
+      "id": 17,
+      "name": "Андижанская обл."
+    },
+    {
+      "id": 20,
+      "name": "Бухарская обл."
+    },
+    {
+      "id": 12,
+      "name": "Сырдарьинская обл."
+    },
+    {
+      "id": 22,
+      "name": "Хорезмская обл."
+    },
+    {
+      "id": 14,
+      "name": "Самаркандская обл."
+    }
+  ]
+}
+
+curl -X 'GET' \
+  'https://rest.aic.uz/api/ins/apex_box/osago_use_territory' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Basic S0xJUk9fVEVDSDo0OTQ1MTM1MUFA'
+
+  {
+  "items": [
+    {
+      "id": 1,
+      "name": "г. Ташкент и Ташкентская область"
+    },
+    {
+      "id": 2,
+      "name": "Другие регионы"
+    },
+    {
+      "id": 3,
+      "name": "Для иностранцев"
+    }
+  ]
+}
+
+curl -X 'GET' \
+  'https://rest.aic.uz/api/ins/apex_box/osago_references_vehicle_type' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Basic S0xJUk9fVEVDSDo0OTQ1MTM1MUFA'
+
+  {
+  "items": [
+    {
+      "id": 1,
+      "name": "Легковые автомобили"
+    },
+    {
+      "id": 15,
+      "name": "Трамваи, мотоциклы и мотороллеры, тракторы, самоходные дорожно-строительные и иные машины"
+    },
+    {
+      "id": 6,
+      "name": "Грузовые автомобили"
+    },
+    {
+      "id": 9,
+      "name": "Автобусы и микроавтобусы"
+    }
+  ]
+}
+
+curl -X 'GET' \
+  'https://rest.aic.uz/api/ins/apex_box/osago_references_discountId' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Basic S0xJUk9fVEVDSDo0OTQ1MTM1MUFA'
+
+  {
+  "items": [
+    {
+      "id": 1,
+      "name_ru": "Льгот нет"
+    },
+    {
+      "id": 2,
+      "name_ru": "Участник или партизан войны 1941-1945 годов либо приравненное к ним лицо"
+    },
+    {
+      "id": 3,
+      "name_ru": "Ветеран трудового фронта периода войны 1941-1945 годов"
+    },
+    {
+      "id": 4,
+      "name_ru": "Бывший малолетний узник концентрационных лагерей"
+    },
+    {
+      "id": 5,
+      "name_ru": "Один из родителей или вдова, не вступавшая в новый брак, военнослужащего, погибшего вследствие ранения, контузии или увечья, полученного при исполнении обязанностей военной службы либо вследствие заболевания, связанного с пребыванием на фронте"
+    },
+    {
+      "id": 6,
+      "name_ru": "Пострадавший вследствие аварии на Чернобыльской АЭС"
+    },
+    {
+      "id": 7,
+      "name_ru": "Пенсионер"
+    },
+    {
+      "id": 8,
+      "name_ru": "Инвалид"
+    },
+    {
+      "id": 9,
+      "name_ru": "Воен.Афганец."
+    }
+  ]
+}
+
+curl -X 'GET' \
+  'https://rest.aic.uz/api/ins/apex_box/osago_references_contractTermConclusionId' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Basic S0xJUk9fVEVDSDo0OTQ1MTM1MUFA'
+
+{
+  "items": [
+    {
+      "id": 2,
+      "name": "С учетом сезонного использования"
+    },
+    {
+      "id": 4,
+      "name": "На срок следования к месту регистрации"
+    },
+    {
+      "id": 1,
+      "name": "На 1 год"
+    },
+    {
+      "id": 3,
+      "name": "На срок временного использования ТС, зарегистрированного в иностранных государствах"
+    }
+  ]
+}
+
+curl -X 'GET' \
+  'https://rest.aic.uz/api/ins/apex_box/osago_relative' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Basic S0xJUk9fVEVDSDo0OTQ1MTM1MUFA'
+
+  {
+  "items": [
+    {
+      "sp_id": 0,
+      "name_uzb": "..",
+      "name_rus": ".."
+    },
+    {
+      "sp_id": 1,
+      "name_uzb": "ОТА",
+      "name_rus": "ОТЕЦ"
+    },
+    {
+      "sp_id": 2,
+      "name_uzb": "ОНА",
+      "name_rus": "МАТЬ"
+    },
+    {
+      "sp_id": 3,
+      "name_uzb": "ЭР",
+      "name_rus": "МУЖ"
+    },
+    {
+      "sp_id": 4,
+      "name_uzb": "ХОТИН",
+      "name_rus": "ЖЕНА"
+    },
+    {
+      "sp_id": 5,
+      "name_uzb": "ЎFИЛ",
+      "name_rus": "СЫН"
+    },
+    {
+      "sp_id": 6,
+      "name_uzb": "КИЗ",
+      "name_rus": "ДОЧЬ"
+    },
+    {
+      "sp_id": 7,
+      "name_uzb": "АКА",
+      "name_rus": "БРАТ"
+    },
+    {
+      "sp_id": 8,
+      "name_uzb": "УКА",
+      "name_rus": "МЛАДШИЙ БРАТ"
+    },
+    {
+      "sp_id": 9,
+      "name_uzb": "ОПА",
+      "name_rus": "СЕСТРА"
+    },
+    {
+      "sp_id": 10,
+      "name_uzb": "СИНГИЛ",
+      "name_rus": "МЛАДШАЯ СЕСТРА"
+    }
+  ]
+}
+
+curl -X 'GET' \
+  'https://rest.aic.uz/api/ins/apex_box/osago_references_foreign_vehicles_policy_duration' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Basic S0xJUk9fVEVDSDo0OTQ1MTM1MUFA'
+
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "до 15 дней"
+    },
+    {
+      "id": 2,
+      "name": "от 16 дней до 2 месяцев"
+    },
+    {
+      "id": 13,
+      "name": "1 год"
+    }
+  ]
+}
+
+curl -X 'GET' \
+  'https://rest.aic.uz/api/ins/apex_box/osago_references_seasonal_insurances' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Basic S0xJUk9fVEVDSDo0OTQ1MTM1MUFA'
+
+  {
+  "items": [
+    {
+      "id": 1,
+      "name": "6 месяцев"
+    },
+    {
+      "id": 7,
+      "name": "1 год"
+    },
+    {
+      "id": 8,
+      "name": "20 дней"
+    }
+  ]
+}
+
+curl -X 'GET' \
+  'https://rest.aic.uz/api/ins/apex_box/resident-types' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Basic S0xJUk9fVEVDSDo0OTQ1MTM1MUFA'
+
+  {
+  "items": [
+    {
+      "id": 1,
+      "name": "Гражданин"
+    },
+    {
+      "id": 2,
+      "name": "Иностранец"
+    },
+    {
+      "id": 3,
+      "name": "ЛБГ"
+    },
+    {
+      "id": 4,
+      "name": "Военный"
+    },
+    {
+      "id": 5,
+      "name": "Иностранный резидент"
+    },
+    {
+      "id": 6,
+      "name": "Ребёнок"
+    }
+  ]
+}
