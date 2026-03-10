@@ -1073,12 +1073,10 @@ func (oc *OsagoAllController) calculateApex(session *SessionData, req *Calculate
 		rep := req.Drivers[0]
 		repPinfl := findPinflByPassport(rep.PassportSeries, rep.PassportNumber, session)
 		if repPinfl == "" && rep.Birthdate != "" {
-			var err error
-			repPinfl, err = oc.euroasiaLookupPinflByPassport(formatDateYYYYMMDD(rep.Birthdate), rep.PassportSeries, rep.PassportNumber)
-			if err != nil {
-				// как fallback используем нули (Apex допускает), но лучше иметь реальный PINFL
-				repPinfl = "00000000000000"
-			}
+			repPinfl, _ = oc.euroasiaLookupPinflByPassport(formatDateYYYYMMDD(rep.Birthdate), rep.PassportSeries, rep.PassportNumber)
+		}
+		if repPinfl == "" {
+			return nil, fmt.Errorf("для Apex (юрлицо) не удалось получить PINFL представителя (drivers[0]); укажите паспорт и дату рождения и выполните find по человеку")
 		}
 
 		inn := extractNestedString(vehicleData, "data", "owner", "organization", "inn")
@@ -1101,10 +1099,13 @@ func (oc *OsagoAllController) calculateApex(session *SessionData, req *Calculate
 	techNumber := extractNestedString(vehicleData, "data", "tech_passport", "number")
 	gosNumber := extractNestedString(vehicleData, "data", "license_plate")
 
-	// Use territory
+	// Территория использования — только из сессии Find (без дефолтов)
 	useTerritoryID := extractNestedString(vehicleData, "data", "use_territory_region", "external_id")
 	if useTerritoryID == "" {
-		useTerritoryID = "1"
+		useTerritoryID = extractNestedString(vehicleData, "data", "use_territory_region", "id")
+	}
+	if useTerritoryID == "" {
+		return nil, fmt.Errorf("в сессии нет территории использования (use_territory_region); выполните find с полными данными по ТС")
 	}
 	// Логируем что именно извлекли из сессии
 	{
@@ -1117,21 +1118,21 @@ func (oc *OsagoAllController) calculateApex(session *SessionData, req *Calculate
 			gosNumber, techSeries, techNumber, useTerritoryID, _pf, _s, _n)
 	}
 
-	// Apex: contractTermConclusionId 1=год, 2=сезон; seasonalInsuranceId 7=1год, 1=6мес, 8=20дней
+	// Период — коды Apex из конфига (period_id от пользователя)
 	var contractTermID, seasonalInsuranceID string
 	switch req.PeriodID {
 	case 1:
-		contractTermID = "1"
-		seasonalInsuranceID = "7" // 1 год
+		contractTermID = oc.cfg.ApexContractTerm12
+		seasonalInsuranceID = oc.cfg.ApexSeasonalID12
 	case 2:
-		contractTermID = "2"
-		seasonalInsuranceID = "1" // 6 месяцев
+		contractTermID = oc.cfg.ApexContractTerm6
+		seasonalInsuranceID = oc.cfg.ApexSeasonalID6
 	case 3:
-		contractTermID = "2"
-		seasonalInsuranceID = "8" // 20 дней
+		contractTermID = oc.cfg.ApexContractTerm6
+		seasonalInsuranceID = oc.cfg.ApexSeasonalID20
 	default:
-		contractTermID = "1"
-		seasonalInsuranceID = "7"
+		contractTermID = oc.cfg.ApexContractTerm12
+		seasonalInsuranceID = oc.cfg.ApexSeasonalID12
 	}
 
 	// Drivers
@@ -1161,7 +1162,7 @@ func (oc *OsagoAllController) calculateApex(session *SessionData, req *Calculate
 					}
 				}
 				if pinfl == "" {
-					pinfl = "00000000000000"
+					return nil, fmt.Errorf("не удалось получить PINFL водителя (серия %s, номер %s); выполните find по человеку или укажите дату рождения", driver.PassportSeries, driver.PassportNumber)
 				}
 				drivers = append(drivers, map[string]interface{}{
 					"passportData": map[string]interface{}{
@@ -1186,14 +1187,8 @@ func (oc *OsagoAllController) calculateApex(session *SessionData, req *Calculate
 		if ownerPinflFull == "" {
 			ownerPinflFull = extractNestedString(vehicleData, "data", "owner", "person", "external_id")
 		}
-		if ownerDocSery == "" {
-			ownerDocSery = "AA"
-		}
-		if ownerDocNum == "" {
-			ownerDocNum = "0000000"
-		}
-		if ownerPinflFull == "" {
-			ownerPinflFull = "00000000000000"
+		if ownerDocSery == "" || ownerDocNum == "" || ownerPinflFull == "" {
+			return nil, fmt.Errorf("для Apex (неограниченный полис) в сессии должны быть данные владельца: паспорт и PINFL; выполните find по ТС и владельцу")
 		}
 		drivers = []map[string]interface{}{
 			{
@@ -1216,7 +1211,7 @@ func (oc *OsagoAllController) calculateApex(session *SessionData, req *Calculate
 			"contractTermConclusionId": contractTermID,
 			"useTerritoryId":           useTerritoryID,
 			"seasonalInsuranceId":      seasonalInsuranceID,
-			"foreignVehicleId":         "2",
+			"foreignVehicleId":         oc.cfg.ApexForeignVehicleID,
 		},
 		"vehicle": map[string]interface{}{
 			"techPassport": map[string]interface{}{
@@ -1255,17 +1250,17 @@ func (oc *OsagoAllController) calculateEuroAsia(session *SessionData, req *Calcu
 		return nil, fmt.Errorf("недостаточно UUID данных для EuroAsia")
 	}
 
-	// Period UUID: 1→365 дней, 2→180 дней, 3→20 дней
+	// Период — из конфига (UUID сезонности EuroAsia)
 	var seasonalInsuranceID string
 	switch req.PeriodID {
 	case 1:
-		seasonalInsuranceID = "8465a831-850f-4445-a995-ef71195094ab" // 365 дней
+		seasonalInsuranceID = oc.cfg.EuroasiaSeasonalID12
 	case 2:
-		seasonalInsuranceID = "9848096e-cc12-4dbd-893b-41f2cdfc9a0e" // 180 дней
+		seasonalInsuranceID = oc.cfg.EuroasiaSeasonalID6
 	case 3:
-		seasonalInsuranceID = "0d546748-0ba6-43bc-9ce2-1b977ad9e494" // 20 дней
+		seasonalInsuranceID = oc.cfg.EuroasiaSeasonalID20
 	default:
-		seasonalInsuranceID = "8465a831-850f-4445-a995-ef71195094ab"
+		seasonalInsuranceID = oc.cfg.EuroasiaSeasonalID12
 	}
 
 	// Drivers
@@ -1321,15 +1316,26 @@ func (oc *OsagoAllController) calculateGross(session *SessionData, req *Calculat
 		return nil, fmt.Errorf("недостаточно данных о машине")
 	}
 
-	// Vehicle type mapping: external_id=2 (легковые) → 1
+	// Тип ТС — только из сессии Find (маппинг external_id → Gross: 2→1, 6→2, 9→3, 15→4)
 	vehicleTypeExternalID := extractNestedInt(vehicleData, "data", "vehicle_type", "external_id")
-	vehicleTypeID := 1 // по умолчанию легковые
-	if vehicleTypeExternalID == 6 {
+	if vehicleTypeExternalID == 0 {
+		vehicleTypeExternalID = extractNestedInt(vehicleData, "data", "vehicle_type", "id")
+	}
+	if vehicleTypeExternalID == 0 {
+		return nil, fmt.Errorf("в сессии нет типа ТС (vehicle_type); выполните find с полными данными по ТС")
+	}
+	var vehicleTypeID int
+	switch vehicleTypeExternalID {
+	case 2:
+		vehicleTypeID = 1 // легковые
+	case 6:
 		vehicleTypeID = 2 // грузовые
-	} else if vehicleTypeExternalID == 9 {
+	case 9:
 		vehicleTypeID = 3 // автобусы
-	} else if vehicleTypeExternalID == 15 {
+	case 15:
 		vehicleTypeID = 4 // мотоциклы
+	default:
+		return nil, fmt.Errorf("тип ТС из сессии (vehicle_type.external_id=%d) не поддерживается Gross; ожидается 2, 6, 9 или 15", vehicleTypeExternalID)
 	}
 
 	// Driver restriction: true→4, false→1
@@ -1358,22 +1364,42 @@ func (oc *OsagoAllController) calculateTrust(session *SessionData, req *Calculat
 
 	gosNumber := extractNestedString(vehicleData, "data", "license_plate")
 
-	// Vehicle type mapping: external_id=2 → 1, 6→6, 9→9, 15→15
+	// Тип ТС — только из сессии Find (маппинг external_id → Trust: 2→1, 6→6, 9→9, 15→15)
 	vehicleTypeExternalID := extractNestedInt(vehicleData, "data", "vehicle_type", "external_id")
-	vehicleTypeID := 1 // по умолчанию
-	if vehicleTypeExternalID == 6 {
-		vehicleTypeID = 6
-	} else if vehicleTypeExternalID == 9 {
-		vehicleTypeID = 9
-	} else if vehicleTypeExternalID == 15 {
-		vehicleTypeID = 15
+	if vehicleTypeExternalID == 0 {
+		vehicleTypeExternalID = extractNestedInt(vehicleData, "data", "vehicle_type", "id")
+	}
+	if vehicleTypeExternalID == 0 {
+		return nil, fmt.Errorf("в сессии нет типа ТС (vehicle_type); выполните find с полными данными по ТС")
+	}
+	vehicleTypeID := vehicleTypeExternalID
+	if vehicleTypeExternalID == 2 {
+		vehicleTypeID = 1 // легковые в Find = external_id 2, в Trust = 1
 	}
 
-	// Use territory: external_id → Trust ID (1-14)
+	// Территория: Find возвращает 1–3 категории (1=Ташкент и обл., 2=Другие регионы, 3=Для иностранцев),
+	// Trust ожидает 1–14 регионов (1=город Ташкент, 2=Ташкентская обл., 3–14=остальные). Маппинг через конфиг.
 	useTerritoryExternalID := extractNestedInt(vehicleData, "data", "use_territory_region", "external_id")
-	useTerritoryID := 1 // по умолчанию
-	if useTerritoryExternalID > 0 && useTerritoryExternalID <= 14 {
-		useTerritoryID = useTerritoryExternalID
+	if useTerritoryExternalID == 0 {
+		useTerritoryExternalID = extractNestedInt(vehicleData, "data", "use_territory_region", "id")
+	}
+	if useTerritoryExternalID <= 0 {
+		return nil, fmt.Errorf("в сессии нет территории использования (use_territory_region); выполните find с полными данными по ТС")
+	}
+	var useTerritoryID int
+	switch useTerritoryExternalID {
+	case 1:
+		useTerritoryID = oc.cfg.TrustTerritoryFind1 // Ташкент и обл. → по умолчанию 1 (город Ташкент)
+	case 2:
+		useTerritoryID = oc.cfg.TrustTerritoryFind2 // Другие регионы → по умолчанию 10 (Самаркандская)
+	case 3:
+		useTerritoryID = oc.cfg.TrustTerritoryFind3 // Для иностранцев
+	default:
+		if useTerritoryExternalID >= 4 && useTerritoryExternalID <= 14 {
+			useTerritoryID = useTerritoryExternalID
+		} else {
+			return nil, fmt.Errorf("территория из сессии (use_territory_region.external_id=%d) не поддерживается Trust; ожидается 1–3 (Find) или 4–14", useTerritoryExternalID)
+		}
 	}
 
 	// Trust: 1=6мес, 2=12мес, 3=2мес, 4=15 и 20 дней
@@ -1453,13 +1479,8 @@ func (oc *OsagoAllController) calculateTrust(session *SessionData, req *Calculat
 			}
 		}
 	} else {
-		// Неограничено - все равно нужен массив с владельцем
-		drivers = []map[string]interface{}{
-			{
-				"pinfl":       ownerPinfl,
-				"coefficient": 1,
-			},
-		}
+		// Неограничено (driver_limit=0): пустой массив, как в Trust Create — иначе Trust возвращает завышенную премию
+		drivers = []map[string]interface{}{}
 	}
 
 	requestBody := map[string]interface{}{
@@ -1471,7 +1492,7 @@ func (oc *OsagoAllController) calculateTrust(session *SessionData, req *Calculat
 		"period":        periodID,
 		"use_territory": useTerritoryID,
 		"driver_limit":  driverLimit,
-		"discount":      1, // по умолчанию без льгот
+		"discount":      oc.cfg.TrustDefaultDiscountID,
 		"owner": map[string]interface{}{
 			"owner_pinfl": ownerPinfl,
 		},
@@ -1484,6 +1505,9 @@ func (oc *OsagoAllController) calculateTrust(session *SessionData, req *Calculat
 			o["owner_fy"] = 1
 		}
 	}
+
+	trustBodyRaw, _ := json.Marshal(requestBody)
+	log.Printf("[Trust calc] → request body (raw JSON): %s", trustBodyRaw)
 
 	url := oc.cfg.TrustBaseURL + "/api/osgo/v2/calc-prem"
 	return oc.makeProviderRequest("POST", url, requestBody, oc.cfg.TrustLogin, oc.cfg.TrustPassword, "")
@@ -1503,29 +1527,33 @@ func (oc *OsagoAllController) calculateInson(session *SessionData, req *Calculat
 		return nil, fmt.Errorf("не найден госномер автомобиля")
 	}
 
-	// period: 1→12 мес, 2→6 мес
+	// period: 1→12 мес, 2→6 мес (в месяцах для API)
 	period := 12
 	if req.PeriodID == 2 {
 		period = 6
 	}
 
-	// vehicleTypeId: из vehicle_type.external_id; 1=легковой (default), 6=грузовой, 9=автобус, 15=мотоцикл/прочее
+	// Тип ТС — только из сессии Find (Inson: 1=легковой, 6, 9, 15; в Find легковые часто external_id=2)
 	vehicleTypeExternalID := extractNestedInt(vehicleData, "data", "vehicle_type", "external_id")
-	vehicleTypeID := 1
-	switch vehicleTypeExternalID {
-	case 6:
-		vehicleTypeID = 6
-	case 9:
-		vehicleTypeID = 9
-	case 15:
-		vehicleTypeID = 15
+	if vehicleTypeExternalID == 0 {
+		vehicleTypeExternalID = extractNestedInt(vehicleData, "data", "vehicle_type", "id")
+	}
+	if vehicleTypeExternalID == 0 {
+		return nil, fmt.Errorf("в сессии нет типа ТС (vehicle_type); выполните find с полными данными по ТС")
+	}
+	vehicleTypeID := vehicleTypeExternalID
+	if vehicleTypeExternalID == 2 {
+		vehicleTypeID = 1 // легковые
+	}
+	if vehicleTypeID != 1 && vehicleTypeID != 6 && vehicleTypeID != 9 && vehicleTypeID != 15 {
+		return nil, fmt.Errorf("тип ТС из сессии (vehicle_type=%d) не поддерживается Inson; ожидается 1, 6, 9 или 15", vehicleTypeID)
 	}
 
 	ownerType := extractNestedString(vehicleData, "data", "owner", "type")
 
 	log.Printf("[Inson calc] extracted from session: gos_number=%q owner_type=%q period_id=%d period_sent=%d driver_restriction=%v", gosNumber, ownerType, req.PeriodID, period, req.DriverRestriction)
 
-	// Строим список водителей (только PINFLs)
+	// Список водителей (PINFLs). По документации Inson: при driverNumberRestricted=false массив drivers должен быть пустым [].
 	var driverPinfls []string
 	if req.DriverRestriction {
 		for _, driver := range req.Drivers {
@@ -1539,6 +1567,10 @@ func (oc *OsagoAllController) calculateInson(session *SessionData, req *Calculat
 				driverPinfls = append(driverPinfls, pinfl)
 			}
 		}
+	}
+	// Иначе driverPinfls остаётся nil → в JSON "null"; Inson принимает и [], и отсутствие. Явно передаём [] для соответствия доке.
+	if driverPinfls == nil {
+		driverPinfls = []string{}
 	}
 
 	requestBody := map[string]interface{}{
@@ -1567,8 +1599,8 @@ func (oc *OsagoAllController) calculateInson(session *SessionData, req *Calculat
 		}
 	}
 
-	reqJSON, _ := json.Marshal(requestBody)
-	log.Printf("[Inson calc] → sending: %s", reqJSON)
+	insonBodyRaw, _ := json.Marshal(requestBody)
+	log.Printf("[Inson calc] → request body (raw JSON): %s", insonBodyRaw)
 
 	url := oc.cfg.InsonBaseURL + "/api/v2/osago/calculator"
 	result, err := oc.makeProviderRequest("POST", url, requestBody, oc.cfg.InsonLogin, oc.cfg.InsonPassword, "")

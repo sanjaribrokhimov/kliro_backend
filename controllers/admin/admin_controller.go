@@ -73,7 +73,31 @@ func (ac *AdminController) DeleteUser(c *gin.Context) {
 	}
 	userID := user.ID
 
-	// Удаляем в транзакции: сначала все связанные записи, затем пользователя (избегаем FK constraint)
+	// Бэкап в deleted_users_backup перед удалением (полная копия строки пользователя)
+	now := time.Now()
+	backup := models.DeletedUserBackup{
+		OriginalUserID:    user.ID,
+		Email:             user.Email,
+		Phone:             user.Phone,
+		RegionID:          user.RegionID,
+		Password:          user.Password,
+		Confirmed:         user.Confirmed,
+		Role:              user.Role,
+		CategoryID:        user.CategoryID,
+		FirstName:         user.FirstName,
+		LastName:          user.LastName,
+		GoogleID:          user.GoogleID,
+		OriginalCreatedAt: user.CreatedAt,
+		OriginalUpdatedAt: user.UpdatedAt,
+		DeletedAt:         now,
+	}
+	if err := ac.db.Table("deleted_users_backup").Create(&backup).Error; err != nil {
+		fmt.Printf("DeleteUser backup: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "Не удалось сохранить бэкап пользователя"})
+		return
+	}
+
+	// Hard delete в транзакции: удаляем связанные записи и пользователя из основных таблиц
 	if err := ac.db.Transaction(func(tx *gorm.DB) error {
 		tx.Unscoped().Where("user_id = ?", userID).Delete(&models.Order{})
 		tx.Unscoped().Where("user_id = ?", userID).Delete(&models.Favorite{})

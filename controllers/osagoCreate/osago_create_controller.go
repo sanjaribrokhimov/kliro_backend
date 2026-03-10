@@ -386,8 +386,9 @@ func (oc *OsagoCreateController) makeProviderRequest(method, url string, bodyDat
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("accept", "application/json")
+	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept-Language", "ru")
 	if apiKey != "" {
 		req.Header.Set("Authorization", apiKey)
 	} else if login != "" && password != "" {
@@ -1521,24 +1522,49 @@ func (oc *OsagoCreateController) trustPaymentLinks(anketaID, uuid string, amount
 	}
 }
 
+// findPinflCreate возвращает PINFL для персоны с паспортом (series, number). Проверяет совпадение паспорта с session.Person и владельцем ТС; иначе — запрос в EuroAsia.
 func findPinflCreate(oc *OsagoCreateController, session *SessionData, series, number, birthdate string) string {
-	pinfl := extractNestedString(session.Person, "data", "pinfls", "0")
-	if pinfl == "" {
-		pinfl = extractNestedString(session.Person, "data", "external_id")
+	series = strings.TrimSpace(series)
+	number = strings.TrimSpace(number)
+	// session.Person — только если паспорт совпадает
+	if session.Person != nil {
+		personSeries, personNumber := extractPersonPassportFromFindSession(session.Person)
+		if personSeries == "" {
+			personSeries = extractNestedString(session.Person, "data", "passport", "series")
+			personNumber = extractNestedString(session.Person, "data", "passport", "number")
+		}
+		if personSeries == series && personNumber == number {
+			pinfl := extractNestedString(session.Person, "data", "pinfls", "0")
+			if pinfl == "" {
+				pinfl = extractNestedString(session.Person, "data", "external_id")
+			}
+			if pinfl != "" {
+				return pinfl
+			}
+		}
 	}
-	if pinfl != "" {
-		return pinfl
+	// Владелец ТС — только если паспорт совпадает
+	if session.Vehicle != nil {
+		v := session.Vehicle
+		ownerSeries := extractNestedString(v, "data", "owner", "person", "passport", "series")
+		ownerNumber := extractNestedString(v, "data", "owner", "person", "passport", "number")
+		if ownerSeries == "" || ownerNumber == "" {
+			ownerSeries, ownerNumber = extractPersonPassportFromFindSession(extractNestedValue(v, "data", "owner", "person"))
+		}
+		if ownerSeries == series && ownerNumber == number {
+			pinfl := extractNestedString(v, "data", "owner", "person", "pinfls", "0")
+			if pinfl == "" {
+				pinfl = extractNestedString(v, "data", "owner", "person", "external_id")
+			}
+			if pinfl != "" {
+				return pinfl
+			}
+		}
 	}
-	v := session.Vehicle
-	pinfl = extractNestedString(v, "data", "owner", "person", "pinfls", "0")
-	if pinfl == "" {
-		pinfl = extractNestedString(v, "data", "owner", "person", "external_id")
-	}
-	if pinfl != "" {
-		return pinfl
-	}
+	// Иначе — поиск по паспорту и дате рождения через EuroAsia
 	if birthdate != "" {
-		if p, err := oc.euroasiaLookupPinflByPassport(birthdate, series, number); err == nil && p != "" {
+		birthNorm := toYYYYMMDD(birthdate)
+		if p, err := oc.euroasiaLookupPinflByPassport(birthNorm, series, number); err == nil && p != "" {
 			return p
 		}
 	}
@@ -2004,6 +2030,16 @@ func (oc *OsagoCreateController) createInson(session *SessionData, req *CreateRe
 		return nil, fmt.Errorf("phone_number обязателен для Inson create")
 	}
 
+	// startDate должен быть сегодня или в будущем (Inson 422)
+	startDate := toYYYYMMDD(req.StartDate)
+	if startDate != "" {
+		if t, err := time.Parse("2006-01-02", startDate); err == nil && t.Before(time.Now().Truncate(24*time.Hour)) {
+			startDate = time.Now().Format("2006-01-02")
+		}
+	} else {
+		startDate = time.Now().Format("2006-01-02")
+	}
+
 	v := session.Vehicle
 	ownerType := extractNestedString(v, "data", "owner", "type")
 
@@ -2028,15 +2064,19 @@ func (oc *OsagoCreateController) createInson(session *SessionData, req *CreateRe
 		return nil, fmt.Errorf("не найден госномер автомобиля")
 	}
 
-	// Drivers list (только для ограниченного полиса)
+	// Drivers list: те же водители, что и в Calculate. Приоритет — список с большим числом водителей (из тела create или из snapshot после calculate).
 	driverRestriction := req.DriverRestriction
 	driversList := req.Drivers
 	if snap := session.CalculateSnapshot; snap != nil {
 		driverRestriction = snap.DriverRestriction
 		if len(snap.Drivers) > 0 {
-			driversList = snap.Drivers
+			if len(snap.Drivers) >= len(req.Drivers) {
+				driversList = snap.Drivers
+			}
+			// иначе оставляем req.Drivers (в теле передали явно, например 2 водителя)
 		}
 	}
+	driversList = oc.enrichDriversWithLicenseFromFind(driversList)
 
 	// Строим applicant (страхователь)
 	var applicant map[string]interface{}
@@ -2063,7 +2103,7 @@ func (oc *OsagoCreateController) createInson(session *SessionData, req *CreateRe
 			"isOwner":       true,
 		}
 	} else {
-		// Физлицо: только паспорт + телефон (Inson сам находит данные по МДМД/ГСБДД)
+		// Физлицо: паспорт, PINFL, birthDate и телефон (Inson требует для applicant.person)
 		ownerPersonObj := extractNestedValue(v, "data", "owner", "person")
 		passSeries, passNumber := extractPersonPassportFromFindSession(ownerPersonObj)
 		if passSeries == "" {
@@ -2073,45 +2113,178 @@ func (oc *OsagoCreateController) createInson(session *SessionData, req *CreateRe
 		if passSeries == "" && session.Person != nil {
 			passSeries, passNumber = extractPersonPassportFromFindSession(session.Person)
 		}
+		ownerBirth := extractNestedString(v, "data", "owner", "person", "birthdate")
+		if ownerBirth == "" && session.Person != nil {
+			ownerBirth = extractNestedString(session.Person, "data", "birthdate")
+		}
+		ownerBirth = toYYYYMMDD(ownerBirth)
+		if ownerBirth == "" {
+			ownerBirth = strings.TrimSpace(req.ApplicantBirthdate)
+			ownerBirth = toYYYYMMDD(ownerBirth)
+		}
+		ownerPinfl := extractNestedString(v, "data", "owner", "person", "pinfls", "0")
+		if ownerPinfl == "" {
+			ownerPinfl = extractNestedString(v, "data", "owner", "person", "external_id")
+		}
+		ownerIssuedBy, ownerIssueDate := "ИИБ", "2020-01-01"
+		ownerFirst, ownerLast, ownerMiddle := "N", "N", "N"
+		ownerAddress := ""
+		ownerRegionID, ownerDistrictID := 0, 0
+		if ownerPinfl == "" && passSeries != "" && passNumber != "" && ownerBirth != "" {
+			ownerPinfl, _ = oc.euroasiaLookupPinflByPassport(ownerBirth, passSeries, passNumber)
+		}
+		if passSeries != "" && passNumber != "" && ownerBirth != "" {
+			if personData, err := oc.euroasiaLookupPersonByPassport(ownerBirth, passSeries, passNumber); err == nil && personData != nil {
+				if by := extractNestedString(personData, "passport", "issued_by"); by != "" {
+					ownerIssuedBy = by
+				}
+				if iss := extractNestedString(personData, "passport", "issued_at"); iss != "" {
+					ownerIssueDate = toYYYYMMDD(iss)
+				}
+				if fn := extractNestedString(personData, "first_name"); fn != "" {
+					ownerFirst = fn
+				}
+				if ln := extractNestedString(personData, "last_name"); ln != "" {
+					ownerLast = ln
+				}
+				if mn := extractNestedString(personData, "middle_name"); mn != "" {
+					ownerMiddle = mn
+				}
+				if addr := extractNestedString(personData, "address"); addr != "" {
+					ownerAddress = addr
+				}
+				if rid := extractNestedInt(v, "data", "owner", "person", "region", "external_id"); rid > 0 {
+					ownerRegionID = rid
+				}
+				if did := extractNestedInt(v, "data", "owner", "person", "district", "external_id"); did > 0 {
+					ownerDistrictID = did
+				}
+			}
+		}
+		if ownerAddress == "" {
+			ownerAddress = "N"
+		}
+		passportData := map[string]interface{}{
+			"series":    passSeries,
+			"number":    passNumber,
+			"issuedBy":  ownerIssuedBy,
+			"issueDate": ownerIssueDate,
+		}
+		if ownerPinfl != "" {
+			passportData["pinfl"] = ownerPinfl
+		}
+		applicantPerson := map[string]interface{}{
+			"passportData": passportData,
+			"fullName": map[string]interface{}{
+				"firstname":  ownerFirst,
+				"lastname":   ownerLast,
+				"middlename": ownerMiddle,
+			},
+			"gender": 1,
+		}
+		if ownerBirth != "" {
+			applicantPerson["birthDate"] = ownerBirth
+		}
+		if ownerAddress != "" {
+			applicantPerson["address"] = ownerAddress
+		}
+		applicantPerson["regionId"] = ownerRegionID
+		applicantPerson["districtId"] = ownerDistrictID
+		phoneNum := strings.TrimSpace(req.PhoneNumber)
+		phoneNum = strings.TrimPrefix(phoneNum, "+")
+		phoneNum = strings.ReplaceAll(phoneNum, " ", "")
+		phoneNum = strings.ReplaceAll(phoneNum, "-", "")
+		if phoneNum != "" && len(phoneNum) < 12 && !strings.HasPrefix(phoneNum, "998") {
+			phoneNum = "998" + strings.TrimLeft(phoneNum, "8")
+		}
 		applicant = map[string]interface{}{
+			"person":        applicantPerson,
 			"residentType":  1,
 			"citizenshipId": 1,
-			"phoneNumber":   req.PhoneNumber,
+			"phoneNumber":   phoneNum,
 			"isOwner":       true,
-			"person": map[string]interface{}{
-				"passportData": map[string]interface{}{
-					"series": passSeries,
-					"number": passNumber,
-				},
-			},
 		}
 	}
 
-	// Обрабатываем drivers (только при ограниченном полисе)
+	// Обрабатываем drivers (только при ограниченном полисе). Inson требует: birthDate, passportData.pinfl, licenseSeries (2–5 символов), licenseNumber (6–10 символов).
 	var insonDrivers []map[string]interface{}
 	if driverRestriction && len(driversList) > 0 {
 		for _, d := range driversList {
-			insonDrivers = append(insonDrivers, map[string]interface{}{
+			birthNorm := toYYYYMMDD(d.Birthdate)
+			if birthNorm == "" {
+				return nil, fmt.Errorf("для Inson у каждого водителя обязательна дата рождения (birthdate); водитель: %s %s", d.PassportSeries, d.PassportNumber)
+			}
+			pinfl := findPinflCreate(oc, session, d.PassportSeries, d.PassportNumber, d.Birthdate)
+			if pinfl == "" && birthNorm != "" {
+				pinfl, _ = oc.euroasiaLookupPinflByPassport(birthNorm, d.PassportSeries, d.PassportNumber)
+			}
+			if pinfl == "" {
+				return nil, fmt.Errorf("для Inson не удалось получить PINFL водителя (серия %s, номер %s); выполните find по человеку", d.PassportSeries, d.PassportNumber)
+			}
+			licSeries := strings.TrimSpace(d.LicenseSeries)
+			licNumber := strings.TrimSpace(d.LicenseNumber)
+			// Inson: licenseSeries 2–5 символов [A-Za-z0-9], licenseNumber 6–10 символов
+			if len(licSeries) < 2 || len(licSeries) > 5 {
+				licSeries = "AA"
+			}
+			if len(licNumber) < 6 || len(licNumber) > 10 {
+				licNumber = "000000"
+			}
+			licenseIssueDate := toYYYYMMDD(d.LicenseIssueDate)
+			dIssuedBy, dIssueDate := "Toshkent shahar IIB", "2020-01-01"
+			dFirst, dLast, dMiddle := "N", "N", "N"
+			if personData, err := oc.euroasiaLookupPersonByPassport(birthNorm, d.PassportSeries, d.PassportNumber); err == nil && personData != nil {
+				if by := extractNestedString(personData, "passport", "issued_by"); by != "" {
+					dIssuedBy = by
+				}
+				if iss := extractNestedString(personData, "passport", "issued_at"); iss != "" {
+					dIssueDate = toYYYYMMDD(iss)
+				}
+				if fn := extractNestedString(personData, "first_name"); fn != "" {
+					dFirst = fn
+				}
+				if ln := extractNestedString(personData, "last_name"); ln != "" {
+					dLast = ln
+				}
+				if mn := extractNestedString(personData, "middle_name"); mn != "" {
+					dMiddle = mn
+				}
+			}
+			driverObj := map[string]interface{}{
 				"residentType": 1,
+				"birthDate":    birthNorm,
+				"relative":     d.Relative,
 				"passportData": map[string]interface{}{
-					"series": d.PassportSeries,
-					"number": d.PassportNumber,
+					"pinfl":     pinfl,
+					"series":    d.PassportSeries,
+					"number":    d.PassportNumber,
+					"issuedBy":  dIssuedBy,
+					"issueDate": dIssueDate,
 				},
-				"licenseSeries":    d.LicenseSeries,
-				"licenseNumber":    d.LicenseNumber,
-				"relative":         d.Relative,
-				"licenseIssueDate": d.LicenseIssueDate,
-			})
+				"fullName": map[string]interface{}{
+					"firstname":  dFirst,
+					"lastname":   dLast,
+					"middlename": dMiddle,
+				},
+				"licenseSeries":    licSeries,
+				"licenseNumber":    licNumber,
+				"licenseIssueDate": licenseIssueDate,
+			}
+			if licenseIssueDate == "" {
+				driverObj["licenseIssueDate"] = "2020-01-01"
+			}
+			insonDrivers = append(insonDrivers, driverObj)
 		}
 	}
 	if insonDrivers == nil {
 		insonDrivers = []map[string]interface{}{}
 	}
 
+	// Рабочая форма Inson: applicant, details, vehicle (techPassport только series+number), drivers; owner не передаём
 	contractBody := map[string]interface{}{
 		"applicant": applicant,
 		"details": map[string]interface{}{
-			"startDate":              req.StartDate,
+			"startDate":              startDate,
 			"period":                 period,
 			"driverNumberRestricted": driverRestriction,
 		},
