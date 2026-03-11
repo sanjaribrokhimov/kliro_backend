@@ -2,6 +2,7 @@ package routes
 
 import (
 	"fmt"
+	"kliro/config"
 	"kliro/controllers"
 	"kliro/middleware"
 
@@ -25,6 +26,9 @@ func SetupRouter() *gin.Engine {
 
 	// Статическая раздача загруженных файлов
 	r.Static("/uploads", "./uploads")
+
+	// Android App Links и iOS Universal Links (должны быть доступны без авторизации)
+	SetupWellKnownRoutes(r)
 
 	// CORS middleware ДО роутов
 	r.Use(cors.New(cors.Config{
@@ -159,6 +163,14 @@ func SetupRouter() *gin.Engine {
 	r.GET("/test/panic", controllers.TestPanic)
 
 	return r
+}
+
+// SetupWellKnownRoutes регистрирует маршруты для Android App Links и iOS Universal Links
+func SetupWellKnownRoutes(r *gin.Engine) {
+	cfg := config.LoadConfig()
+	wc := controllers.NewWellKnownController(cfg)
+	r.GET("/.well-known/assetlinks.json", wc.AssetLinks)
+	r.GET("/.well-known/apple-app-site-association", wc.AppleAppSiteAssociation)
 }
 
 // SetupNeoInsuranceRouterOnly поднимает только neoInsurance маршруты (без БД/кронов)

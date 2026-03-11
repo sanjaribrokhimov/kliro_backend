@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -73,6 +74,11 @@ type Config struct {
 	InsonPassword string
 	// Translation API settings (бесплатный API, без токенов)
 	TranslationAPIURL string // URL для LibreTranslate (опционально, по умолчанию используется публичный)
+	// App Links / Universal Links (для Android App Links и iOS Associated Domains)
+	AndroidPackageName       string   // package_name для assetlinks.json (например com.kliro.app)
+	AndroidSHA256Fingerprints []string // SHA256 отпечатки сертификатов (через запятую в .env)
+	AppleTeamID             string   // Team ID для apple-app-site-association (например 9JA89Q95N)
+	AppleBundleID           string   // Bundle ID для iOS (например com.kliro.app)
 }
 
 func LoadConfig() *Config {
@@ -135,6 +141,10 @@ func LoadConfig() *Config {
 		InsonLogin:          os.Getenv("INSON_LOGIN"),
 		InsonPassword:       os.Getenv("INSON_PASSWORD"),
 		TranslationAPIURL:   getenvOrDefault("TRANSLATION_API_URL", "https://libretranslate.com/translate"),
+		AndroidPackageName:  getenvOrDefault("ANDROID_PACKAGE_NAME", "com.kliro.app"),
+		AndroidSHA256Fingerprints: getenvSliceOrDefault("ANDROID_SHA256_CERT_FINGERPRINTS", []string{"F7:34:EE:03:5C:83:AA:B7:EF:44:43:67:95:28:9B:D0:16:99:0F:E5:52:B8:0F:98:E5:12:76:F2:33:E2"}),
+		AppleTeamID:         os.Getenv("APPLE_TEAM_ID"),
+		AppleBundleID:       getenvOrDefault("APPLE_BUNDLE_ID", "com.kliro.app"),
 	}
 }
 
@@ -154,4 +164,23 @@ func getenvIntOrDefault(key string, def int) int {
 		}
 	}
 	return def
+}
+
+// getenvSliceOrDefault returns the environment variable split by comma (trimmed), or def if empty
+func getenvSliceOrDefault(key string, def []string) []string {
+	v := os.Getenv(key)
+	if v == "" {
+		return def
+	}
+	parts := strings.Split(v, ",")
+	out := make([]string, 0, len(parts))
+	for _, p := range parts {
+		if s := strings.TrimSpace(p); s != "" {
+			out = append(out, s)
+		}
+	}
+	if len(out) == 0 {
+		return def
+	}
+	return out
 }
