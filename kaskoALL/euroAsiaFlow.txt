@@ -1,0 +1,80 @@
+curl -X 'GET' \
+  'https://erp.eai.uz/api/v1/insurance/lookups/kasko-risks' \
+  -H 'accept: application/json' \
+  -H 'Accept-Language: ru' \
+  -H 'Authorization: ahyPz6rUaKp7PpxEN98XP1mpu25uO5'
+
+  {
+  "message": "Kasko risks retrieved successfully",
+  "success": true,
+  "data": [
+    {
+      "code": "FRONT",
+      "name": "Передняя часть"
+    },
+    {
+      "code": "SIDES",
+      "name": "Боковые части"
+    },
+    {
+      "code": "WINDSHIELD_AND_ROOF",
+      "name": "Лобовое стекло и крыша"
+    },
+    {
+      "code": "REAR_AND_SIDE_WINDOWS",
+      "name": "Задние стекла и стекла сбоку"
+    },
+    {
+      "code": "REAR",
+      "name": "Задняя часть"
+    },
+    {
+      "code": "THIRD_PARTY",
+      "name": "Гражданская ответственность"
+    },
+    {
+      "code": "PERSONAL_ACCIDENT",
+      "name": "Несчастный случай"
+    }
+  ]
+}
+
+curl -X 'POST' \
+  'https://erp.eai.uz/api/v1/insurance/euro-kasko/calculate' \
+  -H 'accept: application/json' \
+  -H 'Accept-Language: ru' \
+  -H 'Authorization: ahyPz6rUaKp7PpxEN98XP1mpu25uO5' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "risks": [
+    "FRONT"
+  ]
+}'
+
+{
+  "message": "Premium calculated successfully",
+  "success": true,
+  "data": {
+    "premium": {
+      "amount": 600000,
+      "currency": "UZS"
+    },
+    "sum": {
+      "amount": 20000000,
+      "currency": "UZS"
+    },
+    "risks": [
+      {
+        "risk": "FRONT",
+        "premium": {
+          "amount": 600000,
+          "currency": "UZS"
+        },
+        "sum": {
+          "amount": 20000000,
+          "currency": "UZS"
+        }
+      }
+    ]
+  }
+}

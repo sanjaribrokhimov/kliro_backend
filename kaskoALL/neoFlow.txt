@@ -1,0 +1,4336 @@
+https://api.neoinsurance.uz/api/sayt/kasko/cars get
+
+{
+    "cars": [
+        {
+            "id": 2,
+            "status": 1,
+            "name": "Toyota",
+            "logo": "car_brands/WFxVHbQZlh9C5MWyBG5pggylrLUYD1ripnsPIecO.svg",
+            "created_at": "2023-11-01T11:15:42.000000Z",
+            "updated_at": "2026-02-02T04:10:30.000000Z",
+            "car_models": [
+                {
+                    "id": 3,
+                    "status": 1,
+                    "name": "Prado",
+                    "car_brand_id": 2,
+                    "created_at": "2023-11-01T11:16:36.000000Z",
+                    "updated_at": "2023-11-01T11:56:53.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 4,
+                            "status": 1,
+                            "name": "150",
+                            "price": 630000000,
+                            "car_model_id": 3,
+                            "created_at": "2023-11-01T11:58:50.000000Z",
+                            "updated_at": "2026-01-06T05:52:03.000000Z"
+                        },
+                        {
+                            "id": 5,
+                            "status": 1,
+                            "name": "200",
+                            "price": 1001600000,
+                            "car_model_id": 3,
+                            "created_at": "2023-11-01T12:15:13.000000Z",
+                            "updated_at": "2025-12-30T07:39:05.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 97,
+                    "status": 1,
+                    "name": "Corolla",
+                    "car_brand_id": 2,
+                    "created_at": "2024-06-28T06:39:02.000000Z",
+                    "updated_at": "2024-06-28T06:39:02.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 200,
+                            "status": 1,
+                            "name": "Prestige Hibrid",
+                            "price": 300000000,
+                            "car_model_id": 97,
+                            "created_at": "2024-06-28T06:40:02.000000Z",
+                            "updated_at": "2025-10-22T12:20:13.000000Z"
+                        },
+                        {
+                            "id": 237,
+                            "status": 1,
+                            "name": "Prestige",
+                            "price": 300000000,
+                            "car_model_id": 97,
+                            "created_at": "2025-10-22T12:20:28.000000Z",
+                            "updated_at": "2025-10-22T12:20:28.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 98,
+                    "status": 1,
+                    "name": "Camry",
+                    "car_brand_id": 2,
+                    "created_at": "2024-06-28T06:47:02.000000Z",
+                    "updated_at": "2024-06-28T06:47:22.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 295,
+                            "status": 1,
+                            "name": "SFX E2",
+                            "price": 566000000,
+                            "car_model_id": 98,
+                            "created_at": "2026-03-05T11:23:57.000000Z",
+                            "updated_at": "2026-03-05T11:23:57.000000Z"
+                        },
+                        {
+                            "id": 201,
+                            "status": 1,
+                            "name": "Престиж Гибрид",
+                            "price": 566401500,
+                            "car_model_id": 98,
+                            "created_at": "2024-06-28T06:47:46.000000Z",
+                            "updated_at": "2024-06-28T06:47:46.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 99,
+                    "status": 1,
+                    "name": "Highlander",
+                    "car_brand_id": 2,
+                    "created_at": "2024-06-28T06:53:24.000000Z",
+                    "updated_at": "2024-06-28T06:53:24.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 202,
+                            "status": 1,
+                            "name": "Комфорт Гибрид",
+                            "price": 944002500,
+                            "car_model_id": 99,
+                            "created_at": "2024-06-28T06:53:52.000000Z",
+                            "updated_at": "2024-06-28T06:54:07.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 100,
+                    "status": 1,
+                    "name": "Hilux",
+                    "car_brand_id": 2,
+                    "created_at": "2024-06-28T06:56:19.000000Z",
+                    "updated_at": "2024-06-28T06:56:19.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 203,
+                            "status": 1,
+                            "name": "Gr Sport",
+                            "price": 970434570,
+                            "car_model_id": 100,
+                            "created_at": "2024-06-28T06:56:54.000000Z",
+                            "updated_at": "2024-06-28T06:56:54.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 130,
+                    "status": 1,
+                    "name": "Land Cruiser",
+                    "car_brand_id": 2,
+                    "created_at": "2026-01-28T06:58:49.000000Z",
+                    "updated_at": "2026-01-28T06:58:49.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 285,
+                            "status": 1,
+                            "name": "300",
+                            "price": 1500000000,
+                            "car_model_id": 130,
+                            "created_at": "2026-01-28T06:59:01.000000Z",
+                            "updated_at": "2026-01-30T09:48:31.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "status": 1,
+            "name": "Chevrolet",
+            "logo": "car_brands/5xULkf8GraT7gowEF5UgSYqcq91myaq2vdmCIUEA.svg",
+            "created_at": "2023-11-01T11:15:47.000000Z",
+            "updated_at": "2026-02-02T04:11:07.000000Z",
+            "car_models": [
+                {
+                    "id": 7,
+                    "status": 1,
+                    "name": "Malibu 2",
+                    "car_brand_id": 3,
+                    "created_at": "2023-11-01T11:20:06.000000Z",
+                    "updated_at": "2023-11-02T14:41:32.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 276,
+                            "status": 1,
+                            "name": "1.5 turbo",
+                            "price": 346000000,
+                            "car_model_id": 7,
+                            "created_at": "2025-12-15T12:35:24.000000Z",
+                            "updated_at": "2025-12-15T12:37:20.000000Z"
+                        },
+                        {
+                            "id": 63,
+                            "status": 1,
+                            "name": "XL 1 LT 2.0T",
+                            "price": 375000640,
+                            "car_model_id": 7,
+                            "created_at": "2023-11-02T14:42:27.000000Z",
+                            "updated_at": "2024-06-10T16:35:13.000000Z"
+                        },
+                        {
+                            "id": 64,
+                            "status": 1,
+                            "name": "XL 2 LT 2.0T",
+                            "price": 390000800,
+                            "car_model_id": 7,
+                            "created_at": "2023-11-02T14:44:58.000000Z",
+                            "updated_at": "2023-11-02T14:44:58.000000Z"
+                        },
+                        {
+                            "id": 136,
+                            "status": 1,
+                            "name": "LTZ 2T Premier",
+                            "price": 400000000,
+                            "car_model_id": 7,
+                            "created_at": "2024-05-08T05:58:07.000000Z",
+                            "updated_at": "2024-05-08T05:58:07.000000Z"
+                        },
+                        {
+                            "id": 65,
+                            "status": 1,
+                            "name": "XL LTZ 2.0T",
+                            "price": 419000960,
+                            "car_model_id": 7,
+                            "created_at": "2023-11-02T14:45:32.000000Z",
+                            "updated_at": "2023-11-02T14:45:32.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 41,
+                    "status": 1,
+                    "name": "Monza",
+                    "car_brand_id": 3,
+                    "created_at": "2023-11-03T07:14:30.000000Z",
+                    "updated_at": "2023-11-03T07:14:30.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 89,
+                            "status": 1,
+                            "name": "1.5",
+                            "price": 250000000,
+                            "car_model_id": 41,
+                            "created_at": "2023-11-03T07:14:42.000000Z",
+                            "updated_at": "2023-11-03T07:14:42.000000Z"
+                        },
+                        {
+                            "id": 90,
+                            "status": 1,
+                            "name": "1.3 turbo",
+                            "price": 265000000,
+                            "car_model_id": 41,
+                            "created_at": "2023-11-03T07:14:55.000000Z",
+                            "updated_at": "2023-11-03T07:14:55.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 42,
+                    "status": 1,
+                    "name": "ONIX",
+                    "car_brand_id": 3,
+                    "created_at": "2023-11-04T07:36:34.000000Z",
+                    "updated_at": "2023-11-04T07:36:34.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 177,
+                            "status": 1,
+                            "name": "LS MT",
+                            "price": 161900000,
+                            "car_model_id": 42,
+                            "created_at": "2024-06-27T11:52:39.000000Z",
+                            "updated_at": "2025-10-25T11:21:55.000000Z"
+                        },
+                        {
+                            "id": 178,
+                            "status": 1,
+                            "name": "1LT MT",
+                            "price": 165761000,
+                            "car_model_id": 42,
+                            "created_at": "2024-06-27T11:52:59.000000Z",
+                            "updated_at": "2025-10-25T11:22:21.000000Z"
+                        },
+                        {
+                            "id": 91,
+                            "status": 1,
+                            "name": "3LT (1.2 MT)",
+                            "price": 169750000,
+                            "car_model_id": 42,
+                            "created_at": "2023-11-04T07:36:55.000000Z",
+                            "updated_at": "2025-10-25T11:22:58.000000Z"
+                        },
+                        {
+                            "id": 92,
+                            "status": 1,
+                            "name": "LTZ TURBO AT",
+                            "price": 184899840,
+                            "car_model_id": 42,
+                            "created_at": "2023-11-04T07:37:12.000000Z",
+                            "updated_at": "2025-10-25T11:26:42.000000Z"
+                        },
+                        {
+                            "id": 93,
+                            "status": 1,
+                            "name": "Premier 1 Turbo AT",
+                            "price": 196994720,
+                            "car_model_id": 42,
+                            "created_at": "2023-11-04T07:37:35.000000Z",
+                            "updated_at": "2025-10-25T11:26:59.000000Z"
+                        },
+                        {
+                            "id": 241,
+                            "status": 1,
+                            "name": "Premier 2 Turbo AT",
+                            "price": 204580480,
+                            "car_model_id": 42,
+                            "created_at": "2025-10-25T11:27:26.000000Z",
+                            "updated_at": "2025-10-25T11:27:26.000000Z"
+                        },
+                        {
+                            "id": 242,
+                            "status": 1,
+                            "name": "Premier 2 Turbo AT PLUS",
+                            "price": 206640160,
+                            "car_model_id": 42,
+                            "created_at": "2025-10-25T11:27:51.000000Z",
+                            "updated_at": "2025-10-25T11:27:51.000000Z"
+                        },
+                        {
+                            "id": 243,
+                            "status": 1,
+                            "name": "TURBO AT REDLINE",
+                            "price": 215624800,
+                            "car_model_id": 42,
+                            "created_at": "2025-10-25T11:50:29.000000Z",
+                            "updated_at": "2025-10-25T11:50:29.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 43,
+                    "status": 1,
+                    "name": "COBALT",
+                    "car_brand_id": 3,
+                    "created_at": "2023-11-04T07:38:25.000000Z",
+                    "updated_at": "2023-11-04T07:38:25.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 94,
+                            "status": 1,
+                            "name": "GS-STYLE MT",
+                            "price": 150000000,
+                            "car_model_id": 43,
+                            "created_at": "2023-11-04T07:38:49.000000Z",
+                            "updated_at": "2023-11-06T04:36:53.000000Z"
+                        },
+                        {
+                            "id": 95,
+                            "status": 1,
+                            "name": "GS-STYLE AT PLUS",
+                            "price": 150000000,
+                            "car_model_id": 43,
+                            "created_at": "2023-11-04T07:39:47.000000Z",
+                            "updated_at": "2025-12-15T08:18:39.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 44,
+                    "status": 1,
+                    "name": "LACETTI",
+                    "car_brand_id": 3,
+                    "created_at": "2023-11-04T07:40:26.000000Z",
+                    "updated_at": "2023-11-04T07:40:26.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 115,
+                            "status": 1,
+                            "name": "M/T",
+                            "price": 165000000,
+                            "car_model_id": 44,
+                            "created_at": "2023-11-06T04:48:27.000000Z",
+                            "updated_at": "2023-11-06T04:48:27.000000Z"
+                        },
+                        {
+                            "id": 96,
+                            "status": 1,
+                            "name": "L-Style AT PLUS",
+                            "price": 200000000,
+                            "car_model_id": 44,
+                            "created_at": "2023-11-04T07:40:54.000000Z",
+                            "updated_at": "2023-11-06T04:46:52.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 45,
+                    "status": 1,
+                    "name": "DAMAS",
+                    "car_brand_id": 3,
+                    "created_at": "2023-11-04T07:42:17.000000Z",
+                    "updated_at": "2023-11-04T07:42:17.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 97,
+                            "status": 1,
+                            "name": "D2DLX STYLE PLUS",
+                            "price": 96932000,
+                            "car_model_id": 45,
+                            "created_at": "2023-11-04T07:42:34.000000Z",
+                            "updated_at": "2023-11-04T07:42:34.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 46,
+                    "status": 1,
+                    "name": "LABO",
+                    "car_brand_id": 3,
+                    "created_at": "2023-11-04T07:43:33.000000Z",
+                    "updated_at": "2023-11-04T07:43:33.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 98,
+                            "status": 1,
+                            "name": "Lb2 PLUS NEW",
+                            "price": 96370000,
+                            "car_model_id": 46,
+                            "created_at": "2023-11-04T07:43:53.000000Z",
+                            "updated_at": "2023-11-04T07:44:17.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 47,
+                    "status": 1,
+                    "name": "TRACKER 2",
+                    "car_brand_id": 3,
+                    "created_at": "2023-11-04T07:45:28.000000Z",
+                    "updated_at": "2025-11-24T13:37:08.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 99,
+                            "status": 1,
+                            "name": "LS PLUS",
+                            "price": 215951360,
+                            "car_model_id": 47,
+                            "created_at": "2023-11-04T07:45:54.000000Z",
+                            "updated_at": "2025-10-25T11:08:08.000000Z"
+                        },
+                        {
+                            "id": 208,
+                            "status": 1,
+                            "name": "LS",
+                            "price": 215951360,
+                            "car_model_id": 47,
+                            "created_at": "2024-09-27T12:02:57.000000Z",
+                            "updated_at": "2025-10-25T11:09:16.000000Z"
+                        },
+                        {
+                            "id": 100,
+                            "status": 1,
+                            "name": "LTZ PLUS",
+                            "price": 229108480,
+                            "car_model_id": 47,
+                            "created_at": "2023-11-04T07:46:12.000000Z",
+                            "updated_at": "2025-10-25T11:08:22.000000Z"
+                        },
+                        {
+                            "id": 239,
+                            "status": 1,
+                            "name": "TRK Premier PLUS wo C68",
+                            "price": 250696160,
+                            "car_model_id": 47,
+                            "created_at": "2025-10-25T11:09:45.000000Z",
+                            "updated_at": "2025-10-25T11:09:45.000000Z"
+                        },
+                        {
+                            "id": 101,
+                            "status": 1,
+                            "name": "PREMIER PLUS",
+                            "price": 252656160,
+                            "car_model_id": 47,
+                            "created_at": "2023-11-04T07:46:27.000000Z",
+                            "updated_at": "2025-10-25T11:08:37.000000Z"
+                        },
+                        {
+                            "id": 102,
+                            "status": 1,
+                            "name": "REDLINE",
+                            "price": 260474080,
+                            "car_model_id": 47,
+                            "created_at": "2023-11-04T07:46:40.000000Z",
+                            "updated_at": "2025-10-25T11:09:06.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 48,
+                    "status": 1,
+                    "name": "EQUINOX",
+                    "car_brand_id": 3,
+                    "created_at": "2023-11-04T07:48:03.000000Z",
+                    "updated_at": "2023-11-04T07:48:03.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 103,
+                            "status": 1,
+                            "name": "1LT FWD",
+                            "price": 383450560,
+                            "car_model_id": 48,
+                            "created_at": "2023-11-04T07:48:20.000000Z",
+                            "updated_at": "2025-10-25T11:15:46.000000Z"
+                        },
+                        {
+                            "id": 104,
+                            "status": 1,
+                            "name": "1LT AWD",
+                            "price": 416000000,
+                            "car_model_id": 48,
+                            "created_at": "2023-11-04T07:48:35.000000Z",
+                            "updated_at": "2025-10-25T11:16:02.000000Z"
+                        },
+                        {
+                            "id": 105,
+                            "status": 1,
+                            "name": "3LT AWD",
+                            "price": 447500000,
+                            "car_model_id": 48,
+                            "created_at": "2023-11-04T07:48:51.000000Z",
+                            "updated_at": "2025-10-25T11:16:21.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 49,
+                    "status": 1,
+                    "name": "TRAVERSE",
+                    "car_brand_id": 3,
+                    "created_at": "2023-11-04T07:49:03.000000Z",
+                    "updated_at": "2023-11-04T07:49:03.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 106,
+                            "status": 1,
+                            "name": "PREMIER 2 AT 3.6L",
+                            "price": 657730560,
+                            "car_model_id": 49,
+                            "created_at": "2023-11-04T07:49:20.000000Z",
+                            "updated_at": "2025-10-25T11:17:32.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 50,
+                    "status": 1,
+                    "name": "TAHOE",
+                    "car_brand_id": 3,
+                    "created_at": "2023-11-04T07:49:32.000000Z",
+                    "updated_at": "2023-11-04T07:49:32.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 107,
+                            "status": 1,
+                            "name": "RST 5.3L",
+                            "price": 1109274880,
+                            "car_model_id": 50,
+                            "created_at": "2023-11-04T07:49:48.000000Z",
+                            "updated_at": "2023-11-04T07:49:48.000000Z"
+                        },
+                        {
+                            "id": 240,
+                            "status": 1,
+                            "name": "TAHOE HIGH COUNTRY",
+                            "price": 1464500000,
+                            "car_model_id": 50,
+                            "created_at": "2025-10-25T11:19:34.000000Z",
+                            "updated_at": "2025-10-25T11:19:34.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 51,
+                    "status": 1,
+                    "name": "CAPTIVA 5",
+                    "car_brand_id": 3,
+                    "created_at": "2023-11-04T07:50:05.000000Z",
+                    "updated_at": "2023-11-04T07:50:05.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 108,
+                            "status": 1,
+                            "name": "LT 1",
+                            "price": 284900000,
+                            "car_model_id": 51,
+                            "created_at": "2023-11-04T07:50:30.000000Z",
+                            "updated_at": "2025-10-25T11:12:01.000000Z"
+                        },
+                        {
+                            "id": 109,
+                            "status": 1,
+                            "name": "LT 2",
+                            "price": 304900000,
+                            "car_model_id": 51,
+                            "created_at": "2023-11-04T07:50:49.000000Z",
+                            "updated_at": "2025-10-25T11:12:13.000000Z"
+                        },
+                        {
+                            "id": 110,
+                            "status": 1,
+                            "name": "PREMIER",
+                            "price": 334900000,
+                            "car_model_id": 51,
+                            "created_at": "2023-11-04T07:51:08.000000Z",
+                            "updated_at": "2025-10-25T11:12:32.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 52,
+                    "status": 1,
+                    "name": "Spark",
+                    "car_brand_id": 3,
+                    "created_at": "2023-11-06T04:10:46.000000Z",
+                    "updated_at": "2023-11-06T04:10:46.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 111,
+                            "status": 1,
+                            "name": "M/T",
+                            "price": 122500000,
+                            "car_model_id": 52,
+                            "created_at": "2023-11-06T04:12:59.000000Z",
+                            "updated_at": "2023-11-06T04:12:59.000000Z"
+                        },
+                        {
+                            "id": 112,
+                            "status": 1,
+                            "name": "A/T",
+                            "price": 145000000,
+                            "car_model_id": 52,
+                            "created_at": "2023-11-06T04:14:19.000000Z",
+                            "updated_at": "2025-12-22T16:44:55.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 53,
+                    "status": 1,
+                    "name": "Nexia 3",
+                    "car_brand_id": 3,
+                    "created_at": "2023-11-06T04:14:43.000000Z",
+                    "updated_at": "2023-11-06T04:14:43.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 113,
+                            "status": 1,
+                            "name": "M/T",
+                            "price": 145000000,
+                            "car_model_id": 53,
+                            "created_at": "2023-11-06T04:18:45.000000Z",
+                            "updated_at": "2023-11-06T04:39:03.000000Z"
+                        },
+                        {
+                            "id": 114,
+                            "status": 1,
+                            "name": "A/T",
+                            "price": 165000000,
+                            "car_model_id": 53,
+                            "created_at": "2023-11-06T04:21:34.000000Z",
+                            "updated_at": "2023-11-06T04:40:09.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 83,
+                    "status": 1,
+                    "name": "Captiva 4",
+                    "car_brand_id": 3,
+                    "created_at": "2024-06-21T07:36:17.000000Z",
+                    "updated_at": "2024-06-21T07:36:17.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 172,
+                            "status": 1,
+                            "name": "LTZ",
+                            "price": 350000000,
+                            "car_model_id": 83,
+                            "created_at": "2024-06-21T07:38:21.000000Z",
+                            "updated_at": "2024-06-21T09:41:01.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 101,
+                    "status": 1,
+                    "name": "ORLANDO",
+                    "car_brand_id": 3,
+                    "created_at": "2024-07-26T09:58:39.000000Z",
+                    "updated_at": "2024-07-26T09:58:39.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 204,
+                            "status": 1,
+                            "name": "2",
+                            "price": 316000000,
+                            "car_model_id": 101,
+                            "created_at": "2024-07-26T10:12:45.000000Z",
+                            "updated_at": "2024-07-26T10:12:45.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 102,
+                    "status": 1,
+                    "name": "Bolt",
+                    "car_brand_id": 3,
+                    "created_at": "2025-07-09T08:55:19.000000Z",
+                    "updated_at": "2025-07-09T08:55:19.000000Z",
+                    "car_positions": []
+                },
+                {
+                    "id": 120,
+                    "status": 1,
+                    "name": "TRACKER 1",
+                    "car_brand_id": 3,
+                    "created_at": "2025-11-24T13:37:23.000000Z",
+                    "updated_at": "2025-11-24T13:37:23.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 263,
+                            "status": 1,
+                            "name": "AT",
+                            "price": 186000000,
+                            "car_model_id": 120,
+                            "created_at": "2025-11-24T13:42:07.000000Z",
+                            "updated_at": "2025-11-24T13:43:18.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 128,
+                    "status": 1,
+                    "name": "Trailblazer",
+                    "car_brand_id": 3,
+                    "created_at": "2026-01-14T12:37:12.000000Z",
+                    "updated_at": "2026-01-14T12:37:12.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 282,
+                            "status": 1,
+                            "name": "AT",
+                            "price": 350000000,
+                            "car_model_id": 128,
+                            "created_at": "2026-01-14T12:42:56.000000Z",
+                            "updated_at": "2026-01-14T13:01:55.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "status": 1,
+            "name": "Hyundai",
+            "logo": "car_brands/92XX7QdHvyHAXKNxRkn3yRwhkJFiPJLolhi0h90F.svg",
+            "created_at": "2023-11-01T11:15:52.000000Z",
+            "updated_at": "2026-02-02T04:11:22.000000Z",
+            "car_models": [
+                {
+                    "id": 25,
+                    "status": 1,
+                    "name": "SONATA",
+                    "car_brand_id": 4,
+                    "created_at": "2023-11-02T06:32:35.000000Z",
+                    "updated_at": "2023-11-02T06:32:35.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 48,
+                            "status": 1,
+                            "name": "Style Plus UZ",
+                            "price": 478000000,
+                            "car_model_id": 25,
+                            "created_at": "2023-11-02T06:33:01.000000Z",
+                            "updated_at": "2023-11-02T06:33:01.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 26,
+                    "status": 1,
+                    "name": "TUCSON",
+                    "car_brand_id": 4,
+                    "created_at": "2023-11-02T06:35:23.000000Z",
+                    "updated_at": "2023-11-02T06:35:23.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 170,
+                            "status": 1,
+                            "name": "Comfort",
+                            "price": 400000000,
+                            "car_model_id": 26,
+                            "created_at": "2024-06-12T03:15:48.000000Z",
+                            "updated_at": "2026-02-05T12:48:28.000000Z"
+                        },
+                        {
+                            "id": 49,
+                            "status": 1,
+                            "name": "High-Tech",
+                            "price": 490000000,
+                            "car_model_id": 26,
+                            "created_at": "2023-11-02T06:35:42.000000Z",
+                            "updated_at": "2026-02-05T12:48:48.000000Z"
+                        },
+                        {
+                            "id": 50,
+                            "status": 1,
+                            "name": "Special Uz",
+                            "price": 499000000,
+                            "car_model_id": 26,
+                            "created_at": "2023-11-02T06:35:59.000000Z",
+                            "updated_at": "2026-02-05T12:48:38.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 27,
+                    "status": 1,
+                    "name": "Santa Fe",
+                    "car_brand_id": 4,
+                    "created_at": "2023-11-02T06:36:11.000000Z",
+                    "updated_at": "2023-11-02T06:36:11.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 51,
+                            "status": 1,
+                            "name": "High-Tech",
+                            "price": 674000000,
+                            "car_model_id": 27,
+                            "created_at": "2023-11-02T06:36:32.000000Z",
+                            "updated_at": "2023-11-02T06:36:32.000000Z"
+                        },
+                        {
+                            "id": 52,
+                            "status": 1,
+                            "name": "Luxe",
+                            "price": 755000000,
+                            "car_model_id": 27,
+                            "created_at": "2023-11-02T06:36:46.000000Z",
+                            "updated_at": "2023-11-02T06:36:46.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 28,
+                    "status": 1,
+                    "name": "Staria",
+                    "car_brand_id": 4,
+                    "created_at": "2023-11-02T06:38:00.000000Z",
+                    "updated_at": "2023-11-02T06:38:00.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 53,
+                            "status": 1,
+                            "name": "Luxe",
+                            "price": 764000000,
+                            "car_model_id": 28,
+                            "created_at": "2023-11-02T06:38:15.000000Z",
+                            "updated_at": "2023-11-02T06:38:15.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 71,
+                    "status": 1,
+                    "name": "Creta",
+                    "car_brand_id": 4,
+                    "created_at": "2024-06-01T06:07:42.000000Z",
+                    "updated_at": "2024-06-01T06:07:42.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 151,
+                            "status": 1,
+                            "name": "Dynamic UZ",
+                            "price": 296000000,
+                            "car_model_id": 71,
+                            "created_at": "2024-06-01T06:13:00.000000Z",
+                            "updated_at": "2024-06-01T06:13:00.000000Z"
+                        },
+                        {
+                            "id": 152,
+                            "status": 1,
+                            "name": "Style UZ",
+                            "price": 322000000,
+                            "car_model_id": 71,
+                            "created_at": "2024-06-01T06:13:16.000000Z",
+                            "updated_at": "2024-06-01T06:13:16.000000Z"
+                        },
+                        {
+                            "id": 153,
+                            "status": 1,
+                            "name": "Prime UZ",
+                            "price": 342000000,
+                            "car_model_id": 71,
+                            "created_at": "2024-06-01T06:13:32.000000Z",
+                            "updated_at": "2024-06-01T06:13:32.000000Z"
+                        },
+                        {
+                            "id": 154,
+                            "status": 1,
+                            "name": "High-Tech UZ",
+                            "price": 377000000,
+                            "car_model_id": 71,
+                            "created_at": "2024-06-01T06:13:47.000000Z",
+                            "updated_at": "2024-06-01T06:13:47.000000Z"
+                        },
+                        {
+                            "id": 155,
+                            "status": 1,
+                            "name": "High-Tech Luxe",
+                            "price": 409000000,
+                            "car_model_id": 71,
+                            "created_at": "2024-06-01T06:14:04.000000Z",
+                            "updated_at": "2024-06-01T06:14:04.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 74,
+                    "status": 1,
+                    "name": "i30",
+                    "car_brand_id": 4,
+                    "created_at": "2024-06-04T06:31:15.000000Z",
+                    "updated_at": "2024-06-04T06:31:15.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 159,
+                            "status": 1,
+                            "name": "Comfort 1.5",
+                            "price": 298000000,
+                            "car_model_id": 74,
+                            "created_at": "2024-06-04T06:31:41.000000Z",
+                            "updated_at": "2024-06-04T06:34:36.000000Z"
+                        },
+                        {
+                            "id": 160,
+                            "status": 1,
+                            "name": "Elegance 1.5",
+                            "price": 321000000,
+                            "car_model_id": 74,
+                            "created_at": "2024-06-04T06:33:21.000000Z",
+                            "updated_at": "2024-06-04T06:33:21.000000Z"
+                        },
+                        {
+                            "id": 161,
+                            "status": 1,
+                            "name": "Premium 1.5",
+                            "price": 344000000,
+                            "car_model_id": 74,
+                            "created_at": "2024-06-04T06:33:47.000000Z",
+                            "updated_at": "2024-06-04T06:33:47.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 87,
+                    "status": 1,
+                    "name": "Elantra",
+                    "car_brand_id": 4,
+                    "created_at": "2024-06-27T15:50:50.000000Z",
+                    "updated_at": "2024-06-27T15:50:50.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 179,
+                            "status": 1,
+                            "name": "Elegance Plus",
+                            "price": 340000000,
+                            "car_model_id": 87,
+                            "created_at": "2024-06-27T15:51:41.000000Z",
+                            "updated_at": "2024-06-27T15:58:29.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 121,
+                    "status": 1,
+                    "name": "PALISADE",
+                    "car_brand_id": 4,
+                    "created_at": "2025-11-25T08:02:58.000000Z",
+                    "updated_at": "2025-11-25T08:02:58.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 264,
+                            "status": 1,
+                            "name": "Calligraphy",
+                            "price": 885000000,
+                            "car_model_id": 121,
+                            "created_at": "2025-11-25T08:03:29.000000Z",
+                            "updated_at": "2025-11-25T08:03:29.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "status": 1,
+            "name": "BYD",
+            "logo": "car_brands/5tA3RP7c3iSfUbA6sq3vU8RgNGNh7AFGKlYSLdem.svg",
+            "created_at": "2023-11-01T11:15:58.000000Z",
+            "updated_at": "2026-02-02T04:11:34.000000Z",
+            "car_models": [
+                {
+                    "id": 11,
+                    "status": 1,
+                    "name": "Chazor DMi",
+                    "car_brand_id": 5,
+                    "created_at": "2023-11-01T11:22:04.000000Z",
+                    "updated_at": "2023-11-01T11:22:04.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 217,
+                            "status": 1,
+                            "name": "55 km Active",
+                            "price": 273900000,
+                            "car_model_id": 11,
+                            "created_at": "2025-10-21T11:41:14.000000Z",
+                            "updated_at": "2025-10-21T11:41:14.000000Z"
+                        },
+                        {
+                            "id": 216,
+                            "status": 1,
+                            "name": "55 km Luxe",
+                            "price": 288100000,
+                            "car_model_id": 11,
+                            "created_at": "2025-10-21T11:40:51.000000Z",
+                            "updated_at": "2025-10-21T11:40:51.000000Z"
+                        },
+                        {
+                            "id": 3,
+                            "status": 1,
+                            "name": "120 km Comfort",
+                            "price": 302300000,
+                            "car_model_id": 11,
+                            "created_at": "2023-11-01T11:54:21.000000Z",
+                            "updated_at": "2025-10-21T11:40:31.000000Z"
+                        },
+                        {
+                            "id": 2,
+                            "status": 1,
+                            "name": "120 km Flagship",
+                            "price": 315200000,
+                            "car_model_id": 11,
+                            "created_at": "2023-11-01T11:26:08.000000Z",
+                            "updated_at": "2025-10-21T11:40:05.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 12,
+                    "status": 1,
+                    "name": "Song Plus DMi",
+                    "car_brand_id": 5,
+                    "created_at": "2023-11-01T11:22:17.000000Z",
+                    "updated_at": "2023-11-01T11:22:17.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 8,
+                            "status": 1,
+                            "name": "110km Comfort",
+                            "price": 367732000,
+                            "car_model_id": 12,
+                            "created_at": "2023-11-01T12:19:36.000000Z",
+                            "updated_at": "2023-11-01T12:19:36.000000Z"
+                        },
+                        {
+                            "id": 9,
+                            "status": 1,
+                            "name": "110km Flagship",
+                            "price": 387200000,
+                            "car_model_id": 12,
+                            "created_at": "2023-11-01T12:19:58.000000Z",
+                            "updated_at": "2025-10-21T12:56:08.000000Z"
+                        },
+                        {
+                            "id": 10,
+                            "status": 1,
+                            "name": "150 km Flagship",
+                            "price": 409700000,
+                            "car_model_id": 12,
+                            "created_at": "2023-11-01T12:20:21.000000Z",
+                            "updated_at": "2025-10-21T12:56:01.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 13,
+                    "status": 1,
+                    "name": "Han",
+                    "car_brand_id": 5,
+                    "created_at": "2023-11-01T11:22:27.000000Z",
+                    "updated_at": "2023-11-01T11:22:27.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 55,
+                            "status": 1,
+                            "name": "Flagship AWD 610km",
+                            "price": 480634000,
+                            "car_model_id": 13,
+                            "created_at": "2023-11-02T06:39:43.000000Z",
+                            "updated_at": "2026-02-12T11:47:12.000000Z"
+                        },
+                        {
+                            "id": 54,
+                            "status": 1,
+                            "name": "Flagship FWD 715KM",
+                            "price": 613581000,
+                            "car_model_id": 13,
+                            "created_at": "2023-11-02T06:39:22.000000Z",
+                            "updated_at": "2023-11-02T06:39:22.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 55,
+                    "status": 1,
+                    "name": "Seal",
+                    "car_brand_id": 5,
+                    "created_at": "2023-11-06T05:14:41.000000Z",
+                    "updated_at": "2023-11-06T05:14:41.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 117,
+                            "status": 1,
+                            "name": "550 km Standard prestige RWd",
+                            "price": 450000000,
+                            "car_model_id": 55,
+                            "created_at": "2023-11-06T05:24:03.000000Z",
+                            "updated_at": "2023-11-06T05:24:03.000000Z"
+                        },
+                        {
+                            "id": 118,
+                            "status": 1,
+                            "name": "Long range 700km",
+                            "price": 550000000,
+                            "car_model_id": 55,
+                            "created_at": "2023-11-06T05:30:17.000000Z",
+                            "updated_at": "2023-11-06T05:30:17.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 56,
+                    "status": 1,
+                    "name": "Seagull",
+                    "car_brand_id": 5,
+                    "created_at": "2023-11-06T05:42:01.000000Z",
+                    "updated_at": "2023-11-06T05:42:01.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 121,
+                            "status": 1,
+                            "name": "Seagull Dynamic 305km",
+                            "price": 200000000,
+                            "car_model_id": 56,
+                            "created_at": "2023-11-06T05:48:44.000000Z",
+                            "updated_at": "2023-11-06T05:48:44.000000Z"
+                        },
+                        {
+                            "id": 120,
+                            "status": 1,
+                            "name": "Seagull Free 305km",
+                            "price": 210000000,
+                            "car_model_id": 56,
+                            "created_at": "2023-11-06T05:47:40.000000Z",
+                            "updated_at": "2023-11-06T05:47:40.000000Z"
+                        },
+                        {
+                            "id": 119,
+                            "status": 1,
+                            "name": "Seagull Flying 405km",
+                            "price": 220000000,
+                            "car_model_id": 56,
+                            "created_at": "2023-11-06T05:46:55.000000Z",
+                            "updated_at": "2023-11-06T05:46:55.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 57,
+                    "status": 1,
+                    "name": "E2",
+                    "car_brand_id": 5,
+                    "created_at": "2024-04-29T04:17:46.000000Z",
+                    "updated_at": "2024-04-29T04:17:46.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 122,
+                            "status": 1,
+                            "name": "Luxury version",
+                            "price": 235000000,
+                            "car_model_id": 57,
+                            "created_at": "2024-04-29T04:27:47.000000Z",
+                            "updated_at": "2024-04-29T04:27:47.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 58,
+                    "status": 1,
+                    "name": "song L",
+                    "car_brand_id": 5,
+                    "created_at": "2024-04-29T04:31:38.000000Z",
+                    "updated_at": "2024-04-29T04:31:38.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 123,
+                            "status": 1,
+                            "name": "550km Transcendent",
+                            "price": 336500000,
+                            "car_model_id": 58,
+                            "created_at": "2024-04-29T04:32:20.000000Z",
+                            "updated_at": "2024-04-29T04:32:20.000000Z"
+                        },
+                        {
+                            "id": 124,
+                            "status": 1,
+                            "name": "550km Excellent",
+                            "price": 349000000,
+                            "car_model_id": 58,
+                            "created_at": "2024-04-29T04:33:12.000000Z",
+                            "updated_at": "2024-04-29T04:33:12.000000Z"
+                        },
+                        {
+                            "id": 125,
+                            "status": 1,
+                            "name": "662km Transcendent",
+                            "price": 365000000,
+                            "car_model_id": 58,
+                            "created_at": "2024-04-29T04:34:01.000000Z",
+                            "updated_at": "2024-04-29T04:34:01.000000Z"
+                        },
+                        {
+                            "id": 126,
+                            "status": 1,
+                            "name": "662km Excellent",
+                            "price": 396000000,
+                            "car_model_id": 58,
+                            "created_at": "2024-04-29T04:34:59.000000Z",
+                            "updated_at": "2024-04-29T04:34:59.000000Z"
+                        },
+                        {
+                            "id": 127,
+                            "status": 1,
+                            "name": "602km Excellent4wd",
+                            "price": 428000000,
+                            "car_model_id": 58,
+                            "created_at": "2024-04-29T04:35:41.000000Z",
+                            "updated_at": "2024-04-29T04:35:41.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 60,
+                    "status": 1,
+                    "name": "Yuan pro",
+                    "car_brand_id": 5,
+                    "created_at": "2024-04-29T17:30:28.000000Z",
+                    "updated_at": "2024-04-29T17:33:21.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 135,
+                            "status": 1,
+                            "name": "Full 401 km",
+                            "price": 240000000,
+                            "car_model_id": 60,
+                            "created_at": "2024-04-29T17:53:24.000000Z",
+                            "updated_at": "2024-04-29T17:53:24.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 61,
+                    "status": 1,
+                    "name": "Yuan Up",
+                    "car_brand_id": 5,
+                    "created_at": "2024-04-29T17:33:39.000000Z",
+                    "updated_at": "2024-04-29T17:33:39.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 133,
+                            "status": 1,
+                            "name": "Full",
+                            "price": 265000000,
+                            "car_model_id": 61,
+                            "created_at": "2024-04-29T17:35:16.000000Z",
+                            "updated_at": "2024-04-29T17:35:16.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 62,
+                    "status": 1,
+                    "name": "Yuan plus",
+                    "car_brand_id": 5,
+                    "created_at": "2024-04-29T17:37:43.000000Z",
+                    "updated_at": "2024-04-29T17:37:43.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 134,
+                            "status": 1,
+                            "name": "Champion",
+                            "price": 320000000,
+                            "car_model_id": 62,
+                            "created_at": "2024-04-29T17:38:14.000000Z",
+                            "updated_at": "2024-04-29T17:38:42.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 65,
+                    "status": 1,
+                    "name": "Song Pro",
+                    "car_brand_id": 5,
+                    "created_at": "2024-05-17T13:11:58.000000Z",
+                    "updated_at": "2024-05-17T13:11:58.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 140,
+                            "status": 1,
+                            "name": "DM-i 71km Comfort",
+                            "price": 321800000,
+                            "car_model_id": 65,
+                            "created_at": "2024-05-17T13:12:43.000000Z",
+                            "updated_at": "2025-10-21T12:59:01.000000Z"
+                        },
+                        {
+                            "id": 141,
+                            "status": 1,
+                            "name": "DM-i 71 km Flagship",
+                            "price": 334400000,
+                            "car_model_id": 65,
+                            "created_at": "2024-05-17T13:13:48.000000Z",
+                            "updated_at": "2025-10-21T12:59:19.000000Z"
+                        },
+                        {
+                            "id": 218,
+                            "status": 1,
+                            "name": "DM-i 110 km Flagship",
+                            "price": 359800000,
+                            "car_model_id": 65,
+                            "created_at": "2025-10-21T12:59:39.000000Z",
+                            "updated_at": "2025-10-21T12:59:39.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 69,
+                    "status": 1,
+                    "name": "SONG PLUS CHAMPION",
+                    "car_brand_id": 5,
+                    "created_at": "2024-05-27T15:08:51.000000Z",
+                    "updated_at": "2024-05-27T15:08:51.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 147,
+                            "status": 1,
+                            "name": "DM-i 110 km",
+                            "price": 387200000,
+                            "car_model_id": 69,
+                            "created_at": "2024-05-27T15:13:20.000000Z",
+                            "updated_at": "2024-05-27T15:13:20.000000Z"
+                        },
+                        {
+                            "id": 146,
+                            "status": 1,
+                            "name": "EV 520 km Flagship",
+                            "price": 395300000,
+                            "car_model_id": 69,
+                            "created_at": "2024-05-27T15:11:06.000000Z",
+                            "updated_at": "2025-10-21T12:51:27.000000Z"
+                        },
+                        {
+                            "id": 148,
+                            "status": 1,
+                            "name": "DM-i 150 km",
+                            "price": 409700000,
+                            "car_model_id": 69,
+                            "created_at": "2024-05-27T15:13:36.000000Z",
+                            "updated_at": "2024-05-27T15:13:36.000000Z"
+                        },
+                        {
+                            "id": 145,
+                            "status": 1,
+                            "name": "EV 605 km Flagship",
+                            "price": 412900000,
+                            "car_model_id": 69,
+                            "created_at": "2024-05-27T15:10:42.000000Z",
+                            "updated_at": "2025-10-21T12:51:12.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 70,
+                    "status": 1,
+                    "name": "Tang",
+                    "car_brand_id": 5,
+                    "created_at": "2024-05-30T08:20:04.000000Z",
+                    "updated_at": "2024-05-30T08:20:04.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 149,
+                            "status": 1,
+                            "name": "EV 730KM",
+                            "price": 500000000,
+                            "car_model_id": 70,
+                            "created_at": "2024-05-30T08:20:34.000000Z",
+                            "updated_at": "2024-05-30T08:20:34.000000Z"
+                        },
+                        {
+                            "id": 150,
+                            "status": 1,
+                            "name": "EV 4wd 635km",
+                            "price": 580000000,
+                            "car_model_id": 70,
+                            "created_at": "2024-05-30T09:06:12.000000Z",
+                            "updated_at": "2024-05-30T09:06:12.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 129,
+                    "status": 1,
+                    "name": "Sealion 7",
+                    "car_brand_id": 5,
+                    "created_at": "2026-01-26T05:28:05.000000Z",
+                    "updated_at": "2026-01-26T05:28:11.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 283,
+                            "status": 1,
+                            "name": "567 km Flagship",
+                            "price": 451100000,
+                            "car_model_id": 129,
+                            "created_at": "2026-01-26T05:42:45.000000Z",
+                            "updated_at": "2026-01-26T05:42:45.000000Z"
+                        },
+                        {
+                            "id": 284,
+                            "status": 1,
+                            "name": "AWD 542 km Flagship",
+                            "price": 503000000,
+                            "car_model_id": 129,
+                            "created_at": "2026-01-26T05:48:17.000000Z",
+                            "updated_at": "2026-01-26T05:48:17.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 131,
+                    "status": 1,
+                    "name": "SEAL 6",
+                    "car_brand_id": 5,
+                    "created_at": "2026-02-16T10:37:54.000000Z",
+                    "updated_at": "2026-02-16T10:37:54.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 286,
+                            "status": 1,
+                            "name": "120km Flagship",
+                            "price": 364400000,
+                            "car_model_id": 131,
+                            "created_at": "2026-02-16T10:38:15.000000Z",
+                            "updated_at": "2026-02-16T10:38:15.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 138,
+                    "status": 1,
+                    "name": "ATTO-8",
+                    "car_brand_id": 5,
+                    "created_at": "2026-03-02T09:11:59.000000Z",
+                    "updated_at": "2026-03-02T09:11:59.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 292,
+                            "status": 1,
+                            "name": "FWD DM-i 103 km",
+                            "price": 529800000,
+                            "car_model_id": 138,
+                            "created_at": "2026-03-02T09:12:43.000000Z",
+                            "updated_at": "2026-03-02T09:12:43.000000Z"
+                        },
+                        {
+                            "id": 293,
+                            "status": 1,
+                            "name": "AWD DM-p",
+                            "price": 621600000,
+                            "car_model_id": 138,
+                            "created_at": "2026-03-02T09:13:02.000000Z",
+                            "updated_at": "2026-03-02T09:13:02.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 6,
+            "status": 1,
+            "name": "KIA",
+            "logo": "car_brands/YMlir5GfHFdA9Cq55nSuXdPyi8bdimGg6UL3ifcd.svg",
+            "created_at": "2023-11-02T05:39:48.000000Z",
+            "updated_at": "2026-02-02T04:11:48.000000Z",
+            "car_models": [
+                {
+                    "id": 14,
+                    "status": 1,
+                    "name": "Cerato",
+                    "car_brand_id": 6,
+                    "created_at": "2023-11-02T05:40:04.000000Z",
+                    "updated_at": "2023-11-02T05:40:04.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 11,
+                            "status": 1,
+                            "name": "Comfort",
+                            "price": 317900000,
+                            "car_model_id": 14,
+                            "created_at": "2023-11-02T05:40:44.000000Z",
+                            "updated_at": "2023-11-02T05:40:44.000000Z"
+                        },
+                        {
+                            "id": 12,
+                            "status": 1,
+                            "name": "Luxe",
+                            "price": 369900000,
+                            "car_model_id": 14,
+                            "created_at": "2023-11-02T05:41:02.000000Z",
+                            "updated_at": "2025-10-28T10:47:28.000000Z"
+                        },
+                        {
+                            "id": 13,
+                            "status": 1,
+                            "name": "Luxe 2.0",
+                            "price": 384900000,
+                            "car_model_id": 14,
+                            "created_at": "2023-11-02T05:41:22.000000Z",
+                            "updated_at": "2025-10-28T10:48:00.000000Z"
+                        },
+                        {
+                            "id": 247,
+                            "status": 1,
+                            "name": "GT-Line",
+                            "price": 399900000,
+                            "car_model_id": 14,
+                            "created_at": "2025-10-28T10:48:31.000000Z",
+                            "updated_at": "2025-10-28T10:48:31.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 15,
+                    "status": 1,
+                    "name": "K5",
+                    "car_brand_id": 6,
+                    "created_at": "2023-11-02T05:42:23.000000Z",
+                    "updated_at": "2023-11-02T05:42:23.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 14,
+                            "status": 1,
+                            "name": "Comfort",
+                            "price": 379900000,
+                            "car_model_id": 15,
+                            "created_at": "2023-11-02T05:42:41.000000Z",
+                            "updated_at": "2025-10-28T10:49:48.000000Z"
+                        },
+                        {
+                            "id": 15,
+                            "status": 1,
+                            "name": "Comfort +",
+                            "price": 419900000,
+                            "car_model_id": 15,
+                            "created_at": "2023-11-02T05:43:09.000000Z",
+                            "updated_at": "2025-10-28T10:50:26.000000Z"
+                        },
+                        {
+                            "id": 17,
+                            "status": 1,
+                            "name": "Style Light T",
+                            "price": 432810000,
+                            "car_model_id": 15,
+                            "created_at": "2023-11-02T05:43:43.000000Z",
+                            "updated_at": "2025-10-28T10:51:25.000000Z"
+                        },
+                        {
+                            "id": 16,
+                            "status": 1,
+                            "name": "Prestige",
+                            "price": 469900000,
+                            "car_model_id": 15,
+                            "created_at": "2023-11-02T05:43:27.000000Z",
+                            "updated_at": "2025-10-28T10:50:52.000000Z"
+                        },
+                        {
+                            "id": 18,
+                            "status": 1,
+                            "name": "Style Light",
+                            "price": 495900000,
+                            "car_model_id": 15,
+                            "created_at": "2023-11-02T05:47:59.000000Z",
+                            "updated_at": "2025-10-28T10:52:04.000000Z"
+                        },
+                        {
+                            "id": 19,
+                            "status": 1,
+                            "name": "Style T",
+                            "price": 499900000,
+                            "car_model_id": 15,
+                            "created_at": "2023-11-02T05:48:20.000000Z",
+                            "updated_at": "2025-10-28T10:52:20.000000Z"
+                        },
+                        {
+                            "id": 20,
+                            "status": 1,
+                            "name": "Style",
+                            "price": 514900000,
+                            "car_model_id": 15,
+                            "created_at": "2023-11-02T05:48:39.000000Z",
+                            "updated_at": "2025-10-28T10:52:58.000000Z"
+                        },
+                        {
+                            "id": 21,
+                            "status": 1,
+                            "name": "Premium",
+                            "price": 539900000,
+                            "car_model_id": 15,
+                            "created_at": "2023-11-02T05:48:55.000000Z",
+                            "updated_at": "2025-10-28T10:53:25.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 16,
+                    "status": 1,
+                    "name": "EV6",
+                    "car_brand_id": 6,
+                    "created_at": "2023-11-02T05:49:10.000000Z",
+                    "updated_at": "2023-11-02T05:49:10.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 22,
+                            "status": 1,
+                            "name": "Air",
+                            "price": 559920000,
+                            "car_model_id": 16,
+                            "created_at": "2023-11-02T05:49:26.000000Z",
+                            "updated_at": "2025-10-28T10:54:29.000000Z"
+                        },
+                        {
+                            "id": 23,
+                            "status": 1,
+                            "name": "GT-Line",
+                            "price": 719920000,
+                            "car_model_id": 16,
+                            "created_at": "2023-11-02T05:49:48.000000Z",
+                            "updated_at": "2025-10-28T10:54:39.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 17,
+                    "status": 1,
+                    "name": "K8",
+                    "car_brand_id": 6,
+                    "created_at": "2023-11-02T05:50:16.000000Z",
+                    "updated_at": "2023-11-02T05:50:16.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 24,
+                            "status": 1,
+                            "name": "Signature",
+                            "price": 729900000,
+                            "car_model_id": 17,
+                            "created_at": "2023-11-02T05:50:38.000000Z",
+                            "updated_at": "2023-11-02T05:50:38.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 18,
+                    "status": 1,
+                    "name": "Stinger",
+                    "car_brand_id": 6,
+                    "created_at": "2023-11-02T05:50:54.000000Z",
+                    "updated_at": "2023-11-02T05:50:54.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 25,
+                            "status": 1,
+                            "name": "GT",
+                            "price": 789900000,
+                            "car_model_id": 18,
+                            "created_at": "2023-11-02T05:51:15.000000Z",
+                            "updated_at": "2023-11-02T05:51:15.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 19,
+                    "status": 1,
+                    "name": "K9",
+                    "car_brand_id": 6,
+                    "created_at": "2023-11-02T05:51:29.000000Z",
+                    "updated_at": "2023-11-02T05:51:29.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 26,
+                            "status": 1,
+                            "name": "Prestige",
+                            "price": 869900000,
+                            "car_model_id": 19,
+                            "created_at": "2023-11-02T05:51:51.000000Z",
+                            "updated_at": "2023-11-02T05:51:51.000000Z"
+                        },
+                        {
+                            "id": 27,
+                            "status": 1,
+                            "name": "Premium",
+                            "price": 1129900000,
+                            "car_model_id": 19,
+                            "created_at": "2023-11-02T05:52:03.000000Z",
+                            "updated_at": "2023-11-02T05:52:03.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 20,
+                    "status": 1,
+                    "name": "Seltos",
+                    "car_brand_id": 6,
+                    "created_at": "2023-11-02T05:52:22.000000Z",
+                    "updated_at": "2023-11-02T05:52:22.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 28,
+                            "status": 1,
+                            "name": "Style",
+                            "price": 359910000,
+                            "car_model_id": 20,
+                            "created_at": "2023-11-02T05:52:37.000000Z",
+                            "updated_at": "2025-10-27T13:30:49.000000Z"
+                        },
+                        {
+                            "id": 29,
+                            "status": 1,
+                            "name": "Prestige Light",
+                            "price": 409900000,
+                            "car_model_id": 20,
+                            "created_at": "2023-11-02T05:52:52.000000Z",
+                            "updated_at": "2025-10-27T13:31:22.000000Z"
+                        },
+                        {
+                            "id": 30,
+                            "status": 1,
+                            "name": "Prestige",
+                            "price": 429900000,
+                            "car_model_id": 20,
+                            "created_at": "2023-11-02T05:53:06.000000Z",
+                            "updated_at": "2025-11-21T05:08:21.000000Z"
+                        },
+                        {
+                            "id": 246,
+                            "status": 1,
+                            "name": "Premium",
+                            "price": 449900000,
+                            "car_model_id": 20,
+                            "created_at": "2025-10-27T13:31:50.000000Z",
+                            "updated_at": "2025-10-27T13:31:50.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 21,
+                    "status": 1,
+                    "name": "Sorento",
+                    "car_brand_id": 6,
+                    "created_at": "2023-11-02T05:53:31.000000Z",
+                    "updated_at": "2023-11-02T05:53:31.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 31,
+                            "status": 1,
+                            "name": "Comfort",
+                            "price": 636900000,
+                            "car_model_id": 21,
+                            "created_at": "2023-11-02T05:53:51.000000Z",
+                            "updated_at": "2025-10-28T10:56:44.000000Z"
+                        },
+                        {
+                            "id": 32,
+                            "status": 1,
+                            "name": "Comfort +",
+                            "price": 651900000,
+                            "car_model_id": 21,
+                            "created_at": "2023-11-02T05:54:08.000000Z",
+                            "updated_at": "2025-10-28T10:57:00.000000Z"
+                        },
+                        {
+                            "id": 33,
+                            "status": 1,
+                            "name": "Prestige",
+                            "price": 739900000,
+                            "car_model_id": 21,
+                            "created_at": "2023-11-02T05:54:24.000000Z",
+                            "updated_at": "2025-10-28T10:57:16.000000Z"
+                        },
+                        {
+                            "id": 248,
+                            "status": 1,
+                            "name": "Prestige +",
+                            "price": 771900000,
+                            "car_model_id": 21,
+                            "created_at": "2025-10-28T10:57:33.000000Z",
+                            "updated_at": "2025-10-28T10:57:46.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 22,
+                    "status": 1,
+                    "name": "Sportage",
+                    "car_brand_id": 6,
+                    "created_at": "2023-11-02T05:54:44.000000Z",
+                    "updated_at": "2023-11-02T05:54:44.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 34,
+                            "status": 1,
+                            "name": "Luxe FWD",
+                            "price": 454900000,
+                            "car_model_id": 22,
+                            "created_at": "2023-11-02T05:55:07.000000Z",
+                            "updated_at": "2026-01-19T09:33:16.000000Z"
+                        },
+                        {
+                            "id": 35,
+                            "status": 1,
+                            "name": "Prestige FWD",
+                            "price": 499900000,
+                            "car_model_id": 22,
+                            "created_at": "2023-11-02T05:55:30.000000Z",
+                            "updated_at": "2026-01-19T09:33:55.000000Z"
+                        },
+                        {
+                            "id": 38,
+                            "status": 1,
+                            "name": "Premium",
+                            "price": 503910000,
+                            "car_model_id": 22,
+                            "created_at": "2023-11-02T06:18:25.000000Z",
+                            "updated_at": "2025-10-28T11:00:17.000000Z"
+                        },
+                        {
+                            "id": 36,
+                            "status": 1,
+                            "name": "Style FWD",
+                            "price": 549900000,
+                            "car_model_id": 22,
+                            "created_at": "2023-11-02T05:58:51.000000Z",
+                            "updated_at": "2026-01-19T09:34:27.000000Z"
+                        },
+                        {
+                            "id": 37,
+                            "status": 1,
+                            "name": "Style Plus AWD",
+                            "price": 584900000,
+                            "car_model_id": 22,
+                            "created_at": "2023-11-02T06:00:04.000000Z",
+                            "updated_at": "2026-01-19T09:35:02.000000Z"
+                        },
+                        {
+                            "id": 39,
+                            "status": 1,
+                            "name": "X-line",
+                            "price": 619900000,
+                            "car_model_id": 22,
+                            "created_at": "2023-11-02T06:18:43.000000Z",
+                            "updated_at": "2026-01-19T09:37:06.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 23,
+                    "status": 1,
+                    "name": "Carnival",
+                    "car_brand_id": 6,
+                    "created_at": "2023-11-02T06:18:57.000000Z",
+                    "updated_at": "2023-11-02T06:18:57.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 40,
+                            "status": 1,
+                            "name": "Classic",
+                            "price": 519900000,
+                            "car_model_id": 23,
+                            "created_at": "2023-11-02T06:19:24.000000Z",
+                            "updated_at": "2023-11-02T06:19:24.000000Z"
+                        },
+                        {
+                            "id": 41,
+                            "status": 1,
+                            "name": "Comfort",
+                            "price": 603900000,
+                            "car_model_id": 23,
+                            "created_at": "2023-11-02T06:19:37.000000Z",
+                            "updated_at": "2023-11-02T06:19:37.000000Z"
+                        },
+                        {
+                            "id": 42,
+                            "status": 1,
+                            "name": "Luxe",
+                            "price": 688900000,
+                            "car_model_id": 23,
+                            "created_at": "2023-11-02T06:19:50.000000Z",
+                            "updated_at": "2023-11-02T06:19:50.000000Z"
+                        },
+                        {
+                            "id": 43,
+                            "status": 1,
+                            "name": "Prestige",
+                            "price": 741900000,
+                            "car_model_id": 23,
+                            "created_at": "2023-11-02T06:20:04.000000Z",
+                            "updated_at": "2023-11-02T06:20:04.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 24,
+                    "status": 1,
+                    "name": "Bongo",
+                    "car_brand_id": 6,
+                    "created_at": "2023-11-02T06:20:20.000000Z",
+                    "updated_at": "2023-11-02T06:20:20.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 44,
+                            "status": 1,
+                            "name": "Standard Cab (Шасси, без кузова)",
+                            "price": 279900000,
+                            "car_model_id": 24,
+                            "created_at": "2023-11-02T06:20:42.000000Z",
+                            "updated_at": "2025-10-28T11:10:11.000000Z"
+                        },
+                        {
+                            "id": 45,
+                            "status": 1,
+                            "name": "Standard Cab",
+                            "price": 289900000,
+                            "car_model_id": 24,
+                            "created_at": "2023-11-02T06:21:08.000000Z",
+                            "updated_at": "2025-10-28T11:10:19.000000Z"
+                        },
+                        {
+                            "id": 46,
+                            "status": 1,
+                            "name": "Super Cab",
+                            "price": 294900000,
+                            "car_model_id": 24,
+                            "created_at": "2023-11-02T06:21:28.000000Z",
+                            "updated_at": "2025-10-28T11:10:31.000000Z"
+                        },
+                        {
+                            "id": 47,
+                            "status": 1,
+                            "name": "Double Cab",
+                            "price": 314900000,
+                            "car_model_id": 24,
+                            "created_at": "2023-11-02T06:21:41.000000Z",
+                            "updated_at": "2025-10-28T11:10:42.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 72,
+                    "status": 1,
+                    "name": "Sonet",
+                    "car_brand_id": 6,
+                    "created_at": "2024-06-04T05:05:36.000000Z",
+                    "updated_at": "2024-06-04T05:05:36.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 156,
+                            "status": 1,
+                            "name": "Classic",
+                            "price": 199900000,
+                            "car_model_id": 72,
+                            "created_at": "2024-06-04T05:06:04.000000Z",
+                            "updated_at": "2024-06-04T05:06:04.000000Z"
+                        },
+                        {
+                            "id": 157,
+                            "status": 1,
+                            "name": "Luxe",
+                            "price": 222900000,
+                            "car_model_id": 72,
+                            "created_at": "2024-06-04T05:06:17.000000Z",
+                            "updated_at": "2024-06-04T05:06:17.000000Z"
+                        },
+                        {
+                            "id": 158,
+                            "status": 1,
+                            "name": "Prestige",
+                            "price": 249900000,
+                            "car_model_id": 72,
+                            "created_at": "2024-06-04T05:06:36.000000Z",
+                            "updated_at": "2024-06-04T05:06:36.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 111,
+                    "status": 1,
+                    "name": "Carens",
+                    "car_brand_id": 6,
+                    "created_at": "2025-10-22T07:59:06.000000Z",
+                    "updated_at": "2025-10-22T07:59:06.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 234,
+                            "status": 1,
+                            "name": "Comfort",
+                            "price": 314900000,
+                            "car_model_id": 111,
+                            "created_at": "2025-10-22T08:00:34.000000Z",
+                            "updated_at": "2025-10-22T08:00:34.000000Z"
+                        },
+                        {
+                            "id": 235,
+                            "status": 1,
+                            "name": "Luxe",
+                            "price": 329900000,
+                            "car_model_id": 111,
+                            "created_at": "2025-10-22T08:00:51.000000Z",
+                            "updated_at": "2025-10-22T08:00:51.000000Z"
+                        },
+                        {
+                            "id": 236,
+                            "status": 1,
+                            "name": "Premium 7DCT",
+                            "price": 419900000,
+                            "car_model_id": 111,
+                            "created_at": "2025-10-22T08:01:06.000000Z",
+                            "updated_at": "2025-10-22T08:01:06.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 7,
+            "status": 1,
+            "name": "CHERY",
+            "logo": "car_brands/0iz7fHR9MscQxhLEYLT8TsCCeXPVeJbE7Ap0mp48.svg",
+            "created_at": "2023-11-02T06:45:49.000000Z",
+            "updated_at": "2026-02-02T04:12:03.000000Z",
+            "car_models": [
+                {
+                    "id": 29,
+                    "status": 1,
+                    "name": "ARRIZO 6 PRO",
+                    "car_brand_id": 7,
+                    "created_at": "2023-11-02T06:46:06.000000Z",
+                    "updated_at": "2023-11-02T06:46:06.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 210,
+                            "status": 1,
+                            "name": "Life",
+                            "price": 214000000,
+                            "car_model_id": 29,
+                            "created_at": "2025-08-14T12:06:29.000000Z",
+                            "updated_at": "2025-09-19T07:17:51.000000Z"
+                        },
+                        {
+                            "id": 56,
+                            "status": 1,
+                            "name": "Comfort",
+                            "price": 229900000,
+                            "car_model_id": 29,
+                            "created_at": "2023-11-02T06:46:22.000000Z",
+                            "updated_at": "2025-08-14T11:42:27.000000Z"
+                        },
+                        {
+                            "id": 57,
+                            "status": 1,
+                            "name": "Intelligence",
+                            "price": 254900000,
+                            "car_model_id": 29,
+                            "created_at": "2023-11-02T06:46:51.000000Z",
+                            "updated_at": "2025-08-14T11:41:52.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 30,
+                    "status": 1,
+                    "name": "TIGGO 7 PRO",
+                    "car_brand_id": 7,
+                    "created_at": "2023-11-02T06:48:17.000000Z",
+                    "updated_at": "2023-11-02T06:48:17.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 58,
+                            "status": 1,
+                            "name": "Luxury",
+                            "price": 329900000,
+                            "car_model_id": 30,
+                            "created_at": "2023-11-02T06:48:41.000000Z",
+                            "updated_at": "2023-11-02T06:48:41.000000Z"
+                        },
+                        {
+                            "id": 59,
+                            "status": 1,
+                            "name": "Premium",
+                            "price": 369900000,
+                            "car_model_id": 30,
+                            "created_at": "2023-11-02T06:49:22.000000Z",
+                            "updated_at": "2023-11-02T06:49:22.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 31,
+                    "status": 1,
+                    "name": "TIGGO 8 PRO",
+                    "car_brand_id": 7,
+                    "created_at": "2023-11-02T07:00:04.000000Z",
+                    "updated_at": "2023-11-02T07:00:04.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 60,
+                            "status": 1,
+                            "name": "Comfort",
+                            "price": 376900000,
+                            "car_model_id": 31,
+                            "created_at": "2023-11-02T07:00:22.000000Z",
+                            "updated_at": "2023-11-02T07:00:22.000000Z"
+                        },
+                        {
+                            "id": 61,
+                            "status": 1,
+                            "name": "Luxury",
+                            "price": 439900000,
+                            "car_model_id": 31,
+                            "created_at": "2023-11-02T07:00:41.000000Z",
+                            "updated_at": "2023-11-02T07:00:41.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 32,
+                    "status": 1,
+                    "name": "TIGGO 8 PRO MAX",
+                    "car_brand_id": 7,
+                    "created_at": "2023-11-02T07:02:41.000000Z",
+                    "updated_at": "2023-11-02T07:02:41.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 62,
+                            "status": 1,
+                            "name": "Premium",
+                            "price": 509900000,
+                            "car_model_id": 32,
+                            "created_at": "2023-11-02T07:03:04.000000Z",
+                            "updated_at": "2023-11-02T07:03:04.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 86,
+                    "status": 1,
+                    "name": "Tiggo 8 Plus",
+                    "car_brand_id": 7,
+                    "created_at": "2024-06-26T10:40:19.000000Z",
+                    "updated_at": "2024-06-26T10:40:19.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 176,
+                            "status": 1,
+                            "name": "Kunpeng E+",
+                            "price": 352419480,
+                            "car_model_id": 86,
+                            "created_at": "2024-06-26T10:50:32.000000Z",
+                            "updated_at": "2024-06-26T10:50:32.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 8,
+            "status": 1,
+            "name": "JAC",
+            "logo": "car_brands/CuU2Q993sPScORJG7mcdAXWshV56ZPWHQkAnMWuj.svg",
+            "created_at": "2023-11-03T06:56:52.000000Z",
+            "updated_at": "2026-02-02T04:12:16.000000Z",
+            "car_models": [
+                {
+                    "id": 33,
+                    "status": 1,
+                    "name": "J7",
+                    "car_brand_id": 8,
+                    "created_at": "2023-11-03T06:57:04.000000Z",
+                    "updated_at": "2023-11-03T06:57:04.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 66,
+                            "status": 1,
+                            "name": "Luxury",
+                            "price": 293900000,
+                            "car_model_id": 33,
+                            "created_at": "2023-11-03T06:57:22.000000Z",
+                            "updated_at": "2023-11-03T06:57:22.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 34,
+                    "status": 1,
+                    "name": "JS6",
+                    "car_brand_id": 8,
+                    "created_at": "2023-11-03T06:57:34.000000Z",
+                    "updated_at": "2023-11-03T06:57:34.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 67,
+                            "status": 1,
+                            "name": "Luxury",
+                            "price": 369900000,
+                            "car_model_id": 34,
+                            "created_at": "2023-11-03T06:57:47.000000Z",
+                            "updated_at": "2023-11-03T06:57:47.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 35,
+                    "status": 1,
+                    "name": "JS8",
+                    "car_brand_id": 8,
+                    "created_at": "2023-11-03T07:02:56.000000Z",
+                    "updated_at": "2023-11-03T07:02:56.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 68,
+                            "status": 1,
+                            "name": "Flagship",
+                            "price": 359900000,
+                            "car_model_id": 35,
+                            "created_at": "2023-11-03T07:03:15.000000Z",
+                            "updated_at": "2023-11-03T07:03:15.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 9,
+            "status": 1,
+            "name": "SKODA",
+            "logo": "car_brands/3LbSXAhaG8lBjuCnC9Jiy1qfFK97MKwPPL3Xcawb.svg",
+            "created_at": "2023-11-03T07:03:38.000000Z",
+            "updated_at": "2026-02-02T04:12:27.000000Z",
+            "car_models": [
+                {
+                    "id": 36,
+                    "status": 1,
+                    "name": "KODIAQ",
+                    "car_brand_id": 9,
+                    "created_at": "2023-11-03T07:03:49.000000Z",
+                    "updated_at": "2023-11-03T07:03:49.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 69,
+                            "status": 1,
+                            "name": "AMBITION",
+                            "price": 429000000,
+                            "car_model_id": 36,
+                            "created_at": "2023-11-03T07:04:04.000000Z",
+                            "updated_at": "2023-11-03T07:04:04.000000Z"
+                        },
+                        {
+                            "id": 70,
+                            "status": 1,
+                            "name": "STYLE",
+                            "price": 499000000,
+                            "car_model_id": 36,
+                            "created_at": "2023-11-03T07:05:35.000000Z",
+                            "updated_at": "2023-11-03T07:05:35.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 10,
+            "status": 1,
+            "name": "RENAULT",
+            "logo": "car_brands/F6ubM2HeLwCEfVZhoUN9oMT2NgdBCLqXXR7TVHmm.svg",
+            "created_at": "2023-11-03T07:05:42.000000Z",
+            "updated_at": "2026-02-02T04:12:37.000000Z",
+            "car_models": [
+                {
+                    "id": 37,
+                    "status": 1,
+                    "name": "ARKANA",
+                    "car_brand_id": 10,
+                    "created_at": "2023-11-03T07:05:50.000000Z",
+                    "updated_at": "2023-11-03T07:05:50.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 71,
+                            "status": 1,
+                            "name": "Life",
+                            "price": 274966800,
+                            "car_model_id": 37,
+                            "created_at": "2023-11-03T07:06:03.000000Z",
+                            "updated_at": "2023-11-03T07:06:03.000000Z"
+                        },
+                        {
+                            "id": 72,
+                            "status": 1,
+                            "name": "Drive 114 л.с.",
+                            "price": 287759200,
+                            "car_model_id": 37,
+                            "created_at": "2023-11-03T07:06:17.000000Z",
+                            "updated_at": "2023-11-03T07:06:17.000000Z"
+                        },
+                        {
+                            "id": 73,
+                            "status": 1,
+                            "name": "Drive 150 л.с.",
+                            "price": 310819900,
+                            "car_model_id": 37,
+                            "created_at": "2023-11-03T07:06:56.000000Z",
+                            "updated_at": "2023-11-03T07:06:56.000000Z"
+                        },
+                        {
+                            "id": 74,
+                            "status": 1,
+                            "name": "Style 114 л.с.",
+                            "price": 311947800,
+                            "car_model_id": 37,
+                            "created_at": "2023-11-03T07:07:21.000000Z",
+                            "updated_at": "2023-11-03T07:07:21.000000Z"
+                        },
+                        {
+                            "id": 75,
+                            "status": 1,
+                            "name": "Style 150 л.с.",
+                            "price": 347169100,
+                            "car_model_id": 37,
+                            "created_at": "2023-11-03T07:07:36.000000Z",
+                            "updated_at": "2023-11-03T07:07:36.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 38,
+                    "status": 1,
+                    "name": "KAPTUR",
+                    "car_brand_id": 10,
+                    "created_at": "2023-11-03T07:07:44.000000Z",
+                    "updated_at": "2023-11-03T07:07:44.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 76,
+                            "status": 1,
+                            "name": "Life",
+                            "price": 264857700,
+                            "car_model_id": 38,
+                            "created_at": "2023-11-03T07:07:58.000000Z",
+                            "updated_at": "2023-11-03T07:07:58.000000Z"
+                        },
+                        {
+                            "id": 77,
+                            "status": 1,
+                            "name": "Drive 114 л.с.",
+                            "price": 277650100,
+                            "car_model_id": 38,
+                            "created_at": "2023-11-03T07:08:13.000000Z",
+                            "updated_at": "2023-11-03T07:08:13.000000Z"
+                        },
+                        {
+                            "id": 79,
+                            "status": 1,
+                            "name": "Style 114 л.с.",
+                            "price": 299521900,
+                            "car_model_id": 38,
+                            "created_at": "2023-11-03T07:08:43.000000Z",
+                            "updated_at": "2023-11-03T07:08:43.000000Z"
+                        },
+                        {
+                            "id": 78,
+                            "status": 1,
+                            "name": "Drive 150 л.с.",
+                            "price": 300710800,
+                            "car_model_id": 38,
+                            "created_at": "2023-11-03T07:08:29.000000Z",
+                            "updated_at": "2023-11-03T07:08:29.000000Z"
+                        },
+                        {
+                            "id": 80,
+                            "status": 1,
+                            "name": "Style 150 л.с.",
+                            "price": 341740100,
+                            "car_model_id": 38,
+                            "created_at": "2023-11-03T07:08:59.000000Z",
+                            "updated_at": "2023-11-03T07:08:59.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 39,
+                    "status": 1,
+                    "name": "DUSTER",
+                    "car_brand_id": 10,
+                    "created_at": "2023-11-03T07:09:15.000000Z",
+                    "updated_at": "2023-11-03T07:09:15.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 81,
+                            "status": 1,
+                            "name": "Life 117 л.с.",
+                            "price": 251071500,
+                            "car_model_id": 39,
+                            "created_at": "2023-11-03T07:09:29.000000Z",
+                            "updated_at": "2023-11-03T07:09:29.000000Z"
+                        },
+                        {
+                            "id": 82,
+                            "status": 1,
+                            "name": "Life 150 л.с.",
+                            "price": 282272500,
+                            "car_model_id": 39,
+                            "created_at": "2023-11-03T07:09:45.000000Z",
+                            "updated_at": "2023-11-03T07:09:45.000000Z"
+                        },
+                        {
+                            "id": 83,
+                            "status": 1,
+                            "name": "Drive 150 л.с.",
+                            "price": 286392600,
+                            "car_model_id": 39,
+                            "created_at": "2023-11-03T07:10:00.000000Z",
+                            "updated_at": "2023-11-03T07:10:00.000000Z"
+                        },
+                        {
+                            "id": 84,
+                            "status": 1,
+                            "name": "Style 150 л.с.",
+                            "price": 306673200,
+                            "car_model_id": 39,
+                            "created_at": "2023-11-03T07:10:17.000000Z",
+                            "updated_at": "2023-11-03T07:10:17.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 11,
+            "status": 1,
+            "name": "VOLKSWAGEN",
+            "logo": "car_brands/TXfCIZ6RVSshgi8uxDoMX3TAdN5avPnI5WWpsFs1.svg",
+            "created_at": "2023-11-03T07:11:00.000000Z",
+            "updated_at": "2026-02-02T04:12:50.000000Z",
+            "car_models": [
+                {
+                    "id": 40,
+                    "status": 1,
+                    "name": "CADDY",
+                    "car_brand_id": 11,
+                    "created_at": "2023-11-03T07:11:11.000000Z",
+                    "updated_at": "2023-11-03T07:11:11.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 85,
+                            "status": 1,
+                            "name": "CARGO",
+                            "price": 193100000,
+                            "car_model_id": 40,
+                            "created_at": "2023-11-03T07:11:53.000000Z",
+                            "updated_at": "2023-11-03T07:11:53.000000Z"
+                        },
+                        {
+                            "id": 86,
+                            "status": 1,
+                            "name": "KOMBI",
+                            "price": 212500000,
+                            "car_model_id": 40,
+                            "created_at": "2023-11-03T07:12:19.000000Z",
+                            "updated_at": "2023-11-03T07:12:19.000000Z"
+                        },
+                        {
+                            "id": 87,
+                            "status": 1,
+                            "name": "REFRIGERATOR",
+                            "price": 226000000,
+                            "car_model_id": 40,
+                            "created_at": "2023-11-03T07:12:35.000000Z",
+                            "updated_at": "2023-11-03T07:12:35.000000Z"
+                        },
+                        {
+                            "id": 88,
+                            "status": 1,
+                            "name": "TRENDLINE",
+                            "price": 244000000,
+                            "car_model_id": 40,
+                            "created_at": "2023-11-03T07:13:05.000000Z",
+                            "updated_at": "2023-11-03T07:13:05.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 68,
+                    "status": 1,
+                    "name": "ID 4",
+                    "car_brand_id": 11,
+                    "created_at": "2024-05-25T10:41:40.000000Z",
+                    "updated_at": "2024-05-25T10:41:40.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 144,
+                            "status": 1,
+                            "name": "Pure",
+                            "price": 340000000,
+                            "car_model_id": 68,
+                            "created_at": "2024-05-25T10:42:01.000000Z",
+                            "updated_at": "2024-05-25T10:42:01.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 123,
+                    "status": 1,
+                    "name": "ID 6X PRO",
+                    "car_brand_id": 11,
+                    "created_at": "2025-12-01T09:27:27.000000Z",
+                    "updated_at": "2025-12-01T09:27:27.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 267,
+                            "status": 1,
+                            "name": "Crozz PRIME",
+                            "price": 340000000,
+                            "car_model_id": 123,
+                            "created_at": "2025-12-01T09:28:32.000000Z",
+                            "updated_at": "2025-12-01T09:28:32.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 12,
+            "status": 1,
+            "name": "Honda",
+            "logo": "car_brands/DMZ1Jt7BM2S60ekniWD3mt56gjE4HFfgAO3MI1Y0.svg",
+            "created_at": "2023-11-06T05:01:40.000000Z",
+            "updated_at": "2026-02-02T04:13:02.000000Z",
+            "car_models": [
+                {
+                    "id": 54,
+                    "status": 1,
+                    "name": "Crider",
+                    "car_brand_id": 12,
+                    "created_at": "2023-11-06T05:01:51.000000Z",
+                    "updated_at": "2023-11-06T05:01:51.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 116,
+                            "status": 1,
+                            "name": "1L Turbo",
+                            "price": 225000000,
+                            "car_model_id": 54,
+                            "created_at": "2023-11-06T05:02:16.000000Z",
+                            "updated_at": "2023-11-06T05:02:16.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 13,
+            "status": 1,
+            "name": "ZEEKR",
+            "logo": "car_brands/yf6Gt9nkuna0LlLZMhEjNtXz3vgokNmoSy8WBpKT.svg",
+            "created_at": "2024-05-14T11:30:45.000000Z",
+            "updated_at": "2026-02-02T04:13:12.000000Z",
+            "car_models": [
+                {
+                    "id": 63,
+                    "status": 1,
+                    "name": "001",
+                    "car_brand_id": 13,
+                    "created_at": "2024-05-14T11:30:56.000000Z",
+                    "updated_at": "2024-05-14T11:30:56.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 138,
+                            "status": 1,
+                            "name": "Flagship",
+                            "price": 554000000,
+                            "car_model_id": 63,
+                            "created_at": "2024-05-14T11:32:33.000000Z",
+                            "updated_at": "2026-01-14T04:47:55.000000Z"
+                        },
+                        {
+                            "id": 137,
+                            "status": 1,
+                            "name": "Premium",
+                            "price": 5511000000,
+                            "car_model_id": 63,
+                            "created_at": "2024-05-14T11:32:15.000000Z",
+                            "updated_at": "2026-01-14T04:47:44.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 64,
+                    "status": 1,
+                    "name": "X",
+                    "car_brand_id": 13,
+                    "created_at": "2024-05-14T11:31:19.000000Z",
+                    "updated_at": "2024-05-14T11:31:19.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 139,
+                            "status": 1,
+                            "name": "Flagship",
+                            "price": 470000000,
+                            "car_model_id": 64,
+                            "created_at": "2024-05-14T11:33:04.000000Z",
+                            "updated_at": "2026-02-17T09:24:37.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 88,
+                    "status": 1,
+                    "name": "007",
+                    "car_brand_id": 13,
+                    "created_at": "2024-06-28T05:28:20.000000Z",
+                    "updated_at": "2024-06-28T05:28:20.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 180,
+                            "status": 1,
+                            "name": "Flagship",
+                            "price": 528641400,
+                            "car_model_id": 88,
+                            "created_at": "2024-06-28T05:28:56.000000Z",
+                            "updated_at": "2024-06-28T05:29:48.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 14,
+            "status": 1,
+            "name": "JETOUR",
+            "logo": "car_brands/hSDmptyFKL7gSv0W5Brb8oPBgVvyVgY7VgwYvKsX.svg",
+            "created_at": "2024-05-17T13:17:15.000000Z",
+            "updated_at": "2026-02-02T04:13:21.000000Z",
+            "car_models": [
+                {
+                    "id": 66,
+                    "status": 1,
+                    "name": "X70 PLUS",
+                    "car_brand_id": 14,
+                    "created_at": "2024-05-17T13:17:32.000000Z",
+                    "updated_at": "2024-05-17T13:17:32.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 269,
+                            "status": 1,
+                            "name": "1.5 turbo",
+                            "price": 321218000,
+                            "car_model_id": 66,
+                            "created_at": "2025-12-11T08:21:30.000000Z",
+                            "updated_at": "2025-12-11T08:21:30.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 104,
+                    "status": 1,
+                    "name": "Х90 PLUS",
+                    "car_brand_id": 14,
+                    "created_at": "2025-10-08T07:10:01.000000Z",
+                    "updated_at": "2025-10-08T07:10:01.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 215,
+                            "status": 1,
+                            "name": "FULL",
+                            "price": 340000000,
+                            "car_model_id": 104,
+                            "created_at": "2025-10-08T11:41:00.000000Z",
+                            "updated_at": "2025-10-08T11:41:00.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 15,
+            "status": 1,
+            "name": "Lada",
+            "logo": "car_brands/oojLAY6WQJ1P1RRrWZ06tagTzA7aJM4Qg2btKJAK.svg",
+            "created_at": "2024-05-23T07:46:43.000000Z",
+            "updated_at": "2026-02-02T04:13:32.000000Z",
+            "car_models": [
+                {
+                    "id": 67,
+                    "status": 1,
+                    "name": "Vesta",
+                    "car_brand_id": 15,
+                    "created_at": "2024-05-23T07:46:54.000000Z",
+                    "updated_at": "2024-05-23T07:46:54.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 142,
+                            "status": 1,
+                            "name": "SW CROSS",
+                            "price": 146000000,
+                            "car_model_id": 67,
+                            "created_at": "2024-05-23T07:48:13.000000Z",
+                            "updated_at": "2024-05-23T07:48:13.000000Z"
+                        },
+                        {
+                            "id": 143,
+                            "status": 1,
+                            "name": "CROSS",
+                            "price": 157000000,
+                            "car_model_id": 67,
+                            "created_at": "2024-05-23T07:50:37.000000Z",
+                            "updated_at": "2024-05-23T08:01:22.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 16,
+            "status": 1,
+            "name": "Changan",
+            "logo": "car_brands/NA5KnZ54pmnQM0gudbTABmnZBotprPMOLi8PqZM8.svg",
+            "created_at": "2024-06-06T05:51:20.000000Z",
+            "updated_at": "2026-02-02T04:13:42.000000Z",
+            "car_models": [
+                {
+                    "id": 75,
+                    "status": 1,
+                    "name": "CS55",
+                    "car_brand_id": 16,
+                    "created_at": "2024-06-06T05:51:45.000000Z",
+                    "updated_at": "2024-06-06T05:51:45.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 162,
+                            "status": 1,
+                            "name": "Plus",
+                            "price": 390000000,
+                            "car_model_id": 75,
+                            "created_at": "2024-06-06T06:00:24.000000Z",
+                            "updated_at": "2024-06-06T06:00:24.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 77,
+                    "status": 1,
+                    "name": "Uni-K",
+                    "car_brand_id": 16,
+                    "created_at": "2024-06-06T06:17:29.000000Z",
+                    "updated_at": "2024-06-06T06:17:29.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 163,
+                            "status": 1,
+                            "name": "Comfort",
+                            "price": 460000000,
+                            "car_model_id": 77,
+                            "created_at": "2024-06-06T06:18:15.000000Z",
+                            "updated_at": "2024-06-06T06:18:15.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 78,
+                    "status": 1,
+                    "name": "Deepal Shenlan",
+                    "car_brand_id": 16,
+                    "created_at": "2024-06-06T06:28:28.000000Z",
+                    "updated_at": "2024-06-06T06:28:28.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 164,
+                            "status": 1,
+                            "name": "S7 200Max  (Hybrid)",
+                            "price": 340000000,
+                            "car_model_id": 78,
+                            "created_at": "2024-06-06T06:29:30.000000Z",
+                            "updated_at": "2024-06-06T06:29:30.000000Z"
+                        },
+                        {
+                            "id": 165,
+                            "status": 1,
+                            "name": "S 7 620km",
+                            "price": 370000000,
+                            "car_model_id": 78,
+                            "created_at": "2024-06-06T06:31:54.000000Z",
+                            "updated_at": "2024-06-06T06:31:54.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 79,
+                    "status": 1,
+                    "name": "Shenlan SL03",
+                    "car_brand_id": 16,
+                    "created_at": "2024-06-06T06:32:54.000000Z",
+                    "updated_at": "2024-06-06T06:32:54.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 166,
+                            "status": 1,
+                            "name": "(Gibrid)",
+                            "price": 325000000,
+                            "car_model_id": 79,
+                            "created_at": "2024-06-06T06:33:32.000000Z",
+                            "updated_at": "2024-06-06T06:33:32.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 114,
+                    "status": 1,
+                    "name": "S07",
+                    "car_brand_id": 16,
+                    "created_at": "2025-10-29T05:45:21.000000Z",
+                    "updated_at": "2025-10-29T05:45:21.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 249,
+                            "status": 1,
+                            "name": "Hibrid 215 km MAX",
+                            "price": 373100000,
+                            "car_model_id": 114,
+                            "created_at": "2025-10-29T05:46:36.000000Z",
+                            "updated_at": "2025-10-29T05:46:36.000000Z"
+                        },
+                        {
+                            "id": 277,
+                            "status": 1,
+                            "name": "550 km ultra",
+                            "price": 385000000,
+                            "car_model_id": 114,
+                            "created_at": "2025-12-18T14:06:35.000000Z",
+                            "updated_at": "2025-12-18T14:06:35.000000Z"
+                        },
+                        {
+                            "id": 253,
+                            "status": 1,
+                            "name": "Hibrid 285 km MAX",
+                            "price": 400000000,
+                            "car_model_id": 114,
+                            "created_at": "2025-10-29T05:57:04.000000Z",
+                            "updated_at": "2025-10-29T05:57:04.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 115,
+                    "status": 1,
+                    "name": "SL03",
+                    "car_brand_id": 16,
+                    "created_at": "2025-10-29T05:47:35.000000Z",
+                    "updated_at": "2025-10-29T05:47:35.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 250,
+                            "status": 1,
+                            "name": "Hibrid 220 km MAX",
+                            "price": 346600000,
+                            "car_model_id": 115,
+                            "created_at": "2025-10-29T05:48:21.000000Z",
+                            "updated_at": "2025-10-29T05:48:21.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 116,
+                    "status": 1,
+                    "name": "Nevo A07",
+                    "car_brand_id": 16,
+                    "created_at": "2025-10-29T05:48:57.000000Z",
+                    "updated_at": "2025-10-29T05:49:08.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 251,
+                            "status": 1,
+                            "name": "Hibrid 200 km MAX",
+                            "price": 359600000,
+                            "car_model_id": 116,
+                            "created_at": "2025-10-29T05:49:44.000000Z",
+                            "updated_at": "2025-10-29T05:49:44.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 117,
+                    "status": 1,
+                    "name": "G318",
+                    "car_brand_id": 16,
+                    "created_at": "2025-10-29T05:50:22.000000Z",
+                    "updated_at": "2025-10-29T05:50:22.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 252,
+                            "status": 1,
+                            "name": "Hibrid 200 km MAX",
+                            "price": 562500000,
+                            "car_model_id": 117,
+                            "created_at": "2025-10-29T05:50:57.000000Z",
+                            "updated_at": "2025-10-29T05:50:57.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 125,
+                    "status": 1,
+                    "name": "Deepal S05",
+                    "car_brand_id": 16,
+                    "created_at": "2025-12-12T04:31:08.000000Z",
+                    "updated_at": "2025-12-12T04:31:08.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 275,
+                            "status": 1,
+                            "name": "510 Ultra",
+                            "price": 306000000,
+                            "car_model_id": 125,
+                            "created_at": "2025-12-12T05:08:17.000000Z",
+                            "updated_at": "2025-12-12T05:08:17.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 17,
+            "status": 1,
+            "name": "Li",
+            "logo": "car_brands/cgGBeYSTqFMlU7SkKdI1O6k5emlLmOpZbX1pMTx7.svg",
+            "created_at": "2024-06-12T05:03:28.000000Z",
+            "updated_at": "2026-02-02T04:13:54.000000Z",
+            "car_models": [
+                {
+                    "id": 80,
+                    "status": 1,
+                    "name": "L9",
+                    "car_brand_id": 17,
+                    "created_at": "2024-06-12T05:13:50.000000Z",
+                    "updated_at": "2024-06-12T05:13:50.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 167,
+                            "status": 1,
+                            "name": "Pro",
+                            "price": 800000000,
+                            "car_model_id": 80,
+                            "created_at": "2024-06-12T05:14:15.000000Z",
+                            "updated_at": "2024-06-12T05:14:15.000000Z"
+                        },
+                        {
+                            "id": 168,
+                            "status": 1,
+                            "name": "Max",
+                            "price": 850000000,
+                            "car_model_id": 80,
+                            "created_at": "2024-06-12T05:15:35.000000Z",
+                            "updated_at": "2024-06-12T05:15:35.000000Z"
+                        },
+                        {
+                            "id": 169,
+                            "status": 1,
+                            "name": "ULTRA restayling",
+                            "price": 870000000,
+                            "car_model_id": 80,
+                            "created_at": "2024-06-12T05:16:23.000000Z",
+                            "updated_at": "2024-06-12T05:16:23.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 81,
+                    "status": 1,
+                    "name": "L8",
+                    "car_brand_id": 17,
+                    "created_at": "2024-06-12T05:18:41.000000Z",
+                    "updated_at": "2024-06-12T05:18:41.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 205,
+                            "status": 1,
+                            "name": "Pro 225km",
+                            "price": 640000000,
+                            "car_model_id": 81,
+                            "created_at": "2024-08-28T04:44:55.000000Z",
+                            "updated_at": "2024-08-28T04:44:55.000000Z"
+                        },
+                        {
+                            "id": 206,
+                            "status": 1,
+                            "name": "Max 225km",
+                            "price": 685000000,
+                            "car_model_id": 81,
+                            "created_at": "2024-08-28T04:46:22.000000Z",
+                            "updated_at": "2024-08-28T04:46:22.000000Z"
+                        },
+                        {
+                            "id": 207,
+                            "status": 1,
+                            "name": "Ultra 280km",
+                            "price": 735000000,
+                            "car_model_id": 81,
+                            "created_at": "2024-08-28T04:46:44.000000Z",
+                            "updated_at": "2024-08-28T04:46:44.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 89,
+                    "status": 1,
+                    "name": "L7",
+                    "car_brand_id": 17,
+                    "created_at": "2024-06-28T06:01:48.000000Z",
+                    "updated_at": "2024-06-28T06:01:48.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 181,
+                            "status": 1,
+                            "name": "Ultra",
+                            "price": 670000000,
+                            "car_model_id": 89,
+                            "created_at": "2024-06-28T06:02:15.000000Z",
+                            "updated_at": "2025-11-27T12:32:48.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 113,
+                    "status": 1,
+                    "name": "L6",
+                    "car_brand_id": 17,
+                    "created_at": "2025-10-27T10:59:38.000000Z",
+                    "updated_at": "2025-10-27T10:59:38.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 244,
+                            "status": 1,
+                            "name": "PRO",
+                            "price": 530000000,
+                            "car_model_id": 113,
+                            "created_at": "2025-10-27T11:01:29.000000Z",
+                            "updated_at": "2025-10-27T11:01:29.000000Z"
+                        },
+                        {
+                            "id": 245,
+                            "status": 1,
+                            "name": "MAX",
+                            "price": 560000000,
+                            "car_model_id": 113,
+                            "created_at": "2025-10-27T11:01:43.000000Z",
+                            "updated_at": "2025-10-27T11:01:43.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 18,
+            "status": 1,
+            "name": "GAC",
+            "logo": "car_brands/IRWn5jrN8wK0wB57ETRLy8v68gClHNJoYuCKVIci.svg",
+            "created_at": "2024-06-13T11:35:41.000000Z",
+            "updated_at": "2026-02-02T05:26:32.000000Z",
+            "car_models": [
+                {
+                    "id": 82,
+                    "status": 1,
+                    "name": "AION",
+                    "car_brand_id": 18,
+                    "created_at": "2024-06-13T11:35:47.000000Z",
+                    "updated_at": "2024-06-13T11:35:47.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 171,
+                            "status": 1,
+                            "name": "S580",
+                            "price": 260000000,
+                            "car_model_id": 82,
+                            "created_at": "2024-06-13T11:36:24.000000Z",
+                            "updated_at": "2024-06-13T11:36:24.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 19,
+            "status": 1,
+            "name": "Mercedes-Benz",
+            "logo": "car_brands/O1Wq6lyK6Os1v75f28ENpL1osXXmMZeRX2TYgsfU.svg",
+            "created_at": "2024-06-21T11:51:07.000000Z",
+            "updated_at": "2026-02-02T04:14:59.000000Z",
+            "car_models": [
+                {
+                    "id": 84,
+                    "status": 1,
+                    "name": "S-Class",
+                    "car_brand_id": 19,
+                    "created_at": "2024-06-21T11:52:32.000000Z",
+                    "updated_at": "2024-06-21T11:52:32.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 173,
+                            "status": 1,
+                            "name": "560",
+                            "price": 1700000000,
+                            "car_model_id": 84,
+                            "created_at": "2024-06-21T13:09:08.000000Z",
+                            "updated_at": "2024-06-21T13:09:58.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 20,
+            "status": 1,
+            "name": "Voyah",
+            "logo": "car_brands/omJOwgqYXpKaFVeIMGxBUxnXXPqxGwuBz3Ob3uf8.svg",
+            "created_at": "2024-06-21T12:29:41.000000Z",
+            "updated_at": "2026-02-02T04:15:13.000000Z",
+            "car_models": [
+                {
+                    "id": 85,
+                    "status": 1,
+                    "name": "Free",
+                    "car_brand_id": 20,
+                    "created_at": "2024-06-21T12:31:13.000000Z",
+                    "updated_at": "2024-06-21T13:12:37.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 175,
+                            "status": 1,
+                            "name": "ERV",
+                            "price": 470000000,
+                            "car_model_id": 85,
+                            "created_at": "2024-06-21T13:20:13.000000Z",
+                            "updated_at": "2024-06-21T13:20:13.000000Z"
+                        },
+                        {
+                            "id": 174,
+                            "status": 1,
+                            "name": "EV",
+                            "price": 516000000,
+                            "car_model_id": 85,
+                            "created_at": "2024-06-21T13:17:50.000000Z",
+                            "updated_at": "2024-06-21T13:17:50.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 21,
+            "status": 1,
+            "name": "BMW",
+            "logo": "car_brands/ZnUWOVPdNJgLfzMaKnN1RHu7axiYikbTNjXKU7Wq.svg",
+            "created_at": "2024-06-28T06:03:19.000000Z",
+            "updated_at": "2026-02-02T04:15:22.000000Z",
+            "car_models": [
+                {
+                    "id": 90,
+                    "status": 1,
+                    "name": "M",
+                    "car_brand_id": 21,
+                    "created_at": "2024-06-28T06:03:26.000000Z",
+                    "updated_at": "2024-06-28T06:03:26.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 182,
+                            "status": 1,
+                            "name": "M8 Gran Coupe",
+                            "price": 2831920000,
+                            "car_model_id": 90,
+                            "created_at": "2024-06-28T06:07:18.000000Z",
+                            "updated_at": "2024-06-28T06:07:18.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 91,
+                    "status": 1,
+                    "name": "X",
+                    "car_brand_id": 21,
+                    "created_at": "2024-06-28T06:07:34.000000Z",
+                    "updated_at": "2024-06-28T06:07:34.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 265,
+                            "status": 1,
+                            "name": "X3 drive 40i",
+                            "price": 1035000000,
+                            "car_model_id": 91,
+                            "created_at": "2025-11-26T12:00:24.000000Z",
+                            "updated_at": "2026-03-02T11:41:10.000000Z"
+                        },
+                        {
+                            "id": 268,
+                            "status": 1,
+                            "name": "7 xDrive 40i",
+                            "price": 1720000000,
+                            "car_model_id": 91,
+                            "created_at": "2025-12-02T10:57:39.000000Z",
+                            "updated_at": "2026-03-02T11:39:57.000000Z"
+                        },
+                        {
+                            "id": 183,
+                            "status": 1,
+                            "name": "X5 M60i",
+                            "price": 2073370000,
+                            "car_model_id": 91,
+                            "created_at": "2024-06-28T06:07:54.000000Z",
+                            "updated_at": "2024-06-28T06:07:54.000000Z"
+                        },
+                        {
+                            "id": 184,
+                            "status": 1,
+                            "name": "X6 M Competition",
+                            "price": 2642282500,
+                            "car_model_id": 91,
+                            "created_at": "2024-06-28T06:08:20.000000Z",
+                            "updated_at": "2024-06-28T06:08:20.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 92,
+                    "status": 1,
+                    "name": "XM",
+                    "car_brand_id": 21,
+                    "created_at": "2024-06-28T06:08:36.000000Z",
+                    "updated_at": "2024-06-28T06:08:36.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 185,
+                            "status": 1,
+                            "name": "XM G09",
+                            "price": 2917875000,
+                            "car_model_id": 92,
+                            "created_at": "2024-06-28T06:08:49.000000Z",
+                            "updated_at": "2024-06-28T06:08:49.000000Z"
+                        },
+                        {
+                            "id": 186,
+                            "status": 1,
+                            "name": "XM Label",
+                            "price": 3225350000,
+                            "car_model_id": 92,
+                            "created_at": "2024-06-28T06:09:08.000000Z",
+                            "updated_at": "2024-06-28T06:09:08.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 93,
+                    "status": 1,
+                    "name": "eDrive",
+                    "car_brand_id": 21,
+                    "created_at": "2024-06-28T06:09:19.000000Z",
+                    "updated_at": "2024-06-28T06:09:19.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 187,
+                            "status": 1,
+                            "name": "i4 eDrive 40",
+                            "price": 1192250000,
+                            "car_model_id": 93,
+                            "created_at": "2024-06-28T06:09:47.000000Z",
+                            "updated_at": "2024-06-28T06:09:47.000000Z"
+                        },
+                        {
+                            "id": 188,
+                            "status": 1,
+                            "name": "i4 eDrive 40 Sedan",
+                            "price": 1374225000,
+                            "car_model_id": 93,
+                            "created_at": "2024-06-28T06:10:04.000000Z",
+                            "updated_at": "2024-06-28T06:10:04.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 94,
+                    "status": 1,
+                    "name": "iX",
+                    "car_brand_id": 21,
+                    "created_at": "2024-06-28T06:10:19.000000Z",
+                    "updated_at": "2024-06-28T06:10:19.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 191,
+                            "status": 1,
+                            "name": "iX xDrive40",
+                            "price": 1606400000,
+                            "car_model_id": 94,
+                            "created_at": "2024-06-28T06:11:18.000000Z",
+                            "updated_at": "2024-06-28T06:11:18.000000Z"
+                        },
+                        {
+                            "id": 189,
+                            "status": 1,
+                            "name": "iX xDrive50",
+                            "price": 1869950000,
+                            "car_model_id": 94,
+                            "created_at": "2024-06-28T06:10:34.000000Z",
+                            "updated_at": "2024-06-28T06:10:34.000000Z"
+                        },
+                        {
+                            "id": 190,
+                            "status": 1,
+                            "name": "iX M60",
+                            "price": 1883732500,
+                            "car_model_id": 94,
+                            "created_at": "2024-06-28T06:10:55.000000Z",
+                            "updated_at": "2024-06-28T06:10:55.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 126,
+                    "status": 1,
+                    "name": "iX5",
+                    "car_brand_id": 21,
+                    "created_at": "2026-01-12T10:02:44.000000Z",
+                    "updated_at": "2026-01-12T10:02:44.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 278,
+                            "status": 1,
+                            "name": "40l",
+                            "price": 540000000,
+                            "car_model_id": 126,
+                            "created_at": "2026-01-12T10:06:49.000000Z",
+                            "updated_at": "2026-01-12T10:07:07.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 139,
+                    "status": 1,
+                    "name": "740i",
+                    "car_brand_id": 21,
+                    "created_at": "2026-03-05T11:11:03.000000Z",
+                    "updated_at": "2026-03-05T11:11:03.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 294,
+                            "status": 1,
+                            "name": "3.0L RWD",
+                            "price": 1600000000,
+                            "car_model_id": 139,
+                            "created_at": "2026-03-05T11:12:50.000000Z",
+                            "updated_at": "2026-03-05T11:12:50.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 22,
+            "status": 1,
+            "name": "Avatr",
+            "logo": "car_brands/kdy6JUUcDXWm8KR204t3WPfzFr1ZYec5TpWr5lB0.svg",
+            "created_at": "2024-06-28T06:12:33.000000Z",
+            "updated_at": "2026-02-02T04:15:33.000000Z",
+            "car_models": [
+                {
+                    "id": 95,
+                    "status": 1,
+                    "name": "11",
+                    "car_brand_id": 22,
+                    "created_at": "2024-06-28T06:12:42.000000Z",
+                    "updated_at": "2024-06-28T06:12:42.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 194,
+                            "status": 1,
+                            "name": "Hongmeng 90 degree RWD version",
+                            "price": 676729440,
+                            "car_model_id": 95,
+                            "created_at": "2024-06-28T06:13:45.000000Z",
+                            "updated_at": "2024-06-28T06:13:45.000000Z"
+                        },
+                        {
+                            "id": 195,
+                            "status": 1,
+                            "name": "Hongmeng 90 degree 4WD version",
+                            "price": 708402240,
+                            "car_model_id": 95,
+                            "created_at": "2024-06-28T06:14:06.000000Z",
+                            "updated_at": "2024-06-28T06:14:06.000000Z"
+                        },
+                        {
+                            "id": 193,
+                            "status": 1,
+                            "name": "Hongmeng 116-degree RWD version",
+                            "price": 726210240,
+                            "car_model_id": 95,
+                            "created_at": "2024-06-28T06:13:24.000000Z",
+                            "updated_at": "2024-06-28T06:13:24.000000Z"
+                        },
+                        {
+                            "id": 192,
+                            "status": 1,
+                            "name": "Hongmeng 116-degree 4WD version",
+                            "price": 770374080,
+                            "car_model_id": 95,
+                            "created_at": "2024-06-28T06:12:55.000000Z",
+                            "updated_at": "2024-06-28T06:12:55.000000Z"
+                        },
+                        {
+                            "id": 196,
+                            "status": 1,
+                            "name": "MMW joint 4 seats",
+                            "price": 1209875520,
+                            "car_model_id": 95,
+                            "created_at": "2024-06-28T06:14:30.000000Z",
+                            "updated_at": "2024-06-28T06:14:30.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 96,
+                    "status": 1,
+                    "name": "12",
+                    "car_brand_id": 22,
+                    "created_at": "2024-06-28T06:14:37.000000Z",
+                    "updated_at": "2024-06-28T06:14:37.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 199,
+                            "status": 1,
+                            "name": "700 RWD Luxury",
+                            "price": 660307920,
+                            "car_model_id": 96,
+                            "created_at": "2024-06-28T06:15:28.000000Z",
+                            "updated_at": "2024-06-28T06:15:28.000000Z"
+                        },
+                        {
+                            "id": 198,
+                            "status": 1,
+                            "name": "650 4WD performance",
+                            "price": 735673920,
+                            "car_model_id": 96,
+                            "created_at": "2024-06-28T06:15:10.000000Z",
+                            "updated_at": "2024-06-28T06:15:10.000000Z"
+                        },
+                        {
+                            "id": 197,
+                            "status": 1,
+                            "name": "650 4WD GT",
+                            "price": 859617600,
+                            "car_model_id": 96,
+                            "created_at": "2024-06-28T06:14:54.000000Z",
+                            "updated_at": "2024-06-28T06:14:54.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 23,
+            "status": 1,
+            "name": "Leapmotor",
+            "logo": "car_brands/GE17whf72wHtqniBKXeIgdmjcT4xJm8vEEnkYqD4.svg",
+            "created_at": "2025-09-19T06:45:42.000000Z",
+            "updated_at": "2026-02-02T04:15:45.000000Z",
+            "car_models": [
+                {
+                    "id": 103,
+                    "status": 1,
+                    "name": "C11",
+                    "car_brand_id": 23,
+                    "created_at": "2025-09-19T07:05:26.000000Z",
+                    "updated_at": "2025-09-19T07:05:26.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 212,
+                            "status": 1,
+                            "name": "Comfort EV 500km",
+                            "price": 350000000,
+                            "car_model_id": 103,
+                            "created_at": "2025-09-19T07:16:44.000000Z",
+                            "updated_at": "2025-09-19T07:17:26.000000Z"
+                        },
+                        {
+                            "id": 213,
+                            "status": 1,
+                            "name": "Smart EV 500km",
+                            "price": 370000000,
+                            "car_model_id": 103,
+                            "created_at": "2025-09-19T07:18:45.000000Z",
+                            "updated_at": "2025-09-19T07:18:58.000000Z"
+                        },
+                        {
+                            "id": 214,
+                            "status": 1,
+                            "name": "Smart EV 650km",
+                            "price": 390000000,
+                            "car_model_id": 103,
+                            "created_at": "2025-09-19T07:20:18.000000Z",
+                            "updated_at": "2025-10-31T04:51:42.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 119,
+                    "status": 1,
+                    "name": "C01",
+                    "car_brand_id": 23,
+                    "created_at": "2025-11-03T10:25:06.000000Z",
+                    "updated_at": "2025-11-03T10:25:06.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 257,
+                            "status": 1,
+                            "name": "216 KM HIBRID KOMFORT",
+                            "price": 290000000,
+                            "car_model_id": 119,
+                            "created_at": "2025-11-03T10:25:58.000000Z",
+                            "updated_at": "2025-11-03T12:32:56.000000Z"
+                        },
+                        {
+                            "id": 260,
+                            "status": 1,
+                            "name": "525 KM KOMFORT",
+                            "price": 290000000,
+                            "car_model_id": 119,
+                            "created_at": "2025-11-03T10:28:11.000000Z",
+                            "updated_at": "2025-11-03T12:33:20.000000Z"
+                        },
+                        {
+                            "id": 261,
+                            "status": 1,
+                            "name": "525 KM PREMIUM",
+                            "price": 325000000,
+                            "car_model_id": 119,
+                            "created_at": "2025-11-03T10:28:48.000000Z",
+                            "updated_at": "2025-11-03T12:33:26.000000Z"
+                        },
+                        {
+                            "id": 258,
+                            "status": 1,
+                            "name": "216 KM HIBRID PREMIUM",
+                            "price": 335000000,
+                            "car_model_id": 119,
+                            "created_at": "2025-11-03T10:26:48.000000Z",
+                            "updated_at": "2025-11-03T12:33:02.000000Z"
+                        },
+                        {
+                            "id": 259,
+                            "status": 1,
+                            "name": "316 KM HIBRID PREMIUM",
+                            "price": 335000000,
+                            "car_model_id": 119,
+                            "created_at": "2025-11-03T10:27:38.000000Z",
+                            "updated_at": "2025-11-03T12:33:10.000000Z"
+                        },
+                        {
+                            "id": 262,
+                            "status": 1,
+                            "name": "625 KM PREMIUM",
+                            "price": 335000000,
+                            "car_model_id": 119,
+                            "created_at": "2025-11-03T10:29:25.000000Z",
+                            "updated_at": "2025-11-03T12:33:33.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 124,
+                    "status": 1,
+                    "name": "C16 Hybrid",
+                    "car_brand_id": 23,
+                    "created_at": "2025-12-11T09:16:56.000000Z",
+                    "updated_at": "2025-12-11T09:17:22.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 270,
+                            "status": 1,
+                            "name": "Smart 200km",
+                            "price": 320000000,
+                            "car_model_id": 124,
+                            "created_at": "2025-12-11T09:17:37.000000Z",
+                            "updated_at": "2026-03-11T04:45:53.000000Z"
+                        },
+                        {
+                            "id": 271,
+                            "status": 1,
+                            "name": "Premium 200km",
+                            "price": 330000000,
+                            "car_model_id": 124,
+                            "created_at": "2025-12-11T09:18:02.000000Z",
+                            "updated_at": "2025-12-11T09:18:02.000000Z"
+                        },
+                        {
+                            "id": 272,
+                            "status": 1,
+                            "name": "Smart drive 200km",
+                            "price": 340000000,
+                            "car_model_id": 124,
+                            "created_at": "2025-12-11T09:18:27.000000Z",
+                            "updated_at": "2025-12-11T09:18:27.000000Z"
+                        },
+                        {
+                            "id": 273,
+                            "status": 1,
+                            "name": "Premium additional option 200km",
+                            "price": 350000000,
+                            "car_model_id": 124,
+                            "created_at": "2025-12-11T09:19:15.000000Z",
+                            "updated_at": "2025-12-11T09:19:15.000000Z"
+                        },
+                        {
+                            "id": 274,
+                            "status": 1,
+                            "name": "Luxury lidar 280km",
+                            "price": 380000000,
+                            "car_model_id": 124,
+                            "created_at": "2025-12-11T09:20:01.000000Z",
+                            "updated_at": "2025-12-11T09:20:01.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 24,
+            "status": 1,
+            "name": "HAVAL",
+            "logo": "car_brands/VY8A8Al9ND8bFbZxWpWqbtSFw6dWoSvJdrXcKHUI.svg",
+            "created_at": "2025-10-22T07:38:41.000000Z",
+            "updated_at": "2026-02-02T04:15:56.000000Z",
+            "car_models": [
+                {
+                    "id": 105,
+                    "status": 1,
+                    "name": "H9",
+                    "car_brand_id": 24,
+                    "created_at": "2025-10-22T07:38:49.000000Z",
+                    "updated_at": "2025-10-22T07:38:49.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 219,
+                            "status": 1,
+                            "name": "Elite",
+                            "price": 534900000,
+                            "car_model_id": 105,
+                            "created_at": "2025-10-22T07:39:07.000000Z",
+                            "updated_at": "2025-10-22T07:39:07.000000Z"
+                        },
+                        {
+                            "id": 220,
+                            "status": 1,
+                            "name": "Premium",
+                            "price": 569900000,
+                            "car_model_id": 105,
+                            "created_at": "2025-10-22T07:39:32.000000Z",
+                            "updated_at": "2025-10-22T07:39:32.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 106,
+                    "status": 1,
+                    "name": "H6",
+                    "car_brand_id": 24,
+                    "created_at": "2025-10-22T07:39:56.000000Z",
+                    "updated_at": "2025-10-22T07:39:56.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 221,
+                            "status": 1,
+                            "name": "Comfort",
+                            "price": 324900000,
+                            "car_model_id": 106,
+                            "created_at": "2025-10-22T07:40:11.000000Z",
+                            "updated_at": "2025-10-22T07:40:11.000000Z"
+                        },
+                        {
+                            "id": 222,
+                            "status": 1,
+                            "name": "Prestige",
+                            "price": 354900000,
+                            "car_model_id": 106,
+                            "created_at": "2025-10-22T07:40:25.000000Z",
+                            "updated_at": "2025-10-22T07:40:25.000000Z"
+                        },
+                        {
+                            "id": 223,
+                            "status": 1,
+                            "name": "Premium 1.5 L 2WD",
+                            "price": 369900000,
+                            "car_model_id": 106,
+                            "created_at": "2025-10-22T07:41:17.000000Z",
+                            "updated_at": "2025-10-22T07:41:17.000000Z"
+                        },
+                        {
+                            "id": 224,
+                            "status": 1,
+                            "name": "Premium 2.0 L 4WD",
+                            "price": 389900000,
+                            "car_model_id": 106,
+                            "created_at": "2025-10-22T07:41:43.000000Z",
+                            "updated_at": "2025-10-22T07:41:43.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 107,
+                    "status": 1,
+                    "name": "DARGO",
+                    "car_brand_id": 24,
+                    "created_at": "2025-10-22T07:42:01.000000Z",
+                    "updated_at": "2025-10-22T07:42:01.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 225,
+                            "status": 1,
+                            "name": "Prestige",
+                            "price": 399900000,
+                            "car_model_id": 107,
+                            "created_at": "2025-10-22T07:42:17.000000Z",
+                            "updated_at": "2025-10-22T07:42:17.000000Z"
+                        },
+                        {
+                            "id": 226,
+                            "status": 1,
+                            "name": "Premium",
+                            "price": 429900000,
+                            "car_model_id": 107,
+                            "created_at": "2025-10-22T07:42:32.000000Z",
+                            "updated_at": "2025-10-22T07:42:32.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 108,
+                    "status": 1,
+                    "name": "JOLION",
+                    "car_brand_id": 24,
+                    "created_at": "2025-10-22T07:42:47.000000Z",
+                    "updated_at": "2025-10-22T07:42:47.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 227,
+                            "status": 1,
+                            "name": "Comfort",
+                            "price": 279900000,
+                            "car_model_id": 108,
+                            "created_at": "2025-10-22T07:43:04.000000Z",
+                            "updated_at": "2025-10-22T07:43:04.000000Z"
+                        },
+                        {
+                            "id": 228,
+                            "status": 1,
+                            "name": "Prestige+",
+                            "price": 309900000,
+                            "car_model_id": 108,
+                            "created_at": "2025-10-22T07:43:21.000000Z",
+                            "updated_at": "2025-10-22T07:43:21.000000Z"
+                        },
+                        {
+                            "id": 229,
+                            "status": 1,
+                            "name": "Premium",
+                            "price": 329900000,
+                            "car_model_id": 108,
+                            "created_at": "2025-10-22T07:43:35.000000Z",
+                            "updated_at": "2025-10-22T07:43:35.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 109,
+                    "status": 1,
+                    "name": "M6",
+                    "car_brand_id": 24,
+                    "created_at": "2025-10-22T07:44:01.000000Z",
+                    "updated_at": "2025-10-22T07:44:01.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 230,
+                            "status": 1,
+                            "name": "Comfort MT",
+                            "price": 249900000,
+                            "car_model_id": 109,
+                            "created_at": "2025-10-22T07:44:34.000000Z",
+                            "updated_at": "2025-10-22T07:44:34.000000Z"
+                        },
+                        {
+                            "id": 231,
+                            "status": 1,
+                            "name": "Comfort AT",
+                            "price": 259900000,
+                            "car_model_id": 109,
+                            "created_at": "2025-10-22T07:44:50.000000Z",
+                            "updated_at": "2025-10-22T07:44:50.000000Z"
+                        },
+                        {
+                            "id": 232,
+                            "status": 1,
+                            "name": "Premium AT",
+                            "price": 279900000,
+                            "car_model_id": 109,
+                            "created_at": "2025-10-22T07:45:06.000000Z",
+                            "updated_at": "2025-10-22T07:45:06.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 110,
+                    "status": 1,
+                    "name": "WINGLE 7",
+                    "car_brand_id": 24,
+                    "created_at": "2025-10-22T07:45:29.000000Z",
+                    "updated_at": "2025-10-22T07:45:29.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 233,
+                            "status": 1,
+                            "name": "Premium",
+                            "price": 359900000,
+                            "car_model_id": 110,
+                            "created_at": "2025-10-22T07:45:51.000000Z",
+                            "updated_at": "2025-10-22T07:45:51.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 25,
+            "status": 1,
+            "name": "HOWO",
+            "logo": "car_brands/aFjBoLKDlhbM4fJtJThDtXayoQxr3J6xbpqP4AeK.svg",
+            "created_at": "2025-10-23T09:42:03.000000Z",
+            "updated_at": "2026-02-02T04:16:06.000000Z",
+            "car_models": [
+                {
+                    "id": 112,
+                    "status": 1,
+                    "name": "A7",
+                    "car_brand_id": 25,
+                    "created_at": "2025-10-23T09:42:10.000000Z",
+                    "updated_at": "2025-10-23T09:42:10.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 238,
+                            "status": 1,
+                            "name": "ZZ4257",
+                            "price": 1200000000,
+                            "car_model_id": 112,
+                            "created_at": "2025-10-23T09:53:35.000000Z",
+                            "updated_at": "2025-10-23T09:54:43.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 26,
+            "status": 1,
+            "name": "HONGQI",
+            "logo": "car_brands/0qa8i1DytfUxzMhbXHVmwxDOWkZE8aXpCzbVpgnJ.svg",
+            "created_at": "2025-10-30T11:50:44.000000Z",
+            "updated_at": "2026-02-02T04:16:15.000000Z",
+            "car_models": [
+                {
+                    "id": 118,
+                    "status": 1,
+                    "name": "E-QM5",
+                    "car_brand_id": 26,
+                    "created_at": "2025-10-30T11:51:03.000000Z",
+                    "updated_at": "2025-10-30T11:51:03.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 255,
+                            "status": 1,
+                            "name": "450 km",
+                            "price": 190000000,
+                            "car_model_id": 118,
+                            "created_at": "2025-10-30T11:54:42.000000Z",
+                            "updated_at": "2025-10-30T11:54:42.000000Z"
+                        },
+                        {
+                            "id": 254,
+                            "status": 1,
+                            "name": "500 km",
+                            "price": 200000000,
+                            "car_model_id": 118,
+                            "created_at": "2025-10-30T11:53:33.000000Z",
+                            "updated_at": "2025-10-30T11:56:11.000000Z"
+                        },
+                        {
+                            "id": 256,
+                            "status": 1,
+                            "name": "600 km",
+                            "price": 210000000,
+                            "car_model_id": 118,
+                            "created_at": "2025-10-30T11:56:27.000000Z",
+                            "updated_at": "2025-10-30T11:56:27.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 27,
+            "status": 1,
+            "name": "Dongfen",
+            "logo": "car_brands/Jg6w3Z3jA0kyuh7yraxTaAHspB1jH0j0BAeAeNRQ.svg",
+            "created_at": "2025-11-27T08:11:56.000000Z",
+            "updated_at": "2026-02-02T04:16:26.000000Z",
+            "car_models": [
+                {
+                    "id": 122,
+                    "status": 1,
+                    "name": "008",
+                    "car_brand_id": 27,
+                    "created_at": "2025-11-27T08:12:13.000000Z",
+                    "updated_at": "2025-11-27T08:12:38.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 266,
+                            "status": 1,
+                            "name": "210 Max",
+                            "price": 368986800,
+                            "car_model_id": 122,
+                            "created_at": "2025-11-27T08:12:56.000000Z",
+                            "updated_at": "2025-11-27T08:12:56.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 136,
+                    "status": 1,
+                    "name": "Nammi 01",
+                    "car_brand_id": 27,
+                    "created_at": "2026-02-26T11:19:59.000000Z",
+                    "updated_at": "2026-02-26T11:19:59.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 290,
+                            "status": 1,
+                            "name": "430 Plus",
+                            "price": 230000000,
+                            "car_model_id": 136,
+                            "created_at": "2026-02-26T11:20:22.000000Z",
+                            "updated_at": "2026-02-26T11:20:22.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 137,
+                    "status": 1,
+                    "name": "Nammi 06",
+                    "car_brand_id": 27,
+                    "created_at": "2026-02-26T11:20:56.000000Z",
+                    "updated_at": "2026-02-26T11:20:56.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 291,
+                            "status": 1,
+                            "name": "Full 401 km",
+                            "price": 242000000,
+                            "car_model_id": 137,
+                            "created_at": "2026-02-26T11:24:06.000000Z",
+                            "updated_at": "2026-02-26T11:24:06.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 28,
+            "status": 1,
+            "name": "Mazda",
+            "logo": "car_brands/RNjTp3fV7zgR9XtBbRjQEU0vTahE61uFaXVFCWvf.svg",
+            "created_at": "2026-01-14T07:21:59.000000Z",
+            "updated_at": "2026-02-02T04:16:36.000000Z",
+            "car_models": [
+                {
+                    "id": 127,
+                    "status": 1,
+                    "name": "EZ 6",
+                    "car_brand_id": 28,
+                    "created_at": "2026-01-14T07:22:43.000000Z",
+                    "updated_at": "2026-01-14T07:22:43.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 279,
+                            "status": 1,
+                            "name": "Hybrid 130 km",
+                            "price": 350000000,
+                            "car_model_id": 127,
+                            "created_at": "2026-01-14T07:23:35.000000Z",
+                            "updated_at": "2026-01-14T07:23:35.000000Z"
+                        },
+                        {
+                            "id": 280,
+                            "status": 1,
+                            "name": "EV 480 km",
+                            "price": 350000000,
+                            "car_model_id": 127,
+                            "created_at": "2026-01-14T07:26:46.000000Z",
+                            "updated_at": "2026-01-14T07:26:46.000000Z"
+                        },
+                        {
+                            "id": 281,
+                            "status": 1,
+                            "name": "EZ60 hibrid 200 km",
+                            "price": 400000000,
+                            "car_model_id": 127,
+                            "created_at": "2026-01-14T07:37:10.000000Z",
+                            "updated_at": "2026-01-14T07:37:10.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 31,
+            "status": 1,
+            "name": "XIAOMI",
+            "logo": "car_brands/nUfAH1FXUUkVc5levsd4OqH9GOElmqRymEKiDHUD.svg",
+            "created_at": "2026-02-19T05:56:43.000000Z",
+            "updated_at": "2026-02-19T06:13:19.000000Z",
+            "car_models": [
+                {
+                    "id": 132,
+                    "status": 1,
+                    "name": "YU7 Pro",
+                    "car_brand_id": 31,
+                    "created_at": "2026-02-19T05:57:09.000000Z",
+                    "updated_at": "2026-02-19T05:57:09.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 287,
+                            "status": 1,
+                            "name": "Pro",
+                            "price": 750000000,
+                            "car_model_id": 132,
+                            "created_at": "2026-02-19T05:57:37.000000Z",
+                            "updated_at": "2026-02-19T06:02:00.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 32,
+            "status": 1,
+            "name": "Land Rover",
+            "logo": "car_brands/N2QGU1hxpAXiQPArXPKcs7wsrbuxXg5fYKjdNIRt.svg",
+            "created_at": "2026-02-20T12:04:19.000000Z",
+            "updated_at": "2026-02-26T11:55:51.000000Z",
+            "car_models": [
+                {
+                    "id": 133,
+                    "status": 1,
+                    "name": "P530",
+                    "car_brand_id": 32,
+                    "created_at": "2026-02-20T12:04:26.000000Z",
+                    "updated_at": "2026-02-20T12:04:26.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 288,
+                            "status": 1,
+                            "name": "SV",
+                            "price": 2070000000,
+                            "car_model_id": 133,
+                            "created_at": "2026-02-20T12:06:34.000000Z",
+                            "updated_at": "2026-02-23T07:50:10.000000Z"
+                        }
+                    ]
+                },
+                {
+                    "id": 134,
+                    "status": 1,
+                    "name": "",
+                    "car_brand_id": 32,
+                    "created_at": "2026-02-20T12:06:17.000000Z",
+                    "updated_at": "2026-02-20T12:06:48.000000Z",
+                    "car_positions": []
+                }
+            ]
+        },
+        {
+            "id": 33,
+            "status": 1,
+            "name": "Mini",
+            "logo": "car_brands/1A71wLJ21YwD2Y3ZlrXlg7iuQuD4B2dNQs14NfVt.svg",
+            "created_at": "2026-02-26T10:55:01.000000Z",
+            "updated_at": "2026-02-26T11:47:16.000000Z",
+            "car_models": [
+                {
+                    "id": 135,
+                    "status": 1,
+                    "name": "SE",
+                    "car_brand_id": 33,
+                    "created_at": "2026-02-26T10:56:54.000000Z",
+                    "updated_at": "2026-02-26T10:56:54.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 289,
+                            "status": 1,
+                            "name": "AWD",
+                            "price": 440000000,
+                            "car_model_id": 135,
+                            "created_at": "2026-02-26T10:59:32.000000Z",
+                            "updated_at": "2026-02-26T10:59:32.000000Z"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 34,
+            "status": 1,
+            "name": "Bestune",
+            "logo": "car_brands/iaghjHVZD4tHRMMWzLxo7QQoIZmYobF02DEuRuXI.svg",
+            "created_at": "2026-03-12T10:51:10.000000Z",
+            "updated_at": "2026-03-12T11:05:50.000000Z",
+            "car_models": [
+                {
+                    "id": 140,
+                    "status": 1,
+                    "name": "T55",
+                    "car_brand_id": 34,
+                    "created_at": "2026-03-12T10:51:23.000000Z",
+                    "updated_at": "2026-03-12T10:51:23.000000Z",
+                    "car_positions": [
+                        {
+                            "id": 296,
+                            "status": 1,
+                            "name": "PREMIUM",
+                            "price": 282000000,
+                            "car_model_id": 140,
+                            "created_at": "2026-03-12T10:53:45.000000Z",
+                            "updated_at": "2026-03-12T10:53:45.000000Z"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+
+
+
+https://api.neoinsurance.uz/api/kasko-neo/get-tarif get
+
+{
+    "result": true,
+    "tarif": [
+        {
+            "id": 1,
+            "name": "Basic",
+            "percent": 1
+        },
+        {
+            "id": 2,
+            "name": "Comfort",
+            "percent": 1.5
+        },
+        {
+            "id": 3,
+            "name": "Premium",
+            "percent": 2.5
+        }
+    ],
+    "konstruktor": [
+        {
+            "id": 1,
+            "ru": "Гражданская ответственность",
+            "uz": "Fuqarolik javobgarlik",
+            "percent": 0.003
+        },
+        {
+            "id": 2,
+            "ru": "Несчастные случаи с застрахованными лицами",
+            "uz": "Sug'urtalangan shaxslar bilan baxtsiz xodisa",
+            "percent": 0.005
+        },
+        {
+            "id": 3,
+            "ru": "ДТП при вождении в состоянии алкогольного опьянения",
+            "uz": "Mastlik xolatida YTH ga uchrash",
+            "percent": 0.005
+        },
+        {
+            "id": 4,
+            "ru": "Нарушение правил проезда железнодорожных переездов",
+            "uz": "Temir yo'lni kesib o'tish qoidalarini buzish",
+            "percent": 0.001
+        },
+        {
+            "id": 5,
+            "ru": "Проезда на запрещающий сигнал светофора",
+            "uz": "Svetoforning taqiqlovchi chiroqlariga o'tish",
+            "percent": 0.003
+        },
+        {
+            "id": 6,
+            "ru": "Движение против установленного направления",
+            "uz": "Yo'nalishga qarshi harakatlanish",
+            "percent": 0.003
+        },
+        {
+            "id": 7,
+            "ru": "Повреждения/разрушения переднего ветрового (лобового) стекла ТС",
+            "uz": "Oldi oynaning shikastlanishi/yo'q qilinishi",
+            "percent": 0.003
+        },
+        {
+            "id": 8,
+            "ru": "Услуги аварийных комиссаров - доставка топлива, запуск двигателя, замена колеса",
+            "uz": "Avariya komissarlari xizmati - yoqilg'i etqazish, dvigatelni ishga tushirish, g'ildirak almashtirish",
+            "percent": 0.002
+        },
+        {
+            "id": 9,
+            "ru": "Транспортные расходы по услуге такси или аренды ТС при ДТП",
+            "uz": "YTH sodir bo'lganda taksi xizmatlari yoki transport vositasini ijaraga olish uchun  xarajatlari",
+            "percent": 0.002
+        }
+    ]
+}
+
+
+https://api.neoinsurance.uz/api/kasko-neo/car_price_cal
+
+REQUEST
+{
+    "car_position_id": 96,
+    "year": 2020
+    //moshina narxini yilga qarab o'zgartirish
+}
+
+RESPONCE
+{
+    "result": true,
+    "price": 140000000
+}
+
+https://api.neoinsurance.uz/api/kasko-neo/hisoblash
+
+REQUEST
+{
+  "price": 140000000
+}
+
+RESPONCE
+{
+    "result": true,
+    "tarif_1": 1400000,
+    "tarif_2": 2100000,
+    "tarif_3": 3500000,
+    "konstruktor": 0
+}
+
+
+NEO MINI KASKO >>>>
+
+https://api.neoinsurance.uz/api/mini-casco/getTariffs get 
+
+{
+    "tariffs": [
+        {
+            "id": 0,
+            "name": "Basic",
+            "color": "background-color: #eee;",
+            "price": 60000,
+            "description_uz": "Mijoz aybdor bo‘lsa ham YTH ro‘y berganida 10 000 000 so‘mgacha zarar qoplab beriladi",
+            "description_ru": "Покрытие на сумму до 10 000 000 сум в случае повреждения вашего авто в ДТП, даже если вы виноваты",
+            "description_en": "Coverage up to UZS 10,000,000 in case of damage to your car in an accident, even if you are at fault",
+            "liability": 10000000
+        },
+        {
+            "id": 1,
+            "name": "Comfort",
+            "color": "background-color: #eee;",
+            "price": 90000,
+            "description_uz": "Mijoz aybdor bo‘lsa ham YTH ro‘y berganida 20 000 000 so‘mgacha zarar qoplab beriladi",
+            "description_ru": "Покрытие на сумму до 20 000 000 сум в случае повреждения вашего авто в ДТП, даже если вы виноваты",
+            "description_en": "Coverage up to UZS 20,000,000 in case of damage to your car in an accident, even if you are at fault",
+            "liability": 20000000
+        },
+        {
+            "id": 2,
+            "name": "Premium",
+            "color": "background-color: #eee;",
+            "price": 110000,
+            "description_uz": "Mijoz aybdor bo‘lsa ham  YTH ro‘y berganida 30 000 000 so‘mgacha zarar qoplab beriladi",
+            "description_ru": "Покрытие на сумму до 30 000 000 сум в случае повреждения вашего авто в ДТП, даже если вы виноваты",
+            "description_en": "Coverage up to UZS 30,000,000 in case of damage to your car in an accident, even if you are at fault",
+            "liability": 30000000
+        }
+    ]
+}
+
+
+
+<<<<NEO MINI KASKO

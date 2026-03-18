@@ -158,6 +158,9 @@ func SetupRouter() *gin.Engine {
 	// OSAGO All routes
 	SetupOsagoAllRoutes(r)
 
+	// KASKO All routes (до этапа калькуляции)
+	SetupKaskoAllRoutes(r)
+
 	// Test routes for logging
 	r.GET("/test/error", controllers.TestError)
 	r.GET("/test/panic", controllers.TestPanic)

@@ -1,0 +1,459 @@
+curl -X 'GET' \
+  'https://gross.uz/ru/kasko-gross/autobrand' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Basic Kzk5ODk5MTg1MDIxMjpLbGlyb2dyb3MyMDI1'
+
+  {
+  "result": true,
+  "message": null,
+  "response": [
+    {
+      "id": 1,
+      "name": "CHEVROLET"
+    },
+    {
+      "id": 2,
+      "name": "LADA"
+    },
+    {
+      "id": 3,
+      "name": "HYUNDAI"
+    },
+    {
+      "id": 4,
+      "name": "ZAZ"
+    },
+    {
+      "id": 6,
+      "name": "VOLKSWAGEN"
+    },
+    {
+      "id": 7,
+      "name": "SKODA"
+    },
+    {
+      "id": 8,
+      "name": "KIA"
+    },
+    {
+      "id": 9,
+      "name": "УАЗ "
+    },
+    {
+      "id": 10,
+      "name": "FAW BESTUNE"
+    },
+    {
+      "id": 11,
+      "name": "OPEL"
+    },
+    {
+      "id": 12,
+      "name": "Renault"
+    },
+    {
+      "id": 13,
+      "name": "ISUZU"
+    },
+    {
+      "id": 14,
+      "name": "Chery"
+    },
+    {
+      "id": 15,
+      "name": "BYD"
+    },
+    {
+      "id": 16,
+      "name": "HONDA"
+    },
+    {
+      "id": 17,
+      "name": "AIQAR"
+    },
+    {
+      "id": 18,
+      "name": "HONGOI "
+    },
+    {
+      "id": 19,
+      "name": "BESTUNE "
+    },
+    {
+      "id": 20,
+      "name": "JETOUR"
+    },
+    {
+      "id": 22,
+      "name": "DONGFENG"
+    },
+    {
+      "id": 23,
+      "name": "TOYOTA"
+    },
+    {
+      "id": 24,
+      "name": "BMW"
+    },
+    {
+      "id": 25,
+      "name": "NISSAN"
+    },
+    {
+      "id": 26,
+      "name": "VOLVO"
+    },
+    {
+      "id": 27,
+      "name": "ZEEKR"
+    },
+    {
+      "id": 28,
+      "name": "AUDI"
+    },
+    {
+      "id": 29,
+      "name": "BUICK"
+    },
+    {
+      "id": 30,
+      "name": "CADILLAC"
+    },
+    {
+      "id": 31,
+      "name": "JEEP"
+    },
+    {
+      "id": 32,
+      "name": "LEXUS"
+    },
+    {
+      "id": 33,
+      "name": "LOTUS"
+    },
+    {
+      "id": 34,
+      "name": "MG"
+    },
+    {
+      "id": 35,
+      "name": "MERCEDES BENZ"
+    },
+    {
+      "id": 36,
+      "name": "TESLA"
+    },
+    {
+      "id": 37,
+      "name": "GAC"
+    },
+    {
+      "id": 38,
+      "name": "EXEED"
+    },
+    {
+      "id": 39,
+      "name": "DENZA"
+    },
+    {
+      "id": 40,
+      "name": "AVATR"
+    },
+    {
+      "id": 41,
+      "name": "ZHIJI"
+    },
+    {
+      "id": 42,
+      "name": "LEAPMOTOR"
+    },
+    {
+      "id": 43,
+      "name": "HAVAL"
+    },
+    {
+      "id": 44,
+      "name": "VOYAH"
+    },
+    {
+      "id": 45,
+      "name": "Xiaomi"
+    },
+    {
+      "id": 46,
+      "name": "LIXIANG"
+    },
+    {
+      "id": 47,
+      "name": "XPeng"
+    },
+    {
+      "id": 49,
+      "name": "LAND ROVER"
+    },
+    {
+      "id": 51,
+      "name": "ENOVATE"
+    }
+  ]
+}
+
+
+curl -X 'POST' \
+  'https://gross.uz/ru/kasko-gross/automodel' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Basic Kzk5ODk5MTg1MDIxMjpLbGlyb2dyb3MyMDI1' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "autobrand_id": 1
+}'
+
+{
+  "result": true,
+  "message": null,
+  "response": [
+    {
+      "id": 46,
+      "name": "Captiva"
+    },
+    {
+      "id": 9,
+      "name": "Cobalt"
+    },
+    {
+      "id": 4,
+      "name": "Damas"
+    },
+    {
+      "id": 74,
+      "name": "EQUINOX 2.0"
+    },
+    {
+      "id": 15,
+      "name": "Equinox"
+    },
+    {
+      "id": 139,
+      "name": "LABO"
+    },
+    {
+      "id": 10,
+      "name": "Lacetti"
+    },
+    {
+      "id": 11,
+      "name": "Lacetti с ГБО"
+    },
+    {
+      "id": 147,
+      "name": "MONZA"
+    },
+    {
+      "id": 48,
+      "name": "Malibu"
+    },
+    {
+      "id": 12,
+      "name": "Malibu 2"
+    },
+    {
+      "id": 19,
+      "name": "Nexia 2"
+    },
+    {
+      "id": 8,
+      "name": "Nexia 3"
+    },
+    {
+      "id": 75,
+      "name": "ONIX"
+    },
+    {
+      "id": 47,
+      "name": "Orlando"
+    },
+    {
+      "id": 7,
+      "name": "Spark"
+    },
+    {
+      "id": 17,
+      "name": "Tahoe"
+    },
+    {
+      "id": 13,
+      "name": "Tracker 1"
+    },
+    {
+      "id": 60,
+      "name": "Tracker 2"
+    },
+    {
+      "id": 14,
+      "name": "Trailblazer"
+    },
+    {
+      "id": 16,
+      "name": "Traverse"
+    }
+  ]
+}
+
+curl -X 'POST' \
+  'https://gross.uz/ru/kasko-gross/autocomp' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Basic Kzk5ODk5MTg1MDIxMjpLbGlyb2dyb3MyMDI1' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "automodel_id": 10
+}'
+
+{
+  "result": true,
+  "message": null,
+  "response": [
+    {
+      "id": 149,
+      "name": "CDX A/T"
+    },
+    {
+      "id": 151,
+      "name": "CDX A/T Elegant Plus"
+    },
+    {
+      "id": 244,
+      "name": "L-OPTIMA AT"
+    },
+    {
+      "id": 243,
+      "name": "L-Style MT"
+    },
+    {
+      "id": 148,
+      "name": "SX"
+    },
+    {
+      "id": 150,
+      "name": "SX M/T Comfort Plus"
+    }
+  ]
+}
+
+curl -X 'GET' \
+  'https://gross.uz/ru/kasko-gross/years' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Basic Kzk5ODk5MTg1MDIxMjpLbGlyb2dyb3MyMDI1'
+
+  {
+  "result": true,
+  "message": null,
+  "response": [
+    {
+      "year": 2026
+    },
+    {
+      "year": 2025
+    },
+    {
+      "year": 2024
+    },
+    {
+      "year": 2023
+    },
+    {
+      "year": 2022
+    },
+    {
+      "year": 2021
+    },
+    {
+      "year": 2020
+    },
+    {
+      "year": 2019
+    },
+    {
+      "year": 2018
+    },
+    {
+      "year": 2017
+    },
+    {
+      "year": 2016
+    },
+    {
+      "year": 2015
+    },
+    {
+      "year": 2014
+    },
+    {
+      "year": 2013
+    },
+    {
+      "year": 2012
+    },
+    {
+      "year": 2011
+    }
+  ]
+}
+
+
+curl -X 'POST' \
+  'https://gross.uz/ru/kasko-gross/autoprice' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Basic Kzk5ODk5MTg1MDIxMjpLbGlyb2dyb3MyMDI1' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "autocomp_id": 150,
+  "year": 2020
+}'
+
+{
+  "result": true,
+  "message": null,
+  "response": {
+    "autoprice": 97192302.21656248
+  }
+}
+
+curl -X 'GET' \
+  'https://gross.uz/ru/kasko-gross/tariff' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Basic Kzk5ODk5MTg1MDIxMjpLbGlyb2dyb3MyMDI1'
+
+  {
+  "result": true,
+  "message": null,
+  "response": [
+    {
+      "id": 10,
+      "name": "«GROSS KASKO SILVER»"
+    },
+    {
+      "id": 3,
+      "name": "PRESTIGE"
+    }
+  ]
+}
+
+curl -X 'POST' \
+  'https://gross.uz/ru/kasko-gross/calc-kasko' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Basic Kzk5ODk5MTg1MDIxMjpLbGlyb2dyb3MyMDI1' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "autocomp_id": 150,
+  "tariff_id": 10,
+  "year": 2020
+}'
+
+{
+  "result": true,
+  "message": null,
+  "response": {
+    "amount_uzs": 1360692,
+    "autoprice": 125607000
+  }
+}

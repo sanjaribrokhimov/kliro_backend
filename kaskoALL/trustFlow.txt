@@ -1,0 +1,646 @@
+curl -X 'GET' \
+  'https://api.online-trust.uz/api/v1/kasko/kasko-vehicle-marka' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Basic S0xJUk9fVEVDSF9BUEk6JDIzS0xJUk8wOVRFQ0gyNSM='
+
+  [
+  {
+    "id": 198,
+    "name": "AITO"
+  },
+  {
+    "id": 6,
+    "name": "AUDI"
+  },
+  {
+    "id": 192,
+    "name": "AVATR"
+  },
+  {
+    "id": 208,
+    "name": "BAIC"
+  },
+  {
+    "id": 205,
+    "name": "BAW BAW STONE"
+  },
+  {
+    "id": 9,
+    "name": "BMW"
+  },
+  {
+    "id": 203,
+    "name": "BUICK"
+  },
+  {
+    "id": 193,
+    "name": "BYD"
+  },
+  {
+    "id": 12,
+    "name": "CHANGAN"
+  },
+  {
+    "id": 190,
+    "name": "CHERY"
+  },
+  {
+    "id": 13,
+    "name": "CHEVROLET"
+  },
+  {
+    "id": 131,
+    "name": "DONG FENG"
+  },
+  {
+    "id": 167,
+    "name": "FAW"
+  },
+  {
+    "id": 210,
+    "name": "GAC AION"
+  },
+  {
+    "id": 27,
+    "name": "GAZ"
+  },
+  {
+    "id": 204,
+    "name": "HAVAL"
+  },
+  {
+    "id": 191,
+    "name": "HONGQI"
+  },
+  {
+    "id": 140,
+    "name": "HOWO"
+  },
+  {
+    "id": 33,
+    "name": "HYUNDAI"
+  },
+  {
+    "id": 34,
+    "name": "INFINITI"
+  },
+  {
+    "id": 36,
+    "name": "ISUZU"
+  },
+  {
+    "id": 145,
+    "name": "JAC"
+  },
+  {
+    "id": 38,
+    "name": "JEEP"
+  },
+  {
+    "id": 194,
+    "name": "JETOUR"
+  },
+  {
+    "id": 42,
+    "name": "KIA"
+  },
+  {
+    "id": 43,
+    "name": "LADA"
+  },
+  {
+    "id": 46,
+    "name": "LAND ROVER"
+  },
+  {
+    "id": 207,
+    "name": "LEAPMOTOR"
+  },
+  {
+    "id": 47,
+    "name": "LEXUS"
+  },
+  {
+    "id": 200,
+    "name": "LI"
+  },
+  {
+    "id": 55,
+    "name": "MERCEDES BENZ"
+  },
+  {
+    "id": 57,
+    "name": "MITSUBISHI"
+  },
+  {
+    "id": 201,
+    "name": "NETA"
+  },
+  {
+    "id": 60,
+    "name": "NISSAN"
+  },
+  {
+    "id": 184,
+    "name": "RAVON"
+  },
+  {
+    "id": 206,
+    "name": "SHINERAY T32"
+  },
+  {
+    "id": 78,
+    "name": "SKODA"
+  },
+  {
+    "id": 81,
+    "name": "SUZUKI"
+  },
+  {
+    "id": 86,
+    "name": "TOYOTA"
+  },
+  {
+    "id": 88,
+    "name": "UAZ"
+  },
+  {
+    "id": 93,
+    "name": "VAZ"
+  },
+  {
+    "id": 90,
+    "name": "VOLKSWAGEN"
+  },
+  {
+    "id": 91,
+    "name": "VOLVO"
+  },
+  {
+    "id": 199,
+    "name": "ZEEKR"
+  }
+]
+
+
+
+curl -X 'POST' \
+  'https://api.online-trust.uz/api/v1/kasko/kasko-vehicle-model' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Basic S0xJUk9fVEVDSF9BUEk6JDIzS0xJUk8wOVRFQ0gyNSM=' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "id": 13
+}'
+
+[
+  {
+    "id": 5562,
+    "name": "CAPTIVA",
+    "until_five_year": 0,
+    "after_five_year": 240000000
+  },
+  {
+    "id": 5367,
+    "name": "CAPTIVA 1-2",
+    "until_five_year": 198000000,
+    "after_five_year": 158400000
+  },
+  {
+    "id": 5615,
+    "name": "CAPTIVA 2",
+    "until_five_year": 0,
+    "after_five_year": 166000000
+  },
+  {
+    "id": 5368,
+    "name": "CAPTIVA 3-4",
+    "until_five_year": 235000000,
+    "after_five_year": 188000000
+  },
+  {
+    "id": 5425,
+    "name": "CHEVROLET TRACKER-1",
+    "until_five_year": 218500000,
+    "after_five_year": 174800000
+  },
+  {
+    "id": 5561,
+    "name": "COBALT",
+    "until_five_year": 140000000,
+    "after_five_year": 132767500
+  },
+  {
+    "id": 5357,
+    "name": "COBALT GS-STYLE PLUS MT",
+    "until_five_year": 113711000,
+    "after_five_year": 90968800
+  },
+  {
+    "id": 5358,
+    "name": "COBALT GX-OPTIMA AT",
+    "until_five_year": 123833000,
+    "after_five_year": 99066400
+  },
+  {
+    "id": 5360,
+    "name": "COBALT GX-STYLE PLUS AT",
+    "until_five_year": 153000000,
+    "after_five_year": 107435200
+  },
+  {
+    "id": 5359,
+    "name": "COBALT GX/14ATB",
+    "until_five_year": 121056000,
+    "after_five_year": 96844800
+  },
+  {
+    "id": 5538,
+    "name": "DAMAS 2D2 PLUS",
+    "until_five_year": 96370000,
+    "after_five_year": 0
+  },
+  {
+    "id": 5347,
+    "name": "DAMAS DLX D2 (ПАССАЖИРСКИЙ)",
+    "until_five_year": 86971000,
+    "after_five_year": 69576800
+  },
+  {
+    "id": 5348,
+    "name": "DAMAS LABO LB2 (ПИКАП)",
+    "until_five_year": 90000000,
+    "after_five_year": 70000000
+  },
+  {
+    "id": 5346,
+    "name": "DAMAS VAN D11 (ГРУЗОВОЙ)",
+    "until_five_year": 84309000,
+    "after_five_year": 67447200
+  },
+  {
+    "id": 5457,
+    "name": "EQUINOX 1,5 Т LS FWD",
+    "until_five_year": 349000000,
+    "after_five_year": 251000000
+  },
+  {
+    "id": 5388,
+    "name": "EQUINOX 2.0T 1LT FWD MH",
+    "until_five_year": 440000000,
+    "after_five_year": 0
+  },
+  {
+    "id": 5390,
+    "name": "EQUINOX AT 3LT AWD MH",
+    "until_five_year": 472500000,
+    "after_five_year": 0
+  },
+  {
+    "id": 5389,
+    "name": "EQUINOX RS 2.0T 1LT AT",
+    "until_five_year": 420000000,
+    "after_five_year": 0
+  },
+  {
+    "id": 5458,
+    "name": "EQUINOX RS 2.0T 3LT AT",
+    "until_five_year": 450000000,
+    "after_five_year": 0
+  },
+  {
+    "id": 5393,
+    "name": "Epica",
+    "until_five_year": 0,
+    "after_five_year": 90000000
+  },
+  {
+    "id": 5520,
+    "name": "LACETTI",
+    "until_five_year": 188000000,
+    "after_five_year": 128000000
+  },
+  {
+    "id": 5518,
+    "name": "LACETTI",
+    "until_five_year": 138126000,
+    "after_five_year": 90000000
+  },
+  {
+    "id": 5596,
+    "name": "LACETTI  L STYLE AT PLUS",
+    "until_five_year": 175000000,
+    "after_five_year": 0
+  },
+  {
+    "id": 5548,
+    "name": "LACETTI 2023",
+    "until_five_year": 169118000,
+    "after_five_year": 0
+  },
+  {
+    "id": 5362,
+    "name": "LACETTI CDX A/T Elegant Plus",
+    "until_five_year": 154679000,
+    "after_five_year": 123743200
+  },
+  {
+    "id": 5361,
+    "name": "LACETTI L-COMFORT PLUS",
+    "until_five_year": 129457000,
+    "after_five_year": 103565600
+  },
+  {
+    "id": 5365,
+    "name": "LACETTI L-Opmita AT",
+    "until_five_year": 153101000,
+    "after_five_year": 122480800
+  },
+  {
+    "id": 5364,
+    "name": "LACETTI L-Style AT",
+    "until_five_year": 156356000,
+    "after_five_year": 125084800
+  },
+  {
+    "id": 5363,
+    "name": "LACETTI L-Style MT",
+    "until_five_year": 131134000,
+    "after_five_year": 104907200
+  },
+  {
+    "id": 5366,
+    "name": "LACETTI С ГБО SX CNG PLUS",
+    "until_five_year": 139092000,
+    "after_five_year": 111273600
+  },
+  {
+    "id": 5369,
+    "name": "MALIBU 1",
+    "until_five_year": 180000000,
+    "after_five_year": 144000000
+  },
+  {
+    "id": 5489,
+    "name": "MALIBU 2 ",
+    "until_five_year": 419000000,
+    "after_five_year": 260000000
+  },
+  {
+    "id": 5391,
+    "name": "MATIZ 0,8 Л.",
+    "until_five_year": 60000000,
+    "after_five_year": 48000000
+  },
+  {
+    "id": 5392,
+    "name": "MATIZ 1,0 Л.",
+    "until_five_year": 70000000,
+    "after_five_year": 56000000
+  },
+  {
+    "id": 5497,
+    "name": "MONZA 1.3",
+    "until_five_year": 245000000,
+    "after_five_year": 0
+  },
+  {
+    "id": 5565,
+    "name": "MONZA 1.3",
+    "until_five_year": 218750000,
+    "after_five_year": 0
+  },
+  {
+    "id": 5494,
+    "name": "MONZA 1.5",
+    "until_five_year": 223000000,
+    "after_five_year": 0
+  },
+  {
+    "id": 5370,
+    "name": "Malibu 2/XL 2.0L LTZ",
+    "until_five_year": 395311840,
+    "after_five_year": 300000000
+  },
+  {
+    "id": 5372,
+    "name": "Malibu 2/XL 2LT 9AT",
+    "until_five_year": 390000800,
+    "after_five_year": 290000000
+  },
+  {
+    "id": 5373,
+    "name": "Malibu 2/XL LTZ 9AT",
+    "until_five_year": 419000960,
+    "after_five_year": 335200700
+  },
+  {
+    "id": 5354,
+    "name": "NEXIA 1-2",
+    "until_five_year": 80000000,
+    "after_five_year": 65000000
+  },
+  {
+    "id": 5589,
+    "name": "NEXIA 2",
+    "until_five_year": 130000000,
+    "after_five_year": 120000000
+  },
+  {
+    "id": 5355,
+    "name": "Nexia 3 LT ",
+    "until_five_year": 87320000,
+    "after_five_year": 80000000
+  },
+  {
+    "id": 5356,
+    "name": "Nexia 3 LTZ/AT ",
+    "until_five_year": 120000000,
+    "after_five_year": 120000000
+  },
+  {
+    "id": 5605,
+    "name": "ONIX",
+    "until_five_year": 215000000,
+    "after_five_year": 0
+  },
+  {
+    "id": 5558,
+    "name": "ONIX PREMIER 2 TURBO AT EVRO",
+    "until_five_year": 219580480,
+    "after_five_year": 0
+  },
+  {
+    "id": 5374,
+    "name": "ONIX Premier",
+    "until_five_year": 207347000,
+    "after_five_year": 0
+  },
+  {
+    "id": 5375,
+    "name": "ONIX Premier 2",
+    "until_five_year": 214748000,
+    "after_five_year": 0
+  },
+  {
+    "id": 5376,
+    "name": "ONIX Premier 2+",
+    "until_five_year": 221640160,
+    "after_five_year": 0
+  },
+  {
+    "id": 5377,
+    "name": "ONIX RedLine ",
+    "until_five_year": 230624800,
+    "after_five_year": 0
+  },
+  {
+    "id": 5592,
+    "name": "ORLANDO",
+    "until_five_year": 0,
+    "after_five_year": 144000000
+  },
+  {
+    "id": 5454,
+    "name": "SPARK",
+    "until_five_year": 139620000,
+    "after_five_year": 65300000
+  },
+  {
+    "id": 5604,
+    "name": "SPARK",
+    "until_five_year": 72131200,
+    "after_five_year": 72131200
+  },
+  {
+    "id": 5351,
+    "name": "SPARK LS M/T",
+    "until_five_year": 90000000,
+    "after_five_year": 80250000
+  },
+  {
+    "id": 5350,
+    "name": "SPARK LT A/T",
+    "until_five_year": 111466000,
+    "after_five_year": 94000000
+  },
+  {
+    "id": 5616,
+    "name": "TRACKER TRK AT",
+    "until_five_year": 0,
+    "after_five_year": 150000000
+  },
+  {
+    "id": 5587,
+    "name": "TRACKER-2 TRK PREMIER PLUS",
+    "until_five_year": 276000000,
+    "after_five_year": 0
+  },
+  {
+    "id": 5444,
+    "name": "TRAILBLAZER ",
+    "until_five_year": 340000000,
+    "after_five_year": 260000000
+  },
+  {
+    "id": 5387,
+    "name": "TRAILBLAZER LTZ 6AT",
+    "until_five_year": 398000000,
+    "after_five_year": 318400000
+  },
+  {
+    "id": 5599,
+    "name": "TRAILBLAZER LTZ AT  2020",
+    "until_five_year": 318000000,
+    "after_five_year": 0
+  },
+  {
+    "id": 5386,
+    "name": "TRAVERSE PREMIER 2 AT 3.6L",
+    "until_five_year": 734530720,
+    "after_five_year": 587624500
+  },
+  {
+    "id": 5385,
+    "name": "Tahoe RST 5.3L ",
+    "until_five_year": 1109274000,
+    "after_five_year": 887419900
+  },
+  {
+    "id": 5380,
+    "name": "Tracker-2 LS Plus",
+    "until_five_year": 215000000,
+    "after_five_year": 179059300
+  },
+  {
+    "id": 5381,
+    "name": "Tracker-2 LTZ Plus",
+    "until_five_year": 220000000,
+    "after_five_year": 197585000
+  },
+  {
+    "id": 5383,
+    "name": "Tracker-2 Premier Plus",
+    "until_five_year": 276016160,
+    "after_five_year": 220812900
+  },
+  {
+    "id": 5384,
+    "name": "Tracker-2 RedLine",
+    "until_five_year": 285834080,
+    "after_five_year": 228667260
+  },
+  {
+    "id": 5378,
+    "name": "Tracker-2 TRK LS",
+    "until_five_year": 211454880,
+    "after_five_year": 169163900
+  },
+  {
+    "id": 5379,
+    "name": "Tracker-2 TRK LTZ",
+    "until_five_year": 231196000,
+    "after_five_year": 184956800
+  },
+  {
+    "id": 5382,
+    "name": "Tracker-2 TRK Premier",
+    "until_five_year": 246000000,
+    "after_five_year": 200913600
+  },
+  {
+    "id": 5349,
+    "name": "XLABO LB3",
+    "until_five_year": 85124000,
+    "after_five_year": 68099000
+  }
+]
+
+
+curl -X 'POST' \
+  'https://api.online-trust.uz/api/v1/kasko/cal-prem' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Basic S0xJUk9fVEVDSF9BUEk6JDIzS0xJUk8wOVRFQ0gyNSM=' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "issue_year": 2020,
+  "model_id": 5596,
+  "percent_of_car": 0.7,
+  "days": 365,
+  "auto_ns": 100000,
+  "auto_ago": 100000
+}'
+
+{
+  "result": 0,
+  "result_message": "Successful",
+  "prem_auto": null,
+  "prem_ns": 100000,
+  "prem_ago": 100000,
+  "prem_all": null,
+  "otv_all": 240000000,
+  "otv_auto": 175000000,
+  "otv_ns": 40000000,
+  "otv_ago": 25000000
+}
+
